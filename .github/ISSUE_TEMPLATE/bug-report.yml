@@ -1,0 +1,42 @@
+name: Bug report
+description: Report incorrect analysis, runtime behavior, or presentation.
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: DSP and DSP Guide Check versions.
+    validations:
+      required: true
+  - type: input
+    id: phase
+    attributes:
+      label: Selected phase and route
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Attach screenshots or a reviewed Save snapshot JSON when useful.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Snapshot privacy
+      options:
+        - label: I reviewed attached snapshots for save and planet names.
