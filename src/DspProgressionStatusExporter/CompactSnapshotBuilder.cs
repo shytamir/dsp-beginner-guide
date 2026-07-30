@@ -145,19 +145,22 @@ namespace DspProgressionStatusExporter
             Dictionary<string, object> samplingPerformance,
             bool includeCollectorDiagnostics)
         {
+            var production = new Dictionary<string, object> {
+                { "available", state.ProductionWindowReady },
+                { "source", state.ProductionSource },
+                { "scope", state.ProductionScope },
+                { "period", state.ProductionPeriod },
+                { "windowGameSeconds", state.ProductionWindowSeconds },
+                { "sampleCount", state.ProductionSampleCount },
+                { "watchedItemCount", state.ProductionWatchedItemCount },
+                { "itemCoverage", state.ProductionItemCoverage },
+                { "factoryCount", state.ProductionFactoryCount }
+            };
+            if (!String.IsNullOrEmpty(state.ProductionFailure))
+                production["failure"] = state.ProductionFailure;
             var result = new Dictionary<string, object> {
                 { "cadenceSeconds", 5.0 },
-                { "production", new Dictionary<string, object> {
-                    { "available", state.ProductionWindowReady },
-                    { "source", state.ProductionSource },
-                    { "scope", state.ProductionScope },
-                    { "period", state.ProductionPeriod },
-                    { "windowGameSeconds", state.ProductionWindowSeconds },
-                    { "sampleCount", state.ProductionSampleCount },
-                    { "watchedItemCount", state.ProductionWatchedItemCount },
-                    { "itemCoverage", state.ProductionItemCoverage },
-                    { "factoryCount", state.ProductionFactoryCount }
-                } },
+                { "production", production },
                 { "traffic", new Dictionary<string, object> {
                     { "available", state.TrafficWindowReady },
                     { "windowGameSeconds", state.TrafficWindowSeconds }

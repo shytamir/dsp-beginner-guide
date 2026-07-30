@@ -196,6 +196,7 @@ namespace DspProgressionStatusExporter
         public string ProductionSource;
         public string ProductionScope;
         public string ProductionPeriod;
+        public string ProductionFailure;
         public int ProductionSampleCount;
         public int ProductionWatchedItemCount;
         public int ProductionItemCoverage;
@@ -239,7 +240,7 @@ namespace DspProgressionStatusExporter
             result["unlockedTechIds"] = SortedIds(UnlockedTechIds);
             result["queuedTechIds"] = SortedIds(QueuedTechIds);
             result["ownedItemCounts"] = ExportCounts();
-            result["production"] = new Dictionary<string, object> {
+            var production = new Dictionary<string, object> {
                 { "available", ProductionWindowReady },
                 { "windowGameSeconds", ProductionWindowSeconds },
                 { "source", ProductionSource },
@@ -252,6 +253,9 @@ namespace DspProgressionStatusExporter
                 { "items", ExportItemFlows() },
                 { "factoryItems", ExportFactoryItemFlows() }
             };
+            if (!String.IsNullOrEmpty(ProductionFailure))
+                production["failure"] = ProductionFailure;
+            result["production"] = production;
             result["traffic"] = new Dictionary<string, object> {
                 { "available", TrafficWindowReady },
                 { "windowGameSeconds", TrafficWindowSeconds },
@@ -385,6 +389,7 @@ namespace DspProgressionStatusExporter
             ProductionSource = ToText(GetValue(production, "source"));
             ProductionScope = ToText(GetValue(production, "scope"));
             ProductionPeriod = ToText(GetValue(production, "period"));
+            ProductionFailure = ToText(GetValue(production, "lastFailure"));
             ProductionSampleCount =
                 Plugin.ToInt(GetValue(production, "sampleCount"));
             ProductionWatchedItemCount =

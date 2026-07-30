@@ -2,15 +2,17 @@
 
 ## Status
 
-- Implemented in 1.17.0; runtime comparison pending.
+- Implemented in 1.17.0; compact-pool lookup corrected in 1.17.1 and runtime
+  comparison pending.
 - This is a separate runtime-evidence pass so production and Dyson semantics
   can be corrected and compared with the game UI as one coherent change.
 - The audit used the installed DSP `Assembly-CSharp.dll` read-only.
 
 ## Implemented contract
 
-- Production reads `ProductStat.total[1]` and `total[8]` directly for the
-  bounded item watch list used by analysis and snapshots.
+- Production resolves each watched item through
+  `FactoryProductionStat.productIndices[itemId]`, then reads
+  `ProductStat.total[1]` and `total[8]` from the compact `productPool`.
 - Entire-cluster values are the sum of the native one-minute factory
   aggregates. Planet-factory values are retained only for Titanium and Silicon
   route checks.

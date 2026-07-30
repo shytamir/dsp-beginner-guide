@@ -107,7 +107,7 @@ in objective completion or navigation.
 
 | Contract | Version |
 |---|---:|
-| Exporter | 1.17.0 |
+| Exporter | 1.17.1 |
 | Snapshot schema | 2.1 |
 | Normalized state | 1.5 |
 | Guide selection | 1.3 |
@@ -187,14 +187,14 @@ adopted yet.
 
 ### TEL-01 - Native aggregate telemetry alignment
 
-Implemented in v1.17.0. Production rates now use the native one-minute
+Implemented in v1.17.0 and corrected in v1.17.1. Production rates now use the native one-minute
 Statistics Panel aggregates for a bounded item watch set. Lifetime counters
 are separate and limited to Cube totals. Dyson generation, sail population,
 structure and cell progress use native Dyson system and node aggregates;
 launch devices and Ray Receivers remain dedicated collectors.
 
-Normalized state 1.5 and snapshot schema 2.1 record source, scope, period and
-coverage. The implementation still requires the runtime comparison in
+Normalized state 1.5 and snapshot schema 2.1 record source, scope, period,
+coverage and concise collector failure evidence. The implementation still requires the runtime comparison in
 `docs/RUNTIME-TESTING.md` before TEL-01 evidence is accepted.
 
 ## v1.15.0 public release

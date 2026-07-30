@@ -110,10 +110,12 @@ namespace DspProgressionStatusExporter
                     gameFactories.Add(factory);
 
                 int factoryIndex = 0;
+                int activeFactoryCount = 0;
                 foreach (object factoryStat in Plugin.Enumerate(factoryStatPool))
                 {
                     if (factoryStat != null)
                     {
+                        activeFactoryCount++;
                         Dictionary<int, AggregatePair> counters =
                             ReadFactoryAggregates(factoryStat);
                         if (counters.Count > 0)
@@ -141,7 +143,7 @@ namespace DspProgressionStatusExporter
                     }
                     factoryIndex++;
                 }
-                lastFactoryCount = factoryIndex;
+                lastFactoryCount = activeFactoryCount;
 
                 samples.Enqueue(point);
                 while (samples.Count > MaximumSamples) samples.Dequeue();
@@ -162,7 +164,7 @@ namespace DspProgressionStatusExporter
                 last != null && last.Galaxy.Count > 0;
             var result = new Dictionary<string, object> {
                 { "available", aggregateAvailable },
-                { "source", "GameData.statistics.production.factoryStatPool[*].productPool[itemId].total" },
+                { "source", "GameData.statistics.production.factoryStatPool[*].productIndices[itemId] -> productPool[index].total" },
                 { "scope", "entire-star-cluster" },
                 { "period", "one-minute" },
                 { "productionPeriodIndex", ProductionPeriodIndex },
@@ -234,9 +236,14 @@ namespace DspProgressionStatusExporter
         {
             var result = new Dictionary<int, AggregatePair>();
             object productPool = Plugin.GetMember(factoryStat, "productPool");
+            object productIndices =
+                Plugin.GetMember(factoryStat, "productIndices");
             foreach (int itemId in WatchedItemIds)
             {
-                object stat = ElementAt(productPool, itemId);
+                int poolIndex =
+                    Plugin.ToInt(ElementAt(productIndices, itemId));
+                if (poolIndex <= 0) continue;
+                object stat = ElementAt(productPool, poolIndex);
                 if (stat == null ||
                     Plugin.ToInt(Plugin.GetMember(stat, "itemId")) != itemId)
                     continue;

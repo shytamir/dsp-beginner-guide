@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.17.1 - 2026-07-30
+
+### Fixed
+
+- Resolved watched Statistics Panel items through DSP's native
+  `productIndices` map before reading the compact `productPool`.
+- Reported active production factories instead of allocated pool capacity.
+- Retained a concise production-collector failure reason in normalized and
+  compact snapshot diagnostics.
+
 ## 1.17.0 - 2026-07-30
 
 ### Changed

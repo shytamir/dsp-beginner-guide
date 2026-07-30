@@ -8,7 +8,7 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-Version **1.17.0** aligns production and Dyson evidence with the native
+Version **1.17.1** aligns production and Dyson evidence with the native
 aggregates behind the game's Statistics and Dyson panels. It retains the
 compact diagnostic snapshots from 1.16.0 and per-playthrough phase persistence
 from 1.15.1.
@@ -123,11 +123,12 @@ BOOTSTRAP → BLUE → RED → FLIGHT → TITANIUM → YELLOW → ILS
 
 WARP is an optional detour.
 
-## Version 1.17.0
+## Version 1.17.1
 
 Production telemetry now reads DSP's pre-aggregated one-minute Statistics
 Panel values for a bounded guide-relevant item set. Lifetime counters remain
-separate and are retained only for lifetime Cube totals.
+separate and are retained only for lifetime Cube totals. The 1.17.1 hotfix
+corrects the compact native pool lookup used for watched items.
 
 Dyson generation, sail population and construction progress now come from the
 native Dyson system and node aggregates. Dedicated launch-device and Ray
