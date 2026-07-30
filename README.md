@@ -171,7 +171,10 @@ reported as a substantial reduction rather than complete elimination.
 
 See [docs/PROJECT.md](docs/PROJECT.md) for product and evidence contracts and
 [docs/RUNTIME-TESTING.md](docs/RUNTIME-TESTING.md) for the focused runtime
-validation protocol.
+validation protocol. The prepared
+[guide-revision ingestion contract](docs/GUIDE-REVISION-INGESTION.md) and
+[native telemetry alignment pass](docs/NATIVE-TELEMETRY-ALIGNMENT.md) define
+the next evidence work without adopting the forthcoming guide revision early.
 
 ## Development and contributions
 
@@ -190,6 +193,22 @@ phase conclusions and focused factory evidence; review them before publishing.
 DSP Guide Check supports practical progression through Mission Accomplished.
 It is not a combat adviser, ratio calculator, build planner or general
 post-game dashboard.
+
+## Residual issues
+
+- The current guide-derived phase contracts have not yet been reconciled with
+  the forthcoming guide revision. The revision will be ingested as a new,
+  reviewable contract rather than layered onto existing rules.
+- Production rates are still reconstructed from lifetime game-stat counters,
+  and Dyson construction detail is still reconstructed below the aggregate
+  level used by the native Statistics and Dyson panels. `TEL-01` records the
+  required native-aggregate alignment and runtime comparison.
+- The v1.15.1 persistence repair and snapshot schema 2.0 still share a deferred
+  full-playthrough runtime checkpoint; defects will be handled when they
+  surface during the next appropriate test cycle.
+- Hosted CI builds against pinned public Unity references and official BepInEx
+  5 references. A release build against the installed game's assemblies
+  remains the authoritative compatibility check.
 
 ## License
 

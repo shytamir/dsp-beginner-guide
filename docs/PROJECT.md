@@ -172,6 +172,31 @@ serialized snapshot is rejected rather than written if it exceeds 256 KiB.
 The schema 2.0 runtime checkpoint is intentionally folded into the next
 phase's test cycle.
 
+## Prepared next work
+
+### GUIDE-01 - Revised guide ingestion
+
+The forthcoming guide revision will be treated as a new authority pass, not a
+threshold patch. Phase inventory, readiness checklists, optional-route
+semantics, terminology, panel classification, telemetry dependencies, and
+snapshot evidence must all be re-derived and reviewed.
+
+The complete preparation and acceptance contract is in
+`docs/GUIDE-REVISION-INGESTION.md`. No new revision has been received or
+adopted yet.
+
+### TEL-01 - Native aggregate telemetry alignment
+
+The runtime-source audit confirmed that production rates are currently derived
+from lifetime counters even though the Statistics Panel exposes ready-made
+period aggregates. Dyson construction is likewise reconstructed below the
+aggregate level used by the native Dyson statistics/detail surface.
+
+`docs/NATIVE-TELEMETRY-ALIGNMENT.md` defines the separate correction pass. It
+must align collection with the native UI aggregates, move consumers and
+snapshot provenance together, and validate the results against the in-game
+Statistics and Dyson panels before affected guide evidence is accepted.
+
 ## v1.15.0 public release
 
 The receiver sampler previously discovered Ray Receivers by reflecting across

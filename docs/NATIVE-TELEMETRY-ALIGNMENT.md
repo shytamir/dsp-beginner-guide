@@ -1,0 +1,72 @@
+# TEL-01 - Native aggregate telemetry alignment
+
+## Status
+
+- Required, not yet implemented.
+- This is a separate runtime-evidence pass so production and Dyson semantics
+  can be corrected and compared with the game UI as one coherent change.
+- The audit used the installed DSP `Assembly-CSharp.dll` read-only.
+
+## Confirmed production mismatch
+
+- The native Statistics Panel selects a period index as
+  `timeLevel + 1` for production and adds `7` for consumption.
+- Its one-minute view therefore consumes the game's ready-made
+  `ProductStat.total[1]` production and `ProductStat.total[8]` consumption
+  aggregates, summed across the factories in the selected UI scope.
+- The current collector instead reads lifetime totals at indices `6` and `13`,
+  retains broad per-factory item maps, and derives rates from successive
+  samples.
+
+## Confirmed Dyson mismatch
+
+- The native Dyson statistics/detail surface uses `DysonSwarm.sailCount`,
+  `DysonSphere.energyGenCurrentTick`, layer counts, and the node aggregate
+  getters `totalSp`, `totalSpMax`, `totalCp`, and `totalCpMax`.
+- The current collector separately walks layers, shells, nodes, and frames to
+  reconstruct construction detail and then samples those reconstructed totals
+  for change rates.
+- Launch-device state and PHOTON receiver continuity remain separate evidence;
+  they are not replaced by Dyson-editor aggregates.
+
+## Implementation work
+
+- Replace lifetime-delta production rates with the same pre-aggregated
+  one-minute production and consumption values used by the Statistics Panel.
+- Match the panel's entire-cluster aggregation scope for guide analysis, with
+  a deliberate planet scope only where a guide conclusion actually needs it.
+- Collect only the item identifiers used by the selected-phase analysis,
+  compact snapshot totals, and bounded continuity checks.
+- Keep lifetime Cube totals separate from rolling rates and read only the
+  required Cube identifiers.
+- Retain a bounded history of native aggregate values only where an accepted
+  continuity conclusion needs history.
+- Replace hand-reconstructed Dyson construction totals with the aggregate
+  values used by the Dyson statistics/detail surface.
+- Use the game's aggregate sail count and generation values directly.
+- If a construction-change rate remains useful, derive it only from successive
+  bounded samples of the native aggregate construction totals.
+- Preserve dedicated ejector, silo, receiver, and continuity collectors only
+  for facts the aggregate Dyson surface does not provide.
+- Remove obsolete broad maps, topology duplication, source notes, and snapshot
+  fields after all consumers move to the new normalized evidence.
+- Update collector provenance, normalized-state and snapshot contracts
+  together.
+- Fail softly and mark evidence unavailable when the expected aggregate member
+  is absent; do not silently fall back to a different semantic.
+
+## Acceptance
+
+- A one-minute entire-cluster production checkpoint matches the values shown
+  by the native Statistics Panel for representative Cubes and intermediates.
+- Production conclusions no longer depend on lifetime-counter deltas.
+- Sail population, generation, structure progress, and cell progress match the
+  native Dyson statistics/editor values for swarm-only, partial-sphere, and
+  developed-sphere saves.
+- No full all-item history or duplicate shell/frame reconstruction is retained
+  when an aggregate source is available.
+- Existing manual navigation, SPHERE selection, PHOTON receiver continuity,
+  snapshots, and panel behavior do not regress.
+- Sampling duration and stationary gameplay show no new periodic hitch.
+- A saved compact snapshot identifies the native source, scope, window,
+  coverage, and only the evidence used by implemented conclusions.
