@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.18.1 - 2026-07-30
+
+### Changed
+
+- Added a dark outline to panel text for visibility over bright backgrounds.
+- Replaced phase-navigation backgrounds with transparent hit areas and
+  bounded, non-compounding hover growth.
+- Moved selected DYSON/SPHERE emphasis from the control background to its
+  text outline.
+- Made all non-interactive panel surfaces click-through.
+
+### Validation pending
+
+- Confirm text clarity, hover behavior, selected-route emphasis, and
+  click-through input in DSP.
+
 ## 1.18.0 - 2026-07-30
 
 ### Changed

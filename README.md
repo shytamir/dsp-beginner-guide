@@ -8,10 +8,9 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-Version **1.18.0** adopts the published guide revision as a new authority
-contract. Phase objectives now mirror its readiness checklists, WARP remains a
-reference route without a completion gate, and the new post-completion
-LOGISTICS phase is available through manual navigation.
+Version **1.18.1** adds a focused usability pass to the published guide
+contract: outlined panel text, background-free phase controls with bounded
+hover growth, selected-route outlines, and click-through non-control surfaces.
 
 ## Features
 
@@ -125,6 +124,17 @@ BOOTSTRAP → BLUE → RED → FLIGHT → TITANIUM → YELLOW → ILS
 
 WARP is an optional reference route with no completion gate. LOGISTICS is
 entered manually after the main progression route.
+
+## Version 1.18.1
+
+All panel text now carries a dark outline for legibility over bright factory
+and sky backgrounds. Phase navigation controls use transparent hit areas
+instead of block backgrounds, grow to one fixed hover size, and show the
+selected DYSON/SPHERE route through a colored outline.
+
+The panel background, edge, viewport, rows, and text are click-through. Only
+the collapse, phase navigation, explicit scroll, snapshot, and guide-link
+controls capture pointer input.
 
 ## Version 1.18.0
 

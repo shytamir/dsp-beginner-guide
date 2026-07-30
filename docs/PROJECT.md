@@ -108,13 +108,13 @@ in objective completion or navigation.
 
 | Contract | Version |
 |---|---:|
-| Exporter | 1.18.0 |
+| Exporter | 1.18.1 |
 | Snapshot schema | 2.1 |
 | Normalized state | 1.5 |
 | Guide selection | 1.4 |
 | Guide analysis | 2.4 |
 | Progression | 2.4 |
-| Panel | 1.5 |
+| Panel | 1.6 |
 
 ## Verification performed
 
@@ -222,6 +222,18 @@ Runtime validation reduced the receiver collection pass from 67-139 ms before
 the change to about 1.5-1.7 ms in the captured frames, with a recorded maximum
 of 7.2 ms. A faint periodic hitch can still be perceived on the tested
 late-game save, but it is substantially reduced.
+
+## v1.18.1 panel usability
+
+Panel contract 1.6 outlines all text for contrast while retaining the
+minimal, background-free native Goal presentation. Phase controls have
+transparent hit areas and switch between one fixed normal scale and one fixed
+hover scale, so repeated pointer entry cannot compound their size. The active
+DYSON/SPHERE choice uses a colored text outline instead of a filled
+background.
+
+Non-interactive panel graphics and the bounded viewport do not receive pointer
+raycasts. Only explicit controls capture clicks.
 
 ## Roadmap status
 

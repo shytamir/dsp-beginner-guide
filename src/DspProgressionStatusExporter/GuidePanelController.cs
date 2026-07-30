@@ -23,6 +23,7 @@ namespace DspProgressionStatusExporter
         private const float SafeBottom = 230f;
         private const float ScrollControlWidth = 28f;
         private const float ScrollStep = 120f;
+        private const float HeaderControlHoverScale = 1.12f;
         private const float CompletionSeconds = 0.28f;
         private const float SnapshotFeedbackSeconds = 2f;
         private const string SourceGuideUrl =
@@ -34,6 +35,10 @@ namespace DspProgressionStatusExporter
             new Color(0.23f, 1f, 0.44f, 1f);
         private static readonly Color SnapshotFailureColor =
             new Color(1f, 0.22f, 0.18f, 1f);
+        private static readonly Color TextOutlineColor =
+            new Color(0f, 0f, 0f, 0.9f);
+        private static readonly Color SelectedControlOutlineColor =
+            new Color(0.08f, 0.72f, 0.94f, 1f);
 
         private sealed class RowView
         {
@@ -334,8 +339,8 @@ namespace DspProgressionStatusExporter
         private RectTransform warpPhaseRect;
         private RectTransform dysonPhaseRect;
         private RectTransform spherePhaseRect;
-        private Image dysonPhaseBackground;
-        private Image spherePhaseBackground;
+        private Outline dysonPhaseOutline;
+        private Outline spherePhaseOutline;
         private Image collapseImage;
         private Text collapseFallbackText;
         private NativeGoalStyle style;
@@ -394,6 +399,11 @@ namespace DspProgressionStatusExporter
             result["scrollControls"] = "explicit-up-down-buttons";
             result["phaseNavigation"] =
                 "player-controlled-previous-next-with-explicit-route-choice";
+            result["panelPointerPolicy"] =
+                "click-through-except-interactive-controls";
+            result["textOutline"] = true;
+            result["phaseControlStyle"] =
+                "transparent-bounded-hover-with-selected-outline";
             result["headerFont"] =
                 style != null && style.HeaderText != null &&
                 style.HeaderText.Font != null
@@ -456,6 +466,7 @@ namespace DspProgressionStatusExporter
         public void Hide()
         {
             ResetSnapshotFeedback();
+            ResetHeaderControlScales();
             if (panelObject != null) panelObject.SetActive(false);
         }
 
@@ -624,13 +635,13 @@ namespace DspProgressionStatusExporter
                 "DYSON",
                 delegate { Navigate("dyson"); },
                 out dysonPhaseRect,
-                out dysonPhaseBackground);
+                out dysonPhaseOutline);
             CreateHeaderControl(
                 "SpherePhase",
                 "SPHERE",
                 delegate { Navigate("sphere"); },
                 out spherePhaseRect,
-                out spherePhaseBackground);
+                out spherePhaseOutline);
 
             GameObject scrollObject = CreateObject(
                 "ScrollArea",
@@ -651,7 +662,7 @@ namespace DspProgressionStatusExporter
             viewportRect = viewportObject.GetComponent<RectTransform>();
             Image viewportImage = viewportObject.GetComponent<Image>();
             viewportImage.color = new Color(0f, 0f, 0f, 0.001f);
-            viewportImage.raycastTarget = true;
+            viewportImage.raycastTarget = false;
             Stretch(viewportRect, 0f, 0f, 0f, 0f);
 
             GameObject contentObject = CreateObject(
@@ -894,26 +905,22 @@ namespace DspProgressionStatusExporter
                 previousPhaseRect, controlsRight - 28f, 10f, 26f, 28f);
             controlsRight -= 31f;
 
-            Color idleRoute =
-                new Color(0.08f, 0.12f, 0.16f, 0.72f);
-            Color selectedRoute =
-                new Color(0.02f, 0.58f, 0.76f, 0.72f);
-            if (dysonPhaseBackground != null)
-                dysonPhaseBackground.color =
+            if (dysonPhaseOutline != null)
+                dysonPhaseOutline.effectColor =
                     String.Equals(
                         selectedLateRoute,
                         "dyson",
                         StringComparison.OrdinalIgnoreCase)
-                    ? selectedRoute
-                    : idleRoute;
-            if (spherePhaseBackground != null)
-                spherePhaseBackground.color =
+                    ? SelectedControlOutlineColor
+                    : TextOutlineColor;
+            if (spherePhaseOutline != null)
+                spherePhaseOutline.effectColor =
                     String.Equals(
                         selectedLateRoute,
                         "sphere",
                         StringComparison.OrdinalIgnoreCase)
-                    ? selectedRoute
-                    : idleRoute;
+                    ? SelectedControlOutlineColor
+                    : TextOutlineColor;
 
             float titleRight = panelWidth - controlsRight + 4f;
             float titleWidth = Mathf.Max(
@@ -1277,7 +1284,7 @@ namespace DspProgressionStatusExporter
             string label,
             UnityEngine.Events.UnityAction action,
             out RectTransform rect,
-            out Image background)
+            out Outline outline)
         {
             GameObject control = CreateObject(
                 name,
@@ -1285,18 +1292,25 @@ namespace DspProgressionStatusExporter
                 typeof(Image),
                 typeof(Button));
             rect = control.GetComponent<RectTransform>();
-            background = control.GetComponent<Image>();
-            background.color =
-                new Color(0.08f, 0.12f, 0.16f, 0.72f);
+            Image hitArea = control.GetComponent<Image>();
+            hitArea.color = new Color(1f, 1f, 1f, 0f);
+            hitArea.raycastTarget = true;
             Button button = control.GetComponent<Button>();
-            button.targetGraphic = background;
+            button.targetGraphic = hitArea;
+            button.transition = Selectable.Transition.None;
             DisableNavigation(button);
-            button.onClick.AddListener(action);
             Text text = CreateText(
                 name + "Text", control.transform, style.GroupText);
             text.text = label;
             text.alignment = TextAnchor.MiddleCenter;
             Stretch(text.rectTransform, 0f, 0f, 0f, 0f);
+            outline = text.GetComponent<Outline>();
+            RectTransform controlRect = rect;
+            AddBoundedHoverScale(control, controlRect);
+            button.onClick.AddListener(delegate {
+                controlRect.localScale = Vector3.one;
+                action();
+            });
         }
 
         private void CreateScrollControl(
@@ -1428,6 +1442,52 @@ namespace DspProgressionStatusExporter
             selectable.navigation = navigation;
         }
 
+        private static void AddBoundedHoverScale(
+            GameObject control,
+            RectTransform rect)
+        {
+            EventTrigger trigger = control.AddComponent<EventTrigger>();
+            trigger.triggers = new List<EventTrigger.Entry>();
+            AddPointerTrigger(
+                trigger,
+                EventTriggerType.PointerEnter,
+                delegate {
+                    rect.localScale =
+                        Vector3.one * HeaderControlHoverScale;
+                });
+            AddPointerTrigger(
+                trigger,
+                EventTriggerType.PointerExit,
+                delegate { rect.localScale = Vector3.one; });
+        }
+
+        private static void AddPointerTrigger(
+            EventTrigger trigger,
+            EventTriggerType type,
+            UnityEngine.Events.UnityAction<BaseEventData> action)
+        {
+            var entry = new EventTrigger.Entry {
+                eventID = type,
+                callback = new EventTrigger.TriggerEvent()
+            };
+            entry.callback.AddListener(action);
+            trigger.triggers.Add(entry);
+        }
+
+        private void ResetHeaderControlScales()
+        {
+            ResetScale(previousPhaseRect);
+            ResetScale(nextPhaseRect);
+            ResetScale(warpPhaseRect);
+            ResetScale(dysonPhaseRect);
+            ResetScale(spherePhaseRect);
+        }
+
+        private static void ResetScale(RectTransform rect)
+        {
+            if (rect != null) rect.localScale = Vector3.one;
+        }
+
         private Text CreateText(
             string name,
             Transform parent,
@@ -1436,6 +1496,10 @@ namespace DspProgressionStatusExporter
             GameObject child = CreateObject(name, parent, typeof(Text));
             Text text = child.GetComponent<Text>();
             textStyle.Apply(text);
+            Outline outline = child.AddComponent<Outline>();
+            outline.effectColor = TextOutlineColor;
+            outline.effectDistance = new Vector2(1f, -1f);
+            outline.useGraphicAlpha = true;
             text.alignment = TextAnchor.UpperLeft;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
