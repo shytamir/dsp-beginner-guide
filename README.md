@@ -115,18 +115,26 @@ reported as a substantial reduction rather than complete elimination.
 
 ```text
 .
+├── AGENTS.md
 ├── .github/ISSUE_TEMPLATE/
 ├── docs/
 ├── src/DspProgressionStatusExporter/
 ├── build.cmd
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
+├── LICENSE
 └── README.md
 ```
 
 See [docs/PROJECT.md](docs/PROJECT.md) for product and evidence contracts and
 [docs/RUNTIME-TESTING.md](docs/RUNTIME-TESTING.md) for the focused runtime
 validation protocol.
+
+## Development and contributions
+
+Before making changes, read [AGENTS.md](AGENTS.md) for repository-specific
+engineering and agent instructions. Contribution expectations and bug-report
+evidence are described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Safety and privacy
 
@@ -139,6 +147,11 @@ names and detailed factory statistics; review them before publishing.
 DSP Guide Check supports practical progression through Mission Accomplished.
 It is not a combat adviser, ratio calculator, build planner or general
 post-game dashboard.
+
+## License
+
+DSP Guide Check is licensed under the
+[Apache License 2.0](LICENSE).
 
 ## Disclaimer
 
