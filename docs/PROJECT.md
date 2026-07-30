@@ -107,9 +107,9 @@ in objective completion or navigation.
 
 | Contract | Version |
 |---|---:|
-| Exporter | 1.15.1 |
-| Snapshot schema | 1.14 |
-| Normalized state | 1.3 |
+| Exporter | 1.16.0 |
+| Snapshot schema | 2.0 |
+| Normalized state | 1.4 |
 | Guide selection | 1.3 |
 | Guide analysis | 2.3 |
 | Progression | 2.3 |
@@ -147,6 +147,31 @@ still seeds a phase only when no valid selection exists for that playthrough.
 The high-level snapshot-contract follow-up is recorded in
 `docs/SNAPSHOT-REDESIGN.md`.
 
+## v1.16.0 compact snapshot contract
+
+`Save snapshot` still evaluates the same normalized state used by the live
+panel, but schema 2.0 serializes only diagnostic conclusions and the evidence
+needed to validate implemented functions. It does not serialize the raw
+factory model or duplicate normalized state inside analysis and panel
+structures.
+
+Every snapshot contains:
+
+- synchronized plugin, assembly, exporter and schema provenance;
+- static game tick and derived total playtime;
+- selected phase, route, stable identity and persistence provenance;
+- objective and Current Status conclusions;
+- research totals and lifetime, stock and rolling Cube figures;
+- selected-phase item and logistics evidence;
+- compact power and collector-health summaries;
+- focused DYSON, SPHERE or PHOTON evidence when relevant;
+- explicit omission and truncation markers.
+
+Receiver detail is capped at eight rows and marked when more are omitted. The
+serialized snapshot is rejected rather than written if it exceeds 256 KiB.
+The schema 2.0 runtime checkpoint is intentionally folded into the next
+phase's test cycle.
+
 ## v1.15.0 public release
 
 The receiver sampler previously discovered Ray Receivers by reflecting across
@@ -175,5 +200,5 @@ late-game save, but it is substantially reduced.
 4. SPH-01 - accepted.
 5. PHO-01 - accepted.
 
-The v1.15.1 maintenance release is ready for the focused persistence runtime
-checkpoint described in `docs/RUNTIME-TESTING.md`.
+The v1.15.1 persistence repair and v1.16.0 compact snapshot contract are ready
+to be exercised with the next phase's runtime test cycle.

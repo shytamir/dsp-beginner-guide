@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.16.0 - 2026-07-30
+
+### Changed
+
+- Replaced the million-byte forensic dump with snapshot schema 2.0: a compact,
+  bounded diagnostic contract containing conclusions and the evidence used by
+  implemented guide functions.
+- Removed repeated factory, player, technology, inventory, station, telemetry,
+  normalized-state, analysis and panel structures from saved JSON.
+- Added authoritative total playtime, research totals, lifetime Cube totals,
+  current Cube stock and rolling Cube rates.
+- Added selected-phase item and logistics evidence, a worst-planet power
+  summary, and focused DYSON, SPHERE and PHOTON evidence.
+- Added compact collector coverage and optional performance timing diagnostics,
+  explicit omission markers, receiver-detail truncation and a 256 KiB export
+  limit.
+- Synchronized plugin, assembly, exporter and schema provenance in every
+  future snapshot.
+
 ## 1.15.1 - 2026-07-30
 
 ### Fixed

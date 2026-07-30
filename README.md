@@ -8,8 +8,8 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-Version **1.15.1** repairs per-playthrough phase persistence after the first
-public release.
+Version **1.16.0** introduces compact diagnostic snapshots and retains the
+per-playthrough phase-persistence repair from 1.15.1.
 
 ## Features
 
@@ -94,6 +94,17 @@ BOOTSTRAP → BLUE → RED → FLIGHT → TITANIUM → YELLOW → ILS
 
 WARP is an optional detour.
 
+## Version 1.16.0
+
+Saved snapshots now use schema 2.0. They contain the selected phase and route,
+objective and Current Status conclusions, aggregate research and Cube totals,
+and focused evidence for the selected phase. Broad factory, player, technology,
+inventory, station and all-item dumps are deliberately omitted.
+
+Snapshots include compact collector coverage so unavailable or incomplete
+evidence remains visible. PHOTON receiver detail is capped and marked when
+truncated, and the entire JSON export is bounded to 256 KiB.
+
 ## Version 1.15.1
 
 This maintenance release replaces the mutable save-name persistence key with
@@ -149,8 +160,8 @@ evidence are described in [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Safety and privacy
 
 The plugin is read-only with respect to DSP state. It writes a snapshot only
-when `Save snapshot` is clicked. Snapshots may contain save names, planet
-names and detailed factory statistics; review them before publishing.
+when `Save snapshot` is clicked. Snapshots may contain planet names, selected
+phase conclusions and focused factory evidence; review them before publishing.
 
 ## Scope
 

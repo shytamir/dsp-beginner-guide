@@ -9,7 +9,7 @@ if "%~1"=="" (
 )
 
 pushd "%~dp0"
-echo Building DSP Guide Check 1.15.1
+echo Building DSP Guide Check 1.16.0
 echo Game root: %GAME_ROOT%
 dotnet build "src\DspProgressionStatusExporter\DspProgressionStatusExporter.csproj" -c Release -p:GameRoot="%GAME_ROOT%"
 

@@ -16,6 +16,14 @@ namespace DspProgressionStatusExporter
         public string ProductionContinuity;
     }
 
+    internal sealed class ObservedLifetimeItemTotals
+    {
+        public int ItemId;
+        public string Name;
+        public long Produced;
+        public long Consumed;
+    }
+
     internal sealed class ObservedTrafficFlow
     {
         public int FactoryIndex;
@@ -169,6 +177,8 @@ namespace DspProgressionStatusExporter
         public readonly Dictionary<int, long> OwnedItemCounts = new Dictionary<int, long>();
         public readonly Dictionary<int, long> FactoryBuildingCounts = new Dictionary<int, long>();
         public readonly Dictionary<int, ObservedItemFlow> ItemFlows = new Dictionary<int, ObservedItemFlow>();
+        public readonly Dictionary<int, ObservedLifetimeItemTotals> LifetimeItemTotals =
+            new Dictionary<int, ObservedLifetimeItemTotals>();
         public readonly List<ObservedFactoryItemFlow> FactoryItemFlows = new List<ObservedFactoryItemFlow>();
         public readonly List<ObservedTrafficFlow> TrafficFlows = new List<ObservedTrafficFlow>();
         public readonly List<ObservedPowerState> PowerPlanets = new List<ObservedPowerState>();
@@ -209,7 +219,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "1.3";
+            result["modelVersion"] = "1.4";
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or cumulative-counter delta." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -359,9 +369,16 @@ namespace DspProgressionStatusExporter
             foreach (object rowObject in Enumerate(GetValue(production, "galaxy")))
             {
                 var row = rowObject as Dictionary<string, object>;
-                if (row == null || ToBool(GetValue(row, "counterReset"))) continue;
+                if (row == null) continue;
                 int id = Plugin.ToInt(GetValue(row, "itemId"));
                 if (id <= 0) continue;
+                LifetimeItemTotals[id] = new ObservedLifetimeItemTotals {
+                    ItemId = id,
+                    Name = ToText(GetValue(row, "name")),
+                    Produced = Plugin.ToLong(GetValue(row, "producedTotal")),
+                    Consumed = Plugin.ToLong(GetValue(row, "consumedTotal"))
+                };
+                if (ToBool(GetValue(row, "counterReset"))) continue;
                 ItemFlows[id] = new ObservedItemFlow {
                     ItemId = id,
                     Name = ToText(GetValue(row, "name")),

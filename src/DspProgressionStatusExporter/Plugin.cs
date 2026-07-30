@@ -12,11 +12,11 @@ using UnityEngine;
 
 namespace DspProgressionStatusExporter
 {
-    [BepInPlugin("local.dsp.progressionstatusexporter", "DSP Guide Check", "1.15.1")]
+    [BepInPlugin("local.dsp.progressionstatusexporter", "DSP Guide Check", "1.16.0")]
     public sealed class Plugin : BaseUnityPlugin
     {
-        private const string PluginVersion = "1.15.1";
-        private const string SchemaVersion = "1.14";
+        private const string PluginVersion = "1.16.0";
+        private const string SchemaVersion = "2.0";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -89,7 +89,7 @@ namespace DspProgressionStatusExporter
                 "General",
                 "IncludeDiagnostics",
                 true,
-                "Include compact reflection-based scalar diagnostics. Recommended: true."
+                "Include compact collector performance timings in saved snapshots. Recommended: true."
             );
 
             gameMainType = FindType("GameMain");
@@ -236,65 +236,57 @@ namespace DspProgressionStatusExporter
                 lastSnapshotFileName = Path.GetFileName(path);
                 lastSnapshotDirectory = outDir;
 
-                var snapshot = new Dictionary<string, object>();
-                snapshot["schemaVersion"] = SchemaVersion;
-                snapshot["exporterVersion"] = PluginVersion;
-                snapshot["exportedAtUtc"] = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture);
-                snapshot["runtime"] = ExportRuntimeInfo();
-                snapshot["game"] = ExportGameInfo(data);
-                snapshot["location"] = ExportLocation(player);
-                snapshot["research"] = ExportResearch();
-                snapshot["player"] = ExportPlayer(player);
-                snapshot["factories"] = ExportFactories(data);
-                snapshot["ownedInventorySummary"] = ExportOwnedInventorySummary(data, player);
-                snapshot["exploration"] = ExportExploration(data);
-                snapshot["dyson"] = ExportDyson(data);
-                snapshot["darkFog"] = ExportDarkFog(data);
-                snapshot["progressionSummary"] = ExportProgressionSummary(data, player);
-                snapshot["samplingState"] = new Dictionary<string, object> {
-                    { "rollingSamplingEnabled", true },
-                    { "reason", "selected-phase-analysis" },
-                    { "collectionSchedule", "dyson-production-traffic-power-staggered-across-frames" },
-                    { "intervalSeconds", TelemetryIntervalSeconds },
-                    { "panelRefreshIntervalSeconds", PanelRefreshIntervalSeconds }
-                };
-                snapshot["samplingPerformance"] =
-                    ExportSamplingPerformance();
+                var live = new Dictionary<string, object>();
+                Dictionary<string, object> research = ExportResearch();
+                live["research"] = research;
+                live["player"] = ExportPlayer(player);
+                live["factories"] = ExportFactories(data);
+                live["ownedInventorySummary"] =
+                    ExportOwnedInventorySummary(data, player);
+                live["dyson"] = ExportDyson(data);
+                live["progressionSummary"] =
+                    ExportProgressionSummary(data, player);
                 Dictionary<string, object> production = productionTelemetry.Export();
                 Dictionary<string, object> traffic = trafficTelemetry.Export();
                 Dictionary<string, object> powerTelemetryExport = powerTelemetry.Export();
                 Dictionary<string, object> recipes = RecipeTelemetry.Export(data);
-                snapshot["productionTelemetry"] = production;
-                snapshot["trafficTelemetry"] = traffic;
-                snapshot["powerTelemetry"] = powerTelemetryExport;
-                snapshot["recipeTelemetry"] = recipes;
                 ObservedGameState observedState =
-                    ObservedGameState.Build(snapshot, production, traffic, powerTelemetryExport, recipes);
-                snapshot["observedState"] = observedState.Export();
+                    ObservedGameState.Build(
+                        live, production, traffic,
+                        powerTelemetryExport, recipes);
                 ManualPhaseSelection selection =
                     EnsurePhaseSelection(data, observedState);
-                snapshot["guideSelection"] =
-                    selection.Export(activePhaseSaveKey);
                 Dictionary<string, object> guideAnalysis =
                     GuideAnalyzer.AnalyzeSelected(
                         observedState, selection.PhaseId);
-                snapshot["guideAnalysis"] = guideAnalysis;
                 GuidePanelModel panelModel =
                     GuidePanelModelBuilder.Build(
                         guideAnalysis,
                         lastSnapshotFileName,
                         lastSnapshotDirectory);
                 panelModel.SelectedLateRoute = selection.LateRoute;
-                snapshot["guidePanel"] = panelModel.Export();
-                snapshot["guidePanelPresentationDiagnostics"] =
-                    guidePanel.ExportDiagnostics();
-
-                if (includeDiagnostics.Value)
-                {
-                    snapshot["diagnostics"] = ExportDiagnostics(data, player);
-                }
-
-                File.WriteAllText(path, Json.Stringify(snapshot), new UTF8Encoding(false));
+                Dictionary<string, object> snapshot =
+                    CompactSnapshotBuilder.Build(
+                        SchemaVersion,
+                        PluginVersion,
+                        ExportSnapshotProvenance(),
+                        ExportCompactGameInfo(data),
+                        ExportCompactLocation(),
+                        research,
+                        observedState,
+                        selection.Export(activePhaseSaveKey),
+                        guideAnalysis,
+                        ExportSamplingPerformance(),
+                        includeDiagnostics.Value);
+                string json = Json.Stringify(snapshot);
+                int byteCount = Encoding.UTF8.GetByteCount(json);
+                if (byteCount > 262144)
+                    throw new InvalidOperationException(
+                        "Compact snapshot exceeded 256 KiB (" +
+                        byteCount.ToString(CultureInfo.InvariantCulture) +
+                        " bytes).");
+                File.WriteAllText(
+                    path, json, new UTF8Encoding(false));
 
                 Log.LogInfo("DSP progression status exported: " + path);
                 return panelModel;
@@ -733,6 +725,53 @@ namespace DspProgressionStatusExporter
             d["gameVersion"] = GetStatic(gameConfig, "gameVersion", "version", "gameVersionString");
 
             return d;
+        }
+
+        private static Dictionary<string, object>
+            ExportSnapshotProvenance()
+        {
+            Type gameConfig = FindType("GameConfig");
+            return new Dictionary<string, object> {
+                { "pluginId", "local.dsp.progressionstatusexporter" },
+                { "pluginVersion", PluginVersion },
+                { "assemblyVersion", typeof(Plugin).Assembly
+                    .GetName().Version.ToString() },
+                { "snapshotSchemaVersion", SchemaVersion },
+                { "unityVersion", Application.unityVersion },
+                { "gameVersion", GetStatic(
+                    gameConfig, "gameVersion", "version",
+                    "gameVersionString") }
+            };
+        }
+
+        private static Dictionary<string, object>
+            ExportCompactGameInfo(object data)
+        {
+            object desc = GetMember(data, "gameDesc");
+            long gameTick = ToLong(GetStatic(gameMainType, "gameTick"));
+            return new Dictionary<string, object> {
+                { "gameTick", gameTick },
+                { "totalPlayTimeSeconds", gameTick / 60.0 },
+                { "galaxySeed", Scalar(GetMember(
+                    desc, "galaxySeed", "seed")) },
+                { "starCount", Scalar(GetMember(desc, "starCount")) },
+                { "resourceMultiplier", Scalar(GetMember(
+                    desc, "resourceMultiplier")) },
+                { "sandboxMode", Scalar(GetMember(
+                    desc, "sandboxMode", "isSandboxMode")) },
+                { "peaceMode", Scalar(GetMember(desc, "peaceMode")) }
+            };
+        }
+
+        private static Dictionary<string, object>
+            ExportCompactLocation()
+        {
+            return new Dictionary<string, object> {
+                { "planet", ExportCelestialIdentity(
+                    GetStatic(gameMainType, "localPlanet")) },
+                { "star", ExportCelestialIdentity(
+                    GetStatic(gameMainType, "localStar")) }
+            };
         }
 
         private static Dictionary<string, object> ExportGameInfo(object data)

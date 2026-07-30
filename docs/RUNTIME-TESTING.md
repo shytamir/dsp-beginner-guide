@@ -1,11 +1,11 @@
-# DSP Guide Check v1.15.0 - Runtime Validation
+# DSP Guide Check - Runtime Validation
 
 This protocol uses only Dyson Sphere Program with the mod installed through
 BepInEx. It requires no coding task or other software.
 
 ## Preparation
 
-1. Install the v1.15.0 DLL in the usual BepInEx plugin location.
+1. Install the v1.16.0 DLL in the usual BepInEx plugin location.
 2. Load the late-game PHOTON save that previously showed periodic stuttering.
 3. Let the game run normally for at least one minute.
 
@@ -56,12 +56,15 @@ From the most informative PHOTON state:
 
 The snapshot will be checked for:
 
-- exporter 1.15.0 and schema 1.14;
+- exporter 1.16.0 and schema 2.0;
 - unchanged PHOTON objective and receiver evidence;
 - `dysonAndReceivers` sampler duration no longer showing the former large
   periodic spike;
-- presentation diagnostics reporting the `DON'T PANIC` label, Comic Sans
-  selection, larger font size, and bright-red color.
+- compact research, Cube, selected-phase and collector evidence;
+- no repeated raw factory, player, all-technology, all-item or normalized-state
+  sections;
+- explicit omission and receiver-truncation markers where applicable;
+- a saved file no larger than 256 KiB.
 
 ## Report
 
@@ -89,3 +92,6 @@ Please report:
   `creation-time-v2`, `automaticTransitionsEnabled` is `false`, and
   `persistenceState` reports a stable-key restore, migration, seed or explicit
   player update consistent with the test.
+
+The schema 2.0 snapshot checks above are part of the next phase's test cycle;
+no separate legacy-snapshot migration checkpoint is required.
