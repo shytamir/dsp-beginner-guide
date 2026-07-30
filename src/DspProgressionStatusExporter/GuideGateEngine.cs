@@ -13,7 +13,7 @@ namespace DspProgressionStatusExporter
         public string EvidenceKind;
         public string Action;
 
-        public Dictionary<string, object> Export()
+            public Dictionary<string, object> Export()
         {
             return new Dictionary<string, object> {
                 { "id", Id }, { "label", Label }, { "status", Status },
@@ -52,7 +52,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "2.3" },
+                { "contractVersion", "2.4" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -70,17 +70,18 @@ namespace DspProgressionStatusExporter
 
         private static readonly GateDefinition[] Gates = new GateDefinition[] {
             new GateDefinition { Id = "bootstrap", Title = "Stop handcrafting the factory" },
-            new GateDefinition { Id = "blue", Title = "Keep Blue matrices running" },
-            new GateDefinition { Id = "red", Title = "Build a stable oil economy" },
-            new GateDefinition { Id = "flight", Title = "Prepare and establish planetary escape" },
-            new GateDefinition { Id = "titanium", Title = "Establish useful off-world Titanium" },
-            new GateDefinition { Id = "yellow", Title = "Complete the finite ILS research batch" },
-            new GateDefinition { Id = "ils", Title = "End routine manual interplanetary hauling" },
+            new GateDefinition { Id = "blue", Title = "Build the first continuous matrix line" },
+            new GateDefinition { Id = "red", Title = "Solve oil and prepare for flight" },
+            new GateDefinition { Id = "flight", Title = "Reach another planet safely" },
+            new GateDefinition { Id = "titanium", Title = "Establish a useful off-world Titanium source" },
+            new GateDefinition { Id = "yellow", Title = "Make the finite ILS research batch" },
+            new GateDefinition { Id = "ils", Title = "End manual interplanetary hauling" },
             new GateDefinition { Id = "purple", Title = "Build the first truly wide production tier" },
-            new GateDefinition { Id = "green", Title = "Build the Green tier and prepare Dyson industry" },
-            new GateDefinition { Id = "dyson", Title = "Establish sufficient Dyson swarm generation" },
+            new GateDefinition { Id = "green", Title = "Make warpers routine and prepare Dyson industry" },
+            new GateDefinition { Id = "dyson", Title = "Build the minimum useful Dyson swarm" },
             new GateDefinition { Id = "photon", Title = "Run the critical-photon receiver array" },
-            new GateDefinition { Id = "white", Title = "Sustain Universe Matrix production" }
+            new GateDefinition { Id = "white", Title = "Sustain Universe Matrix production" },
+            new GateDefinition { Id = "logistics", Title = "Automate the infrastructure that moves everything" }
         };
 
         public static GuideProgressionEvaluation EvaluatePhase(
@@ -137,6 +138,7 @@ namespace DspProgressionStatusExporter
             else if (definition.Id == "dyson") EvaluateDyson(result, state);
             else if (definition.Id == "photon") EvaluatePhoton(result, state);
             else if (definition.Id == "white") EvaluateWhite(result, state);
+            else if (definition.Id == "logistics") EvaluateLogistics(result, state);
 
             bool blocked = false;
             bool watch = false;
@@ -155,40 +157,87 @@ namespace DspProgressionStatusExporter
 
         private static void EvaluateBootstrap(GuideGateResult gate, ObservedGameState state)
         {
-            AddFlow(gate, state, "iron-ingot", "Iron smelting is automated", 1101, 30, true);
-            AddFlow(gate, state, "copper-ingot", "Copper smelting is automated", 1104, 20, true);
-            AddAvailable(gate, state, "magnetic-coil", "Magnetic Coils are readily available", 1202, 30, true);
-            AddAvailable(gate, state, "circuit-board", "Circuit Boards are readily available", 1301, 30, true);
-            AddAvailable(gate, state, "belts", "Belts are readily available", 2001, 100, true);
-            AddAvailable(gate, state, "sorters", "Sorters are readily available", 2011, 50, true);
+            AddCombinedFlow(gate, state, "ore-arrival",
+                "Iron and Copper arrive continuously",
+                new int[] { 1101, 1104 }, new double[] { 30, 20 },
+                "Keep Iron and Copper smelting supplied.");
+            AddCombinedFlow(gate, state, "basic-smelting",
+                "Basic smelting runs without manual feeding",
+                new int[] { 1101, 1104 }, new double[] { 30, 20 },
+                "Connect miners, smelters, and output storage continuously.");
+            AddCombinedAvailability(gate, state, "early-components",
+                "Magnetic Coils and Circuit Boards are automated",
+                new int[] { 1202, 1301 }, new long[] { 30, 30 },
+                "Automate Magnetic Coils and Circuit Boards.");
+            AddCombinedAvailability(gate, state, "basic-logistics",
+                "Belts and Sorters are readily available",
+                new int[] { 2001, 2011 }, new long[] { 100, 50 },
+                "Automate and stock Belts and Sorters.");
+            AddManualCondition(gate, "routine-machinery",
+                "Ordinary machinery no longer requires repeated handcrafting",
+                "Check that routine machines come from automated production.",
+                "Automate the ordinary machines you keep rebuilding.");
             AddPower(gate, state, true);
         }
 
         private static void EvaluateBlue(GuideGateResult gate, ObservedGameState state)
         {
-            AddFlow(gate, state, "blue-rate", "Blue matrices meet the guide minimum continuously", 6001, 20, true);
+            AddPositiveFlow(gate, state, "blue-continuous",
+                "Blue Cubes (Electromagnetic Matrices) are continuous", 6001, true);
+            AddManualCondition(gate, "blue-labs-fed",
+                "Research labs run without hand feeding",
+                "Direct lab feeding cannot be confirmed from production totals.",
+                "Connect Blue Cube production to the research labs.");
+            AddFlow(gate, state, "blue-rate",
+                "Blue Cube (Electromagnetic Matrix) output reaches 20/min",
+                6001, 20, true);
             AddPower(gate, state, true);
+            AddCombinedAvailability(gate, state, "blue-factory-supply",
+                "Basic factory components no longer consume every Iron and Copper batch",
+                new int[] { 1202, 1301, 2001, 2011 },
+                new long[] { 30, 30, 100, 50 },
+                "Expand the basic component supply.");
         }
 
         private static void EvaluateRed(GuideGateResult gate, ObservedGameState state)
         {
-            AddTech(gate, state, 1111, "Energy Matrix is researched", true);
-            AddFlow(gate, state, "red-rate", "Red matrices meet the guide minimum", 6002, 10, true);
-            AddTankSafety(gate, state, 1114, "Refined Oil has safe remaining capacity", false);
-            AddTankSafety(gate, state, 1120, "Hydrogen has safe remaining capacity", false);
+            AddPositiveFlow(gate, state, "red-continuous",
+                "Red Cubes (Energy Matrices) are continuous", 6002, true);
+            AddFlow(gate, state, "red-rate",
+                "Red Cube (Energy Matrix) output reaches 10/min", 6002, 10, true);
+            AddTankSafety(gate, state, 1114,
+                "Refined Oil cannot permanently jam the refinery", true);
+            AddTankSafety(gate, state, 1120,
+                "Hydrogen cannot permanently jam the refinery", true);
+            AddStableSupply(gate, state, "red-graphite",
+                "Energetic Graphite reaches the Red Cube labs without hand feeding",
+                1109, "Connect Energetic Graphite production to the Red Cube labs.");
+            AddCombinedAvailability(gate, state, "red-staging",
+                "Steel and Foundation are staged for expansion",
+                new int[] { 1103, 1131 }, new long[] { 60, 30 },
+                "Stock Steel and Foundation for the next build.");
+            AddCubeCapability(gate, state, "red-blue-support",
+                "Blue Cube (Electromagnetic Matrix) production keeps pace",
+                6001, 20);
         }
 
         private static void EvaluateFlight(GuideGateResult gate, ObservedGameState state)
         {
             AddTech(gate, state, 2902, "Drive Engine Lv2 is researched", true);
+            AddTech(gate, state, 2202, "Mecha Core Lv2 is researched", true);
             AddTech(gate, state, 1413, "Titanium Smelting is researched", true);
-            AddTechOrQueue(gate, state, new int[] { 1604, 1703, 1302, 1114 },
-                "PLS, Particle Trap, Processor, and Reinforced Thruster are complete or queued", true);
-            gate.Conditions.Add(Condition(
-                "flight-margin", "Fuel and destination power margin are comfortable",
-                "unknown", false,
-                "The current normalized model does not yet prove the player's intended travel margin.",
-                "unknown", "Verify fuel, buildings, and destination power in the guide checklist."));
+            AddTechReadyOrQueued(gate, state, 1604,
+                "Planetary Logistics System is researched or immediately researchable");
+            AddTechOrQueue(gate, state, new int[] { 1703, 1302, 1114 },
+                "Magnetic Particle Trap, Processor, and Reinforced Thruster are researched or queued", true);
+            AddManualCondition(gate, "flight-margin",
+                "Fuel and Mecha core energy are comfortable for the trip",
+                "Travel margin depends on the player's route and loadout.",
+                "Prepare enough fuel and core energy for the round trip.");
+            AddManualCondition(gate, "destination-plan",
+                "The Titanium destination and its power plan are understood",
+                "Destination choice and intended construction cannot be inferred.",
+                "Choose the Titanium planet and prepare its power plan.");
         }
 
         private static void EvaluateTitanium(GuideGateResult gate, ObservedGameState state)
@@ -215,16 +264,24 @@ namespace DspProgressionStatusExporter
             double remoteSilicon = RemoteProduction(state, 1003);
             gate.Conditions.Add(Condition(
                 "direct-silicon", "Direct Silicon mining is established or planned",
-                remoteSilicon > 0 ? "ready" : "unknown", false,
+                remoteSilicon > 0 ? "ready" : "unknown", true,
                 remoteSilicon > 0 ? "Observed remote Silicon Ore production." :
                     "A future plan cannot be proven from runtime state.",
                 remoteSilicon > 0 ? "observed" : "unknown",
                 "Plan a direct Silicon source before Processor demand grows."));
+            AddManualCondition(gate, "outpost-plan",
+                "The outpost power plan and any needed defense plan are ready",
+                "Future power and defense intent cannot be inferred.",
+                "Prepare the outpost power plan and any defense the site needs.");
         }
 
         private static void EvaluateYellow(GuideGateResult gate, ObservedGameState state)
         {
-            AddFlow(gate, state, "yellow-rate", "Yellow matrices meet the guide minimum continuously", 6003, 7.5, true);
+            AddPositiveFlow(gate, state, "yellow-continuous",
+                "Yellow Cubes (Structure Matrices) are continuous", 6003, true);
+            AddFlow(gate, state, "yellow-rate",
+                "Yellow Cube (Structure Matrix) output reaches 7.5/min",
+                6003, 7.5, true);
             long yellow;
             state.OwnedItemCounts.TryGetValue(6003, out yellow);
             bool spentProof = state.UnlockedTechIds.Contains(1414) || state.UnlockedTechIds.Contains(1605);
@@ -236,11 +293,12 @@ namespace DspProgressionStatusExporter
                 spentProof ? "derived" : "observed",
                 "Produce and reserve the 200 Yellow matrices for Titanium Alloy and ILS."));
             AddTech(gate, state, 1414, "High-Strength Titanium Alloy is complete", true);
-            AddTech(gate, state, 1605, "Interstellar Logistics System is complete", true);
+            AddTechReadyOrQueued(gate, state, 1605,
+                "Interstellar Logistics System is complete or finishing");
             bool stationReady = HasStellarStation(state) || Owned(state, 2104) >= 2;
             gate.Conditions.Add(Condition(
-                "ils-hardware", "The first ILS station pair is built or available",
-                stationReady ? "ready" : "unknown", false,
+                "ils-hardware", "Most non-Yellow ILS hardware is ready",
+                stationReady ? "ready" : "unknown", true,
                 stationReady ? "Observed stellar station infrastructure or two owned ILS buildings." :
                     "Preparation of unbuilt hardware cannot be proven from absence alone.",
                 "observed", "Prepare or build the first two ILS stations."));
@@ -255,10 +313,22 @@ namespace DspProgressionStatusExporter
                 "automated-silicon", "Silicon arrives automatically or has an equivalent sustainable route",
                 siliconRoute ? "ready" : "blocked", true,
                 siliconRoute ? "Traffic and/or matching interstellar station policies prove an active Silicon route." :
-                    "No traffic or matching supplied/demanded Silicon route was proven.",
+                    "An active Silicon route wasn't found.",
                 siliconRoute ? "derived" : "observed",
                 siliconRoute ? null : "Activate a sustainable Silicon route."));
 
+            bool automated = HasSustainableRoute(state, 1106) &&
+                (HasSustainableRoute(state, 1105) ||
+                 HasSustainableRoute(state, 1003));
+            gate.Conditions.Add(Condition(
+                "manual-hauling-ended",
+                "Manual interplanetary hauling is no longer routine",
+                automated ? "ready" : "blocked", true,
+                automated
+                    ? "Automated Titanium and Silicon routes were found."
+                    : "The main interplanetary material routes are not both active.",
+                "derived",
+                automated ? null : "Automate the routine interplanetary material routes."));
             AddPower(gate, state, true);
 
             bool localDistribution = false;
@@ -266,66 +336,125 @@ namespace DspProgressionStatusExporter
                 if (!slot.IsStellar) { localDistribution = true; break; }
             gate.Conditions.Add(Condition(
                 "local-distribution", "Local PLS distribution is used where it saves effort",
-                localDistribution ? "ready" : "unknown", false,
+                localDistribution ? "ready" : "unknown", true,
                 localDistribution ? "At least one non-stellar logistics station is observed." :
-                    "This is optional and usefulness cannot be inferred from absence alone.",
+                    "A useful local PLS route wasn't found.",
                 localDistribution ? "observed" : "unknown",
                 "Use PLS selectively when local belts are genuinely burdensome."));
 
-            bool processor = state.UnlockedTechIds.Contains(1302);
-            bool particle = state.UnlockedTechIds.Contains(1133);
-            bool processorQueued = state.QueuedTechIds.Contains(1302);
-            bool particleQueued = state.QueuedTechIds.Contains(1133);
             bool purpleQueued = state.QueuedTechIds.Contains(1312);
-            bool aligned = (processor || processorQueued) && (particle || particleQueued) && purpleQueued;
-            string action = !(processor || processorQueued) ? "Queue Processor." :
-                (!(particle || particleQueued) ? "Queue Particle Control." : "Queue Information Matrix.");
             gate.Conditions.Add(Condition(
-                "purple-direction", "The research queue is explicitly pointed toward Purple",
-                aligned ? "ready" : "blocked", true,
-                "Processor ready/queued: " + (processor || processorQueued) +
-                    "; Particle Control ready/queued: " + (particle || particleQueued) +
-                    "; Information Matrix queued: " + purpleQueued + ".",
-                "derived", action));
+                "purple-direction",
+                "The main research queue points to Information Matrix",
+                purpleQueued ? "ready" : "blocked", true,
+                purpleQueued
+                    ? "Information Matrix is queued."
+                    : "Information Matrix is not queued.",
+                "observed",
+                purpleQueued ? null : "Queue Information Matrix."));
         }
 
         private static void EvaluatePurple(GuideGateResult gate, ObservedGameState state)
         {
-            AddTech(gate, state, 1312, "Information Matrix is researched", true);
             AddPositiveFlow(gate, state, "purple-operating",
-                "Purple production is established", 6004, true);
-            AddFlow(gate, state, "processors", "Processors support the Purple target", 1303, 24, false);
-            AddFlow(gate, state, "carbon-nanotubes", "Carbon Nanotubes support Particle Broadband", 1124, 24, false);
-            AddFlow(gate, state, "particle-broadband", "Particle Broadband supports the Purple target", 1402, 12, false);
-            AddFlow(gate, state, "purple-rate", "Purple matrices meet the guide minimum", 6004, 12, false);
-            AddFlow(gate, state, "graphene-support", "The standard Graphene support route reaches 40/min", 1123, 40, false);
-            AddOlderMatrixSupport(gate, state);
-            AddTech(gate, state, 1704, "Gravitational Wave Refraction branch is complete", true);
-            AddTech(gate, state, 1303, "Quantum Chip branch is complete", true);
-            AddPower(gate, state, false);
+                "Purple Cubes (Information Matrices) are continuous", 6004, true);
+            AddFlow(gate, state, "purple-rate",
+                "Purple Cube (Information Matrix) output reaches 12/min",
+                6004, 12, true);
+            AddStableSupply(gate, state, "processors",
+                "Processor production keeps pace", 1303,
+                "Expand Processor production if Purple Cube production is starved.");
+            AddStableSupply(gate, state, "particle-broadband",
+                "Particle Broadband production is stable", 1402,
+                "Expand Particle Broadband production if Purple Cube production is starved.");
+            AddCombinedStableSupply(gate, state, "graphene-carbon-nanotubes",
+                "Graphene and Carbon Nanotube production are stable",
+                new int[] { 1123, 1124 },
+                "Expand the Graphene or Carbon Nanotube supply that is starving Particle Broadband.");
+            AddTechReadyOrQueued(gate, state, 1704,
+                "Branch A is complete or actively progressing");
+            AddTechReadyOrQueued(gate, state, 1303,
+                "Branch B is complete or actively progressing");
+            AddOlderMatrixChecklist(gate, state);
         }
 
         private static void EvaluateGreen(GuideGateResult gate, ObservedGameState state)
         {
-            AddTech(gate, state, 1705, "Gravity Matrix is researched", true);
             AddPositiveFlow(gate, state, "green-operating",
-                "Green production is established", 6005, true);
-            AddFlow(gate, state, "deuterium-supply", "Deuterium supply supports the starter Green block", 1121, 50, false);
-            AddFlow(gate, state, "quantum-chip-rate", "Quantum Chips support the Green target", 1305, 5, false);
-            AddFlow(gate, state, "strange-matter-rate", "Strange Matter supports the Green target", 1127, 5, false);
-            AddFlow(gate, state, "graviton-lens-rate", "Graviton Lenses support the Green target", 1209, 5, false);
-            AddFlow(gate, state, "green-rate", "Green matrices meet the guide starter target", 6005, 10, false);
-            AddTech(gate, state, 1505, "Planetary Ionosphere Utilization is researched", true);
-            AddPower(gate, state, false);
+                "Green Cubes (Gravity Matrices) are continuous", 6005, true);
+            AddFlow(gate, state, "green-rate",
+                "Green Cube (Gravity Matrix) output reaches 10/min",
+                6005, 10, true);
+            AddStableSupply(gate, state, "quantum-chip-supply",
+                "Quantum Chip production is stable", 1305,
+                "Stabilize Quantum Chip production.");
+            AddStableSupply(gate, state, "strange-matter-supply",
+                "Strange Matter production is stable", 1127,
+                "Stabilize Strange Matter production.");
+            AddCombinedStableSupply(gate, state, "hydrogen-deuterium-route",
+                "Hydrogen and Deuterium have deliberate supply routes",
+                new int[] { 1120, 1121 },
+                "Establish deliberate Hydrogen and Deuterium supply routes.");
+            bool cheapWarpers =
+                ConfiguredRecipeMachines(state, 79) > 0 ||
+                ItemRate(state, 1210) > 0 ||
+                Owned(state, 1210) > 0;
+            gate.Conditions.Add(Condition(
+                "cheap-warpers",
+                "Cheap 8:1 Space Warpers are available",
+                cheapWarpers ? "ready" : "blocked", true,
+                cheapWarpers
+                    ? "Space Warper production, stock, or the Green recipe was found."
+                    : "The Green Space Warper route wasn't found.",
+                state.RecipeTelemetryAvailable ? "observed" : "derived",
+                cheapWarpers ? null : "Configure the 8:1 Space Warper recipe."));
+            AddManualCondition(gate, "green-scaling",
+                "Green Cube (Gravity Matrix) production is scaling toward endgame pace",
+                "The desired endgame pace is a player-selected target.",
+                "Keep scaling Green Cubes toward the chosen endgame pace.");
+            bool dysonPreparation =
+                state.Dyson.EjectorCount > 0 ||
+                state.Dyson.SiloCount > 0 ||
+                state.Dyson.ReceiverCount > 0 ||
+                ItemRate(state, 1501) > 0 ||
+                ItemRate(state, 1503) > 0;
+            gate.Conditions.Add(Condition(
+                "dyson-preparation",
+                "Dyson and photon preparation is underway",
+                dysonPreparation ? "ready" : "unknown", true,
+                dysonPreparation
+                    ? "Dyson production or deployed Dyson infrastructure was found."
+                    : "Dyson preparation wasn't found in the current runtime evidence.",
+                dysonPreparation ? "observed" : "unknown",
+                dysonPreparation ? null : "Begin the chosen Dyson route and photon preparation."));
         }
 
         private static void EvaluateDyson(GuideGateResult gate, ObservedGameState state)
         {
-            AddTech(gate, state, 1505, "Planetary Ionosphere Utilization is researched", true);
+            AddFlow(gate, state, "solar-sail-replacement",
+                "Solar Sail production sustains the recalculated replacement rate",
+                1501, 511, true);
+            double sailLaunchRate = ItemConsumption(state, 1501);
+            bool launchReady = state.ProductionWindowReady &&
+                sailLaunchRate >= 511;
+            gate.Conditions.Add(Condition(
+                "solar-sail-launches",
+                "Measured long-run Solar Sail launches sustain the replacement rate",
+                launchReady ? "ready" : "blocked", true,
+                state.ProductionWindowReady
+                    ? "Found " + Math.Round(sailLaunchRate, 1) +
+                        " Solar Sails consumed per minute; desired 511/min."
+                    : "The production statistics window is not ready.",
+                state.ProductionWindowReady ? "observed" : "unknown",
+                launchReady ? null : "Sustain the recalculated Solar Sail launch rate."));
+            AddManualCondition(gate, "ray-efficiency",
+                "Ray Transmission Efficiency is known and matches the generation target",
+                "The selected efficiency level and recalculated target are a player choice.",
+                "Check the current Ray Transmission Efficiency against the guide table.");
             if (!state.Dyson.Available)
             {
                 gate.Conditions.Add(Condition(
-                    "dyson-generation", "Dyson generation reaches the guide target",
+                    "dyson-generation", "Live Dyson swarm generation meets the target",
                     "unknown", true, "Dyson telemetry is unavailable.", "unknown",
                     "Establish and observe the Dyson swarm."));
             }
@@ -334,23 +463,14 @@ namespace DspProgressionStatusExporter
                 double gigawatts = state.Dyson.GenerationWatts / 1000000000.0;
                 bool ready = gigawatts >= 1.655;
                 gate.Conditions.Add(Condition(
-                    "dyson-generation", "Dyson generation reaches the guide target",
+                    "dyson-generation", "Live Dyson swarm generation meets the target",
                     ready ? "ready" : "blocked", true,
                     "Observed generation " + Math.Round(gigawatts, 3) +
                         " GW; guide target 1.655 GW.",
                     "observed",
                     ready ? null : "Increase effective Dyson generation toward 1.655 GW."));
             }
-            AddFlow(gate, state, "solar-sail-rate",
-                "Solar Sail production supports the reference swarm build", 1501, 511, false);
-            gate.Conditions.Add(Condition(
-                "ejector-duty", "Ejector deployment and current firing opportunity are visible",
-                state.Dyson.EjectorCount > 0 ? "ready" : "unknown", false,
-                "Ejectors deployed: " + state.Dyson.EjectorCount +
-                    "; currently on target: " + state.Dyson.EjectorsOnTarget +
-                    "; net swarm population: " +
-                    Math.Round(state.Dyson.NetSwarmSailsPerMinute, 1) + "/min.",
-                state.Dyson.Available ? "observed" : "unknown", null));
+            AddTech(gate, state, 1504, "Ray Receiver research is complete", true);
         }
 
         private static GuideGateResult EvaluateSphere(ObservedGameState state)
@@ -358,78 +478,46 @@ namespace DspProgressionStatusExporter
             var gate = new GuideGateResult {
                 Id = "sphere",
                 Title = "Build permanent structure and shell cells",
-                Basis = "Player-selected optional route. Objectives establish the construction chain; reference rates never control navigation."
+                Basis = "Player-selected optional route evaluated against the published SPHERE readiness checklist."
             };
 
             double rocketProduction = ItemRate(state, 1503);
             double rocketConsumption = ItemConsumption(state, 1503);
-            long rocketStock = Owned(state, 1503);
-            bool rocketHistory =
-                state.Dyson.ConstructedStructurePoints > 0 ||
-                state.Dyson.ConstructedNodes > 0;
-            bool rocketsAvailable =
-                rocketProduction > 0.0 ||
-                rocketConsumption > 0.0 ||
-                rocketStock > 0 ||
-                state.Dyson.RocketsInFlight > 0 ||
-                rocketHistory;
+            bool rocketStable = state.ProductionWindowReady &&
+                rocketProduction >= 5;
             gate.Conditions.Add(Condition(
-                "sphere-rockets-available",
-                "Small Carrier Rockets are available to the construction project",
-                rocketsAvailable ? "ready" : "blocked",
-                true,
-                rocketHistory &&
-                    rocketProduction <= 0.0 &&
-                    rocketStock <= 0
-                    ? "Permanent structure proves rockets have already reached the project."
-                    : "Found " + rocketStock + " rockets; production " +
-                        Math.Round(rocketProduction, 1) +
-                        "/min. 5/min is a reference pace.",
-                "observed",
-                rocketsAvailable ? null : "Produce Small Carrier Rockets."));
+                "sphere-rockets",
+                "Small Carrier Rocket production is stable at 5/min",
+                rocketStable ? "ready" : "blocked", true,
+                state.ProductionWindowReady
+                    ? "Found " + Math.Round(rocketProduction, 1) +
+                        " Small Carrier Rockets produced per minute; desired 5/min."
+                    : "The production statistics window is not ready.",
+                state.ProductionWindowReady ? "observed" : "unknown",
+                rocketStable ? null : "Stabilize Small Carrier Rocket production at 5/min."));
 
-            bool siloEstablished =
+            bool siloReady =
                 state.Dyson.SiloCount > 0 &&
-                (state.Dyson.SilosWithTarget > 0 ||
-                 state.Dyson.SilosFiringNow > 0 ||
-                 rocketConsumption > 0.0 ||
-                 state.Dyson.RocketsInFlight > 0 ||
-                 rocketHistory);
-            string siloAction = null;
-            if (!siloEstablished)
-            {
-                if (state.Dyson.SiloCount <= 0)
-                    siloAction =
-                        "Build and supply a Vertical Launching Silo.";
-                else if (state.Dyson.SilosWithTarget <= 0 &&
-                    !rocketHistory)
-                    siloAction =
-                        "Assign the silo to a planned sphere node.";
-                else if (state.Dyson.SilosSupplied <= 0 &&
-                    rocketConsumption <= 0.0)
-                    siloAction =
-                        "Supply the silo with Small Carrier Rockets.";
-                else
-                    siloAction =
-                        "Let the silo begin building the planned sphere.";
-            }
+                state.Dyson.SilosWithTarget > 0 &&
+                state.ProductionWindowReady &&
+                rocketConsumption >= 5;
             gate.Conditions.Add(Condition(
-                "sphere-silo-established",
-                "A Vertical Launching Silo is building the planned sphere",
-                siloEstablished ? "ready" : "blocked",
-                true,
-                "Found " + state.Dyson.SiloCount +
-                    " silo(s); " + state.Dyson.SilosSupplied +
-                    " supplied; " + state.Dyson.SilosWithTarget +
-                    " with a target.",
-                "observed",
-                siloAction));
+                "sphere-silo",
+                "One Vertical Launching Silo sustains 5 launches/min",
+                siloReady ? "ready" : "blocked", true,
+                "Found " + state.Dyson.SiloCount + " silo(s), " +
+                    state.Dyson.SilosWithTarget + " with a target, and " +
+                    Math.Round(rocketConsumption, 1) +
+                    " rockets consumed per minute.",
+                state.Dyson.Available ? "observed" : "unknown",
+                siloReady ? null : "Supply and target a silo to sustain 5 launches/min."));
 
             bool shellDesignated =
                 state.Dyson.DesignatedShellCount > 0 ||
                 state.Dyson.TotalCellPoints > 0;
-            bool shellReady =
-                state.Dyson.ConstructedCellPoints > 0;
+            bool shellReady = shellDesignated &&
+                state.Dyson.ConstructedNodes > 0 &&
+                state.Dyson.ConstructedStructurePoints > 0;
             gate.Conditions.Add(Condition(
                 "sphere-cell-boundary",
                 "Completed nodes and frames enclose a designated shell area",
@@ -451,131 +539,60 @@ namespace DspProgressionStatusExporter
                         ? "Finish the nodes and frames around a designated shell area."
                         : "Designate an enclosed shell area in the Dyson Sphere Editor.")));
 
-            double sailProduction = ItemRate(state, 1501);
-            long sailStock = Owned(state, 1501);
-            bool sailsAvailable =
-                sailProduction > 0.0 ||
-                sailStock > 0 ||
-                state.Dyson.SwarmSailCount > 0 ||
-                state.Dyson.EjectorsSupplied > 0;
-            bool cellConstructionEstablished =
-                state.Dyson.ConstructedCellPoints > 0 ||
-                state.Dyson.ConstructedCellPointsPerMinute > 0.0;
-            // Existing permanent cell points prove that sails reached this
-            // project successfully. Do not regress an established objective
-            // merely because a mature or temporarily paused project has no
-            // sails moving during the current observation window.
-            bool cellsEstablished = cellConstructionEstablished;
-            string cellAction = null;
-            if (!cellsEstablished)
-            {
-                if (!shellReady)
-                    cellAction =
-                        "Finish a shell boundary before launching sails for cells.";
-                else if (!sailsAvailable)
-                    cellAction =
-                        "Produce and launch Solar Sails for shell cells.";
-                else if (state.Dyson.EjectorCount <= 0)
-                    cellAction =
-                        "Build and supply an EM-Rail Ejector for shell cells.";
-                else
-                    cellAction =
-                        "Check that launched Solar Sails are becoming permanent shell cells.";
-            }
+            double sailLaunchRate = ItemConsumption(state, 1501);
+            bool sailsReady = state.ProductionWindowReady &&
+                sailLaunchRate >= 15;
             gate.Conditions.Add(Condition(
-                "sphere-cell-construction",
-                "Solar Sails are available and shell-cell construction is established",
-                cellsEstablished ? "ready" : "blocked",
-                true,
-                "Found " + state.Dyson.ConstructedCellPoints +
-                    " permanent cell points; current growth " +
-                    Math.Round(
-                        state.Dyson.ConstructedCellPointsPerMinute,
-                        1) +
-                    "/min. 15 sails/min is a reference pace.",
-                state.Dyson.ConstructionRateAvailable
-                    ? "observed"
-                    : (state.Dyson.ConstructedCellPoints > 0
-                        ? "observed"
-                        : "unknown"),
-                cellAction));
+                "sphere-sail-launches",
+                "At least 15 Solar Sails/min are launched for cell absorption",
+                sailsReady ? "ready" : "blocked", true,
+                state.ProductionWindowReady
+                    ? "Found " + Math.Round(sailLaunchRate, 1) +
+                        " Solar Sails consumed per minute; desired 15/min."
+                    : "The production statistics window is not ready.",
+                state.ProductionWindowReady ? "observed" : "unknown",
+                sailsReady ? null : "Sustain at least 15 Solar Sail launches/min."));
 
-            gate.Status =
-                rocketsAvailable &&
-                siloEstablished &&
-                shellReady &&
-                cellsEstablished
-                    ? "established"
-                    : "in-progress";
+            AddManualCondition(gate, "sphere-efficiency",
+                "Ray Transmission Efficiency is known and matches the generation target",
+                "The selected efficiency level and recalculated target are a player choice.",
+                "Check the current Ray Transmission Efficiency against the guide table.");
+            double gigawatts = state.Dyson.PermanentGenerationWatts /
+                1000000000.0;
+            bool generationReady = state.Dyson.Available &&
+                gigawatts >= 1.655;
+            gate.Conditions.Add(Condition(
+                "sphere-generation",
+                "Live permanent-sphere generation meets the target",
+                generationReady ? "ready" : "blocked", true,
+                state.Dyson.Available
+                    ? "Found " + Math.Round(gigawatts, 3) +
+                        " GW permanent generation; desired 1.655 GW."
+                    : "Dyson construction telemetry is unavailable.",
+                state.Dyson.Available ? "observed" : "unknown",
+                generationReady ? null : "Expand permanent generation toward the recalculated target."));
+
+            bool complete = true;
+            foreach (GuideGateCondition condition in gate.Conditions)
+                if (condition.Required && condition.Status != "ready")
+                    complete = false;
+            gate.Status = complete ? "complete" : "in-progress";
             return gate;
         }
 
         private static GuideGateResult EvaluateWarp(ObservedGameState state)
         {
-            int expensiveMachines = ConfiguredRecipeMachines(state, 78);
-            int cheapMachines = ConfiguredRecipeMachines(state, 79);
-            double warperRate = ItemRate(state, 1210);
-            long warperStock = Owned(state, 1210);
             var warp = new GuideGateResult {
                 Id = "warp",
-                Title = "Optional pre-Green interstellar scouting",
-                Basis = "Player-selected optional detour; it never blocks the main guide sequence."
+                Title = "Take the interstellar shortcuts you want",
+                Basis = "Player-selected optional reference route. WARP has no completion gate."
             };
-            bool personalWarp = state.UnlockedTechIds.Contains(2904);
-            bool personalWarpQueued = state.QueuedTechIds.Contains(2904);
-            warp.Conditions.Add(Condition(
-                "personal-warp", "Personal warp research is available",
-                personalWarp ? "ready" :
-                    (personalWarpQueued ? "watch" : "unknown"),
-                false,
-                "Drive Engine Lv4 complete: " + personalWarp +
-                    "; queued: " + personalWarpQueued + ".",
-                "observed", null));
-            warp.Conditions.Add(Condition(
-                "expensive-warper-route",
-                "The expensive pre-Green Warper route is deliberately configured",
-                expensiveMachines > 0 ? "ready" :
-                    (cheapMachines > 0 || warperRate > 0 || warperStock > 0
-                        ? "watch"
-                        : "unknown"),
-                false,
-                "Recipe 78 machines: " + expensiveMachines +
-                    "; observed Space Warper output: " +
-                    Math.Round(warperRate, 1) + "/min; owned: " +
-                    warperStock + ".",
-                state.RecipeTelemetryAvailable ? "observed" : "unknown",
-                null));
-            warp.Conditions.Add(Condition(
-                "named-target",
-                "A named rare-resource target solves a known factory problem",
-                "unknown", false,
-                "Player intent and the value of an undiscovered target cannot be proven from runtime state.",
-                "unknown", null));
-            warp.Status = personalWarp && (expensiveMachines > 0 ||
-                cheapMachines > 0 || warperRate > 0 || warperStock > 0)
-                ? "active-observed"
-                : "available";
+            warp.Status = "reference";
             return warp;
         }
 
         private static void EvaluatePhoton(GuideGateResult gate, ObservedGameState state)
         {
-            bool receiverResearch =
-                state.UnlockedTechIds.Contains(1505) &&
-                state.UnlockedTechIds.Contains(1506);
-            gate.Conditions.Add(Condition(
-                "photon-research",
-                "Photon Generation and Graviton Lens receiver research are complete",
-                receiverResearch ? "ready" : "blocked",
-                true,
-                receiverResearch
-                    ? "Dirac Inversion Mechanism and Planetary Ionosphere Utilization are complete."
-                    : "Required research is still incomplete.",
-                "observed",
-                receiverResearch
-                    ? null
-                    : "Research Dirac Inversion Mechanism and Planetary Ionosphere Utilization."));
-
             int configured =
                 state.Dyson.ConfiguredPhotonReceiverCount;
             bool four = configured >= 4;
@@ -619,7 +636,7 @@ namespace DspProgressionStatusExporter
                     configured + ".";
             gate.Conditions.Add(Condition(
                 "photon-receiver-continuity",
-                "The Photon Generation receiver array remains continuously supplied",
+                "Four Ray Receivers remain continuously lensed",
                 continuity ? "ready" : "watch",
                 true,
                 continuityEvidence,
@@ -631,11 +648,15 @@ namespace DspProgressionStatusExporter
                     : "Keep every Photon Generation receiver lensed and continuously receiving for at least 60 seconds."));
 
             AddFlow(gate, state, "critical-photons",
-                "Critical Photon production approaches 48/min",
+                "Critical Photon production reaches 48/min",
                 1208, 48, true);
             AddFlow(gate, state, "antimatter",
-                "Antimatter production approaches 48/min",
+                "One collider produces 48 Antimatter/min",
                 1122, 48, true);
+            AddTankSafety(gate, state, 1120,
+                "Returned Hydrogen cannot block the collider", true);
+            AddAllCubeCapability(gate, state,
+                "All five Cube lines can each reach 40/min", 40);
         }
 
         private static void EvaluateWhite(GuideGateResult gate, ObservedGameState state)
@@ -653,13 +674,15 @@ namespace DspProgressionStatusExporter
                 return;
             }
             AddTech(gate, state, 1507, "Universe Matrix is researched", true);
+            AddAllCubeCapability(gate, state,
+                "All five Cube colors sustain the chosen White Cube rate", 40);
+            AddFlow(gate, state, "white-antimatter",
+                "Antimatter sustains the chosen White Cube rate", 1122, 40, true);
             AddPositiveFlow(gate, state, "white-operating",
-                "Universe Matrix production is operating", 6006, true);
-            AddFlow(gate, state, "white-comfort",
-                "Universe Matrix production reaches the comfortable guide rate", 6006, 40, false);
+                "White Cube (Universe Matrix) production is continuous", 6006, true);
             gate.Conditions.Add(Condition(
                 "mission-completed",
-                "Mission Completed is researched",
+                "Mission Completed is consuming or has consumed the final 4,000 White Cubes",
                 "blocked",
                 true,
                 "Mission Completed is not yet researched.",
@@ -667,39 +690,167 @@ namespace DspProgressionStatusExporter
                 "Research Mission Completed."));
         }
 
-        private static void AddOlderMatrixSupport(GuideGateResult gate, ObservedGameState state)
+        private static void EvaluateLogistics(
+            GuideGateResult gate,
+            ObservedGameState state)
         {
-            AddSupportFlow(gate, state, "older-blue", "Blue matrix support has not regressed", 6001, 20);
-            AddSupportFlow(gate, state, "older-red", "Red matrix support has not regressed", 6002, 10);
-            AddSupportFlow(gate, state, "older-yellow", "Yellow matrix support has not regressed", 6003, 7.5);
+            AddCombinedAvailability(gate, state, "distributor-bots",
+                "Logistics Distributors and Logistics Bots refill automatically",
+                new int[] { 2107, 5003 }, new long[] { 1, 5 },
+                "Automate Logistics Distributors and Logistics Bots.");
+            AddCombinedAvailability(gate, state, "pls-drones",
+                "Planetary Logistics Stations and Logistics Drones refill automatically",
+                new int[] { 2103, 5001 }, new long[] { 1, 5 },
+                "Automate Planetary Logistics Stations and Logistics Drones.");
+            AddCombinedAvailability(gate, state, "ils-vessels",
+                "Interstellar Logistics Stations and Logistics Vessels refill automatically",
+                new int[] { 2104, 5002 }, new long[] { 1, 2 },
+                "Automate Interstellar Logistics Stations and Logistics Vessels.");
+            AddManualCondition(gate, "personal-resupply",
+                "Personal construction inventory is resupplied without visiting storage",
+                "Personal logistics intent cannot be confirmed from aggregate production.",
+                "Configure automatic personal construction resupply.");
+            AddManualCondition(gate, "route-literacy",
+                "Provider and receiver routes can be traced across Local and Remote settings",
+                "Route understanding is a player check.",
+                "Trace one provider and receiver route across Local and Remote settings.");
         }
 
-        private static void AddSupportFlow(
+        private static void AddOlderMatrixChecklist(
+            GuideGateResult gate,
+            ObservedGameState state)
+        {
+            bool ready = CubeCanSupport(state, 6001, 20) &&
+                CubeCanSupport(state, 6002, 10) &&
+                CubeCanSupport(state, 6003, 7.5);
+            gate.Conditions.Add(Condition(
+                "older-cubes",
+                "Older Blue, Red, and Yellow Cube rates have been rechecked",
+                ready ? "ready" : "blocked", true,
+                ready
+                    ? "Past Cube production or reserves can support current demand."
+                    : "One or more past Cube lines are below demand without a useful reserve.",
+                "derived",
+                ready ? null : "Recheck the Blue, Red, and Yellow Cube lines."));
+        }
+
+        private static void AddAllCubeCapability(
+            GuideGateResult gate,
+            ObservedGameState state,
+            string label,
+            double desired)
+        {
+            bool ready = true;
+            for (int itemId = 6001; itemId <= 6005; itemId++)
+                if (!CubeCanSupport(state, itemId, desired))
+                    ready = false;
+            gate.Conditions.Add(Condition(
+                "all-cube-capability", label,
+                ready ? "ready" : "blocked", true,
+                ready
+                    ? "Each matrix line has current production or a useful reserve at the selected pace."
+                    : "At least one matrix line cannot currently support the selected pace.",
+                "derived",
+                ready ? null : "Restore the weakest matrix line."));
+        }
+
+        private static bool CubeCanSupport(
+            ObservedGameState state,
+            int itemId,
+            double desired)
+        {
+            ObservedItemFlow flow;
+            state.ItemFlows.TryGetValue(itemId, out flow);
+            if (flow == null) return Owned(state, itemId) >= desired * 10;
+            if (flow.ProducedPerMinute >= desired) return true;
+            if (flow.ConsumedPerMinute <= 0.1 &&
+                Owned(state, itemId) >= desired * 10)
+                return true;
+            return flow.ProducedPerMinute >= flow.ConsumedPerMinute &&
+                Owned(state, itemId) >= desired * 5;
+        }
+
+        private static void AddCubeCapability(
             GuideGateResult gate,
             ObservedGameState state,
             string id,
             string label,
             int itemId,
-            double minimum)
+            double desired)
+        {
+            bool ready = CubeCanSupport(state, itemId, desired);
+            gate.Conditions.Add(Condition(
+                id, label, ready ? "ready" : "blocked", true,
+                ready
+                    ? "Current production or reserve can support demand."
+                    : "Production is below demand without a useful reserve.",
+                "derived",
+                ready ? null : "Restore this matrix line."));
+        }
+
+        private static void AddStableSupply(
+            GuideGateResult gate,
+            ObservedGameState state,
+            string id,
+            string label,
+            int itemId,
+            string action)
         {
             if (!state.ProductionWindowReady)
             {
-                gate.Conditions.Add(Condition(id, label, "unknown", false,
-                    "Production observation window is not ready.", "unknown", null));
+                gate.Conditions.Add(Condition(
+                    id, label, "unknown", true,
+                    "The production statistics window is not ready.",
+                    "unknown", "Let the factory run long enough to check this supply."));
                 return;
             }
             ObservedItemFlow flow;
             state.ItemFlows.TryGetValue(itemId, out flow);
-            double rate = flow != null ? flow.ProducedPerMinute : 0.0;
-            double active = flow != null ? flow.ProductionActiveFraction : 0.0;
-            string status = rate >= minimum ? "ready" :
-                (rate > 0 ? "watch" : "unknown");
+            double produced = flow != null ? flow.ProducedPerMinute : 0;
+            double consumed = flow != null ? flow.ConsumedPerMinute : 0;
+            bool ready = produced > 0 ||
+                Owned(state, itemId) > Math.Max(100, consumed * 5);
             gate.Conditions.Add(Condition(
-                id, label, status, false,
-                "Observed " + Math.Round(rate, 1) + "/min; active in " +
-                    Math.Round(active * 100.0, 0) + "% of intervals; reference minimum " +
-                    minimum + "/min.",
-                rate > 0 ? "observed" : "unknown", null));
+                id, label, ready ? "ready" : "blocked", true,
+                ready
+                    ? "Found active production or a useful reserve."
+                    : "Active production or a useful reserve wasn't found.",
+                "derived", ready ? null : action));
+        }
+
+        private static void AddCombinedStableSupply(
+            GuideGateResult gate,
+            ObservedGameState state,
+            string id,
+            string label,
+            int[] itemIds,
+            string action)
+        {
+            if (!state.ProductionWindowReady)
+            {
+                gate.Conditions.Add(Condition(
+                    id, label, "unknown", true,
+                    "The production statistics window is not ready.",
+                    "unknown", "Let the factory run long enough to check this supply."));
+                return;
+            }
+            bool ready = true;
+            foreach (int itemId in itemIds)
+            {
+                ObservedItemFlow flow;
+                state.ItemFlows.TryGetValue(itemId, out flow);
+                double produced = flow != null ? flow.ProducedPerMinute : 0;
+                double consumed = flow != null ? flow.ConsumedPerMinute : 0;
+                if (produced <= 0 &&
+                    Owned(state, itemId) <= Math.Max(100, consumed * 5))
+                    ready = false;
+            }
+            gate.Conditions.Add(Condition(
+                id, label, ready ? "ready" : "blocked", true,
+                ready
+                    ? "Found active production or useful reserves for both supplies."
+                    : "Active production or a useful reserve wasn't found for both supplies.",
+                "derived", ready ? null : action));
         }
 
         private static void AddFlow(
@@ -721,19 +872,85 @@ namespace DspProgressionStatusExporter
             ObservedItemFlow flow;
             state.ItemFlows.TryGetValue(itemId, out flow);
             double rate = flow != null ? flow.ProducedPerMinute : 0.0;
-            double active = flow != null ? flow.ProductionActiveFraction : 0.0;
             bool ready = rate >= minimum;
             string status = ready ? "ready" : "blocked";
             string itemName = flow != null && !String.IsNullOrEmpty(flow.Name)
                 ? flow.Name : ItemNameForAction(itemId, label);
             gate.Conditions.Add(Condition(
                 id, label, status, required,
-                "Observed " + Math.Round(rate, 1) + "/min; active in " +
-                    Math.Round(active * 100.0, 0) +
-                    "% of sampled intervals (cadence context only); minimum " +
-                    minimum + "/min.",
+                "Found " + Math.Round(rate, 1) +
+                    "/min; desired " + minimum + "/min.",
                 "observed", ready ? null :
                     "Build or stabilize " + itemName + " at or above " + minimum + "/min."));
+        }
+
+        private static void AddCombinedFlow(
+            GuideGateResult gate,
+            ObservedGameState state,
+            string id,
+            string label,
+            int[] itemIds,
+            double[] desiredRates,
+            string action)
+        {
+            if (!state.ProductionWindowReady)
+            {
+                gate.Conditions.Add(Condition(
+                    id, label, "unknown", true,
+                    "The production statistics window is not ready.",
+                    "unknown", "Let the factory run long enough to check this objective."));
+                return;
+            }
+            bool ready = true;
+            var rates = new List<string>();
+            for (int i = 0; i < itemIds.Length; i++)
+            {
+                double rate = ItemRate(state, itemIds[i]);
+                if (rate < desiredRates[i]) ready = false;
+                rates.Add(Math.Round(rate, 1) + "/" +
+                    desiredRates[i] + "/min");
+            }
+            gate.Conditions.Add(Condition(
+                id, label, ready ? "ready" : "blocked", true,
+                "Found rates: " + String.Join(", ", rates.ToArray()) + ".",
+                "observed", ready ? null : action));
+        }
+
+        private static void AddCombinedAvailability(
+            GuideGateResult gate,
+            ObservedGameState state,
+            string id,
+            string label,
+            int[] itemIds,
+            long[] usefulStocks,
+            string action)
+        {
+            bool ready = true;
+            var evidence = new List<string>();
+            for (int i = 0; i < itemIds.Length; i++)
+            {
+                long stock = Owned(state, itemIds[i]);
+                double rate = ItemRate(state, itemIds[i]);
+                if (stock < usefulStocks[i] && rate <= 0) ready = false;
+                evidence.Add(stock + " owned, " +
+                    Math.Round(rate, 1) + "/min");
+            }
+            gate.Conditions.Add(Condition(
+                id, label, ready ? "ready" : "blocked", true,
+                "Found " + String.Join("; ", evidence.ToArray()) + ".",
+                "derived", ready ? null : action));
+        }
+
+        private static void AddManualCondition(
+            GuideGateResult gate,
+            string id,
+            string label,
+            string evidence,
+            string action)
+        {
+            gate.Conditions.Add(Condition(
+                id, label, "unknown", true,
+                evidence, "player-check", action));
         }
 
         private static void AddPositiveFlow(
@@ -797,6 +1014,29 @@ namespace DspProgressionStatusExporter
                 "observed", ready ? null : "Research " + TechName(state, techId) + "."));
         }
 
+        private static void AddTechReadyOrQueued(
+            GuideGateResult gate,
+            ObservedGameState state,
+            int techId,
+            string label)
+        {
+            bool complete = state.UnlockedTechIds.Contains(techId);
+            bool queued = state.QueuedTechIds.Contains(techId);
+            bool ready = complete || queued;
+            gate.Conditions.Add(Condition(
+                "tech-or-queue-" + techId,
+                label,
+                ready ? "ready" : "blocked",
+                true,
+                complete
+                    ? TechName(state, techId) + " is complete."
+                    : (queued
+                        ? TechName(state, techId) + " is queued."
+                        : TechName(state, techId) + " is neither complete nor queued."),
+                "observed",
+                ready ? null : "Research or queue " + TechName(state, techId) + "."));
+        }
+
         private static void AddTechOrQueue(
             GuideGateResult gate,
             ObservedGameState state,
@@ -828,7 +1068,7 @@ namespace DspProgressionStatusExporter
                 gate.Conditions.Add(Condition(
                     "tank-" + itemId, label, "unknown", required,
                     "No tank capacity for this item is observed.", "unknown",
-                    "Verify the refinery output cannot deadlock."));
+                    "Make sure this output cannot bottleneck production."));
                 return;
             }
             double fill = capacity.Count * 1.0 / capacity.Capacity;

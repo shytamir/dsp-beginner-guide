@@ -23,7 +23,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export(string saveKey)
         {
             return new Dictionary<string, object> {
-                { "contractVersion", "1.3" },
+                { "contractVersion", "1.4" },
                 { "authority", "player" },
                 { "saveKey", saveKey },
                 { "identityVersion", IdentityVersion },
@@ -144,7 +144,7 @@ namespace DspProgressionStatusExporter
             new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
                 "bootstrap", "blue", "red", "flight", "titanium",
                 "yellow", "ils", "purple", "warp", "green", "dyson",
-                "sphere", "photon", "white"
+                "sphere", "photon", "white", "logistics"
             };
 
         public static ManualPhaseSelection Seed(
@@ -201,6 +201,7 @@ namespace DspProgressionStatusExporter
                 return String.IsNullOrEmpty(route) ? "dyson" : route;
             }
             if (phase == "white") return "photon";
+            if (phase == "logistics") return "white";
             int index = Array.IndexOf(BeforeLateRoute, phase);
             return index > 0 ? BeforeLateRoute[index - 1] : phase;
         }
@@ -211,7 +212,8 @@ namespace DspProgressionStatusExporter
             if (phase == "warp") return "green";
             if (phase == "dyson" || phase == "sphere") return "photon";
             if (phase == "photon") return "white";
-            if (phase == "white") return phase;
+            if (phase == "white") return "logistics";
+            if (phase == "logistics") return phase;
             if (phase == "green")
             {
                 string route = NormalizeLateRoute(lateRoute);

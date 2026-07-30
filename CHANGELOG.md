@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.18.0 - 2026-07-30
+
+### Changed
+
+- Adopted published guide version 1.1 as the GUIDE-01 authority contract.
+- Replaced every selected-phase objective inventory with the corresponding
+  readiness checklist.
+- Kept exact paces, comfort references, optional paths, warnings, and
+  unprovable player checks distinct.
+- Removed WARP completion criteria and retained it as a player-selected
+  reference route.
+- Re-derived DYSON, SPHERE, PHOTON, and WHITE objectives from the revised
+  late-game route contracts.
+- Added the manually selected post-completion LOGISTICS phase and focused
+  logistics evidence.
+- Updated guide titles, terminology, evidence watch lists, compact snapshot
+  selection, and documentation for the revised phase inventory.
+
+### Validation pending
+
+- Exercise representative early, middle, optional-route, late, WHITE, and
+  LOGISTICS saves with the v1.18 runtime protocol.
+
 ## 1.17.2 - 2026-07-30
 
 ### Changed

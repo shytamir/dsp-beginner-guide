@@ -8,14 +8,15 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-Version **1.17.1** aligns production and Dyson evidence with the native
-aggregates behind the game's Statistics and Dyson panels. It retains the
-compact diagnostic snapshots from 1.16.0 and per-playthrough phase persistence
-from 1.15.1.
+Version **1.18.0** adopts the published guide revision as a new authority
+contract. Phase objectives now mirror its readiness checklists, WARP remains a
+reference route without a completion gate, and the new post-completion
+LOGISTICS phase is available through manual navigation.
 
 ## Features
 
-- Manual phase navigation from BOOTSTRAP through WHITE.
+- Manual phase navigation from BOOTSTRAP through WHITE and the
+  post-completion LOGISTICS phase.
 - Explicit DYSON/SPHERE and optional WARP route selection.
 - Stable phase objectives based on the
   [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
@@ -119,10 +120,24 @@ Main sequence:
 
 ```text
 BOOTSTRAP → BLUE → RED → FLIGHT → TITANIUM → YELLOW → ILS
-→ PURPLE → GREEN → DYSON or SPHERE → PHOTON → WHITE
+→ PURPLE → GREEN → DYSON or SPHERE → PHOTON → WHITE → LOGISTICS
 ```
 
-WARP is an optional detour.
+WARP is an optional reference route with no completion gate. LOGISTICS is
+entered manually after the main progression route.
+
+## Version 1.18.0
+
+GUIDE-01 re-derived the entire phase contract from the published guide rather
+than layering new thresholds onto older rules. Objectives now come from each
+phase's readiness checklist. Exact production gates are used only where the
+checklist names an exact pace; honest player checks remain visible when runtime
+state cannot prove intent, preparation, or understanding.
+
+The new LOGISTICS phase covers automated refill of logistics infrastructure,
+personal construction resupply, and provider/receiver route literacy. Manual
+phase ownership, per-playthrough persistence, compact snapshots, and native
+Statistics/Dyson evidence remain unchanged.
 
 ## Version 1.17.1
 
@@ -137,8 +152,8 @@ Receiver collectors remain separate because they answer operational questions
 that the aggregate construction totals do not.
 
 Snapshot schema 2.1 and normalized state 1.5 expose the source, scope, period
-and coverage of this evidence. Runtime comparison against the Statistics and
-Dyson panels is the remaining acceptance checkpoint.
+and coverage of this evidence. The corrected lookup was accepted against the
+Statistics, Dyson, and PHOTON runtime checkpoints.
 
 ## Version 1.16.0
 
@@ -195,11 +210,11 @@ reported as a substantial reduction rather than complete elimination.
 
 See [docs/PROJECT.md](docs/PROJECT.md) for product and evidence contracts and
 [docs/RUNTIME-TESTING.md](docs/RUNTIME-TESTING.md) for the focused runtime
-validation protocol. The prepared
-[guide-revision ingestion contract](docs/GUIDE-REVISION-INGESTION.md) and
+validation protocol. The adopted
+[guide authority and ingestion record](docs/GUIDE-REVISION-INGESTION.md) and
 [native telemetry alignment contract](docs/NATIVE-TELEMETRY-ALIGNMENT.md)
-describe the prepared guide-ingestion work and the telemetry evidence now
-awaiting runtime comparison.
+record the published source, the re-derived phase contracts, and their
+evidence mapping.
 
 ## Development and contributions
 
@@ -215,17 +230,15 @@ phase conclusions and focused factory evidence; review them before publishing.
 
 ## Scope
 
-DSP Guide Check supports practical progression through Mission Accomplished.
-It is not a combat adviser, ratio calculator, build planner or general
-post-game dashboard.
+DSP Guide Check supports practical progression through Mission Accomplished
+and the guide's focused post-completion LOGISTICS phase. It is not a combat
+adviser, ratio calculator, build planner or general post-game dashboard.
 
 ## Residual issues
 
-- The current guide-derived phase contracts have not yet been reconciled with
-  the forthcoming guide revision. The revision will be ingested as a new,
-  reviewable contract rather than layered onto existing rules.
-- TEL-01's native Statistics and Dyson aggregate alignment is implemented but
-  still requires the documented in-game comparison checkpoint.
+- GUIDE-01 requires the representative in-game acceptance pass documented in
+  `docs/RUNTIME-TESTING.md`; compilation alone cannot validate player-facing
+  conclusions or manual checklist ergonomics.
 - The v1.15.1 persistence repair and snapshot schema 2.0 still share a deferred
   full-playthrough runtime checkpoint; defects will be handled when they
   surface during the next appropriate test cycle.

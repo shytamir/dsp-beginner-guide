@@ -1,83 +1,102 @@
-# DSP Guide Check 1.17 - Runtime Validation
+# DSP Guide Check 1.18 - Runtime Validation
 
 This protocol uses only Dyson Sphere Program with the mod installed through
 BepInEx. It requires no coding task or other software.
 
-TEL-01 changes the evidence beneath existing guide behavior. The test therefore
-checks the native telemetry alignment and the accepted navigation, analysis,
-snapshot, SPHERE, and PHOTON contracts together.
+GUIDE-01 changes the selected-phase objective contracts while preserving
+manual navigation, native telemetry, compact snapshots, and the accepted
+panel behavior. Representative checkpoints are enough; another full
+playthrough is not required for this acceptance pass.
 
 ## Preparation
 
-1. Install the v1.17 DLL in the usual BepInEx plugin location.
-2. Load a save with active production and let it run for at least one minute.
-3. Keep the Statistics Panel set to `1 minute` and `Entire star cluster` for
-   production comparisons.
-4. Use `Save snapshot` only at the checkpoints below.
+1. Install the v1.18 DLL in the usual BepInEx plugin location.
+2. Load each available representative save and let it run for at least one
+   minute before judging production objectives.
+3. Select phases only with the panel controls.
+4. Use `Save snapshot` only for the most informative checkpoints.
 
-## Checkpoint A - Native production aggregates
+## Checkpoint A - Early and middle progression
 
-Choose a phase with a Cube and at least two relevant intermediates visible in
-the phase evidence, such as PURPLE, GREEN, PHOTON, or WHITE.
-
-1. Open the Statistics Panel's Production page.
-2. Record or screenshot the one-minute production and consumption rates for
-   the phase Cube and at least two relevant intermediates.
-3. Without changing the period or scope, click `Save snapshot`.
+Use one early phase (BLUE or RED) and one middle phase (YELLOW or ILS).
 
 Expected:
 
-- snapshot production provenance identifies the native one-minute Statistics
-  Panel source and `entire-star-cluster` scope;
-- the compared production and consumption rates match the Statistics Panel;
-- lifetime production totals appear only for the six Cubes;
-- selected-phase analysis and Current Status remain sensible;
-- an idle but buffered older Cube does not become a false danger merely
-  because its current rate is zero.
+- the objective list matches the readiness checklist in the source guide;
+- exact rates appear only where the checklist names them;
+- preparation or player-knowledge checks remain honest rather than appearing
+  automatically complete;
+- an idle but buffered older Cube does not become a false failure;
+- no future-phase research blocks the selected phase.
 
-## Checkpoint B - Native Dyson aggregates
+Save one snapshot if an objective conclusion needs comparison with visible
+game state.
 
-Use the SPHERE playthrough if it still contains a partial or developed sphere.
+## Checkpoint B - PURPLE and GREEN
 
-1. Select SPHERE manually.
-2. Open the Dyson editor or statistics surface.
-3. Record or screenshot total generation, swarm sail population, constructed
-   and planned structure points, and constructed and planned cell points.
-   Several screenshots are fine if the native UI cannot show them together.
-4. Click `Save snapshot`.
+Use representative PURPLE and GREEN saves.
 
 Expected:
 
-- snapshot Dyson provenance names the native Dyson statistics/editor
-  aggregates;
-- generation and sail population match the native UI;
-- structure and cell progress match the native editor totals;
-- aggregate-node coverage is present and reports no missing nodes;
-- SPHERE recognizes established construction without requiring the 5/min
-  reference rocket pace;
-- no shell, frame, or raw topology dump is present.
+- PURPLE shows its eight checklist objectives, including one combined
+  recheck of Blue, Red, and Yellow rather than a dashboard of every Cube rate;
+- Processor, Particle Broadband, Graphene, and Carbon Nanotube objectives
+  judge stable supply without inventing unsupported exact targets;
+- GREEN shows its eight checklist objectives;
+- the chosen endgame Green pace remains a player check rather than a hidden
+  20/min or 40/min gate;
+- missing preparation produces a useful pending action, not automatic
+  navigation.
 
-If a swarm-only save is readily available, one additional snapshot is useful
-to confirm zero permanent construction does not make Dyson evidence
-unavailable.
+## Checkpoint C - Optional routes
 
-## Checkpoint C - PHOTON continuity
-
-Use a save with configured Photon Generation receivers and select PHOTON
-manually.
+Select WARP, DYSON, and SPHERE manually on suitable late-game saves.
 
 Expected:
 
-- receiver deployment, mode, lenses, strength, requested and supplied power,
-  Critical Photon output, and the accepted 60-second continuity behavior are
-  unchanged;
-- a mode or lens interruption still breaks continuity and recovery still
-  requires a healthy window;
-- production evidence for Critical Photons and Antimatter uses the native
-  one-minute source.
+- WARP has no objective or completion gate;
+- selecting WARP, DYSON, or SPHERE never changes another phase automatically;
+- DYSON and SPHERE remain distinct alternatives;
+- DYSON presents sail production, launches, efficiency, generation, and
+  receiver research from the published checklist;
+- SPHERE presents rocket production, silo launches, enclosed shell area,
+  Solar Sail absorption, efficiency, and permanent generation;
+- native Dyson evidence remains congruent with the Dyson editor.
 
-Save one PHOTON snapshot from the most informative continuity state. A
-before/after pair is welcome if continuity changes during the test.
+Save the most informative DYSON or SPHERE snapshot.
+
+## Checkpoint D - PHOTON and WHITE
+
+Use a save with four Photon Generation receivers and a late-game save with
+WHITE available.
+
+Expected:
+
+- PHOTON shows six checklist objectives: receiver health and continuity,
+  48 Critical Photons/min, 48 Antimatter/min, safe returned Hydrogen, and all
+  five earlier Cube lines capable of 40/min;
+- the accepted 60-second receiver continuity behavior remains intact;
+- WHITE shows its five checklist objectives before completion;
+- after Mission Completed, WHITE reduces to `Mission Accomplished!`;
+- neither PHOTON nor mission completion changes the selected phase.
+
+Save one PHOTON snapshot and, if convenient, one completed WHITE snapshot.
+
+## Checkpoint E - LOGISTICS
+
+From WHITE, select LOGISTICS with the next-phase control.
+
+Expected:
+
+- previous returns to WHITE and next remains on LOGISTICS;
+- the first three objectives report automatic refill evidence for
+  Distributor/Bot, PLS/Drone, and ILS/Vessel infrastructure;
+- personal construction resupply and route literacy remain explicit player
+  checks;
+- no generic post-game dashboard or combat guidance appears.
+
+Save one LOGISTICS snapshot if the phase has representative production or
+stock.
 
 ## Cross-contract regression check
 
@@ -85,45 +104,28 @@ During the checkpoints, also confirm:
 
 - F8 never saves a snapshot;
 - phase and route selections change only through player controls;
-- the selected phase does not change while paused, after research, or after
-  completing an objective;
+- the selected phase does not change while paused, after research, after
+  completing an objective, or after Mission Completed;
+- the selection persists across a normal game restart;
 - navigation, collapse/expand, scrolling, footer controls, and panel layout
   behave normally;
 - `Save snapshot` writes one JSON, turns green for two seconds on success,
   returns to its default style, and does not open Windows Explorer;
-- `DON'T PANIC` opens the selected source-guide phase;
-- no noticeable new five-second hitch occurs with the panel closed or open;
+- `DON'T PANIC` opens the selected guide anchor, including `#logistics`;
+- no noticeable new sampling hitch occurs with the panel closed or open;
 - each saved JSON is no larger than 256 KiB.
-
-## Snapshot contract checks
-
-The returned files will be checked for:
-
-- exporter 1.17 and snapshot schema 2.1;
-- normalized state 1.5 provenance reflected in collector evidence;
-- production source, scope, period, sample count, bounded watch-list coverage,
-  and only selected-phase item evidence;
-- Cube lifetime totals remaining separate from native one-minute rates;
-- native Dyson aggregate source and node coverage;
-- focused SPHERE or PHOTON evidence where applicable;
-- unchanged guide-selection persistence provenance;
-- compact research, Cube, power, logistics, objectives, and Current Status;
-- no raw factory/entity model, broad all-item history, duplicate normalized
-  state, or shell/frame topology;
-- collector timings consistent with no new periodic hitch.
 
 ## Testing handoff
 
 Please return:
 
-- the Checkpoint A snapshot and Statistics Panel screenshot(s);
-- the Checkpoint B snapshot and Dyson UI screenshot(s);
-- the most informative Checkpoint C snapshot, or a before/after pair;
-- whether any rate or Dyson total disagreed with the native UI;
-- whether navigation, persistence, SPHERE, PHOTON, layout, footer, or
-  performance behavior regressed;
-- any player-facing conclusion that did not fit the visible game state.
+- snapshots from the most informative checkpoints;
+- screenshots only for a player-facing mismatch or layout defect;
+- the selected phase and any objective that disagreed with the visible state;
+- whether navigation, persistence, layout, footer, or performance regressed;
+- whether WARP remained gate-free and LOGISTICS behaved as a manual
+  post-completion phase.
 
-The comparison is intentionally broader than TEL-01 alone: the snapshots will
-be reviewed for collection accuracy, normalized provenance, compactness,
-analysis congruence, and preservation of all accepted product contracts.
+The returned snapshots will be reviewed for checklist alignment, native
+evidence congruence, compactness, manual selection ownership, and clear
+separation between objectives, Pending, Current Status, and player checks.

@@ -28,18 +28,19 @@ namespace DspProgressionStatusExporter
         }
 
         private static readonly Phase[] Phases = new Phase[] {
-            new Phase { Id = "bootstrap", Title = "Establish basic automation", GateTechId = 0, NextTechId = 1002, NextResearch = "Electromagnetism (blue matrix unlock)" },
+            new Phase { Id = "bootstrap", Title = "Stop handcrafting the factory", GateTechId = 0, NextTechId = 1002, NextResearch = "Electromagnetism (blue matrix unlock)" },
             new Phase { Id = "blue", Title = "Build the first continuous matrix line", GateTechId = 1002, NextTechId = 1111, NextResearch = "Energy Matrix" },
             new Phase { Id = "red", Title = "Solve oil and prepare for flight", GateTechId = 1111, NextTechId = 2902, NextResearch = "Drive Engine Lv2" },
             new Phase { Id = "flight", Title = "Reach another planet safely", GateTechId = 2902, NextTechId = 1413, NextResearch = "Titanium Smelting" },
-            new Phase { Id = "titanium", Title = "Establish a useful off-world titanium source", GateTechId = 1413, NextTechId = 1124, NextResearch = "Structure Matrix" },
+            new Phase { Id = "titanium", Title = "Establish a useful off-world Titanium source", GateTechId = 1413, NextTechId = 1124, NextResearch = "Structure Matrix" },
             new Phase { Id = "yellow", Title = "Make the finite ILS research batch", GateTechId = 1124, NextTechId = 1605, NextResearch = "Interstellar Logistics System" },
             new Phase { Id = "ils", Title = "End manual interplanetary hauling", GateTechId = 1605, NextTechId = 1312, NextResearch = "Information Matrix" },
             new Phase { Id = "purple", Title = "Build the first truly wide production tier", GateTechId = 1312, NextTechId = 1705, NextResearch = "Gravity Matrix" },
             new Phase { Id = "green", Title = "Make warpers routine and prepare Dyson industry", GateTechId = 1705, NextTechId = 1505, NextResearch = "Planetary Ionosphere Utilization" },
-            new Phase { Id = "dyson", Title = "Establish sufficient Dyson generation", GateTechId = 1505, NextTechId = 1506, NextResearch = "Dirac Inversion Mechanism" },
+            new Phase { Id = "dyson", Title = "Build the minimum useful Dyson swarm", GateTechId = 1505, NextTechId = 1506, NextResearch = "Dirac Inversion Mechanism" },
             new Phase { Id = "photon", Title = "Run the critical-photon receiver array", GateTechId = 1506, NextTechId = 1507, NextResearch = "Universe Matrix" },
-            new Phase { Id = "white", Title = "Sustain universe matrices", GateTechId = 1507, NextTechId = 1508, NextResearch = "Mission Completed" }
+            new Phase { Id = "white", Title = "Sustain Universe Matrix production", GateTechId = 1507, NextTechId = 1508, NextResearch = "Mission Completed" },
+            new Phase { Id = "logistics", Title = "Automate the infrastructure that moves everything", GateTechId = 1508, NextTechId = 0, NextResearch = "Choose a sandbox objective" }
         };
 
         private static readonly Dictionary<string, RateTarget> PhaseRateTargets =
@@ -131,7 +132,7 @@ namespace DspProgressionStatusExporter
                 "Player-selected phase; runtime evidence evaluates this phase but cannot change it.";
 
             var result = new Dictionary<string, object>();
-            result["analysisVersion"] = "2.3";
+            result["analysisVersion"] = "2.4";
             result["phaseSelectionAuthority"] = "player";
             result["phase"] = phaseResult;
             result["progression"] = progression.Export();
@@ -151,7 +152,7 @@ namespace DspProgressionStatusExporter
             if (String.Equals(id, "warp", StringComparison.OrdinalIgnoreCase))
                 return new Phase {
                     Id = "warp",
-                    Title = "Optional pre-Green interstellar scouting",
+                    Title = "Take the interstellar shortcuts you want",
                     GateTechId = 0,
                     NextTechId = 2904,
                     NextResearch = "Drive Engine Lv4"
@@ -159,7 +160,7 @@ namespace DspProgressionStatusExporter
             if (String.Equals(id, "sphere", StringComparison.OrdinalIgnoreCase))
                 return new Phase {
                     Id = "sphere",
-                    Title = "Optional permanent-sphere route",
+                    Title = "Build permanent structure and shell cells",
                     GateTechId = 1505,
                     NextTechId = 1506,
                     NextResearch = "Dirac Inversion Mechanism"
@@ -436,7 +437,7 @@ namespace DspProgressionStatusExporter
             findings.Add(Finding(
                 "optional-warp-route",
                 "opportunity",
-                "The optional Warp route is positively observed.",
+                "The optional Warp route is active.",
                 "Configured warper recipe: " + configured +
                     "; production " + Math.Round(produced, 1) +
                     "/min; owned " + owned +
@@ -465,10 +466,8 @@ namespace DspProgressionStatusExporter
                 "opportunity",
                 unlocked
                     ? "Gas Giant Exploitation is available while gas demand is substantial."
-                    : "Observed gas demand is now large enough to reconsider Gas Giant Exploitation.",
-                "Hydrogen consumption " + Math.Round(hydrogenUse, 1) +
-                    "/min; Deuterium consumption " + Math.Round(deuteriumUse, 1) +
-                    "/min. The guide keeps this conditional on the starting system and actual payoff.",
+                    : "Gas demand is now large enough to reconsider Gas Giant Exploitation.",
+                "Use it when the starting system and actual payoff make it worthwhile.",
                 "medium"));
         }
 
@@ -490,7 +489,7 @@ namespace DspProgressionStatusExporter
                     "ready",
                     "The Fire Ice route is supplying the advanced Graphene chain.",
                     "Configured Graphene (advanced) machines: " + advancedGraphene +
-                        ". This is a positively observed alternative to the standard Sulfuric Acid route.",
+                        ". A great fallback for the standard Sulfuric Acid route.",
                     "high"));
             }
 
@@ -505,7 +504,7 @@ namespace DspProgressionStatusExporter
                     "The Deuterium economy uses a substantial Fractionator route.",
                     "Deployed Fractionators: " + fractionators +
                         "; configured collider Deuterium machines: " + colliderDeuterium +
-                        ". The guide permits this alternative when it fits the factory.",
+                        ". Acceptable optional path.",
                     "high"));
             }
 
@@ -520,8 +519,8 @@ namespace DspProgressionStatusExporter
                     "combat-investment",
                     "context",
                     "This save has made a substantial optional combat investment.",
-                    "Observed deployed combat buildings: " + combatBuildings +
-                        ". This is reported as a divergence in priorities, not as an error.",
+                    "Found deployed combat buildings: " + combatBuildings +
+                        ". Acceptable optional path.",
                     "high"));
             }
         }

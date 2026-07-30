@@ -1598,7 +1598,8 @@ namespace DspProgressionStatusExporter
                     { "yellow", new Color(1f, 0.76f, 0.18f) },
                     { "purple", new Color(0.72f, 0.42f, 1f) },
                     { "green", new Color(0.27f, 0.9f, 0.48f) },
-                    { "white", new Color(0.94f, 0.94f, 0.96f) }
+                    { "white", new Color(0.94f, 0.94f, 0.96f) },
+                    { "logistics", new Color(0.25f, 0.82f, 0.9f) }
                 };
 
             private static readonly string[] CubePhrases = new string[] {

@@ -49,13 +49,14 @@ Snapshot creation is a deliberate player action.
 PHOTON is a player-selected phase. It neither selects itself nor advances to
 WHITE automatically.
 
-Its five stable objectives cover:
+GUIDE-01 now expresses its six published readiness objectives:
 
-1. the required receiver and lens research;
-2. four receivers in Photon Generation mode;
-3. a sustained healthy receiver array;
-4. Critical Photon production near 48/min;
-5. Antimatter production near 48/min.
+1. four continuously lensed receivers at full strength;
+2. continuous receiving across the array;
+3. Critical Photon production at 48/min;
+4. Antimatter production at 48/min;
+5. returned Hydrogen that cannot block the collider;
+6. all five earlier Cube lines able to reach 40/min.
 
 ### Continuity semantics
 
@@ -107,12 +108,12 @@ in objective completion or navigation.
 
 | Contract | Version |
 |---|---:|
-| Exporter | 1.17.2 |
+| Exporter | 1.18.0 |
 | Snapshot schema | 2.1 |
 | Normalized state | 1.5 |
-| Guide selection | 1.3 |
-| Guide analysis | 2.3 |
-| Progression | 2.3 |
+| Guide selection | 1.4 |
+| Guide analysis | 2.4 |
+| Progression | 2.4 |
 | Panel | 1.5 |
 
 ## Verification performed
@@ -172,18 +173,18 @@ serialized snapshot is rejected rather than written if it exceeds 256 KiB.
 The schema 2.0 runtime checkpoint is intentionally folded into the next
 phase's test cycle.
 
-## Prepared next work
+## GUIDE-01 - Published guide adoption
 
-### GUIDE-01 - Revised guide ingestion
+GUIDE-01 is implemented in v1.18.0 from published guide version 1.1. The
+complete immutable source record, phase-by-phase readiness contract,
+old-to-new disposition, evidence matrix, and runtime acceptance requirements
+are maintained in `docs/GUIDE-REVISION-INGESTION.md`.
 
-The forthcoming guide revision will be treated as a new authority pass, not a
-threshold patch. Phase inventory, readiness checklists, optional-route
-semantics, terminology, panel classification, telemetry dependencies, and
-snapshot evidence must all be re-derived and reviewed.
-
-The complete preparation and acceptance contract is in
-`docs/GUIDE-REVISION-INGESTION.md`. No new revision has been received or
-adopted yet.
+The implementation preserves player-owned navigation and treats each
+selected phase's readiness checklist as the stable objective inventory.
+Reference paces become completion requirements only when the checklist names
+them. WARP has no completion gate, DYSON and SPHERE remain alternatives, and
+LOGISTICS is a new manually selected post-completion phase.
 
 ### TEL-01 - Native aggregate telemetry alignment
 
@@ -194,8 +195,9 @@ structure and cell progress use native Dyson system and node aggregates;
 launch devices and Ray Receivers remain dedicated collectors.
 
 Normalized state 1.5 and snapshot schema 2.1 record source, scope, period,
-coverage and concise collector failure evidence. The implementation still requires the runtime comparison in
-`docs/RUNTIME-TESTING.md` before TEL-01 evidence is accepted.
+coverage and concise collector failure evidence. The user-run native
+Statistics, Dyson, and PHOTON comparisons confirmed the corrected telemetry;
+GUIDE-01 reuses that accepted evidence contract.
 
 ## v1.15.0 public release
 
@@ -228,7 +230,9 @@ late-game save, but it is substantially reduced.
 3. END-01 - accepted.
 4. SPH-01 - accepted.
 5. PHO-01 - accepted.
+6. TEL-01 - accepted after the native lookup hotfix.
+7. GUIDE-01 - implemented; representative runtime acceptance pending.
 
-The v1.15.1 persistence repair, v1.16.0 compact snapshot contract and v1.17.0
-native telemetry alignment are ready to be exercised together in the TEL-01
+The v1.15.1 persistence repair and v1.16.0 compact snapshot contract retain
+their deferred full-playthrough checkpoint. GUIDE-01 is the next focused
 runtime test cycle.

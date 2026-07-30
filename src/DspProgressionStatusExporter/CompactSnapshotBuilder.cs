@@ -14,20 +14,31 @@ namespace DspProgressionStatusExporter
 
         private static readonly Dictionary<string, int[]> PhaseItems =
             new Dictionary<string, int[]>(StringComparer.OrdinalIgnoreCase) {
-                { "bootstrap", new int[0] },
-                { "blue", new int[] { 6001 } },
-                { "red", new int[] { 6002, 1114, 1120 } },
+                { "bootstrap", new int[] {
+                    1101, 1104, 1202, 1301, 2001, 2011
+                } },
+                { "blue", new int[] {
+                    6001, 1202, 1301, 2001, 2011
+                } },
+                { "red", new int[] {
+                    6002, 6001, 1114, 1120, 1109, 1103, 1131
+                } },
                 { "flight", new int[0] },
-                { "titanium", new int[] { 1004, 1106, 1105 } },
+                { "titanium", new int[] { 1004, 1106, 1003 } },
                 { "yellow", new int[] { 6003, 1114, 1120, 1116, 1117, 1118 } },
-                { "ils", new int[] { 1106, 1105 } },
+                { "ils", new int[] { 1106, 1105, 1003 } },
                 { "purple", new int[] { 6004, 1303, 1123, 1124, 1402 } },
                 { "warp", new int[] { 1210 } },
-                { "green", new int[] { 6005, 1121, 1305, 1127, 1209, 1210 } },
+                { "green", new int[] {
+                    6005, 1120, 1121, 1305, 1127, 1210
+                } },
                 { "dyson", new int[] { 1501 } },
                 { "sphere", new int[] { 1501, 1503 } },
-                { "photon", new int[] { 1208, 1122, 1209 } },
-                { "white", new int[] { 6006, 1208, 1122 } }
+                { "photon", new int[] { 1208, 1122, 1120, 1209 } },
+                { "white", new int[] { 6006, 1208, 1122 } },
+                { "logistics", new int[] {
+                    2107, 5003, 2103, 5001, 2104, 5002
+                } }
             };
 
         public static Dictionary<string, object> Build(
