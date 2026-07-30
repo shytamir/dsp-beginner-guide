@@ -11,7 +11,7 @@ $ErrorActionPreference = 'Stop'
 if ([String]::IsNullOrEmpty($DllPath)) {
     $repositoryRoot = Split-Path -Parent $PSScriptRoot
     $DllPath = Join-Path $repositoryRoot `
-        'src\DspProgressionStatusExporter\bin\Release\net472\DspProgressionStatusExporter.dll'
+        'src\DspProgressionStatusExporter\bin\Release\net472\DspGuideCheck.dll'
 }
 
 function Load-Assembly {

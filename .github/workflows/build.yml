@@ -1,4 +1,4 @@
-name: Build and test DLL
+name: Build and test Thunderstore package
 
 run-name: Build ${{ github.run_number }} from ${{ github.sha }}
 
@@ -96,20 +96,37 @@ jobs:
         shell: pwsh
         run: |
           ./scripts/Test-BuildArtifact.ps1 `
-            -DllPath 'src/DspProgressionStatusExporter/bin/Release/net472/DspProgressionStatusExporter.dll' `
+            -DllPath 'src/DspProgressionStatusExporter/bin/Release/net472/DspGuideCheck.dll' `
             -ExpectedReleaseLabel $env:RELEASE_LABEL `
             -ExpectedSemanticVersion $env:SEMANTIC_VERSION `
             -ExpectedAssemblyVersion $env:ASSEMBLY_VERSION
 
-      - name: Upload DLL and reports
+      - name: Build Thunderstore package
+        id: package
+        shell: pwsh
+        run: |
+          ./scripts/New-ThunderstorePackage.ps1 `
+            -DllPath 'src/DspProgressionStatusExporter/bin/Release/net472/DspGuideCheck.dll' `
+            -VersionNumber $env:PACKAGE_VERSION
+
+      - name: Test Thunderstore package
+        id: package_test
+        shell: pwsh
+        run: |
+          ./scripts/Test-ThunderstorePackage.ps1 `
+            -PackagePath "artifacts/packages/DSPGuideCheck-$env:PACKAGE_VERSION.zip" `
+            -ExpectedVersion $env:PACKAGE_VERSION
+
+      - name: Upload installable package and reports
         id: upload
         uses: actions/upload-artifact@v6
         with:
-          name: DSP-Guide-Check-${{ steps.version.outputs.release_label }}
+          name: DSPGuideCheck-${{ steps.version.outputs.package_version }}
           path: |
-            src/DspProgressionStatusExporter/bin/Release/net472/DspProgressionStatusExporter.dll
+            artifacts/packages/DSPGuideCheck-${{ steps.version.outputs.package_version }}.zip
             artifacts/BUILD-INFO.txt
             artifacts/TEST-REPORT.md
+            artifacts/PACKAGE-REPORT.md
           if-no-files-found: error
           retention-days: 30
 
@@ -124,8 +141,11 @@ jobs:
           RESTORE_STATUS: ${{ steps.restore.outcome }}
           BUILD_STATUS: ${{ steps.build.outcome }}
           TEST_STATUS: ${{ steps.test.outcome }}
+          PACKAGE_STATUS: ${{ steps.package.outcome }}
+          PACKAGE_TEST_STATUS: ${{ steps.package_test.outcome }}
           UPLOAD_STATUS: ${{ steps.upload.outcome }}
           RELEASE_LABEL_VALUE: ${{ steps.version.outputs.release_label }}
+          PACKAGE_VERSION_VALUE: ${{ steps.version.outputs.package_version }}
           SEMANTIC_VERSION_VALUE: ${{ steps.version.outputs.semantic_version }}
           ASSEMBLY_VERSION_VALUE: ${{ steps.version.outputs.assembly_version }}
         run: |
@@ -137,6 +157,7 @@ jobs:
           | Source commit | `${{ github.sha }}` |
           | Workflow sequence | `${{ github.run_number }}` |
           | Release label | `$env:RELEASE_LABEL_VALUE` |
+          | Package/plugin version | `$env:PACKAGE_VERSION_VALUE` |
           | Semantic version | `$env:SEMANTIC_VERSION_VALUE` |
           | Assembly version | `$env:ASSEMBLY_VERSION_VALUE` |
 
@@ -149,5 +170,7 @@ jobs:
           | Restore reference packages | $env:RESTORE_STATUS |
           | Build DLL | $env:BUILD_STATUS |
           | Test DLL | $env:TEST_STATUS |
+          | Build Thunderstore package | $env:PACKAGE_STATUS |
+          | Test Thunderstore package | $env:PACKAGE_TEST_STATUS |
           | Publish artifact | $env:UPLOAD_STATUS |
           "@ >> $env:GITHUB_STEP_SUMMARY

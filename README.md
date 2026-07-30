@@ -53,7 +53,7 @@ build.cmd "D:\Games\Dyson Sphere Program"
 The DLL is written to:
 
 ```text
-src\DspProgressionStatusExporter\bin\Release\net472\
+src\DspProgressionStatusExporter\bin\Release\net472\DspGuideCheck.dll
 ```
 
 The game and BepInEx assemblies are referenced from the local installation;
@@ -62,41 +62,40 @@ they are not redistributed in this repository.
 ## Versioning and continuous integration
 
 `VERSION` records the manually selected major and minor version numbers. Every
-push to `main` runs the build, artifact-verification, and packaging workflow.
-The workflow sequence becomes the patch number and the triggering commit is
-included in both published forms:
+push to `main` runs the build, DLL verification, Thunderstore packaging, and
+package verification workflow. The workflow sequence becomes the patch
+number:
 
 ```text
-Release/artifact label: M.m.N.X
-Semantic version:       M.m.N+X
+Package/plugin version: M.m.N
+Assembly/file version:  M.m.N.0
+Diagnostic label:       M.m.N.X
 ```
 
-For example, workflow run 42 for commit `abcdef1` publishes the artifact label
-`1.16.42.abcdef1` and embeds semantic version `1.16.42+abcdef1`. The assembly
-and file version remain numeric (`1.16.42.0`). The workflow sequence advances
-without committing a generated version change back to `main`.
+For example, workflow run 42 publishes package and BepInEx version `1.18.42`,
+assembly/file version `1.18.42.0`, and diagnostic label
+`1.18.42.abcdef1`. The workflow sequence advances without committing a
+generated version change back to `main`.
 
 The hosted build downloads the official BepInEx 5 release as a compile
 reference and restores pinned Unity reference packages. Local release builds
 continue to use the assemblies supplied by the installed game and remain the
 authoritative compatibility check.
 
-BepInEx receives the numeric assembly version (`M.m.N.0`), while snapshots and
-build reports retain the semantic and release labels above. The artifact test
-rejects a generated BepInEx identity that `System.Version` cannot parse.
+BepInEx and the Thunderstore manifest receive the same three-number version.
+Snapshots and reports retain the commit-bearing diagnostic label. The build
+test rejects an invalid BepInEx identity, and the package test rejects an
+incorrect manifest, icon, README, file name, or ZIP layout.
+
+The exact deployment contract is documented in
+[docs/THUNDERSTORE-PACKAGE.md](docs/THUNDERSTORE-PACKAGE.md).
 
 ## Install
 
-Copy `DspProgressionStatusExporter.dll` into a folder beneath:
+Copy `DspGuideCheck.dll` into:
 
 ```text
-Dyson Sphere Program\BepInEx\plugins\
-```
-
-For example:
-
-```text
-Dyson Sphere Program\BepInEx\plugins\DSPGuideCheck\
+Dyson Sphere Program\BepInEx\plugins\DSP-Guide-Check\
 ```
 
 ## Use

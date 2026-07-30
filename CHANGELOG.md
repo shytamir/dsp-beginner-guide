@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Renamed the public build output to `DspGuideCheck.dll` without changing the
+  source namespace or runtime behavior.
+- Added a Thunderstore manifest template, portable package README, 256 by 256
+  icon contract, exact BepInEx install layout, and package validator.
+- Changed hosted packaging to publish an installable `DSPGuideCheck-M.m.N.zip`
+  plus diagnostic reports.
+- Reused the same three-number `M.m.N` version for Thunderstore and BepInEx
+  while retaining `M.m.N.0` for assembly/file metadata and the commit hash in
+  diagnostics.
+
 ## 1.18.3 - 2026-07-30
 
 ### Fixed

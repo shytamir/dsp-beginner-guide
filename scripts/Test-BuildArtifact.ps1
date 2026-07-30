@@ -45,7 +45,7 @@ if ($ExpectedReleaseLabel -notmatch '^\d+\.\d+\.\d+\.[0-9a-f]{7}$') {
     throw "Release label is invalid: $ExpectedReleaseLabel."
 }
 
-if ($ExpectedSemanticVersion -notmatch '^\d+\.\d+\.\d+\+[0-9a-f]{7}$') {
+if ($ExpectedSemanticVersion -notmatch '^\d+\.\d+\.\d+$') {
     throw "Semantic version is invalid: $ExpectedSemanticVersion."
 }
 
@@ -53,8 +53,8 @@ $versionSourcePath = Join-Path $RepositoryRoot `
     'src\DspProgressionStatusExporter\BuildVersion.cs'
 $versionSource = Get-Content -Raw -LiteralPath $versionSourcePath
 if (-not $versionSource.Contains(
-        "BepInPluginVersion = `"$ExpectedAssemblyVersion`"")) {
-    throw 'Generated BepInEx plugin version does not match the numeric assembly version.'
+        "BepInPluginVersion = `"$ExpectedSemanticVersion`"")) {
+    throw 'Generated BepInEx plugin version does not match the public package version.'
 }
 if (-not $versionSource.Contains(
         "PluginVersion = `"$ExpectedSemanticVersion`"")) {
@@ -67,8 +67,8 @@ if (-not $versionSource.Contains(
 
 $parsedBepInPluginVersion = $null
 if (-not [Version]::TryParse(
-        $ExpectedAssemblyVersion, [ref]$parsedBepInPluginVersion)) {
-    throw "BepInEx plugin version is not a valid System.Version: $ExpectedAssemblyVersion."
+        $ExpectedSemanticVersion, [ref]$parsedBepInPluginVersion)) {
+    throw "BepInEx plugin version is not a valid System.Version: $ExpectedSemanticVersion."
 }
 
 $pluginSourcePath = Join-Path $RepositoryRoot `
@@ -104,7 +104,7 @@ $report = @"
 | DLL | `$DllPath` |
 | Release label | `$ExpectedReleaseLabel` |
 | Semantic version | `$ExpectedSemanticVersion` |
-| BepInEx plugin version | `$ExpectedAssemblyVersion` |
+| BepInEx plugin version | `$ExpectedSemanticVersion` |
 | Assembly/file version | `$ExpectedAssemblyVersion` |
 | Size | $length bytes |
 | SHA-256 | `$hash` |

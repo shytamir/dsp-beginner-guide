@@ -32,5 +32,5 @@ if errorlevel 1 (
 
 echo.
 echo BUILD SUCCEEDED
-echo DLL: src\DspProgressionStatusExporter\bin\Release\net472\DspProgressionStatusExporter.dll
+echo DLL: src\DspProgressionStatusExporter\bin\Release\net472\DspGuideCheck.dll
 popd

@@ -253,6 +253,14 @@ normal and hover scales. This includes collapse, explicit scrolling,
 `Save snapshot`, and `DON'T PANIC`; repeated pointer entry cannot compound
 their size.
 
+## Release packaging
+
+Hosted builds publish `DspGuideCheck.dll` inside the Thunderstore-compatible
+ZIP defined by `docs/THUNDERSTORE-PACKAGE.md`. The three-number package
+version is shared with the BepInEx plugin identity; assembly/file metadata
+retains its required fourth numeric component. Packaging does not change the
+source namespace, runtime identity, save contract, or panel behavior.
+
 ## Roadmap status
 
 1. NAV-01 - accepted.

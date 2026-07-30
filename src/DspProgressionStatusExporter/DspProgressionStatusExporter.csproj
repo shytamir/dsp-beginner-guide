@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <LangVersion>7.3</LangVersion>
-    <AssemblyName>DspProgressionStatusExporter</AssemblyName>
+    <AssemblyName>DspGuideCheck</AssemblyName>
     <RootNamespace>DspProgressionStatusExporter</RootNamespace>
     <Version>1.18.3</Version>
     <AssemblyVersion>1.18.3.0</AssemblyVersion>

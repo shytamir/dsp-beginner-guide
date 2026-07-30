@@ -44,12 +44,13 @@ foreach ($requiredName in @('MAJOR', 'MINOR')) {
 }
 
 $shortCommit = $Commit.Substring(0, 7).ToLowerInvariant()
+$packageVersion = '{0}.{1}.{2}' -f (
+    $values.MAJOR, $values.MINOR, $Sequence
+)
 $releaseLabel = '{0}.{1}.{2}.{3}' -f (
     $values.MAJOR, $values.MINOR, $Sequence, $shortCommit
 )
-$semanticVersion = '{0}.{1}.{2}+{3}' -f (
-    $values.MAJOR, $values.MINOR, $Sequence, $shortCommit
-)
+$semanticVersion = $packageVersion
 $assemblyVersion = '{0}.{1}.{2}.0' -f (
     $values.MAJOR, $values.MINOR, $Sequence
 )
@@ -64,7 +65,7 @@ namespace DspProgressionStatusExporter
 {
     internal static class BuildVersion
     {
-        public const string BepInPluginVersion = "$assemblyVersion";
+        public const string BepInPluginVersion = "$packageVersion";
         public const string PluginVersion = "$semanticVersion";
         public const string ReleaseLabel = "$releaseLabel";
     }
@@ -75,6 +76,7 @@ Set-Content -LiteralPath $BuildVersionPath -Value $buildVersionSource `
 
 $buildInfo = @"
 Release label: $releaseLabel
+Package version: $packageVersion
 Semantic version: $semanticVersion
 Assembly version: $assemblyVersion
 Source commit: $($Commit.ToLowerInvariant())
@@ -84,6 +86,7 @@ Set-Content -LiteralPath $BuildInfoPath -Value $buildInfo -Encoding utf8
 
 $environmentValues = [ordered]@{
     RELEASE_LABEL = $releaseLabel
+    PACKAGE_VERSION = $packageVersion
     SEMANTIC_VERSION = $semanticVersion
     ASSEMBLY_VERSION = $assemblyVersion
     SOURCE_COMMIT = $Commit.ToLowerInvariant()
