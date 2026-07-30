@@ -101,13 +101,13 @@ $report = @"
 
 | Check | Result |
 | --- | --- |
-| DLL | `$DllPath` |
-| Release label | `$ExpectedReleaseLabel` |
-| Semantic version | `$ExpectedSemanticVersion` |
-| BepInEx plugin version | `$ExpectedSemanticVersion` |
-| Assembly/file version | `$ExpectedAssemblyVersion` |
+| DLL | ``$DllPath`` |
+| Release label | ``$ExpectedReleaseLabel`` |
+| Semantic version | ``$ExpectedSemanticVersion`` |
+| BepInEx plugin version | ``$ExpectedSemanticVersion`` |
+| Assembly/file version | ``$ExpectedAssemblyVersion`` |
 | Size | $length bytes |
-| SHA-256 | `$hash` |
+| SHA-256 | ``$hash`` |
 | Compile | Passed before artifact verification |
 | Version contract | Passed |
 | BepInEx version parse | Passed |
