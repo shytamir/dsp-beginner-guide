@@ -64,6 +64,7 @@ namespace DspProgressionStatusExporter
 {
     internal static class BuildVersion
     {
+        public const string BepInPluginVersion = "$assemblyVersion";
         public const string PluginVersion = "$semanticVersion";
         public const string ReleaseLabel = "$releaseLabel";
     }

@@ -23,6 +23,13 @@
 - Recheck SPHERE and PHOTON behavior, manual phase ownership, snapshot
   compactness and sampling performance during the same runtime pass.
 
+### Fixed
+
+- Kept the generated semantic build version out of the BepInEx plugin
+  attribute, which only accepts a numeric `System.Version`.
+- Added an artifact test that rejects invalid generated BepInEx versions before
+  upload.
+
 ## 1.16.0 - 2026-07-30
 
 ### Changed

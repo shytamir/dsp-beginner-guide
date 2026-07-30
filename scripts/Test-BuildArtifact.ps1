@@ -53,12 +53,30 @@ $versionSourcePath = Join-Path $RepositoryRoot `
     'src\DspProgressionStatusExporter\BuildVersion.cs'
 $versionSource = Get-Content -Raw -LiteralPath $versionSourcePath
 if (-not $versionSource.Contains(
+        "BepInPluginVersion = `"$ExpectedAssemblyVersion`"")) {
+    throw 'Generated BepInEx plugin version does not match the numeric assembly version.'
+}
+if (-not $versionSource.Contains(
         "PluginVersion = `"$ExpectedSemanticVersion`"")) {
     throw 'Generated plugin version does not match the semantic version.'
 }
 if (-not $versionSource.Contains(
         "ReleaseLabel = `"$ExpectedReleaseLabel`"")) {
     throw 'Generated release label does not match the requested label.'
+}
+
+$parsedBepInPluginVersion = $null
+if (-not [Version]::TryParse(
+        $ExpectedAssemblyVersion, [ref]$parsedBepInPluginVersion)) {
+    throw "BepInEx plugin version is not a valid System.Version: $ExpectedAssemblyVersion."
+}
+
+$pluginSourcePath = Join-Path $RepositoryRoot `
+    'src\DspProgressionStatusExporter\Plugin.cs'
+$pluginSource = Get-Content -Raw -LiteralPath $pluginSourcePath
+if (-not $pluginSource.Contains(
+        'BuildVersion.BepInPluginVersion)]')) {
+    throw 'BepInPlugin does not use the numeric BepInPluginVersion.'
 }
 
 $assemblyName = [Reflection.AssemblyName]::GetAssemblyName(
@@ -86,11 +104,13 @@ $report = @"
 | DLL | `$DllPath` |
 | Release label | `$ExpectedReleaseLabel` |
 | Semantic version | `$ExpectedSemanticVersion` |
+| BepInEx plugin version | `$ExpectedAssemblyVersion` |
 | Assembly/file version | `$ExpectedAssemblyVersion` |
 | Size | $length bytes |
 | SHA-256 | `$hash` |
 | Compile | Passed before artifact verification |
 | Version contract | Passed |
+| BepInEx version parse | Passed |
 | Artifact integrity | Passed |
 "@
 Set-Content -LiteralPath $ReportPath -Value $report -Encoding utf8

@@ -15,7 +15,7 @@ namespace DspProgressionStatusExporter
     [BepInPlugin(
         "local.dsp.progressionstatusexporter",
         "DSP Guide Check",
-        BuildVersion.PluginVersion)]
+        BuildVersion.BepInPluginVersion)]
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;

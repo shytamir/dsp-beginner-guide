@@ -81,6 +81,10 @@ reference and restores pinned Unity reference packages. Local release builds
 continue to use the assemblies supplied by the installed game and remain the
 authoritative compatibility check.
 
+BepInEx receives the numeric assembly version (`M.m.N.0`), while snapshots and
+build reports retain the semantic and release labels above. The artifact test
+rejects a generated BepInEx identity that `System.Version` cannot parse.
+
 ## Install
 
 Copy `DspProgressionStatusExporter.dll` into a folder beneath:
