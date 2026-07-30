@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.15.1 - 2026-07-30
+
+### Fixed
+
+- Prevented autosaves, renamed save slots and restarts from rebinding phase
+  selection to a newly seeded phase.
+- Added one-time migration from the currently loaded legacy phase key.
+- Added compact phase-persistence provenance to snapshot selection diagnostics.
+
+### Planned
+
+- Added `docs/SNAPSHOT-REDESIGN.md` as the high-level implementation worklist
+  for replacing the oversized forensic snapshot with a compact diagnostic
+  contract.
+
 ## 1.15.0 - 2026-07-27
 
 First public repository release.

@@ -12,10 +12,10 @@ using UnityEngine;
 
 namespace DspProgressionStatusExporter
 {
-    [BepInPlugin("local.dsp.progressionstatusexporter", "DSP Guide Check", "1.15.0")]
+    [BepInPlugin("local.dsp.progressionstatusexporter", "DSP Guide Check", "1.15.1")]
     public sealed class Plugin : BaseUnityPlugin
     {
-        private const string PluginVersion = "1.15.0";
+        private const string PluginVersion = "1.15.1";
         private const string SchemaVersion = "1.14";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
@@ -492,7 +492,8 @@ namespace DspProgressionStatusExporter
             object data,
             ObservedGameState observed)
         {
-            string saveKey = BuildPhaseSaveKey(data);
+            PhaseSaveIdentity identity = BuildPhaseSaveIdentity(data);
+            string saveKey = identity.SaveKey;
             if (!String.Equals(
                 saveKey,
                 activePhaseSaveKey,
@@ -503,9 +504,34 @@ namespace DspProgressionStatusExporter
                     "Phase Selection",
                     saveKey,
                     "",
-                    "Player-selected Guide Check phase for this save. Managed by the in-game phase controls.");
+                    "Player-selected Guide Check phase for this playthrough. Managed by the in-game phase controls.");
                 activePhaseSelection = ManualPhaseSelection.Parse(
                     activePhaseSelectionEntry.Value);
+                if (activePhaseSelection != null)
+                {
+                    activePhaseSelection.IdentityVersion = identity.Version;
+                    activePhaseSelection.PersistenceState =
+                        "restored-stable-key";
+                }
+                else
+                {
+                    string legacyKey = BuildLegacyPhaseSaveKey(data);
+                    ConfigEntry<string> legacyEntry = Config.Bind(
+                        "Phase Selection",
+                        legacyKey,
+                        "",
+                        "Legacy Guide Check phase selection retained for one-time migration.");
+                    activePhaseSelection = ManualPhaseSelection.Parse(
+                        legacyEntry.Value);
+                    if (activePhaseSelection != null)
+                    {
+                        activePhaseSelection.IdentityVersion =
+                            identity.Version;
+                        activePhaseSelection.PersistenceState =
+                            "migrated-current-legacy-key";
+                        PersistPhaseSelection();
+                    }
+                }
             }
 
             if (activePhaseSelection == null)
@@ -515,6 +541,11 @@ namespace DspProgressionStatusExporter
                     : ReadCubeResearch();
                 activePhaseSelection =
                     ManualPhaseNavigator.Seed(unlocked);
+                activePhaseSelection.IdentityVersion = identity.Version;
+                activePhaseSelection.PersistenceState =
+                    identity.Stable
+                        ? "seeded-stable-key"
+                        : "seeded-fallback-key";
                 PersistPhaseSelection();
             }
             return activePhaseSelection;
@@ -581,6 +612,7 @@ namespace DspProgressionStatusExporter
             {
                 selection.PhaseId = target;
                 selection.SeedSource = "manual-control";
+                selection.PersistenceState = "updated-by-player";
                 PersistPhaseSelection();
                 GuidePanelModel model =
                     BuildLiveGuidePanelModel(data, player);
@@ -609,34 +641,50 @@ namespace DspProgressionStatusExporter
             return unlocked;
         }
 
-        private static string BuildPhaseSaveKey(object data)
+        private static PhaseSaveIdentity BuildPhaseSaveIdentity(object data)
+        {
+            object desc = GetMember(data, "gameDesc");
+            return PhaseSaveIdentity.Build(
+                PhaseIdentityValue(GetMember(desc, "creationTime")),
+                PhaseIdentityValue(GetMember(
+                    desc, "galaxySeed", "seed")),
+                PhaseIdentityValue(GetMember(desc, "starCount")),
+                PhaseIdentityValue(GetMember(
+                    desc, "sandboxMode", "isSandboxMode")),
+                ToStr(GetMember(
+                    data, "gameName", "saveName", "name")));
+        }
+
+        private static string BuildLegacyPhaseSaveKey(object data)
         {
             object desc = GetMember(data, "gameDesc");
             Type gameSaveType = FindType("GameSave");
-            string identity = String.Join(
-                "|",
-                new string[] {
-                    ToStr(GetMember(
-                        data, "gameName", "saveName", "name")) ?? "",
-                    ToStr(GetStatic(
-                        gameSaveType,
-                        "saveName",
-                        "lastSaveName",
-                        "currentSaveName")) ?? "",
-                    ToStr(GetMember(
-                        desc, "galaxySeed", "seed")) ?? "",
-                    ToStr(GetMember(desc, "starCount")) ?? "",
-                    ToStr(GetMember(
-                        desc, "sandboxMode", "isSandboxMode")) ?? ""
-                });
-            uint hash = 2166136261;
-            for (int i = 0; i < identity.Length; i++)
+            return PhaseSaveIdentity.BuildLegacyKey(
+                ToStr(GetMember(
+                    data, "gameName", "saveName", "name")),
+                ToStr(GetStatic(
+                    gameSaveType,
+                    "saveName",
+                    "lastSaveName",
+                    "currentSaveName")),
+                ToStr(GetMember(desc, "galaxySeed", "seed")),
+                ToStr(GetMember(desc, "starCount")),
+                ToStr(GetMember(
+                    desc, "sandboxMode", "isSandboxMode")));
+        }
+
+        private static string PhaseIdentityValue(object value)
+        {
+            if (value == null) return null;
+            if (value is DateTime)
             {
-                hash ^= identity[i];
-                hash *= 16777619;
+                return ((DateTime)value).Ticks.ToString(
+                    CultureInfo.InvariantCulture);
             }
-            return "save-" + hash.ToString(
-                "x8", CultureInfo.InvariantCulture);
+            IFormattable formattable = value as IFormattable;
+            return formattable != null
+                ? formattable.ToString(null, CultureInfo.InvariantCulture)
+                : value.ToString();
         }
 
         private Dictionary<string, object> ExportSamplingPerformance()

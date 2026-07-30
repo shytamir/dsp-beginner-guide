@@ -72,3 +72,20 @@ Please report:
 - whether the `DON'T PANIC` appearance and link behaved as intended;
 - whether any performance, layout, navigation, or control regression appeared;
 - the saved JSON.
+
+# v1.15.1 phase-persistence checkpoint
+
+- Load a save and use the panel controls to select a phase that differs from
+  the latest researched Cube.
+- Leave the game paused for at least 60 seconds; confirm the selected phase
+  does not change.
+- Allow an autosave or create a differently named manual save; confirm the
+  selected phase does not change.
+- Exit DSP, relaunch it and resume the same playthrough; confirm the selected
+  phase is restored.
+- Complete research or a phase objective while the panel is open; confirm the
+  selected phase does not change.
+- Save one snapshot and confirm `guideSelection.identityVersion` is
+  `creation-time-v2`, `automaticTransitionsEnabled` is `false`, and
+  `persistenceState` reports a stable-key restore, migration, seed or explicit
+  player update consistent with the test.

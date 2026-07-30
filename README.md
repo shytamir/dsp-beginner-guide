@@ -8,7 +8,8 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-Version **1.15.0** is the first public repository release.
+Version **1.15.1** repairs per-playthrough phase persistence after the first
+public release.
 
 ## Features
 
@@ -81,7 +82,8 @@ Press **F8** after loading a save:
   phase.
 
 The initial phase is seeded once from the latest researched Cube. The selected
-phase is then owned entirely by the player and retained separately per save.
+phase is then owned entirely by the player and retained separately per
+playthrough, including across autosaves, renamed save slots and game restarts.
 
 Main sequence:
 
@@ -91,6 +93,14 @@ BOOTSTRAP → BLUE → RED → FLIGHT → TITANIUM → YELLOW → ILS
 ```
 
 WARP is an optional detour.
+
+## Version 1.15.1
+
+This maintenance release replaces the mutable save-name persistence key with
+an identity based on the playthrough creation time and galaxy descriptor.
+Existing selection data for the currently loaded legacy key is migrated once
+when available. Snapshot selection diagnostics identify whether the phase was
+restored, migrated or initially seeded.
 
 ## Version 1.15.0
 

@@ -8,6 +8,8 @@ namespace DspProgressionStatusExporter
         public string PhaseId;
         public string LateRoute;
         public string SeedSource;
+        public string PersistenceState;
+        public string IdentityVersion;
 
         public string Serialize()
         {
@@ -21,9 +23,11 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export(string saveKey)
         {
             return new Dictionary<string, object> {
-                { "contractVersion", "1.2" },
+                { "contractVersion", "1.3" },
                 { "authority", "player" },
                 { "saveKey", saveKey },
+                { "identityVersion", IdentityVersion },
+                { "persistenceState", PersistenceState },
                 { "selectedPhase", ManualPhaseNavigator.NormalizePhase(PhaseId) },
                 { "selectedLateRoute", ManualPhaseNavigator.NormalizeLateRoute(LateRoute) },
                 { "selectionOrigin", SeedSource },
@@ -60,6 +64,72 @@ namespace DspProgressionStatusExporter
                 LateRoute = ManualPhaseNavigator.NormalizeLateRoute(route),
                 SeedSource = String.IsNullOrEmpty(seed) ? "stored" : seed
             };
+        }
+    }
+
+    internal sealed class PhaseSaveIdentity
+    {
+        public string SaveKey;
+        public string Version;
+        public bool Stable;
+
+        public static PhaseSaveIdentity Build(
+            string creationTime,
+            string galaxySeed,
+            string starCount,
+            string sandboxMode,
+            string fallbackGameName)
+        {
+            bool hasCreationTime =
+                !String.IsNullOrWhiteSpace(creationTime) &&
+                !String.Equals(creationTime, "0", StringComparison.Ordinal);
+            string version = hasCreationTime
+                ? "creation-time-v2"
+                : "game-name-fallback-v2";
+            string identity = String.Join(
+                "|",
+                new string[] {
+                    version,
+                    hasCreationTime ? creationTime : fallbackGameName ?? "",
+                    galaxySeed ?? "",
+                    starCount ?? "",
+                    sandboxMode ?? ""
+                });
+            return new PhaseSaveIdentity {
+                SaveKey = "save2-" + Hash(identity),
+                Version = version,
+                Stable = hasCreationTime
+            };
+        }
+
+        public static string BuildLegacyKey(
+            string gameName,
+            string saveName,
+            string galaxySeed,
+            string starCount,
+            string sandboxMode)
+        {
+            string identity = String.Join(
+                "|",
+                new string[] {
+                    gameName ?? "",
+                    saveName ?? "",
+                    galaxySeed ?? "",
+                    starCount ?? "",
+                    sandboxMode ?? ""
+                });
+            return "save-" + Hash(identity);
+        }
+
+        private static string Hash(string identity)
+        {
+            uint hash = 2166136261;
+            for (int i = 0; i < identity.Length; i++)
+            {
+                hash ^= identity[i];
+                hash *= 16777619;
+            }
+            return hash.ToString("x8", System.Globalization.CultureInfo.InvariantCulture);
         }
     }
 

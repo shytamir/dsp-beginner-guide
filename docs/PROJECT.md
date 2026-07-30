@@ -107,10 +107,10 @@ in objective completion or navigation.
 
 | Contract | Version |
 |---|---:|
-| Exporter | 1.15.0 |
+| Exporter | 1.15.1 |
 | Snapshot schema | 1.14 |
 | Normalized state | 1.3 |
-| Guide selection | 1.2 |
+| Guide selection | 1.3 |
 | Guide analysis | 2.3 |
 | Progression | 2.3 |
 | Panel | 1.4 |
@@ -132,6 +132,20 @@ PHO-01 passed both the implementation matrix and runtime acceptance:
 - four runtime PHOTON snapshots spanning receiver warmup, interrupted
   continuity, and sustained healthy continuity;
 - no false positives or functional regressions reported.
+
+## v1.15.1 phase persistence repair
+
+Phase selection is keyed by the playthrough creation time and stable galaxy
+descriptor rather than the mutable save name. Autosaves, renamed save slots,
+pauses and game restarts therefore continue to bind the same player-owned
+selection. The currently loaded legacy key is migrated once when available.
+
+Guide-selection diagnostics report the identity version and whether the
+selection was restored, migrated, seeded or changed by the player. Research
+still seeds a phase only when no valid selection exists for that playthrough.
+
+The high-level snapshot-contract follow-up is recorded in
+`docs/SNAPSHOT-REDESIGN.md`.
 
 ## v1.15.0 public release
 
@@ -161,4 +175,5 @@ late-game save, but it is substantially reduced.
 4. SPH-01 - accepted.
 5. PHO-01 - accepted.
 
-The public v1.15.0 release is ready for a full playthrough.
+The v1.15.1 maintenance release is ready for the focused persistence runtime
+checkpoint described in `docs/RUNTIME-TESTING.md`.
