@@ -892,7 +892,7 @@ namespace DspProgressionStatusExporter
             previousPhaseRect.gameObject.SetActive(!String.Equals(
                 phaseId, "bootstrap", StringComparison.OrdinalIgnoreCase));
             nextPhaseRect.gameObject.SetActive(!String.Equals(
-                phaseId, "white", StringComparison.OrdinalIgnoreCase));
+                phaseId, "logistics", StringComparison.OrdinalIgnoreCase));
             warpPhaseRect.gameObject.SetActive(showWarp);
             dysonPhaseRect.gameObject.SetActive(showRoutes);
             spherePhaseRect.gameObject.SetActive(showRoutes);

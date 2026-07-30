@@ -8,9 +8,8 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-Version **1.18.1** adds a focused usability pass to the published guide
-contract: outlined panel text, background-free phase controls with bounded
-hover growth, selected-route outlines, and click-through non-control surfaces.
+Version **1.18.2** keeps the Next phase control available in WHITE so the
+post-completion LOGISTICS phase is reachable from the panel.
 
 ## Features
 
@@ -124,6 +123,11 @@ BOOTSTRAP → BLUE → RED → FLIGHT → TITANIUM → YELLOW → ILS
 
 WARP is an optional reference route with no completion gate. LOGISTICS is
 entered manually after the main progression route.
+
+## Version 1.18.2
+
+WHITE now retains its Next phase control. Selecting it enters LOGISTICS,
+where Next is hidden because LOGISTICS is the final phase.
 
 ## Version 1.18.1
 

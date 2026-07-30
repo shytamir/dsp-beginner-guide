@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.18.2 - 2026-07-30
+
+### Fixed
+
+- Kept the Next phase control available in WHITE so the player can enter
+  LOGISTICS manually. Next is now hidden only in LOGISTICS.
+
+### Validation pending
+
+- Confirm WHITE shows Next, Next selects LOGISTICS, and LOGISTICS hides Next
+  in DSP.
+
 ## 1.18.1 - 2026-07-30
 
 ### Changed

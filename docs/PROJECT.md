@@ -108,7 +108,7 @@ in objective completion or navigation.
 
 | Contract | Version |
 |---|---:|
-| Exporter | 1.18.1 |
+| Exporter | 1.18.2 |
 | Snapshot schema | 2.1 |
 | Normalized state | 1.5 |
 | Guide selection | 1.4 |
@@ -234,6 +234,12 @@ background.
 
 Non-interactive panel graphics and the bounded viewport do not receive pointer
 raycasts. Only explicit controls capture clicks.
+
+## v1.18.2 logistics navigation hotfix
+
+WHITE retains the Next control so the player can enter the post-completion
+LOGISTICS phase manually. LOGISTICS is the final phase and therefore hides
+Next. No automatic phase selection or progression behavior is introduced.
 
 ## Roadmap status
 
