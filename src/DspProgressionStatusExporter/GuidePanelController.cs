@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -26,11 +24,16 @@ namespace DspProgressionStatusExporter
         private const float ScrollControlWidth = 28f;
         private const float ScrollStep = 120f;
         private const float CompletionSeconds = 0.28f;
+        private const float SnapshotFeedbackSeconds = 2f;
         private const string SourceGuideUrl =
             "https://dsp-beginner-guide.pages.dev/#";
         private const string DontPanicLabel = "DON'T\nPANIC";
         private static readonly Color DontPanicColor =
             new Color(1f, 0.04f, 0.07f, 1f);
+        private static readonly Color SnapshotSuccessColor =
+            new Color(0.23f, 1f, 0.44f, 1f);
+        private static readonly Color SnapshotFailureColor =
+            new Color(1f, 0.22f, 0.18f, 1f);
 
         private sealed class RowView
         {
@@ -338,12 +341,13 @@ namespace DspProgressionStatusExporter
         private NativeGoalStyle style;
         private bool collapsed;
         private string phaseId;
-        private string snapshotDirectory;
-        private Func<string> snapshotAction;
+        private Func<bool> snapshotAction;
         private Action<string> navigationAction;
         private string selectedLateRoute;
         private bool bodyCanScroll;
         private float panelWidth;
+        private Color snapshotLinkDefaultColor;
+        private float snapshotFeedbackRemaining;
         private readonly List<RowView> objectiveViews = new List<RowView>();
         private readonly List<RowView> pendingViews = new List<RowView>();
         private readonly List<RowView> contextViews = new List<RowView>();
@@ -358,7 +362,7 @@ namespace DspProgressionStatusExporter
             EnsureCreated();
         }
 
-        public void SetSnapshotAction(Func<string> action)
+        public void SetSnapshotAction(Func<bool> action)
         {
             snapshotAction = action;
         }
@@ -451,6 +455,7 @@ namespace DspProgressionStatusExporter
 
         public void Hide()
         {
+            ResetSnapshotFeedback();
             if (panelObject != null) panelObject.SetActive(false);
         }
 
@@ -469,6 +474,16 @@ namespace DspProgressionStatusExporter
                 pendingViews, unscaledDeltaTime);
             changed |= AnimateRows(
                 contextViews, unscaledDeltaTime);
+            if (snapshotFeedbackRemaining > 0f)
+            {
+                snapshotFeedbackRemaining = Mathf.Max(
+                    0f, snapshotFeedbackRemaining - unscaledDeltaTime);
+                if (snapshotFeedbackRemaining <= 0f)
+                {
+                    ResetSnapshotFeedback();
+                    changed = true;
+                }
+            }
 
             if (changed) Canvas.ForceUpdateCanvases();
         }
@@ -664,8 +679,9 @@ namespace DspProgressionStatusExporter
                 "SnapshotLink",
                 panelObject.transform,
                 "Save snapshot",
-                SaveSnapshotAndOpenDirectory,
+                SaveSnapshot,
                 out snapshotLinkRect);
+            snapshotLinkDefaultColor = snapshotLinkText.color;
             sourceGuideLinkText = CreateFooterLink(
                 "SourceGuideLink",
                 panelObject.transform,
@@ -728,7 +744,6 @@ namespace DspProgressionStatusExporter
         {
             if (model == null) return;
             titleText.text = GuideRichText.Title(model.PhaseId, model.Title);
-            snapshotDirectory = model.SnapshotDirectory;
             selectedLateRoute = model.SelectedLateRoute;
             snapshotLinkText.text = "Save snapshot";
             sourceGuideLinkText.text = DontPanicLabel;
@@ -1307,32 +1322,35 @@ namespace DspProgressionStatusExporter
             control.SetActive(false);
         }
 
-        private void SaveSnapshotAndOpenDirectory()
+        private void SaveSnapshot()
         {
+            bool succeeded = false;
             try
             {
-                string savedDirectory =
-                    snapshotAction != null ? snapshotAction() : null;
-                if (!String.IsNullOrEmpty(savedDirectory))
-                    snapshotDirectory = savedDirectory;
-                if (String.IsNullOrEmpty(snapshotDirectory) ||
-                    !Directory.Exists(snapshotDirectory))
-                    return;
-                var startInfo = new ProcessStartInfo {
-                    FileName = "explorer.exe",
-                    Arguments = "\"" + snapshotDirectory + "\"",
-                    UseShellExecute = true
-                };
-                System.Diagnostics.Process.Start(startInfo);
+                succeeded =
+                    snapshotAction != null && snapshotAction();
             }
             catch
             {
-                // Footer links are conveniences; panel operation remains intact.
+                succeeded = false;
             }
             finally
             {
+                snapshotFeedbackRemaining = SnapshotFeedbackSeconds;
+                if (snapshotLinkText != null)
+                    snapshotLinkText.color = succeeded
+                        ? SnapshotSuccessColor
+                        : SnapshotFailureColor;
+                Canvas.ForceUpdateCanvases();
                 ClearButtonFocus();
             }
+        }
+
+        private void ResetSnapshotFeedback()
+        {
+            snapshotFeedbackRemaining = 0f;
+            if (snapshotLinkText != null)
+                snapshotLinkText.color = snapshotLinkDefaultColor;
         }
 
         private void OpenSourceGuide()

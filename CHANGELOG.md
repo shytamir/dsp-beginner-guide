@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.17.2 - 2026-07-30
+
+### Changed
+
+- Replaced the `Save snapshot` Explorer launch with two-second footer feedback:
+  green when the file write succeeds and red when it fails.
+
 ## 1.17.1 - 2026-07-30
 
 ### Fixed

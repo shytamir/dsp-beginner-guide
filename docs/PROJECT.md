@@ -107,13 +107,13 @@ in objective completion or navigation.
 
 | Contract | Version |
 |---|---:|
-| Exporter | 1.17.1 |
+| Exporter | 1.17.2 |
 | Snapshot schema | 2.1 |
 | Normalized state | 1.5 |
 | Guide selection | 1.3 |
 | Guide analysis | 2.3 |
 | Progression | 2.3 |
-| Panel | 1.4 |
+| Panel | 1.5 |
 
 ## Verification performed
 
@@ -211,6 +211,10 @@ that fails if receiver sampling accesses the broad entity pool.
 
 The footer's guide link is presented as the two-line bright-red `DON'T PANIC`
 control in Comic Sans. It retains the selected-phase guide URL behavior.
+
+The `Save snapshot` footer control reports only whether the file write
+succeeded. It turns green for two seconds after success or red after failure,
+then returns to its native default style. It does not open Windows Explorer.
 
 Runtime validation reduced the receiver collection pass from 67-139 ms before
 the change to about 1.5-1.7 ms in the captured frames, with a recorded maximum

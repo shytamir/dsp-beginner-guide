@@ -89,7 +89,8 @@ During the checkpoints, also confirm:
   completing an objective;
 - navigation, collapse/expand, scrolling, footer controls, and panel layout
   behave normally;
-- `Save snapshot` writes one JSON and opens its directory;
+- `Save snapshot` writes one JSON, turns green for two seconds on success,
+  returns to its default style, and does not open Windows Explorer;
 - `DON'T PANIC` opens the selected source-guide phase;
 - no noticeable new five-second hitch occurs with the panel closed or open;
 - each saved JSON is no larger than 256 KiB.

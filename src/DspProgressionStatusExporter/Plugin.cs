@@ -299,11 +299,11 @@ namespace DspProgressionStatusExporter
             }
         }
 
-        private string SaveSnapshotFromPanel()
+        private bool SaveSnapshotFromPanel()
         {
             GuidePanelModel model = ExportSnapshot();
             if (model != null) guidePanel.UpdateModel(model);
-            return model != null ? lastSnapshotDirectory : null;
+            return model != null;
         }
 
         private GuidePanelModel BuildLiveGuidePanelModel(

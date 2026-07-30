@@ -106,7 +106,8 @@ Press **F8** after loading a save:
 - F8 opens or closes the panel.
 - Previous and next move between phases.
 - Route controls select DYSON or SPHERE and enter or leave WARP.
-- `Save snapshot` writes one JSON file and opens its directory.
+- `Save snapshot` writes one JSON file. The control turns green for two
+  seconds when the write succeeds or red when it fails.
 - The bright-red `DON'T PANIC` control opens the source guide at the selected
   phase.
 
