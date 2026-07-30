@@ -9,7 +9,8 @@ if "%~1"=="" (
 )
 
 pushd "%~dp0"
-echo Building DSP Guide Check 1.16.0
+for /f "tokens=1,2 delims==" %%A in (VERSION) do set "%%A=%%B"
+echo Building DSP Guide Check %MAJOR%.%MINOR%.0
 echo Game root: %GAME_ROOT%
 dotnet build "src\DspProgressionStatusExporter\DspProgressionStatusExporter.csproj" -c Release -p:GameRoot="%GAME_ROOT%"
 

@@ -10,9 +10,10 @@
     <Product>DSP Guide Check</Product>
     <Description>An on-demand progression companion for Dyson Sphere Program.</Description>
     <GameRoot Condition="'$(GameRoot)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Dyson Sphere Program</GameRoot>
+    <UseCiReferences Condition="'$(UseCiReferences)' == ''">false</UseCiReferences>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(UseCiReferences)' != 'true'">
     <Reference Include="BepInEx">
       <HintPath>$(GameRoot)\BepInEx\core\BepInEx.dll</HintPath>
       <Private>false</Private>
@@ -41,5 +42,26 @@
       <HintPath>$(GameRoot)\DSPGAME_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseCiReferences)' == 'true'">
+    <Reference Include="BepInEx">
+      <HintPath>$(CiBepInExPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <PackageReference
+      Include="Microsoft.NETFramework.ReferenceAssemblies.net472"
+      Version="1.0.3"
+      PrivateAssets="all" />
+    <PackageReference
+      Include="UnityEngine.Modules"
+      Version="2021.3.33"
+      PrivateAssets="all"
+      ExcludeAssets="runtime" />
+    <PackageReference
+      Include="Unity3D.UnityEngine.UI"
+      Version="2018.3.5.1"
+      PrivateAssets="all"
+      ExcludeAssets="runtime" />
   </ItemGroup>
 </Project>

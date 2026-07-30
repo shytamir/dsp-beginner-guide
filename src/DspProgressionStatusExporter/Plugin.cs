@@ -12,10 +12,13 @@ using UnityEngine;
 
 namespace DspProgressionStatusExporter
 {
-    [BepInPlugin("local.dsp.progressionstatusexporter", "DSP Guide Check", "1.16.0")]
+    [BepInPlugin(
+        "local.dsp.progressionstatusexporter",
+        "DSP Guide Check",
+        BuildVersion.PluginVersion)]
     public sealed class Plugin : BaseUnityPlugin
     {
-        private const string PluginVersion = "1.16.0";
+        private const string PluginVersion = BuildVersion.PluginVersion;
         private const string SchemaVersion = "2.0";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;

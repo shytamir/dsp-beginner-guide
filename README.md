@@ -56,6 +56,28 @@ src\DspProgressionStatusExporter\bin\Release\net472\
 The game and BepInEx assemblies are referenced from the local installation;
 they are not redistributed in this repository.
 
+## Versioning and continuous integration
+
+`VERSION` records the manually selected major and minor version numbers. Every
+push to `main` runs the build, artifact-verification, and packaging workflow.
+The workflow sequence becomes the patch number and the triggering commit is
+included in both published forms:
+
+```text
+Release/artifact label: M.m.N.X
+Semantic version:       M.m.N+X
+```
+
+For example, workflow run 42 for commit `abcdef1` publishes the artifact label
+`1.16.42.abcdef1` and embeds semantic version `1.16.42+abcdef1`. The assembly
+and file version remain numeric (`1.16.42.0`). The workflow sequence advances
+without committing a generated version change back to `main`.
+
+The hosted build downloads the official BepInEx 5 release as a compile
+reference and restores pinned Unity reference packages. Local release builds
+continue to use the assemblies supplied by the installed game and remain the
+authoritative compatibility check.
+
 ## Install
 
 Copy `DspProgressionStatusExporter.dll` into a folder beneath:

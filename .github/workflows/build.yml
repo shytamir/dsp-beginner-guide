@@ -1,0 +1,153 @@
+name: Build and test DLL
+
+run-name: Build ${{ github.run_number }} from ${{ github.sha }}
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dsp-guide-check-main
+  cancel-in-progress: false
+
+jobs:
+  build-test-package:
+    name: Build, test, and package
+    runs-on: windows-latest
+
+    steps:
+      - name: Pull source
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Confirm triggering commit
+        shell: pwsh
+        run: |
+          $checkedOut = (git rev-parse HEAD).Trim()
+          if ($checkedOut -cne '${{ github.sha }}') {
+            throw "Checkout mismatch: expected ${{ github.sha }}, found $checkedOut."
+          }
+
+      - name: Install .NET SDK
+        id: setup_dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Prepare build version
+        id: version
+        shell: pwsh
+        run: |
+          ./scripts/Set-BuildVersion.ps1 `
+            -Sequence ${{ github.run_number }} `
+            -Commit '${{ github.sha }}'
+
+      - name: Download official BepInEx 5 compile reference
+        id: bepinex
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP 'BepInEx_win_x64_5.4.23.5.zip'
+          $referenceRoot = Join-Path $env:RUNNER_TEMP 'bepinex-reference'
+          $uri = 'https://github.com/BepInEx/BepInEx/releases/download/' +
+            'v5.4.23.5/BepInEx_win_x64_5.4.23.5.zip'
+          Invoke-WebRequest -Uri $uri -OutFile $archive
+          Expand-Archive -LiteralPath $archive -DestinationPath $referenceRoot
+          $reference = Join-Path $referenceRoot 'BepInEx\core\BepInEx.dll'
+          if (-not (Test-Path -LiteralPath $reference -PathType Leaf)) {
+            throw "BepInEx compile reference was not found at $reference."
+          }
+          "CI_BEPINEX_PATH=$reference" >> $env:GITHUB_ENV
+
+      - name: Restore CI reference packages
+        id: restore
+        shell: pwsh
+        run: |
+          dotnet restore `
+            src/DspProgressionStatusExporter/DspProgressionStatusExporter.csproj `
+            -p:UseCiReferences=true `
+            "-p:CiBepInExPath=$env:CI_BEPINEX_PATH"
+
+      - name: Build release DLL
+        id: build
+        shell: pwsh
+        run: |
+          dotnet build `
+            src/DspProgressionStatusExporter/DspProgressionStatusExporter.csproj `
+            --configuration Release `
+            --no-restore `
+            -p:UseCiReferences=true `
+            "-p:CiBepInExPath=$env:CI_BEPINEX_PATH" `
+            "-p:Version=$env:SEMANTIC_VERSION" `
+            "-p:AssemblyVersion=$env:ASSEMBLY_VERSION" `
+            "-p:FileVersion=$env:ASSEMBLY_VERSION" `
+            "-p:InformationalVersion=$env:RELEASE_LABEL" `
+            -p:IncludeSourceRevisionInInformationalVersion=false `
+            -p:ContinuousIntegrationBuild=true
+
+      - name: Test release artifact
+        id: test
+        shell: pwsh
+        run: |
+          ./scripts/Test-BuildArtifact.ps1 `
+            -DllPath 'src/DspProgressionStatusExporter/bin/Release/net472/DspProgressionStatusExporter.dll' `
+            -ExpectedReleaseLabel $env:RELEASE_LABEL `
+            -ExpectedSemanticVersion $env:SEMANTIC_VERSION `
+            -ExpectedAssemblyVersion $env:ASSEMBLY_VERSION
+
+      - name: Upload DLL and reports
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: DSP-Guide-Check-${{ steps.version.outputs.release_label }}
+          path: |
+            src/DspProgressionStatusExporter/bin/Release/net472/DspProgressionStatusExporter.dll
+            artifacts/BUILD-INFO.txt
+            artifacts/TEST-REPORT.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Report detailed status
+        if: always()
+        shell: pwsh
+        env:
+          CHECKOUT_STATUS: ${{ steps.checkout.outcome }}
+          SDK_STATUS: ${{ steps.setup_dotnet.outcome }}
+          VERSION_STATUS: ${{ steps.version.outcome }}
+          BEPINEX_STATUS: ${{ steps.bepinex.outcome }}
+          RESTORE_STATUS: ${{ steps.restore.outcome }}
+          BUILD_STATUS: ${{ steps.build.outcome }}
+          TEST_STATUS: ${{ steps.test.outcome }}
+          UPLOAD_STATUS: ${{ steps.upload.outcome }}
+          RELEASE_LABEL_VALUE: ${{ steps.version.outputs.release_label }}
+          SEMANTIC_VERSION_VALUE: ${{ steps.version.outputs.semantic_version }}
+          ASSEMBLY_VERSION_VALUE: ${{ steps.version.outputs.assembly_version }}
+        run: |
+          @"
+          # DSP Guide Check build status
+
+          | Field | Value |
+          | --- | --- |
+          | Source commit | `${{ github.sha }}` |
+          | Workflow sequence | `${{ github.run_number }}` |
+          | Release label | `$env:RELEASE_LABEL_VALUE` |
+          | Semantic version | `$env:SEMANTIC_VERSION_VALUE` |
+          | Assembly version | `$env:ASSEMBLY_VERSION_VALUE` |
+
+          | Stage | Status |
+          | --- | --- |
+          | Pull source | $env:CHECKOUT_STATUS |
+          | Install SDK | $env:SDK_STATUS |
+          | Generate version | $env:VERSION_STATUS |
+          | Acquire BepInEx reference | $env:BEPINEX_STATUS |
+          | Restore reference packages | $env:RESTORE_STATUS |
+          | Build DLL | $env:BUILD_STATUS |
+          | Test DLL | $env:TEST_STATUS |
+          | Publish artifact | $env:UPLOAD_STATUS |
+          "@ >> $env:GITHUB_STEP_SUMMARY
