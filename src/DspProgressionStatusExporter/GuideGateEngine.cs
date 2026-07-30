@@ -429,7 +429,6 @@ namespace DspProgressionStatusExporter
                 state.Dyson.DesignatedShellCount > 0 ||
                 state.Dyson.TotalCellPoints > 0;
             bool shellReady =
-                state.Dyson.CellReadyShellCount > 0 ||
                 state.Dyson.ConstructedCellPoints > 0;
             gate.Conditions.Add(Condition(
                 "sphere-cell-boundary",
@@ -438,11 +437,10 @@ namespace DspProgressionStatusExporter
                 true,
                 shellDesignated
                     ? "Found " + state.Dyson.DesignatedShellCount +
-                        " designated shell area(s); " +
-                        state.Dyson.CellReadyShellCount +
-                        " ready to accept cells."
+                        " designated shell area(s); native cell capacity " +
+                        state.Dyson.TotalCellPoints + "."
                     : "A designated shell area wasn't found.",
-                state.Dyson.ShellTopologyAvailable
+                state.Dyson.ConstructionAggregateAvailable
                     ? "observed"
                     : (state.Dyson.TotalCellPoints > 0
                         ? "derived"

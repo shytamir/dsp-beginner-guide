@@ -2,7 +2,7 @@
 {
     internal static class BuildVersion
     {
-        public const string PluginVersion = "1.16.0";
-        public const string ReleaseLabel = "1.16.0.local";
+        public const string PluginVersion = "1.17.0";
+        public const string ReleaseLabel = "1.17.0.local";
     }
 }

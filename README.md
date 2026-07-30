@@ -8,8 +8,10 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-Version **1.16.0** introduces compact diagnostic snapshots and retains the
-per-playthrough phase-persistence repair from 1.15.1.
+Version **1.17.0** aligns production and Dyson evidence with the native
+aggregates behind the game's Statistics and Dyson panels. It retains the
+compact diagnostic snapshots from 1.16.0 and per-playthrough phase persistence
+from 1.15.1.
 
 ## Features
 
@@ -17,7 +19,8 @@ per-playthrough phase-persistence repair from 1.15.1.
 - Explicit DYSON/SPHERE and optional WARP route selection.
 - Stable phase objectives based on the
   [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
-- Rolling production, logistics, power, Dyson and Ray Receiver evidence.
+- Native Statistics Panel production evidence plus focused logistics, power,
+  Dyson and Ray Receiver evidence.
 - Sixty-second receiver continuity tracking for the PHOTON phase.
 - Player-requested JSON snapshots for diagnostics and guide development.
 - Native-styled, collapsible and scrollable panel.
@@ -116,6 +119,21 @@ BOOTSTRAP → BLUE → RED → FLIGHT → TITANIUM → YELLOW → ILS
 
 WARP is an optional detour.
 
+## Version 1.17.0
+
+Production telemetry now reads DSP's pre-aggregated one-minute Statistics
+Panel values for a bounded guide-relevant item set. Lifetime counters remain
+separate and are retained only for lifetime Cube totals.
+
+Dyson generation, sail population and construction progress now come from the
+native Dyson system and node aggregates. Dedicated launch-device and Ray
+Receiver collectors remain separate because they answer operational questions
+that the aggregate construction totals do not.
+
+Snapshot schema 2.1 and normalized state 1.5 expose the source, scope, period
+and coverage of this evidence. Runtime comparison against the Statistics and
+Dyson panels is the remaining acceptance checkpoint.
+
 ## Version 1.16.0
 
 Saved snapshots now use schema 2.0. They contain the selected phase and route,
@@ -173,8 +191,9 @@ See [docs/PROJECT.md](docs/PROJECT.md) for product and evidence contracts and
 [docs/RUNTIME-TESTING.md](docs/RUNTIME-TESTING.md) for the focused runtime
 validation protocol. The prepared
 [guide-revision ingestion contract](docs/GUIDE-REVISION-INGESTION.md) and
-[native telemetry alignment pass](docs/NATIVE-TELEMETRY-ALIGNMENT.md) define
-the next evidence work without adopting the forthcoming guide revision early.
+[native telemetry alignment contract](docs/NATIVE-TELEMETRY-ALIGNMENT.md)
+describe the prepared guide-ingestion work and the telemetry evidence now
+awaiting runtime comparison.
 
 ## Development and contributions
 
@@ -199,10 +218,8 @@ post-game dashboard.
 - The current guide-derived phase contracts have not yet been reconciled with
   the forthcoming guide revision. The revision will be ingested as a new,
   reviewable contract rather than layered onto existing rules.
-- Production rates are still reconstructed from lifetime game-stat counters,
-  and Dyson construction detail is still reconstructed below the aggregate
-  level used by the native Statistics and Dyson panels. `TEL-01` records the
-  required native-aggregate alignment and runtime comparison.
+- TEL-01's native Statistics and Dyson aggregate alignment is implemented but
+  still requires the documented in-game comparison checkpoint.
 - The v1.15.1 persistence repair and snapshot schema 2.0 still share a deferred
   full-playthrough runtime checkpoint; defects will be handled when they
   surface during the next appropriate test cycle.

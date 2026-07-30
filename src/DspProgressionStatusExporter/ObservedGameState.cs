@@ -132,13 +132,16 @@ namespace DspProgressionStatusExporter
         public long ConstructedCellPoints;
         public long TotalCellPoints;
         public long DesignatedShellCount;
-        public long CellReadyShellCount;
         public long RocketsInFlight;
         public bool ConstructionRateAvailable;
         public double ConstructedStructurePointsPerMinute;
         public double ConstructedCellPointsPerMinute;
         public double PermanentGenerationWattsChangePerMinute;
-        public bool ShellTopologyAvailable;
+        public string AggregateSource;
+        public int AggregateSystemCount;
+        public int AggregateNodesRead;
+        public int AggregateNodesMissing;
+        public bool ConstructionAggregateAvailable;
         public bool SphereRouteObserved;
     }
 
@@ -190,6 +193,13 @@ namespace DspProgressionStatusExporter
 
         public bool ProductionWindowReady;
         public double ProductionWindowSeconds;
+        public string ProductionSource;
+        public string ProductionScope;
+        public string ProductionPeriod;
+        public int ProductionSampleCount;
+        public int ProductionWatchedItemCount;
+        public int ProductionItemCoverage;
+        public int ProductionFactoryCount;
         public bool TrafficWindowReady;
         public double TrafficWindowSeconds;
         public double PowerWindowSeconds;
@@ -219,9 +229,9 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "1.4";
+            result["modelVersion"] = "1.5";
             result["evidencePolicy"] = new Dictionary<string, object> {
-                { "observed", "Direct runtime value or cumulative-counter delta." },
+                { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
                 { "inferred", "Guide-aware interpretation that remains explicitly qualified." },
                 { "unknown", "Required evidence was unavailable or the observation window was insufficient." }
@@ -232,7 +242,13 @@ namespace DspProgressionStatusExporter
             result["production"] = new Dictionary<string, object> {
                 { "available", ProductionWindowReady },
                 { "windowGameSeconds", ProductionWindowSeconds },
-                { "source", "DSP cumulative production statistics" },
+                { "source", ProductionSource },
+                { "scope", ProductionScope },
+                { "period", ProductionPeriod },
+                { "sampleCount", ProductionSampleCount },
+                { "watchedItemCount", ProductionWatchedItemCount },
+                { "itemCoverage", ProductionItemCoverage },
+                { "factoryCount", ProductionFactoryCount },
                 { "items", ExportItemFlows() },
                 { "factoryItems", ExportFactoryItemFlows() }
             };
@@ -366,6 +382,17 @@ namespace DspProgressionStatusExporter
         {
             ProductionWindowReady = ToBool(GetValue(production, "windowReady"));
             ProductionWindowSeconds = Plugin.ToDouble(GetValue(production, "windowGameSeconds"));
+            ProductionSource = ToText(GetValue(production, "source"));
+            ProductionScope = ToText(GetValue(production, "scope"));
+            ProductionPeriod = ToText(GetValue(production, "period"));
+            ProductionSampleCount =
+                Plugin.ToInt(GetValue(production, "sampleCount"));
+            ProductionWatchedItemCount =
+                Plugin.ToInt(GetValue(production, "watchedItemCount"));
+            ProductionItemCoverage =
+                Plugin.ToInt(GetValue(production, "galaxyItemCoverage"));
+            ProductionFactoryCount =
+                Plugin.ToInt(GetValue(production, "factoryCount"));
             foreach (object rowObject in Enumerate(GetValue(production, "galaxy")))
             {
                 var row = rowObject as Dictionary<string, object>;
@@ -378,7 +405,6 @@ namespace DspProgressionStatusExporter
                     Produced = Plugin.ToLong(GetValue(row, "producedTotal")),
                     Consumed = Plugin.ToLong(GetValue(row, "consumedTotal"))
                 };
-                if (ToBool(GetValue(row, "counterReset"))) continue;
                 ItemFlows[id] = new ObservedItemFlow {
                     ItemId = id,
                     Name = ToText(GetValue(row, "name")),
@@ -401,7 +427,7 @@ namespace DspProgressionStatusExporter
                 foreach (object rowObject in Enumerate(GetValue(factory, "items")))
                 {
                     var row = rowObject as Dictionary<string, object>;
-                    if (row == null || ToBool(GetValue(row, "counterReset"))) continue;
+                    if (row == null) continue;
                     FactoryItemFlows.Add(new ObservedFactoryItemFlow {
                         FactoryIndex = factoryIndex,
                         PlanetId = planetId,
@@ -504,8 +530,19 @@ namespace DspProgressionStatusExporter
             {
                 var system = systemObject as Dictionary<string, object>;
                 if (system == null) continue;
-                Dyson.Available = true;
+                Dyson.AggregateSystemCount++;
                 Dictionary<string, object> metrics = GetDictionary(system, "metrics");
+                Dyson.Available |= ToBool(GetValue(metrics, "available"));
+                if (String.IsNullOrEmpty(Dyson.AggregateSource))
+                    Dyson.AggregateSource =
+                        ToText(GetValue(metrics, "source"));
+                Dyson.ConstructionAggregateAvailable |=
+                    ToBool(GetValue(
+                        metrics, "constructionAggregateAvailable"));
+                Dyson.AggregateNodesRead +=
+                    Plugin.ToInt(GetValue(metrics, "aggregateNodesRead"));
+                Dyson.AggregateNodesMissing +=
+                    Plugin.ToInt(GetValue(metrics, "aggregateNodesMissing"));
                 Dyson.GenerationWatts +=
                     Plugin.ToDouble(GetValue(metrics, "energyGenCurrentTick")) * 60.0;
                 Dyson.PermanentGenerationWatts +=
@@ -527,17 +564,8 @@ namespace DspProgressionStatusExporter
                     Plugin.ToLong(GetValue(metrics, "totalConstructedCellPoint"));
                 Dyson.TotalCellPoints += Plugin.ToLong(GetValue(metrics, "totalCellPoint"));
                 Dyson.RocketsInFlight += Plugin.ToLong(GetValue(metrics, "rocketCount"));
-
-                Dictionary<string, object> topology =
-                    GetDictionary(system, "topology");
-                if (topology.Count > 0)
-                {
-                    Dyson.ShellTopologyAvailable = true;
-                    Dyson.DesignatedShellCount += Plugin.ToLong(
-                        GetValue(topology, "designatedShellCount"));
-                    Dyson.CellReadyShellCount += Plugin.ToLong(
-                        GetValue(topology, "cellReadyShellCount"));
-                }
+                Dyson.DesignatedShellCount += Plugin.ToLong(
+                    GetValue(metrics, "designatedShellCount"));
 
                 Dictionary<string, object> constructionRate =
                     GetDictionary(system, "observedConstructionRate");
@@ -638,6 +666,8 @@ namespace DspProgressionStatusExporter
             {
                 Dyson.ReceiverTelemetryAvailable =
                     ToBool(GetValue(continuity, "available"));
+                Dyson.ReceiverCount =
+                    Plugin.ToInt(GetValue(continuity, "deployedCount"));
                 Dyson.ReceiverContinuityWindowSeconds =
                     Plugin.ToDouble(
                         GetValue(continuity, "maximumWindowSeconds"));
@@ -647,9 +677,13 @@ namespace DspProgressionStatusExporter
                 Dyson.LensedPhotonReceiverCount =
                     Plugin.ToInt(
                         GetValue(continuity, "lensedPhotonCount"));
+                Dyson.LensedReceiverCount =
+                    Dyson.LensedPhotonReceiverCount;
                 Dyson.FullStrengthPhotonReceiverCount =
                     Plugin.ToInt(
                         GetValue(continuity, "fullStrengthPhotonCount"));
+                Dyson.FullStrengthReceiverCount =
+                    Dyson.FullStrengthPhotonReceiverCount;
                 Dyson.ContinuousPhotonReceiverCount =
                     Plugin.ToInt(
                         GetValue(
@@ -738,13 +772,6 @@ namespace DspProgressionStatusExporter
                         0.0,
                         Dyson.GenerationWatts -
                             Dyson.SwarmGenerationWatts);
-            if (Dyson.DesignatedShellCount <= 0 &&
-                Dyson.TotalCellPoints > 0)
-                Dyson.DesignatedShellCount = 1;
-            if (Dyson.CellReadyShellCount <= 0 &&
-                Dyson.ConstructedCellPoints > 0)
-                Dyson.CellReadyShellCount = 1;
-
             ObservedItemFlow rockets;
             double rocketLaunchRate = ItemFlows.TryGetValue(1503, out rockets)
                 ? rockets.ConsumedPerMinute : 0.0;
@@ -896,13 +923,16 @@ namespace DspProgressionStatusExporter
                 { "constructedCellPoints", Dyson.ConstructedCellPoints },
                 { "totalCellPoints", Dyson.TotalCellPoints },
                 { "designatedShellCount", Dyson.DesignatedShellCount },
-                { "cellReadyShellCount", Dyson.CellReadyShellCount },
                 { "rocketsInFlight", Dyson.RocketsInFlight },
                 { "constructionRateAvailable", Dyson.ConstructionRateAvailable },
                 { "constructedStructurePointsPerMinute", Dyson.ConstructedStructurePointsPerMinute },
                 { "constructedCellPointsPerMinute", Dyson.ConstructedCellPointsPerMinute },
                 { "permanentGenerationWattsChangePerMinute", Dyson.PermanentGenerationWattsChangePerMinute },
-                { "shellTopologyAvailable", Dyson.ShellTopologyAvailable },
+                { "aggregateSource", Dyson.AggregateSource },
+                { "aggregateSystemCount", Dyson.AggregateSystemCount },
+                { "constructionAggregateAvailable", Dyson.ConstructionAggregateAvailable },
+                { "aggregateNodesRead", Dyson.AggregateNodesRead },
+                { "aggregateNodesMissing", Dyson.AggregateNodesMissing },
                 { "sphereRouteObserved", Dyson.SphereRouteObserved }
             };
         }

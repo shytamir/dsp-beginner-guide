@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.17.0 - 2026-07-30
+
+### Changed
+
+- Replaced production-rate reconstruction from lifetime counters with DSP's
+  native one-minute Statistics Panel aggregates.
+- Limited production collection to the guide-relevant watch set and retained
+  factory-scoped evidence only for route checks that require it.
+- Kept lifetime counters separate and limited them to lifetime Cube totals.
+- Replaced reconstructed Dyson topology with native generation, sail,
+  structure and cell aggregates.
+- Kept launch-device and Ray Receiver telemetry on their dedicated component
+  pools.
+- Added production and Dyson source, scope, period and coverage provenance to
+  normalized state 1.5 and snapshot schema 2.1.
+
+### Validation pending
+
+- Compare saved evidence with the in-game one-minute, entire-cluster
+  Statistics Panel and Dyson editor/detail surfaces.
+- Recheck SPHERE and PHOTON behavior, manual phase ownership, snapshot
+  compactness and sampling performance during the same runtime pass.
+
 ## 1.16.0 - 2026-07-30
 
 ### Changed

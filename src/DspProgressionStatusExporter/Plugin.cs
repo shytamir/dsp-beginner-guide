@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.0";
+        private const string SchemaVersion = "2.1";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -33,20 +33,20 @@ namespace DspProgressionStatusExporter
         private static readonly Dictionary<int, string> RecipeNames = new Dictionary<int, string>();
 
         // Runtime-derived Phase 1 bundle authoritative prototype IDs.
-        private const int ItemIdRayReceiver = 2208;
         private const int ItemIdEmRailEjector = 2311;
         private const int ItemIdVerticalLaunchingSilo = 2312;
 
         private sealed class DysonPopulationSample
         {
             public DateTime AtUtc;
+            public long GameTick;
             public double SailCount;
-            public string MemberName;
         }
 
         private sealed class DysonConstructionSample
         {
             public DateTime AtUtc;
+            public long GameTick;
             public double ConstructedStructurePoints;
             public double ConstructedCellPoints;
             public double PermanentGenerationWatts;
@@ -55,9 +55,6 @@ namespace DspProgressionStatusExporter
         private readonly Dictionary<int, Queue<DysonPopulationSample>> dysonPopulationSamples = new Dictionary<int, Queue<DysonPopulationSample>>();
         private readonly Dictionary<int, Queue<DysonConstructionSample>> dysonConstructionSamples =
             new Dictionary<int, Queue<DysonConstructionSample>>();
-        private readonly Dictionary<int, Dictionary<string, object>>
-            dysonTopologyCache =
-                new Dictionary<int, Dictionary<string, object>>();
         private object dysonSampleData;
         private readonly ProductionTelemetry productionTelemetry = new ProductionTelemetry();
         private readonly TrafficTelemetry trafficTelemetry = new TrafficTelemetry();
@@ -186,7 +183,7 @@ namespace DspProgressionStatusExporter
             float started = Time.realtimeSinceStartup;
             if (stage == 0)
             {
-                SampleDysonPopulation();
+                SampleDysonAggregates(gameTick);
                 receiverTelemetry.Sample(
                     data,
                     GetStatic(gameMainType, "history"),
@@ -986,7 +983,7 @@ namespace DspProgressionStatusExporter
             return d;
         }
 
-        private void SampleDysonPopulation()
+        private void SampleDysonAggregates(long gameTick)
         {
             object data = GetStatic(gameMainType, "data");
             if (data == null) return;
@@ -1001,8 +998,8 @@ namespace DspProgressionStatusExporter
             {
                 if (sphere != null)
                 {
-                    dysonTopologyCache[slotIndex] =
-                        ExportDysonTopology(sphere);
+                    Dictionary<string, object> aggregate =
+                        ExportNativeDysonAggregate(sphere);
                     Queue<DysonConstructionSample> constructionSamples;
                     if (!dysonConstructionSamples.TryGetValue(
                         slotIndex, out constructionSamples))
@@ -1015,18 +1012,25 @@ namespace DspProgressionStatusExporter
                     constructionSamples.Enqueue(
                         new DysonConstructionSample {
                             AtUtc = now,
+                            GameTick = gameTick,
                             ConstructedStructurePoints = ToDouble(
-                                GetMember(
-                                    sphere,
-                                    "totalConstructedStructurePoint")),
+                                aggregate.ContainsKey(
+                                    "totalConstructedStructurePoint")
+                                    ? aggregate[
+                                        "totalConstructedStructurePoint"]
+                                    : null),
                             ConstructedCellPoints = ToDouble(
-                                GetMember(
-                                    sphere,
-                                    "totalConstructedCellPoint")),
+                                aggregate.ContainsKey(
+                                    "totalConstructedCellPoint")
+                                    ? aggregate[
+                                        "totalConstructedCellPoint"]
+                                    : null),
                             PermanentGenerationWatts = ToDouble(
-                                GetMember(
-                                    sphere,
-                                    "energyGenCurrentTick_Layers")) * 60.0
+                                aggregate.ContainsKey(
+                                    "energyGenCurrentTick_Layers")
+                                    ? aggregate[
+                                        "energyGenCurrentTick_Layers"]
+                                    : null) * 60.0
                         });
                     while (constructionSamples.Count > 0 &&
                         (now - constructionSamples.Peek().AtUtc)
@@ -1035,17 +1039,21 @@ namespace DspProgressionStatusExporter
 
                     string swarmMemberName;
                     object swarm = FindObjectMember(sphere, new string[] { "swarm" }, out swarmMemberName);
-                    string countMemberName;
-                    double sailCount;
-                    if (TryFindNumericScalarMember(swarm, new string[] { "sail", "count" }, out countMemberName, out sailCount))
+                    object sailCountValue = GetMember(swarm, "sailCount");
+                    if (sailCountValue != null)
                     {
+                        double sailCount = ToDouble(sailCountValue);
                         Queue<DysonPopulationSample> samples;
                         if (!dysonPopulationSamples.TryGetValue(slotIndex, out samples))
                         {
                             samples = new Queue<DysonPopulationSample>();
                             dysonPopulationSamples[slotIndex] = samples;
                         }
-                        samples.Enqueue(new DysonPopulationSample { AtUtc = now, SailCount = sailCount, MemberName = countMemberName });
+                        samples.Enqueue(new DysonPopulationSample {
+                            AtUtc = now,
+                            GameTick = gameTick,
+                            SailCount = sailCount
+                        });
                         while (samples.Count > 0 && (now - samples.Peek().AtUtc).TotalSeconds > 75.0)
                             samples.Dequeue();
                     }
@@ -1062,7 +1070,6 @@ namespace DspProgressionStatusExporter
             dysonSampleData = data;
             dysonPopulationSamples.Clear();
             dysonConstructionSamples.Clear();
-            dysonTopologyCache.Clear();
         }
 
         private Dictionary<string, object> ExportObservedDysonPopulationRate(int slotIndex)
@@ -1080,10 +1087,10 @@ namespace DspProgressionStatusExporter
             }
             if (first == null || last == null || first == last) return d;
 
-            double seconds = (last.AtUtc - first.AtUtc).TotalSeconds;
+            double seconds = (last.GameTick - first.GameTick) / 60.0;
             if (seconds < 10.0) return d;
-            d["sourceMember"] = last.MemberName;
-            d["windowSeconds"] = seconds;
+            d["sourceMember"] = "DysonSwarm.sailCount";
+            d["windowGameSeconds"] = seconds;
             d["netSailPopulationPerMinute"] = (last.SailCount - first.SailCount) * 60.0 / seconds;
             d["note"] = "Observed wall-clock net change in the live swarm sail-count member. It is not labeled as launch rate because expirations and sphere absorption can also change the population.";
             return d;
@@ -1108,10 +1115,10 @@ namespace DspProgressionStatusExporter
             }
             if (first == null || last == null || first == last) return d;
 
-            double seconds = (last.AtUtc - first.AtUtc).TotalSeconds;
+            double seconds = (last.GameTick - first.GameTick) / 60.0;
             if (seconds < 10.0) return d;
             double scale = 60.0 / seconds;
-            d["windowSeconds"] = seconds;
+            d["windowGameSeconds"] = seconds;
             d["constructedStructurePointsPerMinute"] =
                 (last.ConstructedStructurePoints -
                     first.ConstructedStructurePoints) * scale;
@@ -1160,22 +1167,8 @@ namespace DspProgressionStatusExporter
                         row["starMember"] = starMemberName;
                     }
 
-                    row["metrics"] = ExportScalarObject(
-                        sphere,
-                        1,
-                        new string[] {
-                            "energy", "power", "sail", "rocket", "node", "cell",
-                            "layer", "frame", "structure", "request", "generate", "absorb"
-                        }
-                    );
-                    Dictionary<string, object> topology;
-                    if (!dysonTopologyCache.TryGetValue(
-                            slotIndex, out topology))
-                    {
-                        topology = ExportDysonTopology(sphere);
-                        dysonTopologyCache[slotIndex] = topology;
-                    }
-                    row["topology"] = topology;
+                    row["metrics"] =
+                        ExportNativeDysonAggregate(sphere);
                     Dictionary<string, object> constructionRate =
                         ExportObservedDysonConstructionRate(slotIndex);
                     if (constructionRate.Count > 0)
@@ -1188,11 +1181,13 @@ namespace DspProgressionStatusExporter
                         var swarmRow = new Dictionary<string, object>();
                         swarmRow["runtimeType"] = swarm.GetType().FullName;
                         swarmRow["member"] = swarmMemberName;
-                        swarmRow["metrics"] = ExportScalarObject(
-                            swarm,
-                            1,
-                            new string[] { "sail", "bullet", "orbit", "energy", "count", "cursor" }
-                        );
+                        object sailCount = GetMember(swarm, "sailCount");
+                        swarmRow["metrics"] =
+                            new Dictionary<string, object> {
+                                { "source", "DysonSwarm.sailCount" },
+                                { "available", sailCount != null },
+                                { "sailCount", Scalar(sailCount) }
+                            };
                         Dictionary<string, object> observedRate = ExportObservedDysonPopulationRate(slotIndex);
                         if (observedRate.Count > 0) swarmRow["observedPopulationRate"] = observedRate;
                         row["swarm"] = swarmRow;
@@ -1210,53 +1205,41 @@ namespace DspProgressionStatusExporter
             foreach (object factory in Enumerate(GetMember(data, "factories")))
             {
                 if (factory == null) continue;
-
-                HashSet<int> ejectorEntities = FindEntityIdsByProto(factory, ItemIdEmRailEjector);
-                HashSet<int> siloEntities = FindEntityIdsByProto(factory, ItemIdVerticalLaunchingSilo);
-                HashSet<int> receiverEntities = FindEntityIdsByProto(factory, ItemIdRayReceiver);
-                if (ejectorEntities.Count == 0 && siloEntities.Count == 0 && receiverEntities.Count == 0)
+                Dictionary<string, object> ejectors =
+                    ExportLaunchDeviceSummary(
+                        factory,
+                        ItemIdEmRailEjector,
+                        new string[] { "ejector", "pool" });
+                Dictionary<string, object> silos =
+                    ExportLaunchDeviceSummary(
+                        factory,
+                        ItemIdVerticalLaunchingSilo,
+                        new string[] { "silo", "pool" });
+                if (ToInt(ejectors["deployedCount"]) == 0 &&
+                    ToInt(silos["deployedCount"]) == 0)
                     continue;
 
                 var row = new Dictionary<string, object>();
                 row["planet"] = ExportCelestialIdentity(GetMember(factory, "planet"));
-                if (ejectorEntities.Count > 0)
-                    row["ejectors"] = ExportLaunchDeviceSummary(factory, ejectorEntities, ItemIdEmRailEjector, new string[] { "ejector", "pool" });
-                if (siloEntities.Count > 0)
-                    row["silos"] = ExportLaunchDeviceSummary(factory, siloEntities, ItemIdVerticalLaunchingSilo, new string[] { "silo", "pool" });
-                if (receiverEntities.Count > 0)
-                    row["receivers"] = ExportReceiverSummary(factory, receiverEntities);
+                if (ToInt(ejectors["deployedCount"]) > 0)
+                    row["ejectors"] = ejectors;
+                if (ToInt(silos["deployedCount"]) > 0)
+                    row["silos"] = silos;
                 planets.Add(row);
             }
             d["planets"] = planets;
-            d["note"] = "Dyson telemetry is deliberately narrow. It exports only live scalar state from established Dyson systems and deployed launch/receiver devices; unavailable runtime members are omitted rather than synthesized.";
+            d["note"] = "Dyson generation, sail population, and construction progress use the native Dyson statistics/editor aggregates. Launch devices and receiver continuity retain dedicated component-pool collectors.";
             return d;
         }
 
-        private static HashSet<int> FindEntityIdsByProto(object factory, int protoId)
-        {
-            var ids = new HashSet<int>();
-            Array pool = GetMember(factory, "entityPool") as Array;
-            int cursor = ToInt(GetMember(factory, "entityCursor"));
-            if (pool == null) return ids;
-            if (cursor <= 0 || cursor > pool.Length) cursor = pool.Length;
-
-            for (int i = 1; i < cursor; i++)
-            {
-                object entity = pool.GetValue(i);
-                if (entity == null) continue;
-                if (ToInt(GetMember(entity, "protoId")) != protoId) continue;
-                int entityId = ToInt(GetMember(entity, "id"));
-                if (entityId > 0) ids.Add(entityId);
-            }
-            return ids;
-        }
-
-        private static Dictionary<string, object> ExportLaunchDeviceSummary(object factory, HashSet<int> entityIds, int protoId, string[] poolKeywords)
+        private static Dictionary<string, object> ExportLaunchDeviceSummary(
+            object factory,
+            int protoId,
+            string[] poolKeywords)
         {
             var d = new Dictionary<string, object>();
             d["protoId"] = protoId;
             d["name"] = ItemNames.ContainsKey(protoId) ? ItemNames[protoId] : null;
-            d["deployedCount"] = entityIds.Count;
 
             object factorySystem = GetMember(factory, "factorySystem");
             string poolMemberName;
@@ -1274,7 +1257,7 @@ namespace DspProgressionStatusExporter
             {
                 if (component == null) continue;
                 int entityId = ToInt(GetMember(component, "entityId"));
-                if (entityId <= 0 || !entityIds.Contains(entityId)) continue;
+                if (entityId <= 0) continue;
                 matched++;
                 if (ToInt(GetMember(component, "bulletCount")) > 0)
                     supplied++;
@@ -1293,6 +1276,7 @@ namespace DspProgressionStatusExporter
                 CollectNumericSums(component, new string[] { "bullet", "launch", "fire", "shoot" }, counters);
             }
 
+            d["deployedCount"] = matched;
             d["componentCount"] = matched;
             d["suppliedCount"] = supplied;
             d["targetAssignedCount"] = targetAssigned;
@@ -1302,18 +1286,40 @@ namespace DspProgressionStatusExporter
             return d;
         }
 
-        private static Dictionary<string, object> ExportDysonTopology(
-            object sphere)
+        private static Dictionary<string, object>
+            ExportNativeDysonAggregate(object sphere)
         {
-            var d = new Dictionary<string, object>();
+            var d = new Dictionary<string, object> {
+                { "source", "Dyson statistics/editor aggregates: DysonSphere generation fields and DysonNode totalSp/totalSpMax/totalCp/totalCpMax" },
+                { "scope", "dyson-system" }
+            };
+            string[] sphereMembers = {
+                "energyGenCurrentTick",
+                "energyGenCurrentTick_Layers",
+                "energyGenCurrentTick_Swarm",
+                "energyReqCurrentTick",
+                "rocketCount"
+            };
+            int sphereMembersAvailable = 0;
+            foreach (string member in sphereMembers)
+            {
+                object value = GetMember(sphere, member);
+                if (value == null) continue;
+                d[member] = Scalar(value);
+                sphereMembersAvailable++;
+            }
+
             long layerCount = 0;
-            long nodeCount = 0;
+            long plannedNodeCount = 0;
+            long constructedNodeCount = 0;
             long frameCount = 0;
             long designatedShellCount = 0;
-            long cellReadyShellCount = 0;
-            long shellCellPoints = 0;
-            long shellCellPointCapacity = 0;
-            var layers = new List<object>();
+            long constructedStructurePoints = 0;
+            long structurePointCapacity = 0;
+            long constructedCellPoints = 0;
+            long cellPointCapacity = 0;
+            int aggregateNodesRead = 0;
+            int aggregateNodesMissing = 0;
 
             object layerPool = GetMember(
                 sphere, "layersIdBased", "layersSorted");
@@ -1325,125 +1331,57 @@ namespace DspProgressionStatusExporter
                 layerCount++;
 
                 int layerNodes = ToInt(GetMember(layer, "nodeCount"));
-                int layerFrames = ToInt(GetMember(layer, "frameCount"));
-                int layerShells = ToInt(GetMember(layer, "shellCount"));
-                nodeCount += layerNodes;
-                frameCount += layerFrames;
+                plannedNodeCount += layerNodes;
+                frameCount += ToInt(GetMember(layer, "frameCount"));
+                designatedShellCount +=
+                    ToInt(GetMember(layer, "shellCount"));
 
-                long layerReadyShells = 0;
-                long layerCellPoints = 0;
-                long layerCellCapacity = 0;
-                foreach (object shell in Enumerate(
-                    GetMember(layer, "shellPool")))
+                foreach (object node in Enumerate(
+                    GetMember(layer, "nodePool")))
                 {
-                    if (shell == null ||
-                        ToInt(GetMember(shell, "id")) <= 0)
+                    if (node == null ||
+                        ToInt(GetMember(node, "id")) <= 0)
                         continue;
-                    long cellPoints = ToLong(
-                        GetMember(shell, "cellPoint"));
-                    long cellCapacity = ToLong(
-                        GetMember(shell, "cellPointMax"));
-                    bool boundaryReady =
-                        cellPoints > 0 ||
-                        IsShellBoundaryReady(shell);
-                    designatedShellCount++;
-                    layerCellPoints += cellPoints;
-                    layerCellCapacity += cellCapacity;
-                    if (boundaryReady) layerReadyShells++;
-                }
+                    object totalSp = GetMember(node, "totalSp");
+                    object totalSpMax = GetMember(node, "totalSpMax");
+                    object totalCp = GetMember(node, "totalCp");
+                    object totalCpMax = GetMember(node, "totalCpMax");
+                    if (totalSp == null || totalSpMax == null ||
+                        totalCp == null || totalCpMax == null)
+                    {
+                        aggregateNodesMissing++;
+                        continue;
+                    }
+                    aggregateNodesRead++;
+                    constructedStructurePoints += ToLong(totalSp);
+                    structurePointCapacity += ToLong(totalSpMax);
+                    constructedCellPoints += ToLong(totalCp);
+                    cellPointCapacity += ToLong(totalCpMax);
 
-                cellReadyShellCount += layerReadyShells;
-                shellCellPoints += layerCellPoints;
-                shellCellPointCapacity += layerCellCapacity;
-                layers.Add(new Dictionary<string, object> {
-                    { "layerId", id },
-                    { "nodeCount", layerNodes },
-                    { "frameCount", layerFrames },
-                    { "designatedShellCount", layerShells },
-                    { "cellReadyShellCount", layerReadyShells },
-                    { "constructedCellPoints", layerCellPoints },
-                    { "cellPointCapacity", layerCellCapacity }
-                });
+                    long sp = ToLong(GetMember(node, "sp"));
+                    long spMax = ToLong(GetMember(node, "spMax"));
+                    if (spMax > 0 && sp >= spMax)
+                        constructedNodeCount++;
+                }
             }
 
+            d["available"] = sphereMembersAvailable > 0;
+            d["constructionAggregateAvailable"] =
+                plannedNodeCount == 0 || aggregateNodesRead > 0;
+            d["sphereMemberCoverage"] =
+                sphereMembersAvailable + "/" + sphereMembers.Length;
             d["layerCount"] = layerCount;
-            d["plannedNodeCount"] = nodeCount;
+            d["totalNodeCount"] = plannedNodeCount;
+            d["totalConstructedNodeCount"] = constructedNodeCount;
             d["plannedFrameCount"] = frameCount;
             d["designatedShellCount"] = designatedShellCount;
-            d["cellReadyShellCount"] = cellReadyShellCount;
-            d["constructedCellPoints"] = shellCellPoints;
-            d["cellPointCapacity"] = shellCellPointCapacity;
-            d["layers"] = layers;
-            d["note"] =
-                "A designated shell is counted from live layer shell objects. A shell is cell-ready only after its boundary nodes and frames are complete, or after permanent cell construction has already begun.";
-            return d;
-        }
-
-        private static bool IsShellBoundaryReady(object shell)
-        {
-            bool sawNode = false;
-            foreach (object node in Enumerate(GetMember(shell, "nodes")))
-            {
-                if (node == null ||
-                    ToInt(GetMember(node, "id")) <= 0)
-                    continue;
-                sawNode = true;
-                long maximum = ToLong(GetMember(node, "spMax"));
-                long constructed = ToLong(GetMember(node, "sp"));
-                if (maximum > 0 && constructed < maximum)
-                    return false;
-            }
-
-            bool sawFrame = false;
-            foreach (object frame in Enumerate(GetMember(shell, "frames")))
-            {
-                if (frame == null ||
-                    ToInt(GetMember(frame, "id")) <= 0)
-                    continue;
-                sawFrame = true;
-                long maximum = ToLong(GetMember(frame, "spMax"));
-                long constructed =
-                    ToLong(GetMember(frame, "spA")) +
-                    ToLong(GetMember(frame, "spB"));
-                if (maximum > 0 && constructed < maximum)
-                    return false;
-            }
-            return sawNode && sawFrame;
-        }
-
-        private static Dictionary<string, object> ExportReceiverSummary(object factory, HashSet<int> entityIds)
-        {
-            var d = new Dictionary<string, object>();
-            d["protoId"] = ItemIdRayReceiver;
-            d["name"] = ItemNames.ContainsKey(ItemIdRayReceiver) ? ItemNames[ItemIdRayReceiver] : null;
-            d["deployedCount"] = entityIds.Count;
-
-            object power = GetMember(factory, "powerSystem");
-            string poolMemberName;
-            object generatorPool = FindEnumerableMember(power, new string[] { "gen", "pool" }, out poolMemberName);
-            d["componentPoolMember"] = poolMemberName;
-
-            var devices = new List<object>();
-            foreach (object component in Enumerate(generatorPool))
-            {
-                if (component == null) continue;
-                int entityId = ToInt(GetMember(component, "entityId"));
-                if (entityId <= 0 || !entityIds.Contains(entityId)) continue;
-
-                var row = new Dictionary<string, object>();
-                row["entityId"] = entityId;
-                row["metrics"] = ExportScalarObject(
-                    component,
-                    1,
-                    new string[] {
-                        "product", "catalyst", "warm", "ion", "ray", "receiver",
-                        "generate", "energy", "power", "strength", "capacity", "state"
-                    }
-                );
-                devices.Add(row);
-            }
-            d["componentCount"] = devices.Count;
-            d["devices"] = devices;
+            d["totalConstructedStructurePoint"] =
+                constructedStructurePoints;
+            d["totalStructurePoint"] = structurePointCapacity;
+            d["totalConstructedCellPoint"] = constructedCellPoints;
+            d["totalCellPoint"] = cellPointCapacity;
+            d["aggregateNodesRead"] = aggregateNodesRead;
+            d["aggregateNodesMissing"] = aggregateNodesMissing;
             return d;
         }
 

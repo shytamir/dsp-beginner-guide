@@ -107,9 +107,9 @@ in objective completion or navigation.
 
 | Contract | Version |
 |---|---:|
-| Exporter | 1.16.0 |
-| Snapshot schema | 2.0 |
-| Normalized state | 1.4 |
+| Exporter | 1.17.0 |
+| Snapshot schema | 2.1 |
+| Normalized state | 1.5 |
 | Guide selection | 1.3 |
 | Guide analysis | 2.3 |
 | Progression | 2.3 |
@@ -187,15 +187,15 @@ adopted yet.
 
 ### TEL-01 - Native aggregate telemetry alignment
 
-The runtime-source audit confirmed that production rates are currently derived
-from lifetime counters even though the Statistics Panel exposes ready-made
-period aggregates. Dyson construction is likewise reconstructed below the
-aggregate level used by the native Dyson statistics/detail surface.
+Implemented in v1.17.0. Production rates now use the native one-minute
+Statistics Panel aggregates for a bounded item watch set. Lifetime counters
+are separate and limited to Cube totals. Dyson generation, sail population,
+structure and cell progress use native Dyson system and node aggregates;
+launch devices and Ray Receivers remain dedicated collectors.
 
-`docs/NATIVE-TELEMETRY-ALIGNMENT.md` defines the separate correction pass. It
-must align collection with the native UI aggregates, move consumers and
-snapshot provenance together, and validate the results against the in-game
-Statistics and Dyson panels before affected guide evidence is accepted.
+Normalized state 1.5 and snapshot schema 2.1 record source, scope, period and
+coverage. The implementation still requires the runtime comparison in
+`docs/RUNTIME-TESTING.md` before TEL-01 evidence is accepted.
 
 ## v1.15.0 public release
 
@@ -225,5 +225,6 @@ late-game save, but it is substantially reduced.
 4. SPH-01 - accepted.
 5. PHO-01 - accepted.
 
-The v1.15.1 persistence repair and v1.16.0 compact snapshot contract are ready
-to be exercised with the next phase's runtime test cycle.
+The v1.15.1 persistence repair, v1.16.0 compact snapshot contract and v1.17.0
+native telemetry alignment are ready to be exercised together in the TEL-01
+runtime test cycle.

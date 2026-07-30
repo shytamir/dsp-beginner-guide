@@ -1,97 +1,128 @@
-# DSP Guide Check - Runtime Validation
+# DSP Guide Check 1.17 - Runtime Validation
 
 This protocol uses only Dyson Sphere Program with the mod installed through
 BepInEx. It requires no coding task or other software.
 
+TEL-01 changes the evidence beneath existing guide behavior. The test therefore
+checks the native telemetry alignment and the accepted navigation, analysis,
+snapshot, SPHERE, and PHOTON contracts together.
+
 ## Preparation
 
-1. Install the v1.16.0 DLL in the usual BepInEx plugin location.
-2. Load the late-game PHOTON save that previously showed periodic stuttering.
-3. Let the game run normally for at least one minute.
+1. Install the v1.17 DLL in the usual BepInEx plugin location.
+2. Load a save with active production and let it run for at least one minute.
+3. Keep the Statistics Panel set to `1 minute` and `Entire star cluster` for
+   production comparisons.
+4. Use `Save snapshot` only at the checkpoints below.
 
-## Performance
+## Checkpoint A - Native production aggregates
 
-Observe the stationary game for at least one minute with the guide panel
-closed, then for another minute with PHOTON open.
+Choose a phase with a Cube and at least two relevant intermediates visible in
+the phase evidence, such as PURPLE, GREEN, PHOTON, or WHITE.
 
-Expected:
-
-- no noticeable five-second hitch;
-- no new performance drop while the panel is open;
-- receiver counts and Current Status continue to refresh normally.
-
-## Receiver continuity
-
-Use a save with four configured Photon Generation receivers.
+1. Open the Statistics Panel's Production page.
+2. Record or screenshot the one-minute production and consumption rates for
+   the phase Cube and at least two relevant intermediates.
+3. Without changing the period or scope, click `Save snapshot`.
 
 Expected:
 
-- deployed and Photon Generation receiver counts are correct;
-- lenses, warmup, strength, and continuity preserve the accepted PHOTON
-  behavior;
-- continuity completes after at least 60 healthy game seconds;
-- changing receiver mode or losing a lens still interrupts continuity.
+- snapshot production provenance identifies the native one-minute Statistics
+  Panel source and `entire-star-cluster` scope;
+- the compared production and consumption rates match the Statistics Panel;
+- lifetime production totals appear only for the six Cubes;
+- selected-phase analysis and Current Status remain sensible;
+- an idle but buffered older Cube does not become a false danger merely
+  because its current rate is zero.
 
-## `DON'T PANIC`
+## Checkpoint B - Native Dyson aggregates
 
-Open any expanded phase panel and inspect the right footer control.
+Use the SPHERE playthrough if it still contains a partial or developed sphere.
+
+1. Select SPHERE manually.
+2. Open the Dyson editor or statistics surface.
+3. Record or screenshot total generation, swarm sail population, constructed
+   and planned structure points, and constructed and planned cell points.
+   Several screenshots are fine if the native UI cannot show them together.
+4. Click `Save snapshot`.
 
 Expected:
 
-- it reads `DON'T` above `PANIC`;
-- it uses Comic Sans, a slightly larger size, and bright red text;
-- it remains clear of native lower-right controls;
-- clicking it opens the selected phase in the published source guide.
+- snapshot Dyson provenance names the native Dyson statistics/editor
+  aggregates;
+- generation and sail population match the native UI;
+- structure and cell progress match the native editor totals;
+- aggregate-node coverage is present and reports no missing nodes;
+- SPHERE recognizes established construction without requiring the 5/min
+  reference rocket pace;
+- no shell, frame, or raw topology dump is present.
 
-Also confirm navigation, collapse/expand, scrolling, `Save snapshot`, and panel
-layout show no regression.
+If a swarm-only save is readily available, one additional snapshot is useful
+to confirm zero permanent construction does not make Dyson evidence
+unavailable.
 
-## Snapshot
+## Checkpoint C - PHOTON continuity
 
-From the most informative PHOTON state:
+Use a save with configured Photon Generation receivers and select PHOTON
+manually.
 
-1. Click `Save snapshot`.
-2. Confirm one JSON is saved and its directory opens.
-3. Attach the JSON with your report.
+Expected:
 
-The snapshot will be checked for:
+- receiver deployment, mode, lenses, strength, requested and supplied power,
+  Critical Photon output, and the accepted 60-second continuity behavior are
+  unchanged;
+- a mode or lens interruption still breaks continuity and recovery still
+  requires a healthy window;
+- production evidence for Critical Photons and Antimatter uses the native
+  one-minute source.
 
-- exporter 1.16.0 and schema 2.0;
-- unchanged PHOTON objective and receiver evidence;
-- `dysonAndReceivers` sampler duration no longer showing the former large
-  periodic spike;
-- compact research, Cube, selected-phase and collector evidence;
-- no repeated raw factory, player, all-technology, all-item or normalized-state
-  sections;
-- explicit omission and receiver-truncation markers where applicable;
-- a saved file no larger than 256 KiB.
+Save one PHOTON snapshot from the most informative continuity state. A
+before/after pair is welcome if continuity changes during the test.
 
-## Report
+## Cross-contract regression check
 
-Please report:
+During the checkpoints, also confirm:
 
-- whether either one-minute observation showed a five-second hitch;
-- whether receiver counts and continuity remained correct;
-- whether the `DON'T PANIC` appearance and link behaved as intended;
-- whether any performance, layout, navigation, or control regression appeared;
-- the saved JSON.
+- F8 never saves a snapshot;
+- phase and route selections change only through player controls;
+- the selected phase does not change while paused, after research, or after
+  completing an objective;
+- navigation, collapse/expand, scrolling, footer controls, and panel layout
+  behave normally;
+- `Save snapshot` writes one JSON and opens its directory;
+- `DON'T PANIC` opens the selected source-guide phase;
+- no noticeable new five-second hitch occurs with the panel closed or open;
+- each saved JSON is no larger than 256 KiB.
 
-# v1.15.1 phase-persistence checkpoint
+## Snapshot contract checks
 
-- Load a save and use the panel controls to select a phase that differs from
-  the latest researched Cube.
-- Leave the game paused for at least 60 seconds; confirm the selected phase
-  does not change.
-- Allow an autosave or create a differently named manual save; confirm the
-  selected phase does not change.
-- Exit DSP, relaunch it and resume the same playthrough; confirm the selected
-  phase is restored.
-- Complete research or a phase objective while the panel is open; confirm the
-  selected phase does not change.
-- Save one snapshot and confirm `guideSelection.identityVersion` is
-  `creation-time-v2`, `automaticTransitionsEnabled` is `false`, and
-  `persistenceState` reports a stable-key restore, migration, seed or explicit
-  player update consistent with the test.
+The returned files will be checked for:
 
-The schema 2.0 snapshot checks above are part of the next phase's test cycle;
-no separate legacy-snapshot migration checkpoint is required.
+- exporter 1.17 and snapshot schema 2.1;
+- normalized state 1.5 provenance reflected in collector evidence;
+- production source, scope, period, sample count, bounded watch-list coverage,
+  and only selected-phase item evidence;
+- Cube lifetime totals remaining separate from native one-minute rates;
+- native Dyson aggregate source and node coverage;
+- focused SPHERE or PHOTON evidence where applicable;
+- unchanged guide-selection persistence provenance;
+- compact research, Cube, power, logistics, objectives, and Current Status;
+- no raw factory/entity model, broad all-item history, duplicate normalized
+  state, or shell/frame topology;
+- collector timings consistent with no new periodic hitch.
+
+## Testing handoff
+
+Please return:
+
+- the Checkpoint A snapshot and Statistics Panel screenshot(s);
+- the Checkpoint B snapshot and Dyson UI screenshot(s);
+- the most informative Checkpoint C snapshot, or a before/after pair;
+- whether any rate or Dyson total disagreed with the native UI;
+- whether navigation, persistence, SPHERE, PHOTON, layout, footer, or
+  performance behavior regressed;
+- any player-facing conclusion that did not fit the visible game state.
+
+The comparison is intentionally broader than TEL-01 alone: the snapshots will
+be reviewed for collection accuracy, normalized provenance, compactness,
+analysis congruence, and preservation of all accepted product contracts.

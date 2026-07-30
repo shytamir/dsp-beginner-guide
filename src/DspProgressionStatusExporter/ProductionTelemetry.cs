@@ -6,40 +6,73 @@ using System.Globalization;
 namespace DspProgressionStatusExporter
 {
     /// <summary>
-    /// Samples the game's own cumulative production-stat counters. Inventory
-    /// movement is deliberately not used as a production proxy.
+    /// Reads the same one-minute aggregates used by DSP's Statistics Panel.
+    /// Inventory movement is deliberately not used as a production proxy.
     /// </summary>
     internal sealed class ProductionTelemetry
     {
         private const int MaximumSamples = 25;
-        private const double MinimumWindowSeconds = 4.0;
+        private const int ProductionPeriodIndex = 1;
+        private const int ConsumptionPeriodIndex = 8;
+        private const int LifetimeProductionIndex = 6;
+        private const int LifetimeConsumptionIndex = 13;
+        private const double NativePeriodSeconds = 60.0;
 
-        private sealed class CounterPair
+        // This is the union currently consumed by guide analysis, compact
+        // snapshots, and the few planet-scoped route checks.
+        private static readonly int[] WatchedItemIds = {
+            1003, 1004,
+            1101, 1104, 1105, 1106,
+            1114, 1116, 1117, 1118,
+            1120, 1121, 1122, 1123, 1124, 1127,
+            1202, 1208, 1209, 1210,
+            1301, 1303, 1305,
+            1402,
+            1501, 1503,
+            2001, 2011,
+            6001, 6002, 6003, 6004, 6005, 6006
+        };
+
+        private static readonly HashSet<int> FactoryScopedItemIds =
+            new HashSet<int> { 1003, 1004, 1105, 1106 };
+        private static readonly HashSet<int> LifetimeItemIds =
+            new HashSet<int> { 6001, 6002, 6003, 6004, 6005, 6006 };
+
+        private sealed class AggregatePair
         {
             public long Produced;
             public long Consumed;
+            public long LifetimeProduced;
+            public long LifetimeConsumed;
+            public bool LifetimeAvailable;
         }
 
         private sealed class SamplePoint
         {
             public DateTime AtUtc;
             public long GameTick;
-            public Dictionary<int, CounterPair> Galaxy = new Dictionary<int, CounterPair>();
-            public Dictionary<int, Dictionary<int, CounterPair>> Factories =
-                new Dictionary<int, Dictionary<int, CounterPair>>();
-            public Dictionary<int, int> FactoryPlanetIds = new Dictionary<int, int>();
-            public Dictionary<int, string> FactoryPlanetNames = new Dictionary<int, string>();
+            public Dictionary<int, AggregatePair> Galaxy =
+                new Dictionary<int, AggregatePair>();
+            public Dictionary<int, Dictionary<int, AggregatePair>> Factories =
+                new Dictionary<int, Dictionary<int, AggregatePair>>();
+            public Dictionary<int, int> FactoryPlanetIds =
+                new Dictionary<int, int>();
+            public Dictionary<int, string> FactoryPlanetNames =
+                new Dictionary<int, string>();
         }
 
-        private readonly Queue<SamplePoint> samples = new Queue<SamplePoint>();
+        private readonly Queue<SamplePoint> samples =
+            new Queue<SamplePoint>();
         private object sampledGameData;
         private string lastFailure;
+        private int lastFactoryCount;
 
         public void Clear()
         {
             samples.Clear();
             sampledGameData = null;
             lastFailure = null;
+            lastFactoryCount = 0;
         }
 
         public void Sample(object gameData, long gameTick)
@@ -54,25 +87,26 @@ namespace DspProgressionStatusExporter
 
                 object gameStatistics = Plugin.GetMember(gameData, "statistics");
                 object production = Plugin.GetMember(gameStatistics, "production");
-                object factoryStatPool = Plugin.GetMember(production, "factoryStatPool");
+                object factoryStatPool =
+                    Plugin.GetMember(production, "factoryStatPool");
                 if (factoryStatPool == null)
                 {
-                    lastFailure = "GameData.statistics.production.factoryStatPool was unavailable.";
+                    lastFailure =
+                        "GameData.statistics.production.factoryStatPool was unavailable.";
                     return;
                 }
 
-                var point = new SamplePoint();
-                point.AtUtc = DateTime.UtcNow;
-                point.GameTick = gameTick;
-                if (samples.Count > 0)
-                {
-                    SamplePoint previous = null;
-                    foreach (SamplePoint existing in samples) previous = existing;
-                    if (point.GameTick < previous.GameTick) samples.Clear();
-                }
+                var point = new SamplePoint {
+                    AtUtc = DateTime.UtcNow,
+                    GameTick = gameTick
+                };
+                SamplePoint previous = LastSample();
+                if (previous != null && point.GameTick < previous.GameTick)
+                    samples.Clear();
 
                 var gameFactories = new List<object>();
-                foreach (object factory in Plugin.Enumerate(Plugin.GetMember(gameData, "factories")))
+                foreach (object factory in Plugin.Enumerate(
+                    Plugin.GetMember(gameData, "factories")))
                     gameFactories.Add(factory);
 
                 int factoryIndex = 0;
@@ -80,27 +114,40 @@ namespace DspProgressionStatusExporter
                 {
                     if (factoryStat != null)
                     {
-                        Dictionary<int, CounterPair> counters = ReadFactoryCounters(factoryStat);
+                        Dictionary<int, AggregatePair> counters =
+                            ReadFactoryAggregates(factoryStat);
                         if (counters.Count > 0)
                         {
-                            point.Factories[factoryIndex] = counters;
                             Merge(point.Galaxy, counters);
+                            Dictionary<int, AggregatePair> scoped =
+                                FilterFactoryScoped(counters);
+                            if (scoped.Count > 0)
+                                point.Factories[factoryIndex] = scoped;
                         }
                     }
-                    if (factoryIndex < gameFactories.Count && gameFactories[factoryIndex] != null)
+                    if (factoryIndex < gameFactories.Count &&
+                        gameFactories[factoryIndex] != null)
                     {
-                        object planet = Plugin.GetMember(gameFactories[factoryIndex], "planet");
+                        object planet = Plugin.GetMember(
+                            gameFactories[factoryIndex], "planet");
                         point.FactoryPlanetIds[factoryIndex] =
-                            Plugin.ToInt(Plugin.GetMember(planet, "id", "planetId"));
-                        object name = Plugin.GetMember(planet, "displayName", "name");
-                        if (name != null) point.FactoryPlanetNames[factoryIndex] = name.ToString();
+                            Plugin.ToInt(Plugin.GetMember(
+                                planet, "id", "planetId"));
+                        object name = Plugin.GetMember(
+                            planet, "displayName", "name");
+                        if (name != null)
+                            point.FactoryPlanetNames[factoryIndex] =
+                                name.ToString();
                     }
                     factoryIndex++;
                 }
+                lastFactoryCount = factoryIndex;
 
                 samples.Enqueue(point);
                 while (samples.Count > MaximumSamples) samples.Dequeue();
-                lastFailure = null;
+                lastFailure = point.Galaxy.Count > 0
+                    ? null
+                    : "No watched ProductStat native aggregate rows were available.";
             }
             catch (Exception ex)
             {
@@ -110,160 +157,197 @@ namespace DspProgressionStatusExporter
 
         public Dictionary<string, object> Export()
         {
-            var result = new Dictionary<string, object>();
-            result["available"] = samples.Count > 0;
-            result["source"] = "GameData.statistics.production.factoryStatPool[*].productPool[*].total[6 production, 13 consumption]";
-            result["semantics"] = "Rates are deltas of the game's cumulative production and consumption counters; inventory transfers do not affect them.";
-            result["sampleCount"] = samples.Count;
-            if (!String.IsNullOrEmpty(lastFailure)) result["lastFailure"] = lastFailure;
-            if (samples.Count == 0) return result;
+            SamplePoint last = LastSample();
+            bool aggregateAvailable =
+                last != null && last.Galaxy.Count > 0;
+            var result = new Dictionary<string, object> {
+                { "available", aggregateAvailable },
+                { "source", "GameData.statistics.production.factoryStatPool[*].productPool[itemId].total" },
+                { "scope", "entire-star-cluster" },
+                { "period", "one-minute" },
+                { "productionPeriodIndex", ProductionPeriodIndex },
+                { "consumptionPeriodIndex", ConsumptionPeriodIndex },
+                { "semantics", "Rates are DSP's pre-aggregated one-minute Statistics Panel values; inventory transfers do not affect them." },
+                { "sampleCount", samples.Count },
+                { "watchedItemCount", WatchedItemIds.Length },
+                { "factoryCount", lastFactoryCount },
+                { "windowGameSeconds", NativePeriodSeconds },
+                { "windowReady", aggregateAvailable }
+            };
+            if (!String.IsNullOrEmpty(lastFailure))
+                result["lastFailure"] = lastFailure;
+            if (last == null) return result;
 
-            SamplePoint first = null;
-            SamplePoint last = null;
+            SamplePoint first = FirstSample();
+            result["sampledAtUtc"] =
+                last.AtUtc.ToString("o", CultureInfo.InvariantCulture);
+            result["observationSpanGameSeconds"] =
+                Math.Round((last.GameTick - first.GameTick) / 60.0, 3);
+            result["galaxyItemCoverage"] = last.Galaxy.Count;
+
+            var galaxyWindows =
+                new List<Dictionary<int, AggregatePair>>();
             foreach (SamplePoint sample in samples)
-            {
-                if (first == null) first = sample;
-                last = sample;
-            }
-
-            long gameTicks = last.GameTick - first.GameTick;
-            double seconds = gameTicks / 60.0;
-            result["sampledAtUtc"] = last.AtUtc.ToString("o", CultureInfo.InvariantCulture);
-            result["windowGameTicks"] = gameTicks;
-            result["windowGameSeconds"] = Math.Round(seconds, 3);
-            result["wallClockSpanSeconds"] = Math.Round((last.AtUtc - first.AtUtc).TotalSeconds, 3);
-            result["windowReady"] = seconds >= MinimumWindowSeconds;
-            var galaxyWindows = new List<Dictionary<int, CounterPair>>();
-            foreach (SamplePoint sample in samples) galaxyWindows.Add(sample.Galaxy);
-            result["galaxy"] = ExportRates(first.Galaxy, last.Galaxy, seconds, galaxyWindows);
+                galaxyWindows.Add(sample.Galaxy);
+            result["galaxy"] =
+                ExportAggregates(last.Galaxy, galaxyWindows, true);
 
             var factories = new List<object>();
             var factoryIds = new SortedSet<int>();
-            foreach (int id in first.Factories.Keys) factoryIds.Add(id);
-            foreach (int id in last.Factories.Keys) factoryIds.Add(id);
+            foreach (SamplePoint sample in samples)
+                foreach (int id in sample.Factories.Keys)
+                    factoryIds.Add(id);
             foreach (int id in factoryIds)
             {
-                var row = new Dictionary<string, object>();
-                row["factoryIndex"] = id;
+                var row = new Dictionary<string, object> {
+                    { "factoryIndex", id },
+                    { "scope", "planet-factory" }
+                };
                 int planetId;
                 string planetName;
-                if (last.FactoryPlanetIds.TryGetValue(id, out planetId)) row["planetId"] = planetId;
-                if (last.FactoryPlanetNames.TryGetValue(id, out planetName)) row["planetName"] = planetName;
-                Dictionary<int, CounterPair> a;
-                Dictionary<int, CounterPair> b;
-                if (!first.Factories.TryGetValue(id, out a)) a = new Dictionary<int, CounterPair>();
-                if (!last.Factories.TryGetValue(id, out b)) b = new Dictionary<int, CounterPair>();
-                var factoryWindows = new List<Dictionary<int, CounterPair>>();
+                if (last.FactoryPlanetIds.TryGetValue(id, out planetId))
+                    row["planetId"] = planetId;
+                if (last.FactoryPlanetNames.TryGetValue(id, out planetName))
+                    row["planetName"] = planetName;
+
+                Dictionary<int, AggregatePair> current;
+                if (!last.Factories.TryGetValue(id, out current))
+                    current = new Dictionary<int, AggregatePair>();
+                var windows =
+                    new List<Dictionary<int, AggregatePair>>();
                 foreach (SamplePoint sample in samples)
                 {
-                    Dictionary<int, CounterPair> window;
+                    Dictionary<int, AggregatePair> window;
                     if (!sample.Factories.TryGetValue(id, out window))
-                        window = new Dictionary<int, CounterPair>();
-                    factoryWindows.Add(window);
+                        window = new Dictionary<int, AggregatePair>();
+                    windows.Add(window);
                 }
-                row["items"] = ExportRates(a, b, seconds, factoryWindows);
+                row["items"] = ExportAggregates(current, windows, false);
                 factories.Add(row);
             }
             result["factories"] = factories;
             return result;
         }
 
-        private static Dictionary<int, CounterPair> ReadFactoryCounters(object factoryStat)
+        private static Dictionary<int, AggregatePair>
+            ReadFactoryAggregates(object factoryStat)
         {
-            var result = new Dictionary<int, CounterPair>();
-            foreach (object stat in Plugin.Enumerate(Plugin.GetMember(factoryStat, "productPool")))
+            var result = new Dictionary<int, AggregatePair>();
+            object productPool = Plugin.GetMember(factoryStat, "productPool");
+            foreach (int itemId in WatchedItemIds)
             {
-                if (stat == null) continue;
-                int itemId = Plugin.ToInt(Plugin.GetMember(stat, "itemId"));
-                if (itemId <= 0) continue;
-
+                object stat = ElementAt(productPool, itemId);
+                if (stat == null ||
+                    Plugin.ToInt(Plugin.GetMember(stat, "itemId")) != itemId)
+                    continue;
+                object totals = Plugin.GetMember(stat, "total");
                 long produced;
                 long consumed;
-                if (!TryReadCounterPair(Plugin.GetMember(stat, "total"), out produced, out consumed))
+                if (!TryReadTotal(totals, ProductionPeriodIndex, out produced) ||
+                    !TryReadTotal(totals, ConsumptionPeriodIndex, out consumed))
                     continue;
 
-                result[itemId] = new CounterPair { Produced = produced, Consumed = consumed };
+                var pair = new AggregatePair {
+                    Produced = produced,
+                    Consumed = consumed
+                };
+                if (LifetimeItemIds.Contains(itemId))
+                {
+                    long lifetimeProduced = 0L;
+                    long lifetimeConsumed = 0L;
+                    pair.LifetimeAvailable =
+                        TryReadTotal(
+                            totals, LifetimeProductionIndex,
+                            out lifetimeProduced) &&
+                        TryReadTotal(
+                            totals, LifetimeConsumptionIndex,
+                            out lifetimeConsumed);
+                    pair.LifetimeProduced = lifetimeProduced;
+                    pair.LifetimeConsumed = lifetimeConsumed;
+                }
+                result[itemId] = pair;
             }
             return result;
         }
 
-        private static bool TryReadCounterPair(object value, out long produced, out long consumed)
+        private static object ElementAt(object collection, int index)
         {
-            produced = 0L;
-            consumed = 0L;
-            if (value == null || value is string) return false;
-
-            int index = 0;
-            bool foundProduction = false;
-            bool foundConsumption = false;
-            foreach (object x in Plugin.Enumerate(value))
-            {
-                if (index == 6)
-                {
-                    produced = Plugin.ToLong(x);
-                    foundProduction = true;
-                }
-                else if (index == 13)
-                {
-                    consumed = Plugin.ToLong(x);
-                    foundConsumption = true;
-                    break;
-                }
-                index++;
-            }
-            return foundProduction && foundConsumption;
+            Array array = collection as Array;
+            if (array != null)
+                return index >= 0 && index < array.Length
+                    ? array.GetValue(index) : null;
+            IList list = collection as IList;
+            return list != null && index >= 0 && index < list.Count
+                ? list[index] : null;
         }
 
-        private static void Merge(Dictionary<int, CounterPair> target, Dictionary<int, CounterPair> source)
+        private static bool TryReadTotal(
+            object totals, int index, out long value)
+        {
+            value = 0L;
+            object element = ElementAt(totals, index);
+            if (element == null) return false;
+            value = Plugin.ToLong(element);
+            return true;
+        }
+
+        private static Dictionary<int, AggregatePair> FilterFactoryScoped(
+            Dictionary<int, AggregatePair> source)
+        {
+            var result = new Dictionary<int, AggregatePair>();
+            foreach (var kv in source)
+                if (FactoryScopedItemIds.Contains(kv.Key))
+                    result[kv.Key] = kv.Value;
+            return result;
+        }
+
+        private static void Merge(
+            Dictionary<int, AggregatePair> target,
+            Dictionary<int, AggregatePair> source)
         {
             foreach (var kv in source)
             {
-                CounterPair pair;
+                AggregatePair pair;
                 if (!target.TryGetValue(kv.Key, out pair))
                 {
-                    pair = new CounterPair();
+                    pair = new AggregatePair();
                     target[kv.Key] = pair;
                 }
                 pair.Produced += kv.Value.Produced;
                 pair.Consumed += kv.Value.Consumed;
+                if (kv.Value.LifetimeAvailable)
+                {
+                    pair.LifetimeAvailable = true;
+                    pair.LifetimeProduced += kv.Value.LifetimeProduced;
+                    pair.LifetimeConsumed += kv.Value.LifetimeConsumed;
+                }
             }
         }
 
-        private static List<object> ExportRates(
-            Dictionary<int, CounterPair> first,
-            Dictionary<int, CounterPair> last,
-            double seconds,
-            List<Dictionary<int, CounterPair>> windows)
+        private static List<object> ExportAggregates(
+            Dictionary<int, AggregatePair> current,
+            List<Dictionary<int, AggregatePair>> windows,
+            bool includeLifetime)
         {
             var rows = new List<object>();
-            var ids = new SortedSet<int>();
-            foreach (int id in first.Keys) ids.Add(id);
-            foreach (int id in last.Keys) ids.Add(id);
-
+            var ids = new List<int>(current.Keys);
+            ids.Sort();
             foreach (int id in ids)
             {
-                CounterPair a;
-                CounterPair b;
-                if (!first.TryGetValue(id, out a)) a = new CounterPair();
-                if (!last.TryGetValue(id, out b)) b = new CounterPair();
-
-                long producedDelta = b.Produced - a.Produced;
-                long consumedDelta = b.Consumed - a.Consumed;
-                bool reset = producedDelta < 0 || consumedDelta < 0;
-
-                var row = new Dictionary<string, object>();
-                row["itemId"] = id;
-                row["name"] = Plugin.ItemName(id);
-                row["producedTotal"] = b.Produced;
-                row["consumedTotal"] = b.Consumed;
-                row["counterReset"] = reset;
-                if (!reset && seconds >= MinimumWindowSeconds)
+                AggregatePair pair = current[id];
+                var row = new Dictionary<string, object> {
+                    { "itemId", id },
+                    { "name", Plugin.ItemName(id) },
+                    { "producedPerMinute", (double)pair.Produced },
+                    { "consumedPerMinute", (double)pair.Consumed },
+                    { "netPerMinute", (double)(pair.Produced - pair.Consumed) }
+                };
+                if (includeLifetime && pair.LifetimeAvailable)
                 {
-                    row["producedPerMinute"] = Math.Round(producedDelta * 60.0 / seconds, 3);
-                    row["consumedPerMinute"] = Math.Round(consumedDelta * 60.0 / seconds, 3);
-                    row["netPerMinute"] = Math.Round((producedDelta - consumedDelta) * 60.0 / seconds, 3);
-                    AddContinuity(row, id, windows);
+                    row["producedTotal"] = pair.LifetimeProduced;
+                    row["consumedTotal"] = pair.LifetimeConsumed;
                 }
+                AddContinuity(row, id, windows);
                 rows.Add(row);
             }
             return rows;
@@ -272,47 +356,50 @@ namespace DspProgressionStatusExporter
         private static void AddContinuity(
             Dictionary<string, object> row,
             int itemId,
-            List<Dictionary<int, CounterPair>> windows)
+            List<Dictionary<int, AggregatePair>> windows)
         {
-            int intervals = 0;
-            int activeProduction = 0;
-            int activeConsumption = 0;
-            long previousProduced = 0L;
-            long previousConsumed = 0L;
-            bool havePrevious = false;
-
-            foreach (Dictionary<int, CounterPair> window in windows)
+            int observed = 0;
+            int productionActive = 0;
+            int consumptionActive = 0;
+            foreach (Dictionary<int, AggregatePair> window in windows)
             {
-                CounterPair current;
-                if (!window.TryGetValue(itemId, out current)) current = new CounterPair();
-                if (havePrevious)
-                {
-                    long producedDelta = current.Produced - previousProduced;
-                    long consumedDelta = current.Consumed - previousConsumed;
-                    if (producedDelta >= 0 && consumedDelta >= 0)
-                    {
-                        intervals++;
-                        if (producedDelta > 0) activeProduction++;
-                        if (consumedDelta > 0) activeConsumption++;
-                    }
-                }
-                previousProduced = current.Produced;
-                previousConsumed = current.Consumed;
-                havePrevious = true;
+                AggregatePair pair;
+                if (!window.TryGetValue(itemId, out pair)) continue;
+                observed++;
+                if (pair.Produced > 0) productionActive++;
+                if (pair.Consumed > 0) consumptionActive++;
             }
+            row["continuitySamples"] = observed;
+            row["observedIntervals"] = observed;
+            if (observed <= 0) return;
 
-            row["observedIntervals"] = intervals;
-            if (intervals > 0)
-            {
-                double productionFraction = activeProduction * 1.0 / intervals;
-                double consumptionFraction = activeConsumption * 1.0 / intervals;
-                row["productionActiveIntervals"] = activeProduction;
-                row["productionActiveFraction"] = Math.Round(productionFraction, 3);
-                row["consumptionActiveIntervals"] = activeConsumption;
-                row["consumptionActiveFraction"] = Math.Round(consumptionFraction, 3);
-                row["productionContinuity"] = productionFraction >= 0.90 ? "continuous-observed" :
-                    (productionFraction >= 0.50 ? "intermittent-observed" : "mostly-idle-observed");
-            }
+            double productionFraction =
+                productionActive * 1.0 / observed;
+            double consumptionFraction =
+                consumptionActive * 1.0 / observed;
+            row["productionActiveFraction"] =
+                Math.Round(productionFraction, 3);
+            row["consumptionActiveFraction"] =
+                Math.Round(consumptionFraction, 3);
+            row["productionContinuity"] =
+                productionFraction >= 0.90
+                    ? "continuous-native-window"
+                    : (productionFraction >= 0.50
+                        ? "intermittent-native-window"
+                        : "mostly-idle-native-window");
+        }
+
+        private SamplePoint FirstSample()
+        {
+            foreach (SamplePoint sample in samples) return sample;
+            return null;
+        }
+
+        private SamplePoint LastSample()
+        {
+            SamplePoint last = null;
+            foreach (SamplePoint sample in samples) last = sample;
+            return last;
         }
     }
 }

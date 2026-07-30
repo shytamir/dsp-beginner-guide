@@ -2,34 +2,54 @@
 
 ## Status
 
-- Required, not yet implemented.
+- Implemented in 1.17.0; runtime comparison pending.
 - This is a separate runtime-evidence pass so production and Dyson semantics
   can be corrected and compared with the game UI as one coherent change.
 - The audit used the installed DSP `Assembly-CSharp.dll` read-only.
 
-## Confirmed production mismatch
+## Implemented contract
+
+- Production reads `ProductStat.total[1]` and `total[8]` directly for the
+  bounded item watch list used by analysis and snapshots.
+- Entire-cluster values are the sum of the native one-minute factory
+  aggregates. Planet-factory values are retained only for Titanium and Silicon
+  route checks.
+- Lifetime reads use `total[6]` and `total[13]` only for the six Cubes.
+- A bounded sample history records continuity of the native one-minute windows;
+  no rate is derived from lifetime-counter deltas.
+- Dyson generation uses the exact `DysonSphere` aggregate fields, sail
+  population uses `DysonSwarm.sailCount`, and construction progress sums the
+  editor-facing `DysonNode.totalSp`, `totalSpMax`, `totalCp`, and `totalCpMax`
+  getters.
+- Construction-change rates are derived only from successive bounded samples
+  of those native aggregate totals.
+- Ejector and silo discovery now reads their dedicated component pools.
+  Receiver continuity retains its accepted dedicated generator-pool sampler.
+- Schema 2.1 records source, scope, period, watch-list coverage, and Dyson
+  aggregate-node coverage without exporting broad item or topology maps.
+
+## Original production mismatch
 
 - The native Statistics Panel selects a period index as
   `timeLevel + 1` for production and adds `7` for consumption.
 - Its one-minute view therefore consumes the game's ready-made
   `ProductStat.total[1]` production and `ProductStat.total[8]` consumption
   aggregates, summed across the factories in the selected UI scope.
-- The current collector instead reads lifetime totals at indices `6` and `13`,
-  retains broad per-factory item maps, and derives rates from successive
-  samples.
+- The prior collector read lifetime totals at indices `6` and `13`, retained
+  broad per-factory item maps, and derived rates from successive samples.
 
-## Confirmed Dyson mismatch
+## Original Dyson mismatch
 
 - The native Dyson statistics/detail surface uses `DysonSwarm.sailCount`,
   `DysonSphere.energyGenCurrentTick`, layer counts, and the node aggregate
   getters `totalSp`, `totalSpMax`, `totalCp`, and `totalCpMax`.
-- The current collector separately walks layers, shells, nodes, and frames to
-  reconstruct construction detail and then samples those reconstructed totals
+- The prior collector separately walked layers, shells, nodes, and frames to
+  reconstruct construction detail and then sampled those reconstructed totals
   for change rates.
 - Launch-device state and PHOTON receiver continuity remain separate evidence;
   they are not replaced by Dyson-editor aggregates.
 
-## Implementation work
+## Completed implementation work
 
 - Replace lifetime-delta production rates with the same pre-aggregated
   one-minute production and consumption values used by the Statistics Panel.

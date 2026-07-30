@@ -561,7 +561,6 @@ namespace DspProgressionStatusExporter
                 state.Dyson.DesignatedShellCount > 0 ||
                 state.Dyson.TotalCellPoints > 0;
             bool shellReady =
-                state.Dyson.CellReadyShellCount > 0 ||
                 state.Dyson.ConstructedCellPoints > 0;
             bool cellHistory = state.Dyson.ConstructedCellPoints > 0;
 

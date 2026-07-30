@@ -149,7 +149,14 @@ namespace DspProgressionStatusExporter
                 { "cadenceSeconds", 5.0 },
                 { "production", new Dictionary<string, object> {
                     { "available", state.ProductionWindowReady },
-                    { "windowGameSeconds", state.ProductionWindowSeconds }
+                    { "source", state.ProductionSource },
+                    { "scope", state.ProductionScope },
+                    { "period", state.ProductionPeriod },
+                    { "windowGameSeconds", state.ProductionWindowSeconds },
+                    { "sampleCount", state.ProductionSampleCount },
+                    { "watchedItemCount", state.ProductionWatchedItemCount },
+                    { "itemCoverage", state.ProductionItemCoverage },
+                    { "factoryCount", state.ProductionFactoryCount }
                 } },
                 { "traffic", new Dictionary<string, object> {
                     { "available", state.TrafficWindowReady },
@@ -203,7 +210,7 @@ namespace DspProgressionStatusExporter
                 { "itemId", itemId },
                 { "name", name },
                 { "owned", owned },
-                { "rollingWindowAvailable", state.ProductionWindowReady && flow != null },
+                { "nativeWindowAvailable", state.ProductionWindowReady && flow != null },
                 { "producedPerMinute", flow != null ? (object)flow.ProducedPerMinute : null },
                 { "consumedPerMinute", flow != null ? (object)flow.ConsumedPerMinute : null },
                 { "netPerMinute", flow != null ? (object)flow.NetPerMinute : null },
@@ -294,6 +301,11 @@ namespace DspProgressionStatusExporter
             ObservedDysonState d = state.Dyson;
             var result = new Dictionary<string, object> {
                 { "available", d.Available },
+                { "aggregateSource", d.AggregateSource },
+                { "aggregateSystemCount", d.AggregateSystemCount },
+                { "constructionAggregateAvailable", d.ConstructionAggregateAvailable },
+                { "aggregateNodesRead", d.AggregateNodesRead },
+                { "aggregateNodesMissing", d.AggregateNodesMissing },
                 { "generationWatts", d.GenerationWatts },
                 { "permanentGenerationWatts", d.PermanentGenerationWatts },
                 { "swarmGenerationWatts", d.SwarmGenerationWatts },
