@@ -286,6 +286,9 @@ git -c "safe.directory=$repo" status --short
 Use the same `-c "safe.directory=$repo"` form for other Git commands in that
 turn.
 
+If Git cannot create `.git/index.lock`, rerun only that Git operation under the
+authenticated desktop context. Do not change repository permissions.
+
 Before editing or pushing, fetch or use `git pull --ff-only` when the clean
 local branch may be behind its remote. Never resolve divergence with a force
 push or history rewrite.
