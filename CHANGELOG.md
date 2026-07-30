@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.18.3 - 2026-07-30
+
+### Fixed
+
+- Strengthened the panel text outline so it remains visible against bright
+  terrain and clouds.
+- Restored visible selected-route emphasis for the preserved DYSON/SPHERE
+  choice on GREEN.
+- Applied bounded hover growth to collapse, scroll, snapshot, and guide-link
+  controls.
+- Removed the remaining filled backgrounds from the scroll controls.
+- Changed the active LOGISTICS phase label to bright green.
+
+### Validation pending
+
+- Confirm outline visibility, selected-route emphasis, transparent controls,
+  hover behavior, and the LOGISTICS color in DSP.
+
 ## 1.18.2 - 2026-07-30
 
 ### Fixed

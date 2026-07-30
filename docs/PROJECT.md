@@ -108,13 +108,13 @@ in objective completion or navigation.
 
 | Contract | Version |
 |---|---:|
-| Exporter | 1.18.2 |
+| Exporter | 1.18.3 |
 | Snapshot schema | 2.1 |
 | Normalized state | 1.5 |
 | Guide selection | 1.4 |
 | Guide analysis | 2.4 |
 | Progression | 2.4 |
-| Panel | 1.6 |
+| Panel | 1.7 |
 
 ## Verification performed
 
@@ -240,6 +240,18 @@ raycasts. Only explicit controls capture clicks.
 WHITE retains the Next control so the player can enter the post-completion
 LOGISTICS phase manually. LOGISTICS is the final phase and therefore hides
 Next. No automatic phase selection or progression behavior is introduced.
+
+## v1.18.3 panel usability completion
+
+Panel contract 1.7 uses a two-pixel, alpha-independent dark outline for all
+panel text. The preserved DYSON/SPHERE choice remains distinguishable on
+GREEN through its colored outline, and LOGISTICS uses a bright-green phase
+identity.
+
+Every interactive control uses a transparent hit area and the same fixed
+normal and hover scales. This includes collapse, explicit scrolling,
+`Save snapshot`, and `DON'T PANIC`; repeated pointer entry cannot compound
+their size.
 
 ## Roadmap status
 

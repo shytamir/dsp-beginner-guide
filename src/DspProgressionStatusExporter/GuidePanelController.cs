@@ -23,7 +23,7 @@ namespace DspProgressionStatusExporter
         private const float SafeBottom = 230f;
         private const float ScrollControlWidth = 28f;
         private const float ScrollStep = 120f;
-        private const float HeaderControlHoverScale = 1.12f;
+        private const float InteractiveControlHoverScale = 1.12f;
         private const float CompletionSeconds = 0.28f;
         private const float SnapshotFeedbackSeconds = 2f;
         private const string SourceGuideUrl =
@@ -334,6 +334,7 @@ namespace DspProgressionStatusExporter
         private RectTransform sourceGuideLinkRect;
         private RectTransform scrollUpRect;
         private RectTransform scrollDownRect;
+        private RectTransform collapseButtonRect;
         private RectTransform previousPhaseRect;
         private RectTransform nextPhaseRect;
         private RectTransform warpPhaseRect;
@@ -466,7 +467,7 @@ namespace DspProgressionStatusExporter
         public void Hide()
         {
             ResetSnapshotFeedback();
-            ResetHeaderControlScales();
+            ResetInteractiveControlScales();
             if (panelObject != null) panelObject.SetActive(false);
         }
 
@@ -581,12 +582,19 @@ namespace DspProgressionStatusExporter
                 panelObject.transform,
                 typeof(Image),
                 typeof(Button));
+            collapseButtonRect =
+                collapseButton.GetComponent<RectTransform>();
             Image buttonImage = collapseButton.GetComponent<Image>();
             buttonImage.color = new Color(1f, 1f, 1f, 0.001f);
             Button button = collapseButton.GetComponent<Button>();
             button.targetGraphic = buttonImage;
+            button.transition = Selectable.Transition.None;
             DisableNavigation(button);
-            button.onClick.AddListener(ToggleCollapsed);
+            AddBoundedHoverScale(collapseButton, collapseButtonRect);
+            button.onClick.AddListener(delegate {
+                collapseButtonRect.localScale = Vector3.one;
+                ToggleCollapsed();
+            });
             if (style.Collapse != null && style.Collapse.Sprite != null)
             {
                 GameObject iconObject = CreateObject(
@@ -965,11 +973,8 @@ namespace DspProgressionStatusExporter
                 headerHeight += 31f;
             }
 
-            RectTransform buttonRect = collapseImage != null
-                ? collapseImage.transform.parent.GetComponent<RectTransform>()
-                : collapseFallbackText.transform.parent.GetComponent<RectTransform>();
             SetTopRect(
-                buttonRect,
+                collapseButtonRect,
                 panelWidth - 48f,
                 7f,
                 38f,
@@ -1265,8 +1270,14 @@ namespace DspProgressionStatusExporter
             hitArea.color = new Color(1f, 1f, 1f, 0.001f);
             Button button = linkObject.GetComponent<Button>();
             button.targetGraphic = hitArea;
+            button.transition = Selectable.Transition.None;
             DisableNavigation(button);
-            button.onClick.AddListener(action);
+            RectTransform linkRect = rect;
+            AddBoundedHoverScale(linkObject, linkRect);
+            button.onClick.AddListener(delegate {
+                linkRect.localScale = Vector3.one;
+                action();
+            });
 
             Text text = CreateText(
                 name + "Text", linkObject.transform, style.InfoText);
@@ -1323,11 +1334,18 @@ namespace DspProgressionStatusExporter
                 name, panelObject.transform, typeof(Image), typeof(Button));
             rect = control.GetComponent<RectTransform>();
             Image background = control.GetComponent<Image>();
-            background.color = new Color(0.08f, 0.12f, 0.16f, 0.72f);
+            background.color = new Color(1f, 1f, 1f, 0f);
+            background.raycastTarget = true;
             Button button = control.GetComponent<Button>();
             button.targetGraphic = background;
+            button.transition = Selectable.Transition.None;
             DisableNavigation(button);
-            button.onClick.AddListener(action);
+            RectTransform controlRect = rect;
+            AddBoundedHoverScale(control, controlRect);
+            button.onClick.AddListener(delegate {
+                controlRect.localScale = Vector3.one;
+                action();
+            });
             Text text = CreateText(
                 name + "Glyph", control.transform, style.GroupText);
             text.text = glyph;
@@ -1453,7 +1471,7 @@ namespace DspProgressionStatusExporter
                 EventTriggerType.PointerEnter,
                 delegate {
                     rect.localScale =
-                        Vector3.one * HeaderControlHoverScale;
+                        Vector3.one * InteractiveControlHoverScale;
                 });
             AddPointerTrigger(
                 trigger,
@@ -1474,13 +1492,18 @@ namespace DspProgressionStatusExporter
             trigger.triggers.Add(entry);
         }
 
-        private void ResetHeaderControlScales()
+        private void ResetInteractiveControlScales()
         {
+            ResetScale(collapseButtonRect);
             ResetScale(previousPhaseRect);
             ResetScale(nextPhaseRect);
             ResetScale(warpPhaseRect);
             ResetScale(dysonPhaseRect);
             ResetScale(spherePhaseRect);
+            ResetScale(scrollUpRect);
+            ResetScale(scrollDownRect);
+            ResetScale(snapshotLinkRect);
+            ResetScale(sourceGuideLinkRect);
         }
 
         private static void ResetScale(RectTransform rect)
@@ -1498,8 +1521,8 @@ namespace DspProgressionStatusExporter
             textStyle.Apply(text);
             Outline outline = child.AddComponent<Outline>();
             outline.effectColor = TextOutlineColor;
-            outline.effectDistance = new Vector2(1f, -1f);
-            outline.useGraphicAlpha = true;
+            outline.effectDistance = new Vector2(2f, -2f);
+            outline.useGraphicAlpha = false;
             text.alignment = TextAnchor.UpperLeft;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
@@ -1663,7 +1686,7 @@ namespace DspProgressionStatusExporter
                     { "purple", new Color(0.72f, 0.42f, 1f) },
                     { "green", new Color(0.27f, 0.9f, 0.48f) },
                     { "white", new Color(0.94f, 0.94f, 0.96f) },
-                    { "logistics", new Color(0.25f, 0.82f, 0.9f) }
+                    { "logistics", new Color(0.22f, 1f, 0.32f) }
                 };
 
             private static readonly string[] CubePhrases = new string[] {

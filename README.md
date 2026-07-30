@@ -8,8 +8,9 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-Version **1.18.2** keeps the Next phase control available in WHITE so the
-post-completion LOGISTICS phase is reachable from the panel.
+Version **1.18.3** completes the panel usability pass with a stronger text
+outline, visible selected-route emphasis, bright-green LOGISTICS identity,
+and consistent transparent hover controls.
 
 ## Features
 
@@ -123,6 +124,15 @@ BOOTSTRAP → BLUE → RED → FLIGHT → TITANIUM → YELLOW → ILS
 
 WARP is an optional reference route with no completion gate. LOGISTICS is
 entered manually after the main progression route.
+
+## Version 1.18.3
+
+The panel uses a stronger dark outline for readable text over bright terrain
+and clouds. The selected DYSON/SPHERE route uses its colored outline when the
+choice is preserved on GREEN. Collapse, scroll, snapshot, and `DON'T PANIC`
+now share the same bounded hover growth as phase navigation, and the scroll
+controls no longer use filled backgrounds. LOGISTICS is identified in bright
+green.
 
 ## Version 1.18.2
 
