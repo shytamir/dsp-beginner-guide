@@ -8,15 +8,12 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-Version **1.18.3** completes the panel usability pass with a stronger text
-outline, visible selected-route emphasis, bright-green LOGISTICS identity,
-and consistent transparent hover controls.
+The current development contract follows guide **1.22.2** and supports only
+the ten critical-path phases from BOOTSTRAP through WHITE.
 
 ## Features
 
-- Manual phase navigation from BOOTSTRAP through WHITE and the
-  post-completion LOGISTICS phase.
-- Explicit DYSON/SPHERE and optional WARP route selection.
+- Manual phase navigation through the ten critical-path phases.
 - Stable phase objectives based on the
   [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
 - Native Statistics Panel production evidence plus focused logistics, power,
@@ -104,7 +101,6 @@ Press **F8** after loading a save:
 
 - F8 opens or closes the panel.
 - Previous and next move between phases.
-- Route controls select DYSON or SPHERE and enter or leave WARP.
 - `Save snapshot` writes one JSON file. The control turns green for two
   seconds when the write succeeds or red when it fails.
 - The bright-red `DON'T PANIC` control opens the source guide at the selected
@@ -114,15 +110,15 @@ The initial phase is seeded once from the latest researched Cube. The selected
 phase is then owned entirely by the player and retained separately per
 playthrough, including across autosaves, renamed save slots and game restarts.
 
-Main sequence:
+Critical-path sequence:
 
 ```text
-BOOTSTRAP → BLUE → RED → FLIGHT → TITANIUM → YELLOW → ILS
-→ PURPLE → GREEN → DYSON or SPHERE → PHOTON → WHITE → LOGISTICS
+BOOTSTRAP -> BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
+          -> DYSON -> PHOTON -> WHITE
 ```
 
-WARP is an optional reference route with no completion gate. LOGISTICS is
-entered manually after the main progression route.
+FLIGHT and TITANIUM are checkpoints inside ILS. Optional WARP, SPHERE, and
+LOGISTICS material remains in the source guide but does not receive a panel.
 
 ## Version 1.18.3
 
@@ -233,8 +229,9 @@ reported as a substantial reduction rather than complete elimination.
 
 See [docs/PROJECT.md](docs/PROJECT.md) for product and evidence contracts and
 [docs/RUNTIME-TESTING.md](docs/RUNTIME-TESTING.md) for the focused runtime
-validation protocol. The adopted
-[guide authority and ingestion record](docs/GUIDE-REVISION-INGESTION.md) and
+validation protocol. The current
+[guide v1.22.2 gap analysis](docs/GUIDE-1.22.2-GAP-ANALYSIS.md), earlier
+[guide authority and ingestion record](docs/GUIDE-REVISION-INGESTION.md), and
 [native telemetry alignment contract](docs/NATIVE-TELEMETRY-ALIGNMENT.md)
 record the published source, the re-derived phase contracts, and their
 evidence mapping.
@@ -253,15 +250,15 @@ phase conclusions and focused factory evidence; review them before publishing.
 
 ## Scope
 
-DSP Guide Check supports practical progression through Mission Accomplished
-and the guide's focused post-completion LOGISTICS phase. It is not a combat
-adviser, ratio calculator, build planner or general post-game dashboard.
+DSP Guide Check supports the guide's default critical path through Mission
+Accomplished. It does not provide panels for optional paths, and it is not a
+combat adviser, ratio calculator, build planner, or post-game dashboard.
 
 ## Residual issues
 
-- GUIDE-01 requires the representative in-game acceptance pass documented in
-  `docs/RUNTIME-TESTING.md`; compilation alone cannot validate player-facing
-  conclusions or manual checklist ergonomics.
+- The guide 1.22.2 critical-path migration requires the representative in-game
+  acceptance pass documented in `docs/RUNTIME-TESTING.md`; compilation alone
+  cannot validate player-facing conclusions or checklist ergonomics.
 - The v1.15.1 persistence repair and snapshot schema 2.0 still share a deferred
   full-playthrough runtime checkpoint; defects will be handled when they
   surface during the next appropriate test cycle.

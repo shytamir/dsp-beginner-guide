@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.1";
+        private const string SchemaVersion = "2.2";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -264,7 +264,6 @@ namespace DspProgressionStatusExporter
                         guideAnalysis,
                         lastSnapshotFileName,
                         lastSnapshotDirectory);
-                panelModel.SelectedLateRoute = selection.LateRoute;
                 Dictionary<string, object> snapshot =
                     CompactSnapshotBuilder.Build(
                         SchemaVersion,
@@ -345,7 +344,6 @@ namespace DspProgressionStatusExporter
                     analysis,
                     lastSnapshotFileName,
                     lastSnapshotDirectory);
-                model.SelectedLateRoute = selection.LateRoute;
                 return model;
             }
             catch (Exception ex)
@@ -466,10 +464,6 @@ namespace DspProgressionStatusExporter
                         analysis,
                         lastSnapshotFileName,
                         lastSnapshotDirectory);
-                model.SelectedLateRoute =
-                    activePhaseSelection != null
-                        ? activePhaseSelection.LateRoute
-                        : null;
                 if (guidePanel.IsVisible)
                     guidePanel.UpdateModel(model);
             }
@@ -573,30 +567,12 @@ namespace DspProgressionStatusExporter
             if (String.Equals(
                 command, "previous", StringComparison.OrdinalIgnoreCase))
             {
-                target = ManualPhaseNavigator.Previous(
-                    current, selection.LateRoute);
+                target = ManualPhaseNavigator.Previous(current);
             }
             else if (String.Equals(
                 command, "next", StringComparison.OrdinalIgnoreCase))
             {
-                target = ManualPhaseNavigator.Next(
-                    current, selection.LateRoute);
-            }
-            else if (String.Equals(
-                command, "warp", StringComparison.OrdinalIgnoreCase) &&
-                current == "purple")
-            {
-                target = "warp";
-            }
-            else if ((String.Equals(
-                    command, "dyson", StringComparison.OrdinalIgnoreCase) ||
-                String.Equals(
-                    command, "sphere", StringComparison.OrdinalIgnoreCase)) &&
-                current == "green")
-            {
-                selection.LateRoute =
-                    command.ToLowerInvariant();
-                target = selection.LateRoute;
+                target = ManualPhaseNavigator.Next(current);
             }
 
             if (!String.Equals(

@@ -75,6 +75,16 @@ namespace DspProgressionStatusExporter
         public string RemoteLogic;
     }
 
+    internal sealed class ObservedStationState
+    {
+        public int PlanetId;
+        public string PlanetName;
+        public int StationId;
+        public bool IsStellar;
+        public int IdleShipCount;
+        public int WorkShipCount;
+    }
+
     internal sealed class ObservedCapacity
     {
         public long Count;
@@ -186,6 +196,7 @@ namespace DspProgressionStatusExporter
         public readonly List<ObservedTrafficFlow> TrafficFlows = new List<ObservedTrafficFlow>();
         public readonly List<ObservedPowerState> PowerPlanets = new List<ObservedPowerState>();
         public readonly List<ObservedStationSlot> StationSlots = new List<ObservedStationSlot>();
+        public readonly List<ObservedStationState> Stations = new List<ObservedStationState>();
         public readonly Dictionary<int, ObservedCapacity> TankStorage = new Dictionary<int, ObservedCapacity>();
         public readonly List<ObservedRecipeConfiguration> RecipeConfigurations =
             new List<ObservedRecipeConfiguration>();
@@ -230,7 +241,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "1.5";
+            result["modelVersion"] = "1.6";
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -277,6 +288,7 @@ namespace DspProgressionStatusExporter
             result["factoryBuildingCounts"] = ExportBuildingCounts();
             result["tankStorage"] = ExportCapacities();
             result["stationSlots"] = ExportStationSlots();
+            result["stations"] = ExportStations();
             return result;
         }
 
@@ -361,6 +373,18 @@ namespace DspProgressionStatusExporter
                     if (station == null) continue;
                     int stationId = Plugin.ToInt(GetValue(station, "id"));
                     bool isStellar = ToBool(GetValue(station, "isStellar"));
+                    Dictionary<string, object> fleet =
+                        GetDictionary(station, "fleet");
+                    Stations.Add(new ObservedStationState {
+                        PlanetId = planetId,
+                        PlanetName = planetName,
+                        StationId = stationId,
+                        IsStellar = isStellar,
+                        IdleShipCount = Plugin.ToInt(
+                            GetValue(fleet, "idleShipCount")),
+                        WorkShipCount = Plugin.ToInt(
+                            GetValue(fleet, "workShipCount"))
+                    });
                     foreach (object slotObject in Enumerate(GetValue(station, "storage")))
                     {
                         var slot = slotObject as Dictionary<string, object>;
@@ -993,6 +1017,19 @@ namespace DspProgressionStatusExporter
                     { "itemId", x.ItemId }, { "name", x.Name },
                     { "count", x.Count }, { "max", x.Maximum },
                     { "localLogic", x.LocalLogic }, { "remoteLogic", x.RemoteLogic }
+                });
+            return rows;
+        }
+
+        private List<object> ExportStations()
+        {
+            var rows = new List<object>();
+            foreach (ObservedStationState x in Stations)
+                rows.Add(new Dictionary<string, object> {
+                    { "planetId", x.PlanetId }, { "planetName", x.PlanetName },
+                    { "stationId", x.StationId }, { "isStellar", x.IsStellar },
+                    { "idleShipCount", x.IdleShipCount },
+                    { "workShipCount", x.WorkShipCount }
                 });
             return rows;
         }

@@ -69,6 +69,10 @@ turning it into a rate dashboard:
 
 ## Immediate roadmap
 
+Implementation status: SCOPE-01, ILS-02, OBJ-02, LATE-01, and PRUNE-01 were
+delivered together in the guide 1.22.2 critical-path migration. The acceptance
+criteria below now define the focused runtime test pass.
+
 ### SCOPE-01 - Restrict navigation to the critical path
 
 **User story:** As a guide reader, I can navigate only the ten default-route

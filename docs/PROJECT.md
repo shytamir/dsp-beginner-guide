@@ -12,7 +12,7 @@ build designer, or unsolicited warning system.
 
 ## Product invariants
 
-- The player owns phase and optional-route selection.
+- The player owns phase selection.
 - Runtime evidence evaluates the selection but never changes it.
 - Objectives remain stable while a phase is selected.
 - Required objectives, reference paces, and optional choices remain distinct.
@@ -109,12 +109,12 @@ in objective completion or navigation.
 | Contract | Version |
 |---|---:|
 | Exporter | 1.18.3 |
-| Snapshot schema | 2.1 |
-| Normalized state | 1.5 |
-| Guide selection | 1.4 |
-| Guide analysis | 2.4 |
-| Progression | 2.4 |
-| Panel | 1.7 |
+| Snapshot schema | 2.2 |
+| Normalized state | 1.6 |
+| Guide selection | 1.5 |
+| Guide analysis | 2.5 |
+| Progression | 2.5 |
+| Panel | 1.8 |
 
 ## Verification performed
 
@@ -160,12 +160,12 @@ Every snapshot contains:
 
 - synchronized plugin, assembly, exporter and schema provenance;
 - static game tick and derived total playtime;
-- selected phase, route, stable identity and persistence provenance;
+- selected phase, stable identity and persistence provenance;
 - objective and Current Status conclusions;
 - research totals and lifetime, stock and rolling Cube figures;
 - selected-phase item and logistics evidence;
 - compact power and collector-health summaries;
-- focused DYSON, SPHERE or PHOTON evidence when relevant;
+- focused DYSON or PHOTON evidence when relevant;
 - explicit omission and truncation markers.
 
 Receiver detail is capped at eight rows and marked when more are omitted. The
@@ -180,11 +180,10 @@ complete immutable source record, phase-by-phase readiness contract,
 old-to-new disposition, evidence matrix, and runtime acceptance requirements
 are maintained in `docs/GUIDE-REVISION-INGESTION.md`.
 
-The implementation preserves player-owned navigation and treats each
-selected phase's readiness checklist as the stable objective inventory.
-Reference paces become completion requirements only when the checklist names
-them. WARP has no completion gate, DYSON and SPHERE remain alternatives, and
-LOGISTICS is a new manually selected post-completion phase.
+That release preserved player-owned navigation and treated each selected
+phase's readiness checklist as the stable objective inventory. Its WARP,
+SPHERE, and LOGISTICS contracts are retained here only as release history and
+are superseded by the guide v1.22.2 critical-path contract below.
 
 ### TEL-01 - Native aggregate telemetry alignment
 
@@ -261,23 +260,23 @@ version is shared with the BepInEx plugin identity; assembly/file metadata
 retains its required fourth numeric component. Packaging does not change the
 source namespace, runtime identity, save contract, or panel behavior.
 
-## Immediate roadmap - guide v1.22.2
+## Guide v1.22.2 critical-path contract
 
-The fresh critical-path gap analysis and acceptance criteria are maintained in
-`docs/GUIDE-1.22.2-GAP-ANALYSIS.md`. It supersedes the GUIDE-01 phase contract
-for future implementation while retaining the earlier document as release
-history.
+The gap analysis and acceptance criteria are maintained in
+`docs/GUIDE-1.22.2-GAP-ANALYSIS.md`. The five migration stories are now
+implemented as one coordinated contract change:
 
-1. SCOPE-01 - restrict navigation and persistence to the ten default-route
-   phases.
-2. ILS-02 - consolidate FLIGHT, TITANIUM, the finite Yellow batch, and the old
-   ILS boundary into one expedition checklist.
-3. OBJ-02 - align BOOTSTRAP, BLUE, RED, YELLOW, PURPLE, and GREEN with their
-   phase-local readiness checks.
-4. LATE-01 - realign DYSON, PHOTON, and WHITE while keeping detailed telemetry
-   diagnostic rather than gate-defining.
-5. PRUNE-01 - remove obsolete optional-phase rules, evidence, snapshots, tests,
-   and documentation.
+1. SCOPE-01 restricts manual navigation to BOOTSTRAP, BLUE, RED, ILS, YELLOW,
+   PURPLE, GREEN, DYSON, PHOTON, and WHITE.
+2. ILS-02 consolidates preparation, the remote outpost, exact return cargo,
+   the finite Yellow purchase, ILS hardware, and automatic delivery.
+3. OBJ-02 derives the six early and middle objective inventories directly
+   from their phase-local readiness checks.
+4. LATE-01 limits DYSON, PHOTON, and WHITE to the published critical-path
+   conclusions; detailed native telemetry remains diagnostic.
+5. PRUNE-01 removes retired phases from navigation, presentation, analysis,
+   and compact snapshot selection.
 
-Implementation order is the numbered order above. Player-owned navigation and
-the no-automatic-transition invariant remain unchanged throughout.
+Legacy stored selections normalize once to retained phases: FLIGHT and
+TITANIUM to ILS, SPHERE to DYSON, WARP to GREEN, and LOGISTICS/COMPLETE to
+WHITE. Evidence never changes the resulting player-owned selection.

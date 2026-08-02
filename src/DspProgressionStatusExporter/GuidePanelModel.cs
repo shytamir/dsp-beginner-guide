@@ -34,7 +34,6 @@ namespace DspProgressionStatusExporter
         public string Subtitle;
         public string SnapshotFileName;
         public string SnapshotDirectory;
-        public string SelectedLateRoute;
         public readonly List<GuidePanelRowModel> Objectives =
             new List<GuidePanelRowModel>();
         public readonly List<GuidePanelRowModel> Pending =
@@ -55,10 +54,9 @@ namespace DspProgressionStatusExporter
                 context.Add(row.Export());
 
             return new Dictionary<string, object> {
-                { "contractVersion", "1.4" },
+                { "contractVersion", "1.8" },
                 { "phaseId", PhaseId },
                 { "phaseSelectionAuthority", "player" },
-                { "selectedLateRoute", SelectedLateRoute },
                 { "title", Title },
                 { "subtitle", Subtitle },
                 { "snapshotFileName", SnapshotFileName },
@@ -234,11 +232,6 @@ namespace DspProgressionStatusExporter
                 if (finding == null) continue;
                 string id = Text(Get(finding, "id"), null);
                 if (String.IsNullOrEmpty(id) || SuppressedContextIds.Contains(id))
-                    continue;
-                if (String.Equals(
-                    id, "dyson-route-choice", StringComparison.OrdinalIgnoreCase) &&
-                    !String.Equals(
-                        model.PhaseId, "sphere", StringComparison.OrdinalIgnoreCase))
                     continue;
                 string claim = Text(Get(finding, "claim"), null);
                 if (String.IsNullOrEmpty(claim)) continue;
@@ -499,43 +492,6 @@ namespace DspProgressionStatusExporter
                     status, "ready", StringComparison.OrdinalIgnoreCase)
                     ? "An active Silicon route was found."
                     : "A sustainable Silicon route wasn't found.";
-            else if (String.Equals(
-                id, "local-distribution", StringComparison.OrdinalIgnoreCase))
-                return null;
-            else if (String.Equals(
-                id, "purple-direction", StringComparison.OrdinalIgnoreCase))
-                result = result.IndexOf(
-                    "Particle Control ready/queued: False",
-                    StringComparison.OrdinalIgnoreCase) >= 0
-                    ? "Particle Control isn't ready or queued."
-                    : "Purple research is not yet queued.";
-            else if (String.Equals(
-                id, "flight-margin", StringComparison.OrdinalIgnoreCase))
-                result =
-                    "Travel fuel and destination power need a manual check.";
-            else if (String.Equals(
-                id, "direct-silicon", StringComparison.OrdinalIgnoreCase))
-                result = "A direct Silicon plan wasn't found.";
-            else if (String.Equals(
-                id, "ils-hardware", StringComparison.OrdinalIgnoreCase))
-                result = "A ready ILS station pair wasn't found.";
-            else if (id != null && id.StartsWith(
-                "tank-", StringComparison.OrdinalIgnoreCase))
-                result = "Storage capacity wasn't found.";
-            else if (String.Equals(
-                id,
-                "phase-input-bottleneck",
-                StringComparison.OrdinalIgnoreCase))
-            {
-                Match desiredRate = Regex.Match(
-                    result,
-                    @"Guide reference\s+([0-9]+(?:[.,][0-9]+)?/min)",
-                    RegexOptions.IgnoreCase |
-                    RegexOptions.CultureInvariant);
-                result = desiredRate.Success
-                    ? "Desired rate " + desiredRate.Groups[1].Value + "."
-                    : null;
-            }
 
             result = ReplaceInsensitive(result, "Observed", "Found");
             result = ReplaceInsensitive(result, "minimum", "desired");

@@ -15,30 +15,24 @@ namespace DspProgressionStatusExporter
         private static readonly Dictionary<string, int[]> PhaseItems =
             new Dictionary<string, int[]>(StringComparer.OrdinalIgnoreCase) {
                 { "bootstrap", new int[] {
-                    1101, 1104, 1202, 1301, 2001, 2011
+                    1101, 1104, 1202, 1301, 2001, 2011, 2301, 2302,
+                    2303, 2101, 2106, 2203, 2201
                 } },
-                { "blue", new int[] {
-                    6001, 1202, 1301, 2001, 2011
-                } },
-                { "red", new int[] {
-                    6002, 6001, 1114, 1120, 1109, 1103, 1131
-                } },
-                { "flight", new int[0] },
-                { "titanium", new int[] { 1004, 1106, 1003 } },
-                { "yellow", new int[] { 6003, 1114, 1120, 1116, 1117, 1118 } },
-                { "ils", new int[] { 1106, 1105, 1003 } },
-                { "purple", new int[] { 6004, 1303, 1123, 1124, 1402 } },
-                { "warp", new int[] { 1210 } },
-                { "green", new int[] {
-                    6005, 1120, 1121, 1305, 1127, 1210
-                } },
-                { "dyson", new int[] { 1501 } },
-                { "sphere", new int[] { 1501, 1503 } },
-                { "photon", new int[] { 1208, 1122, 1120, 1209 } },
-                { "white", new int[] { 6006, 1208, 1122 } },
-                { "logistics", new int[] {
-                    2107, 5003, 2103, 5001, 2104, 5002
-                } }
+                { "blue", new int[] { 6001 } },
+                { "red", new int[] { 6002, 1114, 1120 } },
+                { "ils", new int[] { 1106, 1105, 1003, 6003, 2104, 5002 } },
+                { "yellow", new int[] { 6003 } },
+                { "purple", new int[] { 6004 } },
+                { "green", new int[] { 6005, 1305, 1209 } },
+                { "dyson", new int[] { 1208, 1122 } },
+                { "photon", new int[] { 1122 } },
+                { "white", new int[] { 6001, 6002, 6003, 6004, 6005, 6006, 1122 } }
+            };
+
+        private static readonly Dictionary<string, int> PhaseRecipeIds =
+            new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) {
+                { "blue", 9 }, { "red", 18 }, { "yellow", 27 },
+                { "purple", 55 }, { "green", 102 }, { "white", 75 }
             };
 
         public static Dictionary<string, object> Build(
@@ -143,6 +137,7 @@ namespace DspProgressionStatusExporter
                     state, samplingPerformance,
                     includeCollectorDiagnostics) },
                 { "phaseItems", PhaseItemEvidence(phaseId, state) },
+                { "phaseRecipe", RecipeEvidence(phaseId, state) },
                 { "logistics", LogisticsEvidence(phaseId, state) },
                 { "power", PowerEvidence(state) }
             };
@@ -278,10 +273,44 @@ namespace DspProgressionStatusExporter
             var sorted = new List<int>(aggregates.Keys);
             sorted.Sort();
             foreach (int id in sorted) rows.Add(aggregates[id]);
-            return new Dictionary<string, object> {
+            var result = new Dictionary<string, object> {
                 { "available", state.TrafficWindowReady },
                 { "windowGameSeconds", state.TrafficWindowSeconds },
                 { "selectedPhaseItems", rows }
+            };
+            if (String.Equals(phaseId, "ils", StringComparison.OrdinalIgnoreCase))
+            {
+                int stationCount = 0;
+                int vesselCount = 0;
+                foreach (ObservedStationState station in state.Stations)
+                {
+                    if (!station.IsStellar) continue;
+                    stationCount++;
+                    vesselCount += station.IdleShipCount + station.WorkShipCount;
+                }
+                result["stellarStationCount"] = stationCount;
+                result["deployedVesselCount"] = vesselCount;
+            }
+            return result;
+        }
+
+        private static Dictionary<string, object> RecipeEvidence(
+            string phaseId,
+            ObservedGameState state)
+        {
+            int recipeId;
+            if (!PhaseRecipeIds.TryGetValue(phaseId ?? "", out recipeId))
+                return new Dictionary<string, object> {
+                    { "available", state.RecipeTelemetryAvailable }
+                };
+            int count = 0;
+            foreach (ObservedRecipeConfiguration recipe in state.RecipeConfigurations)
+                if (recipe.RecipeId == recipeId)
+                    count += recipe.ConfiguredMachineCount;
+            return new Dictionary<string, object> {
+                { "available", state.RecipeTelemetryAvailable },
+                { "recipeId", recipeId },
+                { "configuredMachineCount", count }
             };
         }
 
@@ -336,26 +365,6 @@ namespace DspProgressionStatusExporter
                     { "ejectorsFiringNow", d.EjectorsFiringNow }
                 };
             }
-            if (phaseId == "sphere")
-            {
-                result["construction"] = new Dictionary<string, object> {
-                    { "siloCount", d.SiloCount },
-                    { "silosSupplied", d.SilosSupplied },
-                    { "silosWithTarget", d.SilosWithTarget },
-                    { "silosFiringNow", d.SilosFiringNow },
-                    { "constructedNodes", d.ConstructedNodes },
-                    { "totalNodes", d.TotalNodes },
-                    { "constructedStructurePoints", d.ConstructedStructurePoints },
-                    { "totalStructurePoints", d.TotalStructurePoints },
-                    { "constructedCellPoints", d.ConstructedCellPoints },
-                    { "totalCellPoints", d.TotalCellPoints },
-                    { "rocketsInFlight", d.RocketsInFlight },
-                    { "constructionRateAvailable", d.ConstructionRateAvailable },
-                    { "constructedStructurePointsPerMinute", d.ConstructedStructurePointsPerMinute },
-                    { "constructedCellPointsPerMinute", d.ConstructedCellPointsPerMinute },
-                    { "sphereRouteObserved", d.SphereRouteObserved }
-                };
-            }
             if (phaseId == "photon" || phaseId == "white")
                 result["receivers"] = ReceiverEvidence(d);
             return result;
@@ -407,7 +416,7 @@ namespace DspProgressionStatusExporter
         private static bool IsDysonPhase(string phaseId)
         {
             return phaseId == "green" || phaseId == "dyson" ||
-                phaseId == "sphere" || phaseId == "photon" ||
+                phaseId == "photon" ||
                 phaseId == "white";
         }
 

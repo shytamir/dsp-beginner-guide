@@ -6,15 +6,13 @@ namespace DspProgressionStatusExporter
     internal sealed class ManualPhaseSelection
     {
         public string PhaseId;
-        public string LateRoute;
         public string SeedSource;
         public string PersistenceState;
         public string IdentityVersion;
 
         public string Serialize()
         {
-            return "nav1;phase=" + ManualPhaseNavigator.NormalizePhase(PhaseId) +
-                ";route=" + ManualPhaseNavigator.NormalizeLateRoute(LateRoute) +
+            return "nav2;phase=" + ManualPhaseNavigator.NormalizePhase(PhaseId) +
                 ";seed=" + (String.IsNullOrEmpty(SeedSource)
                     ? "stored"
                     : SeedSource.Replace(";", "").Replace("=", ""));
@@ -23,13 +21,12 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export(string saveKey)
         {
             return new Dictionary<string, object> {
-                { "contractVersion", "1.4" },
+                { "contractVersion", "1.5" },
                 { "authority", "player" },
                 { "saveKey", saveKey },
                 { "identityVersion", IdentityVersion },
                 { "persistenceState", PersistenceState },
                 { "selectedPhase", ManualPhaseNavigator.NormalizePhase(PhaseId) },
-                { "selectedLateRoute", ManualPhaseNavigator.NormalizeLateRoute(LateRoute) },
                 { "selectionOrigin", SeedSource },
                 { "automaticTransitionsEnabled", false }
             };
@@ -39,11 +36,11 @@ namespace DspProgressionStatusExporter
         {
             if (String.IsNullOrEmpty(serialized)) return null;
             string phase = null;
-            string route = null;
             string seed = null;
             string[] parts = serialized.Split(';');
             if (parts.Length == 0 ||
-                !String.Equals(parts[0], "nav1", StringComparison.Ordinal))
+                (!String.Equals(parts[0], "nav1", StringComparison.Ordinal) &&
+                 !String.Equals(parts[0], "nav2", StringComparison.Ordinal)))
                 return null;
             for (int i = 1; i < parts.Length; i++)
             {
@@ -52,16 +49,15 @@ namespace DspProgressionStatusExporter
                 string key = parts[i].Substring(0, equals);
                 string value = parts[i].Substring(equals + 1);
                 if (key == "phase") phase = value;
-                else if (key == "route") route = value;
                 else if (key == "seed") seed = value;
             }
             if (String.Equals(
                 phase, "complete", StringComparison.OrdinalIgnoreCase))
                 phase = "white";
+            phase = ManualPhaseNavigator.MigrateLegacyPhase(phase);
             if (!ManualPhaseNavigator.IsValidPhase(phase)) return null;
             return new ManualPhaseSelection {
                 PhaseId = ManualPhaseNavigator.NormalizePhase(phase),
-                LateRoute = ManualPhaseNavigator.NormalizeLateRoute(route),
                 SeedSource = String.IsNullOrEmpty(seed) ? "stored" : seed
             };
         }
@@ -135,16 +131,15 @@ namespace DspProgressionStatusExporter
 
     internal static class ManualPhaseNavigator
     {
-        private static readonly string[] BeforeLateRoute = new string[] {
-            "bootstrap", "blue", "red", "flight", "titanium",
-            "yellow", "ils", "purple", "green"
+        private static readonly string[] Phases = new string[] {
+            "bootstrap", "blue", "red", "ils", "yellow",
+            "purple", "green", "dyson", "photon", "white"
         };
 
         private static readonly HashSet<string> ValidPhases =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-                "bootstrap", "blue", "red", "flight", "titanium",
-                "yellow", "ils", "purple", "warp", "green", "dyson",
-                "sphere", "photon", "white", "logistics"
+                "bootstrap", "blue", "red", "ils", "yellow",
+                "purple", "green", "dyson", "photon", "white"
             };
 
         public static ManualPhaseSelection Seed(
@@ -163,7 +158,6 @@ namespace DspProgressionStatusExporter
             }
             return new ManualPhaseSelection {
                 PhaseId = phase,
-                LateRoute = "",
                 SeedSource = "latest-researched-cube"
             };
         }
@@ -176,52 +170,40 @@ namespace DspProgressionStatusExporter
 
         public static string NormalizePhase(string phaseId)
         {
+            phaseId = MigrateLegacyPhase(phaseId);
             return IsValidPhase(phaseId)
                 ? phaseId.ToLowerInvariant()
                 : "bootstrap";
         }
 
-        public static string NormalizeLateRoute(string route)
+        public static string MigrateLegacyPhase(string phaseId)
         {
-            if (String.Equals(route, "sphere", StringComparison.OrdinalIgnoreCase))
-                return "sphere";
-            if (String.Equals(route, "dyson", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(phaseId, "flight", StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(phaseId, "titanium", StringComparison.OrdinalIgnoreCase))
+                return "ils";
+            if (String.Equals(phaseId, "sphere", StringComparison.OrdinalIgnoreCase))
                 return "dyson";
-            return "";
+            if (String.Equals(phaseId, "warp", StringComparison.OrdinalIgnoreCase))
+                return "green";
+            if (String.Equals(phaseId, "logistics", StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(phaseId, "complete", StringComparison.OrdinalIgnoreCase))
+                return "white";
+            return phaseId;
         }
 
-        public static string Previous(string phaseId, string lateRoute)
+        public static string Previous(string phaseId)
         {
             string phase = NormalizePhase(phaseId);
-            if (phase == "warp") return "purple";
-            if (phase == "dyson" || phase == "sphere") return "green";
-            if (phase == "photon")
-            {
-                string route = NormalizeLateRoute(lateRoute);
-                return String.IsNullOrEmpty(route) ? "dyson" : route;
-            }
-            if (phase == "white") return "photon";
-            if (phase == "logistics") return "white";
-            int index = Array.IndexOf(BeforeLateRoute, phase);
-            return index > 0 ? BeforeLateRoute[index - 1] : phase;
+            int index = Array.IndexOf(Phases, phase);
+            return index > 0 ? Phases[index - 1] : phase;
         }
 
-        public static string Next(string phaseId, string lateRoute)
+        public static string Next(string phaseId)
         {
             string phase = NormalizePhase(phaseId);
-            if (phase == "warp") return "green";
-            if (phase == "dyson" || phase == "sphere") return "photon";
-            if (phase == "photon") return "white";
-            if (phase == "white") return "logistics";
-            if (phase == "logistics") return phase;
-            if (phase == "green")
-            {
-                string route = NormalizeLateRoute(lateRoute);
-                return String.IsNullOrEmpty(route) ? phase : route;
-            }
-            int index = Array.IndexOf(BeforeLateRoute, phase);
-            return index >= 0 && index + 1 < BeforeLateRoute.Length
-                ? BeforeLateRoute[index + 1]
+            int index = Array.IndexOf(Phases, phase);
+            return index >= 0 && index + 1 < Phases.Length
+                ? Phases[index + 1]
                 : phase;
         }
     }

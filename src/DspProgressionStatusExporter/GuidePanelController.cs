@@ -337,11 +337,6 @@ namespace DspProgressionStatusExporter
         private RectTransform collapseButtonRect;
         private RectTransform previousPhaseRect;
         private RectTransform nextPhaseRect;
-        private RectTransform warpPhaseRect;
-        private RectTransform dysonPhaseRect;
-        private RectTransform spherePhaseRect;
-        private Outline dysonPhaseOutline;
-        private Outline spherePhaseOutline;
         private Image collapseImage;
         private Text collapseFallbackText;
         private NativeGoalStyle style;
@@ -349,7 +344,6 @@ namespace DspProgressionStatusExporter
         private string phaseId;
         private Func<bool> snapshotAction;
         private Action<string> navigationAction;
-        private string selectedLateRoute;
         private bool bodyCanScroll;
         private float panelWidth;
         private Color snapshotLinkDefaultColor;
@@ -399,7 +393,7 @@ namespace DspProgressionStatusExporter
             result["manualWheelSupport"] = false;
             result["scrollControls"] = "explicit-up-down-buttons";
             result["phaseNavigation"] =
-                "player-controlled-previous-next-with-explicit-route-choice";
+                "player-controlled-critical-path-previous-next";
             result["panelPointerPolicy"] =
                 "click-through-except-interactive-controls";
             result["textOutline"] = true;
@@ -632,25 +626,6 @@ namespace DspProgressionStatusExporter
                 delegate { Navigate("next"); },
                 out nextPhaseRect,
                 out _);
-            CreateHeaderControl(
-                "WarpPhase",
-                "WARP",
-                delegate { Navigate("warp"); },
-                out warpPhaseRect,
-                out _);
-            CreateHeaderControl(
-                "DysonPhase",
-                "DYSON",
-                delegate { Navigate("dyson"); },
-                out dysonPhaseRect,
-                out dysonPhaseOutline);
-            CreateHeaderControl(
-                "SpherePhase",
-                "SPHERE",
-                delegate { Navigate("sphere"); },
-                out spherePhaseRect,
-                out spherePhaseOutline);
-
             GameObject scrollObject = CreateObject(
                 "ScrollArea",
                 panelObject.transform,
@@ -763,7 +738,6 @@ namespace DspProgressionStatusExporter
         {
             if (model == null) return;
             titleText.text = GuideRichText.Title(model.PhaseId, model.Title);
-            selectedLateRoute = model.SelectedLateRoute;
             snapshotLinkText.text = "Save snapshot";
             sourceGuideLinkText.text = DontPanicLabel;
 
@@ -893,17 +867,10 @@ namespace DspProgressionStatusExporter
         {
             ResetPanelAnchor();
 
-            bool showWarp = String.Equals(
-                phaseId, "purple", StringComparison.OrdinalIgnoreCase);
-            bool showRoutes = String.Equals(
-                phaseId, "green", StringComparison.OrdinalIgnoreCase);
             previousPhaseRect.gameObject.SetActive(!String.Equals(
                 phaseId, "bootstrap", StringComparison.OrdinalIgnoreCase));
             nextPhaseRect.gameObject.SetActive(!String.Equals(
-                phaseId, "logistics", StringComparison.OrdinalIgnoreCase));
-            warpPhaseRect.gameObject.SetActive(showWarp);
-            dysonPhaseRect.gameObject.SetActive(showRoutes);
-            spherePhaseRect.gameObject.SetActive(showRoutes);
+                phaseId, "white", StringComparison.OrdinalIgnoreCase));
 
             float controlsRight = panelWidth - 52f;
             SetTopRect(
@@ -912,23 +879,6 @@ namespace DspProgressionStatusExporter
             SetTopRect(
                 previousPhaseRect, controlsRight - 28f, 10f, 26f, 28f);
             controlsRight -= 31f;
-
-            if (dysonPhaseOutline != null)
-                dysonPhaseOutline.effectColor =
-                    String.Equals(
-                        selectedLateRoute,
-                        "dyson",
-                        StringComparison.OrdinalIgnoreCase)
-                    ? SelectedControlOutlineColor
-                    : TextOutlineColor;
-            if (spherePhaseOutline != null)
-                spherePhaseOutline.effectColor =
-                    String.Equals(
-                        selectedLateRoute,
-                        "sphere",
-                        StringComparison.OrdinalIgnoreCase)
-                    ? SelectedControlOutlineColor
-                    : TextOutlineColor;
 
             float titleRight = panelWidth - controlsRight + 4f;
             float titleWidth = Mathf.Max(
@@ -946,33 +896,6 @@ namespace DspProgressionStatusExporter
             titleText.rectTransform.SetSizeWithCurrentAnchors(
                 RectTransform.Axis.Vertical, titleHeight);
             float headerHeight = Mathf.Max(48f, titleHeight + 15f);
-            if (showWarp)
-            {
-                SetTopRect(
-                    warpPhaseRect,
-                    panelWidth - OuterPadding - 62f,
-                    headerHeight - 1f,
-                    62f,
-                    27f);
-                headerHeight += 31f;
-            }
-            else if (showRoutes)
-            {
-                SetTopRect(
-                    spherePhaseRect,
-                    panelWidth - OuterPadding - 76f,
-                    headerHeight - 1f,
-                    76f,
-                    27f);
-                SetTopRect(
-                    dysonPhaseRect,
-                    panelWidth - OuterPadding - 147f,
-                    headerHeight - 1f,
-                    67f,
-                    27f);
-                headerHeight += 31f;
-            }
-
             SetTopRect(
                 collapseButtonRect,
                 panelWidth - 48f,
@@ -1497,9 +1420,6 @@ namespace DspProgressionStatusExporter
             ResetScale(collapseButtonRect);
             ResetScale(previousPhaseRect);
             ResetScale(nextPhaseRect);
-            ResetScale(warpPhaseRect);
-            ResetScale(dysonPhaseRect);
-            ResetScale(spherePhaseRect);
             ResetScale(scrollUpRect);
             ResetScale(scrollDownRect);
             ResetScale(snapshotLinkRect);
@@ -1685,8 +1605,7 @@ namespace DspProgressionStatusExporter
                     { "yellow", new Color(1f, 0.76f, 0.18f) },
                     { "purple", new Color(0.72f, 0.42f, 1f) },
                     { "green", new Color(0.27f, 0.9f, 0.48f) },
-                    { "white", new Color(0.94f, 0.94f, 0.96f) },
-                    { "logistics", new Color(0.22f, 1f, 0.32f) }
+                    { "white", new Color(0.94f, 0.94f, 0.96f) }
                 };
 
             private static readonly string[] CubePhrases = new string[] {

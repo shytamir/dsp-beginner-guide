@@ -4,6 +4,16 @@
 
 ### Changed
 
+- Adopted the guide 1.22.2 critical path as the active ten-phase contract.
+- Consolidated FLIGHT and TITANIUM into one ILS expedition checklist and
+  aligned every retained objective inventory with its phase-local readiness
+  checks.
+- Reduced hard production-rate objectives to Blue 20/min, Red 20/min, and
+  White 40/min; late Dyson and receiver metrics remain diagnostic evidence.
+- Removed WARP, SPHERE, LOGISTICS, and other optional-route panels, controls,
+  findings, and compact snapshot phase contracts.
+- Added compact ILS station and deployed-vessel evidence and advanced the
+  snapshot schema to 2.2.
 - Renamed the public build output to `DspGuideCheck.dll` without changing the
   source namespace or runtime behavior.
 - Added a Thunderstore manifest template, portable package README, 256 by 256

@@ -1,131 +1,110 @@
-# DSP Guide Check 1.18 - Runtime Validation
+# DSP Guide Check - Critical-path runtime validation
 
 This protocol uses only Dyson Sphere Program with the mod installed through
-BepInEx. It requires no coding task or other software.
-
-GUIDE-01 changes the selected-phase objective contracts while preserving
-manual navigation, native telemetry, compact snapshots, and the accepted
-panel behavior. Representative checkpoints are enough; another full
-playthrough is not required for this acceptance pass.
+BepInEx. It validates the guide v1.22.2 contract; no coding tools are needed.
 
 ## Preparation
 
-1. Install the v1.18 DLL in the usual BepInEx plugin location.
-2. Load each available representative save and let it run for at least one
-   minute before judging production objectives.
-3. Select phases only with the panel controls.
-4. Use `Save snapshot` only for the most informative checkpoints.
+1. Install the latest `DspGuideCheck.dll` in the usual BepInEx plugin folder.
+2. Load a representative save and let the game run for at least one minute
+   before judging production objectives.
+3. Open the panel with F8 and select phases only with Previous and Next.
+4. Use `Save snapshot` for a checkpoint whose visible conclusion needs audit.
 
-## Checkpoint A - Early and middle progression
+## Navigation and persistence
 
-Use one early phase (BLUE or RED) and one middle phase (YELLOW or ILS).
+Expected phase order:
 
-Expected:
+```text
+BOOTSTRAP -> BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
+          -> DYSON -> PHOTON -> WHITE
+```
 
-- the objective list matches the readiness checklist in the source guide;
-- exact rates appear only where the checklist names them;
-- preparation or player-knowledge checks remain honest rather than appearing
-  automatically complete;
-- an idle but buffered older Cube does not become a false failure;
-- no future-phase research blocks the selected phase.
+Confirm:
 
-Save one snapshot if an objective conclusion needs comparison with visible
-game state.
+- no FLIGHT, TITANIUM, SPHERE, WARP, LOGISTICS, or COMPLETE panel exists;
+- runtime evidence, pausing, research, objectives, and Mission Completed never
+  change the selected phase;
+- the selection persists across a normal game restart;
+- a legacy removed selection opens on its documented retained replacement.
 
-## Checkpoint B - PURPLE and GREEN
-
-Use representative PURPLE and GREEN saves.
-
-Expected:
-
-- PURPLE shows its eight checklist objectives, including one combined
-  recheck of Blue, Red, and Yellow rather than a dashboard of every Cube rate;
-- Processor, Particle Broadband, Graphene, and Carbon Nanotube objectives
-  judge stable supply without inventing unsupported exact targets;
-- GREEN shows its eight checklist objectives;
-- the chosen endgame Green pace remains a player check rather than a hidden
-  20/min or 40/min gate;
-- missing preparation produces a useful pending action, not automatic
-  navigation.
-
-## Checkpoint C - Optional routes
-
-Select WARP, DYSON, and SPHERE manually on suitable late-game saves.
+## Checkpoint A - BOOTSTRAP through RED
 
 Expected:
 
-- WARP has no objective or completion gate;
-- selecting WARP, DYSON, or SPHERE never changes another phase automatically;
-- DYSON and SPHERE remain distinct alternatives;
-- DYSON presents sail production, launches, efficiency, generation, and
-  receiver research from the published checklist;
-- SPHERE presents rocket production, silo launches, enclosed shell area,
-  Solar Sail absorption, efficiency, and permanent generation;
-- native Dyson evidence remains congruent with the Dyson editor.
+- BOOTSTRAP reports continuous starter inputs, automatic routine-building
+  replenishment, and the early power grid;
+- BLUE uses 20 Blue Cubes/min as its only rate objective and retains the
+  explicit no-hand-feeding check;
+- RED uses one combined conclusion: two Labs, 20 Red Cubes/min, and both
+  refinery outputs moving;
+- no future-phase research or comfort pace blocks these phases.
 
-Save the most informative DYSON or SPHERE snapshot.
+## Checkpoint B - ILS expedition
 
-## Checkpoint D - PHOTON and WHITE
+Exercise a save before departure and one after automatic delivery if
+available. Confirm that one stable checklist covers:
 
-Use a save with four Photon Generation receivers and a late-game save with
-WHITE available.
+- Drive Engine Lv2 and Titanium Smelting;
+- trip loadout and the explicit remote-outpost player check;
+- powered remote Titanium and Silicon production;
+- 860 Titanium Ingots and 520 High-Purity Silicon returned;
+- the finite 200-Yellow-Cube purchase;
+- two ILS towers and five Logistics Vessels;
+- Titanium and Silicon arriving home automatically.
 
-Expected:
+No objective should claim that an outpost plan or route exists without
+positive evidence.
 
-- PHOTON shows six checklist objectives: receiver health and continuity,
-  48 Critical Photons/min, 48 Antimatter/min, safe returned Hydrogen, and all
-  five earlier Cube lines capable of 40/min;
-- the accepted 60-second receiver continuity behavior remains intact;
-- WHITE shows its five checklist objectives before completion;
-- after Mission Completed, WHITE reduces to `Mission Accomplished!`;
-- neither PHOTON nor mission completion changes the selected phase.
-
-Save one PHOTON snapshot and, if convenient, one completed WHITE snapshot.
-
-## Checkpoint E - LOGISTICS
-
-From WHITE, select LOGISTICS with the next-phase control.
+## Checkpoint C - YELLOW through GREEN
 
 Expected:
 
-- previous returns to WHITE and next remains on LOGISTICS;
-- the first three objectives report automatic refill evidence for
-  Distributor/Bot, PLS/Drone, and ILS/Vessel infrastructure;
-- personal construction resupply and route literacy remain explicit player
-  checks;
-- no generic post-game dashboard or combat guidance appears.
+- YELLOW requires three configured Labs with continuous production;
+- PURPLE requires three configured Labs with continuous production;
+- GREEN requires two configured Labs with continuous production plus visible
+  Quantum Chip and Graviton Lens storage;
+- none of these phases acquires an old numeric dashboard rate gate;
+- healthy supporting chains do not create completed objective clutter.
 
-Save one LOGISTICS snapshot if the phase has representative production or
-stock.
+## Checkpoint D - DYSON and PHOTON
+
+Expected:
+
+- DYSON requires reliable Critical Photon-to-Antimatter production and
+  automatic delivery to science;
+- sail pace, launch duty, receiver details, generation, 48/min, and 1.655 GW
+  remain diagnostic evidence rather than readiness gates;
+- PHOTON requires 2,000 stored Antimatter and retains one explicit player
+  check that the rising rate is sufficient for the planned WHITE run;
+- a receiver or conversion failure produces at most one useful causal status.
+
+## Checkpoint E - WHITE
+
+Expected objective rows:
+
+1. Universe Matrix is researched;
+2. all five Matrix colors and Antimatter reach the Labs continuously;
+3. ten Labs sustain 40 White Cubes/min;
+4. Mission Completed consumes or has consumed 4,000 White Cubes.
+
+After Mission Completed, WHITE presents `Mission Accomplished!` without
+navigating or exposing a later phase.
 
 ## Cross-contract regression check
 
 During the checkpoints, also confirm:
 
 - F8 never saves a snapshot;
-- phase and route selections change only through player controls;
-- the selected phase does not change while paused, after research, after
-  completing an objective, or after Mission Completed;
-- the selection persists across a normal game restart;
-- navigation, collapse/expand, scrolling, footer controls, and panel layout
-  behave normally;
+- navigation, collapse, scrolling, footer controls, and layout behave normally;
 - `Save snapshot` writes one JSON, turns green for two seconds on success,
-  returns to its default style, and does not open Windows Explorer;
-- `DON'T PANIC` opens the selected guide anchor, including `#logistics`;
+  and does not open Windows Explorer;
+- `DON'T PANIC` opens the matching retained guide anchor;
 - no noticeable new sampling hitch occurs with the panel closed or open;
-- each saved JSON is no larger than 256 KiB.
+- each JSON is no larger than 256 KiB and names snapshot schema 2.2.
 
 ## Testing handoff
 
-Please return:
-
-- snapshots from the most informative checkpoints;
-- screenshots only for a player-facing mismatch or layout defect;
-- the selected phase and any objective that disagreed with the visible state;
-- whether navigation, persistence, layout, footer, or performance regressed;
-- whether WARP remained gate-free and LOGISTICS behaved as a manual
-  post-completion phase.
-
-The returned snapshots will be reviewed for checklist alignment, native
-evidence congruence, compactness, manual selection ownership, and clear
-separation between objectives, Pending, Current Status, and player checks.
+Please return the most informative snapshots, screenshots only for visible
+mismatches, and notes identifying any objective that disagreed with the game.
+Also report navigation, persistence, layout, footer, or performance regressions.
