@@ -140,6 +140,19 @@ panel contracts have completed in-game acceptance. Packaging has passed its
 automated contract checks. See [CHANGELOG.md](CHANGELOG.md) for release
 history.
 
+## Active development
+
+The current information-quality pass is defined in
+[docs/PROJECT.md](docs/PROJECT.md#project-status):
+
+- `RATE-01` will show supporting rates only when they explain an actionable
+  shortfall.
+- `BUFFER-01` will distinguish a real supply risk from normal idle production
+  using demand, net deficit, and available buffer.
+
+The remaining panel-density ideas are recorded as future considerations and
+are not part of the active implementation work.
+
 ## Repository layout
 
 ```text

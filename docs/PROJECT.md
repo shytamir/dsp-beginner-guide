@@ -45,6 +45,90 @@ FLIGHT and TITANIUM are checkpoints inside ILS. WARP, SPHERE, LOGISTICS,
 COMPLETE, and other optional or post-completion routes have no navigation
 control, panel, objective contract, finding, or snapshot phase contract.
 
+## Project status
+
+**Active:** information-quality pass (`RATE-01` and `BUFFER-01`).
+
+The current implementation is accepted against the guide 1.22.2 critical
+path. The active work improves how supporting production evidence becomes a
+player-facing conclusion; it does not change phase objectives, navigation, or
+the underlying native telemetry sources.
+
+### RATE-01 - Show rates only when they explain a problem
+
+**User story:** As a guide reader, I want supporting production rates to appear
+only when they explain an actionable shortfall, so the panel gives me useful
+knowledge instead of reproducing the Statistics Panel.
+
+Scope:
+
+- Preserve exact checklist rates as phase objectives where the guide makes
+  them hard requirements.
+- Suppress healthy supporting-rate findings.
+- When supporting production is genuinely limiting the selected phase,
+  present one causal conclusion naming the constraint and affected goal.
+- Include a current and desired rate only when those numbers help the player
+  judge the shortfall; otherwise prefer the conclusion alone.
+- Continue using native one-minute Statistics Panel aggregates and retain the
+  focused evidence in snapshots for auditability.
+
+Acceptance:
+
+- Healthy supporting chains add no rate-dashboard rows.
+- A sustained, causally relevant shortfall produces a concise actionable
+  finding rather than a list of every related rate.
+- Hard objective completion, manual phase ownership, and snapshot evidence do
+  not regress.
+- Missing or immature rate evidence remains unknown and does not create a
+  confident diagnosis.
+
+### BUFFER-01 - Interpret idle production in demand and buffer context
+
+**User story:** As a guide reader, I want an idle but adequately buffered line
+to be treated as healthy, so normal production shutdown does not become a
+false shortage warning.
+
+Scope:
+
+- Evaluate supporting production together with current consumption, net
+  deficit, and relevant owned or stored stock.
+- Treat zero or low production as non-problematic when there is no active
+  deficit or the available buffer credibly covers current demand.
+- Warn only when active demand, net depletion, and inadequate buffer agree on
+  a real risk; do not infer failure from production rate alone.
+- Report unavailable demand or stock evidence honestly instead of substituting
+  inventory deltas or speculative restart assumptions.
+- Export the compact demand, deficit, buffer, and conclusion evidence needed
+  to validate the decision.
+
+Acceptance:
+
+- A full, idle, or demand-free buffered line does not produce a shortage
+  warning.
+- A consuming line with a sustained deficit and insufficient runway produces
+  a concise warning identifying the endangered phase need.
+- The same evidence yields the same deterministic conclusion in the panel,
+  analyzer, and snapshot.
+- No additional factory-wide scan, automatic phase behavior, or unsolicited
+  alert is introduced.
+
+## Future considerations
+
+These ideas are recorded but are not active work:
+
+- Keep completed objectives to compact single lines while reserving supporting
+  detail for incomplete objectives.
+- Limit Pending to the few highest-value actions, ordered by what unlocks or
+  constrains progress, without repeating every incomplete objective.
+- Limit Current Status to exceptional findings rather than every available
+  healthy fact.
+- Use a quiet-success conclusion such as `No immediate constraints found`
+  when the analyzer has nothing actionable to report.
+- Stabilize conclusions across insignificant fluctuations so the panel does
+  not rewrite itself on minor rate noise.
+- Reserve explicit player checks for important judgments the runtime genuinely
+  cannot observe, and present each only once.
+
 ## Objective authority
 
 The phase-local `Ready to move on when` checklist is authoritative. The ILS
