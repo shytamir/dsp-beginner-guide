@@ -11,6 +11,9 @@ This report supersedes `GUIDE-REVISION-INGESTION.md` for future guide-derived
 work. The older document remains the implementation record for the v1.18
 baseline.
 
+Implementation and representative runtime acceptance are complete. The gaps
+and stories below are retained as the derivation record, not an open roadmap.
+
 ## Adopted scope
 
 The panel phase sequence becomes:
@@ -42,7 +45,7 @@ turning it into a rate dashboard:
 
 ## Phase checklist gaps
 
-| Retained phase | Published phase-local readiness contract | Current gap and required disposition |
+| Retained phase | Published phase-local readiness contract | Original gap and delivered disposition |
 |---|---|---|
 | BOOTSTRAP | Inputs arrive continuously; routine mall hardware replenishes automatically; the grid provides roughly 5-10 MW for the mall, Labs, and oil preparation. | Keep the replenishment and power evidence, but replace generic handcrafting/player-check rows with the three published conclusions. |
 | BLUE | Blue Cubes run continuously at 20/min or better; research is not hand-fed; roughly 5-10 MW is available for Blue and the coming oil district. | Keep 20/min as the only Blue rate objective. Treat 40/min and component comfort as reference/status, not completion requirements. |
@@ -55,23 +58,23 @@ turning it into a rate dashboard:
 | PHOTON | At least 2,000 Antimatter is stored and the player is satisfied that the rising production trend can support WHITE. | Make stored Antimatter the measurable objective and leave sufficiency as an explicit player check. Receiver continuity, lens supply, Critical Photon conversion, and Hydrogen outlet health become focused status/pending evidence rather than extra completion gates. |
 | WHITE | Universe Matrix is researched; all six inputs reach the Labs continuously; ten Labs sustain 40 White Cubes/min; Mission Completed consumes or has consumed 4,000 White Cubes. | Replace the generic selected-pace model with these four explicit readiness rows. Preserve the concise Mission Accomplished endpoint without introducing a later phase. |
 
-## Gaps outside the objective inventory
+## Resolved gaps outside the objective inventory
 
-- Navigation and persistence still recognize five phases that are now outside
-  scope and retain a DYSON/SPHERE route choice.
-- Analyzer phase metadata and panel links still expose the old phase order.
-- Current Status still contains optional-route opportunities and rate findings
-  whose only consumers are removed phases or old checklist rows.
-- The telemetry watch set and snapshot schema still carry evidence for
-  FLIGHT, TITANIUM, SPHERE, WARP, and LOGISTICS contracts.
-- The acceptance harness and runtime checklist still validate the v1.18 phase
-  inventory.
+- Navigation, persistence, analyzer metadata, and panel links now expose only
+  the ten retained phases.
+- Optional-route opportunities and obsolete rate findings were removed from
+  Current Status.
+- The telemetry watch set and schema 2.2 snapshot contract retain only
+  evidence with a critical-path consumer.
+- The acceptance harness and runtime protocol now validate the guide 1.22.2
+  phase inventory.
 
-## Immediate roadmap
+## Delivered migration stories
 
 Implementation status: SCOPE-01, ILS-02, OBJ-02, LATE-01, and PRUNE-01 were
-delivered together in the guide 1.22.2 critical-path migration. The acceptance
-criteria below now define the focused runtime test pass.
+delivered together in the guide 1.22.2 critical-path migration. Their
+acceptance criteria passed the representative runtime test and remain useful
+as regression criteria.
 
 ### SCOPE-01 - Restrict navigation to the critical path
 
@@ -196,9 +199,9 @@ Acceptance:
 - the deterministic harness and release build pass against the ten-phase
   inventory.
 
-## Delivery order
+## Delivery record
 
-Implement in this order:
+The coordinated migration was implemented in this dependency order:
 
 1. SCOPE-01
 2. ILS-02

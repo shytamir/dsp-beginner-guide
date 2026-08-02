@@ -3,6 +3,9 @@
 This protocol uses only Dyson Sphere Program with the mod installed through
 BepInEx. It validates the guide v1.22.2 contract; no coding tools are needed.
 
+The first representative guide 1.22.2 user test completed without reported
+defects. This document remains the regression protocol for future changes.
+
 ## Preparation
 
 1. Install the latest `DspGuideCheck.dll` in the usual BepInEx plugin folder.

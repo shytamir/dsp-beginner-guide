@@ -122,97 +122,23 @@ BOOTSTRAP -> BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
 FLIGHT and TITANIUM are checkpoints inside ILS. Optional WARP, SPHERE, and
 LOGISTICS material remains in the source guide but does not receive a panel.
 
-## Version 1.18.3
+## Current contract
 
-The panel uses a stronger dark outline for readable text over bright terrain
-and clouds. The selected DYSON/SPHERE route uses its colored outline when the
-choice is preserved on GREEN. Collapse, scroll, snapshot, and `DON'T PANIC`
-now share the same bounded hover growth as phase navigation, and the scroll
-controls no longer use filled backgrounds. LOGISTICS is identified in bright
-green.
+- Objectives come from each retained phase's local readiness checklist.
+- Exact production gates are used only where that checklist names an exact
+  pace: Blue 20/min, Red 20/min, and White 40/min.
+- Production uses DSP's pre-aggregated one-minute Statistics Panel values.
+- Dyson generation, sail population, and construction progress use the native
+  Dyson system and editor aggregates.
+- Compact snapshot schema 2.2 exports conclusions, provenance, collector
+  health, and only the focused evidence needed to audit those conclusions.
+- The click-through panel uses Basic Regular with a dark outline. Only its
+  explicit controls capture pointer input.
 
-## Version 1.18.2
-
-WHITE now retains its Next phase control. Selecting it enters LOGISTICS,
-where Next is hidden because LOGISTICS is the final phase.
-
-## Version 1.18.1
-
-All panel text now carries a dark outline for legibility over bright factory
-and sky backgrounds. Phase navigation controls use transparent hit areas
-instead of block backgrounds, grow to one fixed hover size, and show the
-selected DYSON/SPHERE route through a colored outline.
-
-The panel background, edge, viewport, rows, and text are click-through. Only
-the collapse, phase navigation, explicit scroll, snapshot, and guide-link
-controls capture pointer input.
-
-## Version 1.18.0
-
-GUIDE-01 re-derived the entire phase contract from the published guide rather
-than layering new thresholds onto older rules. Objectives now come from each
-phase's readiness checklist. Exact production gates are used only where the
-checklist names an exact pace; honest player checks remain visible when runtime
-state cannot prove intent, preparation, or understanding.
-
-The new LOGISTICS phase covers automated refill of logistics infrastructure,
-personal construction resupply, and provider/receiver route literacy. Manual
-phase ownership, per-playthrough persistence, compact snapshots, and native
-Statistics/Dyson evidence remain unchanged.
-
-## Version 1.17.1
-
-Production telemetry now reads DSP's pre-aggregated one-minute Statistics
-Panel values for a bounded guide-relevant item set. Lifetime counters remain
-separate and are retained only for lifetime Cube totals. The 1.17.1 hotfix
-corrects the compact native pool lookup used for watched items.
-
-Dyson generation, sail population and construction progress now come from the
-native Dyson system and node aggregates. Dedicated launch-device and Ray
-Receiver collectors remain separate because they answer operational questions
-that the aggregate construction totals do not.
-
-Snapshot schema 2.1 and normalized state 1.5 expose the source, scope, period
-and coverage of this evidence. The corrected lookup was accepted against the
-Statistics, Dyson, and PHOTON runtime checkpoints.
-
-## Version 1.16.0
-
-Saved snapshots now use schema 2.0. They contain the selected phase and route,
-objective and Current Status conclusions, aggregate research and Cube totals,
-and focused evidence for the selected phase. Broad factory, player, technology,
-inventory, station and all-item dumps are deliberately omitted.
-
-Snapshots include compact collector coverage so unavailable or incomplete
-evidence remains visible. PHOTON receiver detail is capped and marked when
-truncated, and the entire JSON export is bounded to 256 KiB.
-
-## Version 1.15.1
-
-This maintenance release replaces the mutable save-name persistence key with
-an identity based on the playthrough creation time and galaxy descriptor.
-Existing selection data for the currently loaded legacy key is migrated once
-when available. Snapshot selection diagnostics identify whether the phase was
-restored, migrated or initially seeded.
-
-## Version 1.15.0
-
-This release includes the complete manual-navigation, SPHERE and PHOTON
-roadmap:
-
-- automatic phase transitions and the redundant COMPLETE phase are removed;
-- SPHERE recognizes active construction without requiring an arbitrary rocket
-  rate;
-- PHOTON tracks receiver mode, lenses, warmup, strength, requested and
-  supplied Dyson power, Critical Photon output and sustained continuity;
-- receiver discovery uses the dedicated gamma-generator pool instead of
-  scanning every factory entity;
-- the guide link is now the two-line Comic Sans `DON'T PANIC` control.
-
-In late-game validation, the receiver collection pass fell from roughly
-67-139 ms to about 1.5-1.7 ms in captured frames, with a 7.2 ms recorded
-maximum. A faint periodic hitch remained perceptible on that save, so this is
-reported as a substantial reduction rather than complete elimination.
+The critical-path migration, telemetry alignment, persistence, snapshot, and
+panel contracts have completed in-game acceptance. Packaging has passed its
+automated contract checks. See [CHANGELOG.md](CHANGELOG.md) for release
+history.
 
 ## Repository layout
 
@@ -221,6 +147,8 @@ reported as a substantial reduction rather than complete elimination.
 ├── AGENTS.md
 ├── .github/ISSUE_TEMPLATE/
 ├── docs/
+├── packaging/
+├── scripts/
 ├── src/DspProgressionStatusExporter/
 ├── build.cmd
 ├── CHANGELOG.md
@@ -258,12 +186,6 @@ combat adviser, ratio calculator, build planner, or post-game dashboard.
 
 ## Residual issues
 
-- The guide 1.22.2 critical-path migration requires the representative in-game
-  acceptance pass documented in `docs/RUNTIME-TESTING.md`; compilation alone
-  cannot validate player-facing conclusions or checklist ergonomics.
-- The v1.15.1 persistence repair and snapshot schema 2.0 still share a deferred
-  full-playthrough runtime checkpoint; defects will be handled when they
-  surface during the next appropriate test cycle.
 - Hosted CI builds against pinned public Unity references and official BepInEx
   5 references. A release build against the installed game's assemblies
   remains the authoritative compatibility check.

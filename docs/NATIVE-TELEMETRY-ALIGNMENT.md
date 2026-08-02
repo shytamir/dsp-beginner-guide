@@ -2,8 +2,8 @@
 
 ## Status
 
-- Implemented in 1.17.0; compact-pool lookup corrected in 1.17.1 and runtime
-  comparison pending.
+- Implemented in 1.17.0; compact-pool lookup corrected in 1.17.1 and accepted
+  against Statistics Panel, Dyson editor, and PHOTON runtime checkpoints.
 - This is a separate runtime-evidence pass so production and Dyson semantics
   can be corrected and compared with the game UI as one coherent change.
 - The audit used the installed DSP `Assembly-CSharp.dll` read-only.
@@ -87,7 +87,7 @@
   developed-sphere saves.
 - No full all-item history or duplicate shell/frame reconstruction is retained
   when an aggregate source is available.
-- Existing manual navigation, SPHERE selection, PHOTON receiver continuity,
+- Existing manual critical-path navigation, PHOTON receiver continuity,
   snapshots, and panel behavior do not regress.
 - Sampling duration and stationary gameplay show no new periodic hitch.
 - A saved compact snapshot identifies the native source, scope, window,

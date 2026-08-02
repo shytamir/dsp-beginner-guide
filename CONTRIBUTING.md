@@ -7,7 +7,7 @@ Bug reports and focused improvements are welcome.
 Please include:
 
 - DSP and DSP Guide Check versions;
-- selected phase and optional route;
+- selected critical-path phase;
 - what was expected and what appeared instead;
 - a screenshot when presentation or wording is involved;
 - a snapshot created with `Save snapshot` when runtime analysis is involved;

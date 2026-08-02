@@ -10,13 +10,14 @@ never changes the factory or save, and never advances phases automatically.
 
 ## Features
 
-- Manual phase navigation from BOOTSTRAP through WHITE and LOGISTICS.
-- Explicit DYSON/SPHERE and optional WARP route selection.
+- Manual phase navigation through the ten critical-path phases from BOOTSTRAP
+  through WHITE.
 - Stable objectives based on the
   [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
 - Native Statistics Panel, logistics, power, Dyson, and Ray Receiver evidence.
 - Player-requested compact JSON snapshots for diagnostics.
 - A native-styled, collapsible, scrollable, and click-through panel.
+- Embedded Basic Regular presentation font with a high-contrast outline.
 
 ## Installation
 
@@ -32,7 +33,6 @@ Press **F8** after loading a save.
 
 - F8 opens or closes the panel.
 - Previous and next move between phases.
-- Route controls select DYSON or SPHERE and enter or leave WARP.
 - `Save snapshot` writes one compact JSON file on demand.
 - `DON'T PANIC` opens the source guide at the selected phase.
 
