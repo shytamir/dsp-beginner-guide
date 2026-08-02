@@ -261,16 +261,23 @@ version is shared with the BepInEx plugin identity; assembly/file metadata
 retains its required fourth numeric component. Packaging does not change the
 source namespace, runtime identity, save contract, or panel behavior.
 
-## Roadmap status
+## Immediate roadmap - guide v1.22.2
 
-1. NAV-01 - accepted.
-2. ARC-01 - accepted.
-3. END-01 - accepted.
-4. SPH-01 - accepted.
-5. PHO-01 - accepted.
-6. TEL-01 - accepted after the native lookup hotfix.
-7. GUIDE-01 - implemented; representative runtime acceptance pending.
+The fresh critical-path gap analysis and acceptance criteria are maintained in
+`docs/GUIDE-1.22.2-GAP-ANALYSIS.md`. It supersedes the GUIDE-01 phase contract
+for future implementation while retaining the earlier document as release
+history.
 
-The v1.15.1 persistence repair and v1.16.0 compact snapshot contract retain
-their deferred full-playthrough checkpoint. GUIDE-01 is the next focused
-runtime test cycle.
+1. SCOPE-01 - restrict navigation and persistence to the ten default-route
+   phases.
+2. ILS-02 - consolidate FLIGHT, TITANIUM, the finite Yellow batch, and the old
+   ILS boundary into one expedition checklist.
+3. OBJ-02 - align BOOTSTRAP, BLUE, RED, YELLOW, PURPLE, and GREEN with their
+   phase-local readiness checks.
+4. LATE-01 - realign DYSON, PHOTON, and WHITE while keeping detailed telemetry
+   diagnostic rather than gate-defining.
+5. PRUNE-01 - remove obsolete optional-phase rules, evidence, snapshots, tests,
+   and documentation.
+
+Implementation order is the numbered order above. Player-owned navigation and
+the no-automatic-transition invariant remain unchanged throughout.

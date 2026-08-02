@@ -1,5 +1,9 @@
 # GUIDE-01 - Adopted guide authority
 
+> Historical baseline: this document records the v1.18 implementation against
+> guide v1.1. Future guide-derived work is governed by
+> `GUIDE-1.22.2-GAP-ANALYSIS.md`.
+
 ## Source
 
 - Status: adopted for DSP Guide Check 1.18.0.
