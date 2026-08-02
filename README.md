@@ -142,16 +142,19 @@ history.
 
 ## Active development
 
-The current information-quality pass is defined in
+The active `CUBE-01` presentation story is defined in
 [docs/PROJECT.md](docs/PROJECT.md#project-status):
 
-- `RATE-01` will show supporting rates only when they explain an actionable
-  shortfall.
-- `BUFFER-01` will distinguish a real supply risk from normal idle production
-  using demand, net deficit, and available buffer.
+- A click-through Cube-rate column grows from Blue through White as the player
+  selects later critical-path phases.
+- Each Cube occupies one compact square and shows only its native production
+  rate in `/s` form.
+- Rate text changes from red or orange through white to green using the
+  phase-specific minimum, comfortable, and later thresholds.
+- The column remains anchored below collapse/expand and stays visible in both
+  panel states.
 
-The remaining panel-density ideas are recorded as future considerations and
-are not part of the active implementation work.
+`RATE-01`, `BUFFER-01`, and the remaining panel-density ideas are deferred.
 
 ## Repository layout
 

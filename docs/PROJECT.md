@@ -47,75 +47,92 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** information-quality pass (`RATE-01` and `BUFFER-01`).
+**Active:** progressive Cube-rate column (`CUBE-01`).
 
 The current implementation is accepted against the guide 1.22.2 critical
-path. The active work improves how supporting production evidence becomes a
-player-facing conclusion; it does not change phase objectives, navigation, or
-the underlying native telemetry sources.
+path. `CUBE-01` has priority over the deferred information-quality stories and
+does not change phase objectives, navigation, or telemetry collection.
 
-### RATE-01 - Show rates only when they explain a problem
+### CUBE-01 - Progressive Cube-rate column
 
-**User story:** As a guide reader, I want supporting production rates to appear
-only when they explain an actionable shortfall, so the panel gives me useful
-knowledge instead of reproducing the Statistics Panel.
+**User story:** As a guide reader, I want a compact, always-visible column of
+the Cube rates established so far, so I can read matrix capacity at a glance
+without adding prose or a production dashboard to the guide panel.
 
-Scope:
+Presentation:
 
-- Preserve exact checklist rates as phase objectives where the guide makes
-  them hard requirements.
-- Suppress healthy supporting-rate findings.
-- When supporting production is genuinely limiting the selected phase,
-  present one causal conclusion naming the constraint and affected goal.
-- Include a current and desired rate only when those numbers help the player
-  judge the shortfall; otherwise prefer the conclusion alone.
-- Continue using native one-minute Statistics Panel aggregates and retain the
-  focused evidence in snapshots for auditability.
+- Anchor the column directly below the expand/collapse control.
+- Keep it visible and stationary when the main panel is expanded or collapsed.
+- Add one square for each Cube phase reached in the player-selected phase
+  sequence: Blue, Red, Yellow, Purple, Green, then White.
+- Give each square its Cube identity through its intrinsic Cube color; display
+  no label, icon, tooltip, or other text beyond the rate in `x/s` form.
+- Keep every square and text element non-interactive and completely
+  click-through.
+- Use the embedded Basic font and existing high-contrast outline.
+
+Rate source and formatting:
+
+- Reuse the bounded native one-minute Statistics Panel production aggregates;
+  do not add another sampler or calculate from inventories.
+- Convert the native per-minute rate to per-second display and show up to two
+  decimal places followed by `/s`.
+- Show `--/s` in neutral white when the native rate is unavailable or its
+  observation window is not ready; unknown evidence never becomes zero.
+
+Thresholds:
+
+| Cube | Minimum | Comfortable | Later |
+|---|---:|---:|---:|
+| Blue | 20/min | 40/min | 60/min |
+| Red | 10/min | 20/min | 60/min |
+| Yellow | 15/min | 22.5/min | 60/min |
+| Purple | 12/min | 24/min | 40/min |
+| Green | 10/min | 20/min | 40/min |
+| White | 40/min | 40/min | not defined |
+
+Color policy:
+
+- Below minimum: red only for the selected phase's Cube, or the latest prior
+  Cube when the selected phase has no Cube of its own; older Cubes use orange.
+- At minimum and below comfortable: orange.
+- At comfortable and below later: white.
+- At or above the later target: green.
+- WHITE's published 40/min objective is both minimum and comfortable, so it
+  becomes white at 40/min and has no green tier.
+- Re-evaluate color whenever a refreshed native rate crosses a threshold.
+
+Phase growth and focus:
+
+- BOOTSTRAP shows no Cube squares.
+- BLUE and RED add their respective squares.
+- ILS keeps Blue and Red visible and treats Red as the focus Cube.
+- YELLOW, PURPLE, and GREEN each add and focus their own Cube.
+- DYSON and PHOTON retain the five established Cube squares and treat Green as
+  the focus Cube.
+- WHITE adds and focuses the White Cube square.
 
 Acceptance:
 
-- Healthy supporting chains add no rate-dashboard rows.
-- A sustained, causally relevant shortfall produces a concise actionable
-  finding rather than a list of every related rate.
-- Hard objective completion, manual phase ownership, and snapshot evidence do
-  not regress.
-- Missing or immature rate evidence remains unknown and does not create a
-  confident diagnosis.
-
-### BUFFER-01 - Interpret idle production in demand and buffer context
-
-**User story:** As a guide reader, I want an idle but adequately buffered line
-to be treated as healthy, so normal production shutdown does not become a
-false shortage warning.
-
-Scope:
-
-- Evaluate supporting production together with current consumption, net
-  deficit, and relevant owned or stored stock.
-- Treat zero or low production as non-problematic when there is no active
-  deficit or the available buffer credibly covers current demand.
-- Warn only when active demand, net depletion, and inadequate buffer agree on
-  a real risk; do not infer failure from production rate alone.
-- Report unavailable demand or stock evidence honestly instead of substituting
-  inventory deltas or speculative restart assumptions.
-- Export the compact demand, deficit, buffer, and conclusion evidence needed
-  to validate the decision.
-
-Acceptance:
-
-- A full, idle, or demand-free buffered line does not produce a shortage
-  warning.
-- A consuming line with a sustained deficit and insufficient runway produces
-  a concise warning identifying the endangered phase need.
-- The same evidence yields the same deterministic conclusion in the panel,
-  analyzer, and snapshot.
-- No additional factory-wide scan, automatic phase behavior, or unsolicited
-  alert is introduced.
+- The column contains exactly the squares permitted by the selected phase and
+  never changes the selected phase.
+- Expanding, collapsing, scrolling, and refreshing the main panel do not move,
+  hide, duplicate, or resize the Cube column.
+- Only the focus Cube can render below-minimum red; threshold crossings update
+  the other colors according to the table.
+- The column does not capture clicks, hover, focus, scrolling, or keyboard
+  input and does not block the game world beneath it.
+- Existing navigation, panel layout, objectives, footer actions, snapshots,
+  native telemetry, and performance behavior do not regress.
 
 ## Future considerations
 
 These ideas are recorded but are not active work:
 
+- `RATE-01`: show supporting rates only when they explain a causal,
+  actionable shortfall.
+- `BUFFER-01`: interpret idle production using demand, net deficit, and
+  available buffer before warning.
 - Keep completed objectives to compact single lines while reserving supporting
   detail for incomplete objectives.
 - Limit Pending to the few highest-value actions, ordered by what unlocks or
