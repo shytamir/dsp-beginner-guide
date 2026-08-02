@@ -13,6 +13,13 @@
     <UseCiReferences Condition="'$(UseCiReferences)' == ''">false</UseCiReferences>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Fonts\Basic-Regular.ttf"
+                      LogicalName="DspGuideCheck.Fonts.Basic-Regular.ttf" />
+    <EmbeddedResource Include="Assets\Fonts\Basic-OFL.txt"
+                      LogicalName="DspGuideCheck.Fonts.Basic-OFL.txt" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(UseCiReferences)' != 'true'">
     <Reference Include="BepInEx">
       <HintPath>$(GameRoot)\BepInEx\core\BepInEx.dll</HintPath>

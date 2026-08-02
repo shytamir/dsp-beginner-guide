@@ -51,6 +51,7 @@ $expectedEntries = @(
     'manifest.json',
     'README.md',
     'icon.png',
+    'Basic-OFL.txt',
     'BepInEx/plugins/DSP-Guide-Check/DspGuideCheck.dll'
 )
 $expectedDescription = (
@@ -120,6 +121,15 @@ try {
     if ([string]::IsNullOrWhiteSpace($readme) -or
         -not $readme.StartsWith('# DSP Guide Check')) {
         throw 'Package README is empty or has an unexpected heading.'
+    }
+
+    $fontLicenseEntry = $fileEntries |
+        Where-Object { $_.FullName -ceq 'Basic-OFL.txt' } |
+        Select-Object -First 1
+    $fontLicense = Read-ZipText -Entry $fontLicenseEntry
+    if ($fontLicense -notmatch 'SIL OPEN FONT LICENSE Version 1.1' -or
+        $fontLicense -notmatch 'Basic') {
+        throw 'Basic font license is missing or invalid.'
     }
 
     Add-Type -AssemblyName System.Drawing

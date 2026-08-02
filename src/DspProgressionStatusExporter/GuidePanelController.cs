@@ -330,6 +330,7 @@ namespace DspProgressionStatusExporter
         private Text sourceGuideLinkText;
         private Font dontPanicFont;
         private bool ownsDontPanicFont;
+        private EmbeddedBasicFont presentationFont;
         private RectTransform snapshotLinkRect;
         private RectTransform sourceGuideLinkRect;
         private RectTransform scrollUpRect;
@@ -397,6 +398,10 @@ namespace DspProgressionStatusExporter
             result["panelPointerPolicy"] =
                 "click-through-except-interactive-controls";
             result["textOutline"] = true;
+            result["presentationFontSource"] =
+                presentationFont != null
+                    ? presentationFont.Source
+                    : "not-loaded";
             result["phaseControlStyle"] =
                 "transparent-bounded-hover-with-selected-outline";
             result["headerFont"] =
@@ -506,6 +511,9 @@ namespace DspProgressionStatusExporter
             fallbackCanvasObject = null;
             dontPanicFont = null;
             ownsDontPanicFont = false;
+            if (presentationFont != null)
+                presentationFont.Dispose();
+            presentationFont = null;
             objectiveViews.Clear();
             pendingViews.Clear();
             contextViews.Clear();
@@ -520,6 +528,12 @@ namespace DspProgressionStatusExporter
             phaseId = null;
             Font fallbackFont = FindFont();
             style = NativeGoalStyle.Capture(fallbackFont);
+            presentationFont = EmbeddedBasicFont.Load(
+                style.InfoText.Font,
+                style.InfoText.FontSize);
+            style.HeaderText.Font = presentationFont.Font;
+            style.GroupText.Font = presentationFont.Font;
+            style.InfoText.Font = presentationFont.Font;
             Transform parent = style.Parent;
             if (parent == null)
             {

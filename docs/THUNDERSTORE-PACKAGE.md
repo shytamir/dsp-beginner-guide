@@ -15,6 +15,7 @@ The installable ZIP contains exactly these files:
 manifest.json
 README.md
 icon.png
+Basic-OFL.txt
 BepInEx/
   plugins/
     DSP-Guide-Check/
@@ -60,7 +61,8 @@ The workflow:
 4. builds `DspGuideCheck.dll`;
 5. verifies DLL identity and version metadata;
 6. renders the manifest template and creates the exact ZIP layout;
-7. verifies file names, casing, count, manifest fields, dependency, UTF-8
+7. verifies file names, casing, count, manifest fields, dependency, font
+   license, UTF-8
    README, 256 by 256 PNG icon, and non-empty DLL;
 8. uploads the installable ZIP with build and package reports beside it.
 

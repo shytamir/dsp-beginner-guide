@@ -114,7 +114,7 @@ in objective completion or navigation.
 | Guide selection | 1.5 |
 | Guide analysis | 2.5 |
 | Progression | 2.5 |
-| Panel | 1.8 |
+| Panel | 1.9 |
 
 ## Verification performed
 
@@ -259,6 +259,18 @@ ZIP defined by `docs/THUNDERSTORE-PACKAGE.md`. The three-number package
 version is shared with the BepInEx plugin identity; assembly/file metadata
 retains its required fourth numeric component. Packaging does not change the
 source namespace, runtime identity, save contract, or panel behavior.
+
+## Basic presentation font
+
+Panel contract 1.9 adopts the embedded Basic Regular font for the title,
+section labels, objectives, pending work, Current Status, navigation, and
+snapshot presentation. Existing font sizes, styles, spacing, colors,
+outlines, and interaction behavior are unchanged. `DON'T PANIC` retains its
+separate Comic Sans treatment. If the private runtime font registration is
+unavailable, the panel falls back softly to the captured native Goal font.
+
+The unmodified font and its SIL Open Font License 1.1 notice are embedded in
+the assembly. Public packages also expose `Basic-OFL.txt` at ZIP root.
 
 ## Guide v1.22.2 critical-path contract
 

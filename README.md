@@ -21,6 +21,8 @@ the ten critical-path phases from BOOTSTRAP through WHITE.
 - Sixty-second receiver continuity tracking for the PHOTON phase.
 - Player-requested JSON snapshots for diagnostics and guide development.
 - Native-styled, collapsible and scrollable panel.
+- Embedded Basic Regular presentation font with the existing high-contrast
+  outline; `DON'T PANIC` retains its separate Comic Sans treatment.
 - No unsolicited notifications, automatic phase changes or factory actions.
 
 ## Requirements

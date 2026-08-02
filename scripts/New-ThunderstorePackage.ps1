@@ -21,6 +21,12 @@ param(
         Join-Path $RepositoryRoot 'packaging\icon.png'
     ),
 
+    [string]$FontLicensePath = (
+        Join-Path $RepositoryRoot (
+            'src\DspProgressionStatusExporter\Assets\Fonts\Basic-OFL.txt'
+        )
+    ),
+
     [string]$OutputDirectory = (
         Join-Path $RepositoryRoot 'artifacts\packages'
     )
@@ -34,7 +40,8 @@ foreach ($requiredPath in @(
         $DllPath,
         $ManifestTemplatePath,
         $ReadmePath,
-        $IconPath
+        $IconPath,
+        $FontLicensePath
     )) {
     if (-not (Test-Path -LiteralPath $requiredPath -PathType Leaf)) {
         throw "Required package input was not found: $requiredPath"
@@ -100,6 +107,12 @@ try {
         $archive,
         $IconPath,
         'icon.png',
+        [System.IO.Compression.CompressionLevel]::Optimal
+    ) | Out-Null
+    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+        $archive,
+        $FontLicensePath,
+        'Basic-OFL.txt',
         [System.IO.Compression.CompressionLevel]::Optimal
     ) | Out-Null
     [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(

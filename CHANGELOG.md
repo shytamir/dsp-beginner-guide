@@ -4,6 +4,10 @@
 
 ### Changed
 
+- Adopted the embedded Basic Regular font for panel presentation while
+  preserving every established size, spacing, color, outline, and control
+  behavior; `DON'T PANIC` remains Comic Sans.
+- Added the Basic font's SIL Open Font License notice to public packages.
 - Adopted the guide 1.22.2 critical path as the active ten-phase contract.
 - Consolidated FLIGHT and TITANIUM into one ILS expedition checklist and
   aligned every retained objective inventory with its phase-local readiness
