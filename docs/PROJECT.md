@@ -67,7 +67,7 @@ Presentation:
 - Add one square for each Cube phase reached in the player-selected phase
   sequence: Blue, Red, Yellow, Purple, Green, then White.
 - Give each square its Cube identity through its intrinsic Cube color; display
-  no label, icon, tooltip, or other text beyond the rate in `x/s` form.
+  no label, icon, tooltip, or other text beyond the rate in `x/m` form.
 - Keep every square and text element non-interactive and completely
   click-through.
 - Use the embedded Basic font and existing high-contrast outline.
@@ -76,9 +76,9 @@ Rate source and formatting:
 
 - Reuse the bounded native one-minute Statistics Panel production aggregates;
   do not add another sampler or calculate from inventories.
-- Convert the native per-minute rate to per-second display and show up to two
-  decimal places followed by `/s`.
-- Show `--/s` in neutral white when the native rate is unavailable or its
+- Display the native per-minute rate with up to two decimal places followed
+  by `/m`.
+- Show `--/m` in neutral white when the native rate is unavailable or its
   observation window is not ready; unknown evidence never becomes zero.
 
 Thresholds:

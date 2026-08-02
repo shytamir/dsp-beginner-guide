@@ -148,7 +148,7 @@ The active `CUBE-01` presentation story is defined in
 - A click-through Cube-rate column grows from Blue through White as the player
   selects later critical-path phases.
 - Each Cube occupies one compact square and shows only its native production
-  rate in `/s` form.
+  rate in `/m` form.
 - Rate text changes from red or orange through white to green using the
   phase-specific minimum, comfortable, and later thresholds.
 - The column remains anchored below collapse/expand and stays visible in both

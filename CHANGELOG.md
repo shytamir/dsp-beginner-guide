@@ -6,7 +6,7 @@
 
 - Added the CUBE-01 click-through Cube-rate column. It grows from Blue through
   White with the selected phase, reuses native one-minute production rates,
-  and presents per-second rates with phase-aware threshold colors.
+  and presents per-minute rates with phase-aware threshold colors.
 - Advanced the panel presentation contract to 2.0; phase objectives,
   navigation, telemetry collection, and snapshot schema are unchanged.
 - Adopted the embedded Basic Regular font for panel presentation while

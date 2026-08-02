@@ -202,7 +202,7 @@ namespace DspProgressionStatusExporter
                 {
                     model.CubeRates.Add(new GuidePanelCubeRateModel {
                         CubeId = spec.CubeId,
-                        RateText = "--/s",
+                        RateText = "--/m",
                         Level = CubeRateLevel.Unknown
                     });
                     continue;
@@ -211,8 +211,8 @@ namespace DspProgressionStatusExporter
                 double perMinute = Math.Max(0.0, flow.ProducedPerMinute);
                 model.CubeRates.Add(new GuidePanelCubeRateModel {
                     CubeId = spec.CubeId,
-                    RateText = (perMinute / 60.0).ToString(
-                        "0.##", CultureInfo.InvariantCulture) + "/s",
+                    RateText = perMinute.ToString(
+                        "0.##", CultureInfo.InvariantCulture) + "/m",
                     Level = CubeLevel(spec, perMinute, i == focusIndex)
                 });
             }
