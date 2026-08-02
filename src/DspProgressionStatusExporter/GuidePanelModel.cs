@@ -27,6 +27,22 @@ namespace DspProgressionStatusExporter
         }
     }
 
+    internal enum CubeRateLevel
+    {
+        Unknown,
+        BelowMinimum,
+        Minimum,
+        Comfortable,
+        Later
+    }
+
+    internal sealed class GuidePanelCubeRateModel
+    {
+        public string CubeId;
+        public string RateText;
+        public CubeRateLevel Level;
+    }
+
     internal sealed class GuidePanelModel
     {
         public string PhaseId;
@@ -40,6 +56,8 @@ namespace DspProgressionStatusExporter
             new List<GuidePanelRowModel>();
         public readonly List<GuidePanelRowModel> Context =
             new List<GuidePanelRowModel>();
+        public readonly List<GuidePanelCubeRateModel> CubeRates =
+            new List<GuidePanelCubeRateModel>();
 
         public Dictionary<string, object> Export()
         {
@@ -54,7 +72,7 @@ namespace DspProgressionStatusExporter
                 context.Add(row.Export());
 
             return new Dictionary<string, object> {
-                { "contractVersion", "1.9" },
+                { "contractVersion", "2.0" },
                 { "phaseId", PhaseId },
                 { "phaseSelectionAuthority", "player" },
                 { "title", Title },
@@ -76,6 +94,42 @@ namespace DspProgressionStatusExporter
     /// </summary>
     internal static class GuidePanelModelBuilder
     {
+        private sealed class CubeRateSpec
+        {
+            public string CubeId;
+            public int ItemId;
+            public double Minimum;
+            public double Comfortable;
+            public double? Later;
+        }
+
+        private static readonly CubeRateSpec[] CubeRateSpecs = {
+            new CubeRateSpec {
+                CubeId = "blue", ItemId = 6001,
+                Minimum = 20, Comfortable = 40, Later = 60
+            },
+            new CubeRateSpec {
+                CubeId = "red", ItemId = 6002,
+                Minimum = 10, Comfortable = 20, Later = 60
+            },
+            new CubeRateSpec {
+                CubeId = "yellow", ItemId = 6003,
+                Minimum = 15, Comfortable = 22.5, Later = 60
+            },
+            new CubeRateSpec {
+                CubeId = "purple", ItemId = 6004,
+                Minimum = 12, Comfortable = 24, Later = 40
+            },
+            new CubeRateSpec {
+                CubeId = "green", ItemId = 6005,
+                Minimum = 10, Comfortable = 20, Later = 40
+            },
+            new CubeRateSpec {
+                CubeId = "white", ItemId = 6006,
+                Minimum = 40, Comfortable = 40, Later = null
+            }
+        };
+
         private static readonly HashSet<string> SuppressedContextIds =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
                 "phase-matrix-rate",
@@ -84,6 +138,7 @@ namespace DspProgressionStatusExporter
 
         public static GuidePanelModel Build(
             Dictionary<string, object> analysis,
+            ObservedGameState observedState,
             string snapshotFileName,
             string snapshotDirectory)
         {
@@ -102,6 +157,7 @@ namespace DspProgressionStatusExporter
             model.PhaseId = Text(Get(phase, "id"), "unknown");
             model.Title = PlayerFacingText.Normalize(
                 Text(Get(phase, "title"), "Guide Check"));
+            AddCubeRates(model, observedState);
 
             Dictionary<string, object> currentGate =
                 FindCurrentGate(progression, model.PhaseId);
@@ -125,6 +181,99 @@ namespace DspProgressionStatusExporter
 
             AddContext(model, AsList(Get(analysis, "findings")));
             return model;
+        }
+
+        private static void AddCubeRates(
+            GuidePanelModel model,
+            ObservedGameState state)
+        {
+            int visibleCount;
+            int focusIndex;
+            CubeRangeForPhase(model.PhaseId, out visibleCount, out focusIndex);
+            for (int i = 0; i < visibleCount; i++)
+            {
+                CubeRateSpec spec = CubeRateSpecs[i];
+                ObservedItemFlow flow = null;
+                bool available =
+                    state != null &&
+                    state.ProductionWindowReady &&
+                    state.ItemFlows.TryGetValue(spec.ItemId, out flow);
+                if (!available)
+                {
+                    model.CubeRates.Add(new GuidePanelCubeRateModel {
+                        CubeId = spec.CubeId,
+                        RateText = "--/s",
+                        Level = CubeRateLevel.Unknown
+                    });
+                    continue;
+                }
+
+                double perMinute = Math.Max(0.0, flow.ProducedPerMinute);
+                model.CubeRates.Add(new GuidePanelCubeRateModel {
+                    CubeId = spec.CubeId,
+                    RateText = (perMinute / 60.0).ToString(
+                        "0.##", CultureInfo.InvariantCulture) + "/s",
+                    Level = CubeLevel(spec, perMinute, i == focusIndex)
+                });
+            }
+        }
+
+        private static CubeRateLevel CubeLevel(
+            CubeRateSpec spec,
+            double perMinute,
+            bool focused)
+        {
+            if (perMinute < spec.Minimum)
+                return focused
+                    ? CubeRateLevel.BelowMinimum
+                    : CubeRateLevel.Minimum;
+            if (spec.Later.HasValue && perMinute >= spec.Later.Value)
+                return CubeRateLevel.Later;
+            if (perMinute >= spec.Comfortable)
+                return CubeRateLevel.Comfortable;
+            return CubeRateLevel.Minimum;
+        }
+
+        private static void CubeRangeForPhase(
+            string phaseId,
+            out int visibleCount,
+            out int focusIndex)
+        {
+            visibleCount = 0;
+            focusIndex = -1;
+            if (String.Equals(phaseId, "blue", StringComparison.OrdinalIgnoreCase))
+            {
+                visibleCount = 1;
+                focusIndex = 0;
+            }
+            else if (String.Equals(phaseId, "red", StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(phaseId, "ils", StringComparison.OrdinalIgnoreCase))
+            {
+                visibleCount = 2;
+                focusIndex = 1;
+            }
+            else if (String.Equals(phaseId, "yellow", StringComparison.OrdinalIgnoreCase))
+            {
+                visibleCount = 3;
+                focusIndex = 2;
+            }
+            else if (String.Equals(phaseId, "purple", StringComparison.OrdinalIgnoreCase))
+            {
+                visibleCount = 4;
+                focusIndex = 3;
+            }
+            else if (String.Equals(phaseId, "green", StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(phaseId, "dyson", StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(phaseId, "photon", StringComparison.OrdinalIgnoreCase))
+            {
+                visibleCount = 5;
+                focusIndex = 4;
+            }
+            else if (String.Equals(phaseId, "white", StringComparison.OrdinalIgnoreCase))
+            {
+                visibleCount = 6;
+                focusIndex = 5;
+            }
         }
 
         private static bool HasCompletedObjective(

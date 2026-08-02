@@ -262,6 +262,7 @@ namespace DspProgressionStatusExporter
                 GuidePanelModel panelModel =
                     GuidePanelModelBuilder.Build(
                         guideAnalysis,
+                        observedState,
                         lastSnapshotFileName,
                         lastSnapshotDirectory);
                 Dictionary<string, object> snapshot =
@@ -342,6 +343,7 @@ namespace DspProgressionStatusExporter
                         observed, selection.PhaseId);
                 GuidePanelModel model = GuidePanelModelBuilder.Build(
                     analysis,
+                    observed,
                     lastSnapshotFileName,
                     lastSnapshotDirectory);
                 return model;
@@ -462,6 +464,7 @@ namespace DspProgressionStatusExporter
                 GuidePanelModel model =
                     GuidePanelModelBuilder.Build(
                         analysis,
+                        observed,
                         lastSnapshotFileName,
                         lastSnapshotDirectory);
                 if (guidePanel.IsVisible)

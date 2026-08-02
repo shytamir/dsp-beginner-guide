@@ -50,8 +50,9 @@ control, panel, objective contract, finding, or snapshot phase contract.
 **Active:** progressive Cube-rate column (`CUBE-01`).
 
 The current implementation is accepted against the guide 1.22.2 critical
-path. `CUBE-01` has priority over the deferred information-quality stories and
-does not change phase objectives, navigation, or telemetry collection.
+path. `CUBE-01` is implemented and awaits in-game visual acceptance. It has
+priority over the deferred information-quality stories and does not change
+phase objectives, navigation, or telemetry collection.
 
 ### CUBE-01 - Progressive Cube-rate column
 
@@ -258,7 +259,7 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Guide selection | 1.5 |
 | Guide analysis | 2.5 |
 | Progression | 2.5 |
-| Panel | 1.9 |
+| Panel | 2.0 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use
 the same three-number version; assembly/file metadata adds `.0`, and

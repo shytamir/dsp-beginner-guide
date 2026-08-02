@@ -23,6 +23,12 @@ namespace DspProgressionStatusExporter
         private const float SafeBottom = 230f;
         private const float ScrollControlWidth = 28f;
         private const float ScrollStep = 120f;
+        private const float CubeRateSquareSize = 44f;
+        private const float CubeRateGap = 4f;
+        private const float CubeRateColumnInset =
+            CubeRateSquareSize + CubeRateGap;
+        private const float BodyRightInset =
+            ScrollControlWidth + CubeRateColumnInset;
         private const float InteractiveControlHoverScale = 1.12f;
         private const float CompletionSeconds = 0.28f;
         private const float SnapshotFeedbackSeconds = 2f;
@@ -51,6 +57,14 @@ namespace DspProgressionStatusExporter
             public bool Completed;
             public float CompletionProgress;
             public float StrikeWidth;
+        }
+
+        private sealed class CubeRateView
+        {
+            public GameObject Root;
+            public Image Background;
+            public Text Rate;
+            public string CubeId;
         }
 
         private sealed class ImageStyle
@@ -338,6 +352,7 @@ namespace DspProgressionStatusExporter
         private RectTransform collapseButtonRect;
         private RectTransform previousPhaseRect;
         private RectTransform nextPhaseRect;
+        private RectTransform cubeRateColumnRect;
         private Image collapseImage;
         private Text collapseFallbackText;
         private NativeGoalStyle style;
@@ -352,6 +367,8 @@ namespace DspProgressionStatusExporter
         private readonly List<RowView> objectiveViews = new List<RowView>();
         private readonly List<RowView> pendingViews = new List<RowView>();
         private readonly List<RowView> contextViews = new List<RowView>();
+        private readonly List<CubeRateView> cubeRateViews =
+            new List<CubeRateView>();
 
         public bool IsVisible
         {
@@ -397,6 +414,8 @@ namespace DspProgressionStatusExporter
                 "player-controlled-critical-path-previous-next";
             result["panelPointerPolicy"] =
                 "click-through-except-interactive-controls";
+            result["cubeRateColumn"] =
+                "native-one-minute-rates-click-through-fixed-below-collapse";
             result["textOutline"] = true;
             result["presentationFontSource"] =
                 presentationFont != null
@@ -517,6 +536,7 @@ namespace DspProgressionStatusExporter
             objectiveViews.Clear();
             pendingViews.Clear();
             contextViews.Clear();
+            cubeRateViews.Clear();
         }
 
         private void EnsureCreated()
@@ -525,6 +545,7 @@ namespace DspProgressionStatusExporter
             objectiveViews.Clear();
             pendingViews.Clear();
             contextViews.Clear();
+            cubeRateViews.Clear();
             phaseId = null;
             Font fallbackFont = FindFont();
             style = NativeGoalStyle.Capture(fallbackFont);
@@ -628,6 +649,11 @@ namespace DspProgressionStatusExporter
                     collapseFallbackText.rectTransform, 0f, 0f, 0f, 0f);
             }
 
+            GameObject cubeRateColumn = CreateObject(
+                "CubeRateColumn", panelObject.transform);
+            cubeRateColumnRect =
+                cubeRateColumn.GetComponent<RectTransform>();
+
             CreateHeaderControl(
                 "PreviousPhase",
                 "\u25C0",
@@ -717,6 +743,7 @@ namespace DspProgressionStatusExporter
                 "▼",
                 ScrollDown,
                 out scrollDownRect);
+            cubeRateColumnRect.SetAsLastSibling();
 
             panelObject.transform.SetAsLastSibling();
             panelObject.SetActive(false);
@@ -775,9 +802,89 @@ namespace DspProgressionStatusExporter
             else
                 UpdateRows(contextViews, model.Context);
 
+            ApplyCubeRates(model.CubeRates);
+
             Layout();
             if (phaseChanged)
                 contentRect.anchoredPosition = Vector2.zero;
+        }
+
+        private void ApplyCubeRates(List<GuidePanelCubeRateModel> rates)
+        {
+            bool rebuild = cubeRateViews.Count != rates.Count;
+            if (!rebuild)
+                for (int i = 0; i < rates.Count; i++)
+                    if (!String.Equals(
+                        cubeRateViews[i].CubeId,
+                        rates[i].CubeId,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        rebuild = true;
+                        break;
+                    }
+
+            if (rebuild)
+            {
+                foreach (CubeRateView view in cubeRateViews)
+                    if (view.Root != null)
+                        UnityEngine.Object.Destroy(view.Root);
+                cubeRateViews.Clear();
+                foreach (GuidePanelCubeRateModel rate in rates)
+                {
+                    GameObject root = CreateObject(
+                        "CubeRate-" + rate.CubeId,
+                        cubeRateColumnRect,
+                        typeof(Image));
+                    Image background = root.GetComponent<Image>();
+                    background.raycastTarget = false;
+                    Text text = CreateText(
+                        "Rate", root.transform, style.InfoText);
+                    text.alignment = TextAnchor.MiddleCenter;
+                    text.fontSize = Math.Max(10, style.InfoText.FontSize - 1);
+                    Stretch(text.rectTransform, 2f, 2f, 2f, 2f);
+                    cubeRateViews.Add(new CubeRateView {
+                        Root = root,
+                        Background = background,
+                        Rate = text,
+                        CubeId = rate.CubeId
+                    });
+                }
+            }
+
+            for (int i = 0; i < rates.Count; i++)
+            {
+                GuidePanelCubeRateModel rate = rates[i];
+                CubeRateView view = cubeRateViews[i];
+                view.Background.color = CubeBackgroundColor(rate.CubeId);
+                view.Rate.text = rate.RateText;
+                view.Rate.color = CubeRateTextColor(rate.Level);
+            }
+        }
+
+        private static Color CubeBackgroundColor(string cubeId)
+        {
+            if (String.Equals(cubeId, "blue", StringComparison.OrdinalIgnoreCase))
+                return new Color(0.05f, 0.62f, 1f, 0.38f);
+            if (String.Equals(cubeId, "red", StringComparison.OrdinalIgnoreCase))
+                return new Color(1f, 0.12f, 0.16f, 0.38f);
+            if (String.Equals(cubeId, "yellow", StringComparison.OrdinalIgnoreCase))
+                return new Color(1f, 0.72f, 0.04f, 0.38f);
+            if (String.Equals(cubeId, "purple", StringComparison.OrdinalIgnoreCase))
+                return new Color(0.68f, 0.18f, 1f, 0.38f);
+            if (String.Equals(cubeId, "green", StringComparison.OrdinalIgnoreCase))
+                return new Color(0.12f, 0.9f, 0.32f, 0.38f);
+            return new Color(0.9f, 0.94f, 1f, 0.38f);
+        }
+
+        private static Color CubeRateTextColor(CubeRateLevel level)
+        {
+            if (level == CubeRateLevel.BelowMinimum)
+                return new Color(1f, 0.12f, 0.12f, 1f);
+            if (level == CubeRateLevel.Minimum)
+                return new Color(1f, 0.55f, 0.08f, 1f);
+            if (level == CubeRateLevel.Later)
+                return new Color(0.22f, 1f, 0.4f, 1f);
+            return Color.white;
         }
 
         private bool RowsMatch(
@@ -916,6 +1023,19 @@ namespace DspProgressionStatusExporter
                 7f,
                 38f,
                 38f);
+            SetTopRect(
+                cubeRateColumnRect,
+                panelWidth - 51f,
+                49f,
+                CubeRateSquareSize,
+                cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap));
+            for (int i = 0; i < cubeRateViews.Count; i++)
+                SetTopRect(
+                    cubeRateViews[i].Root.GetComponent<RectTransform>(),
+                    0f,
+                    i * (CubeRateSquareSize + CubeRateGap),
+                    CubeRateSquareSize,
+                    CubeRateSquareSize);
             if (collapseImage != null)
                 collapseImage.rectTransform.localEulerAngles =
                     new Vector3(0f, 0f, collapsed ? 180f : 0f);
@@ -957,7 +1077,7 @@ namespace DspProgressionStatusExporter
                 scrollRect.GetComponent<RectTransform>(),
                 0f,
                 FooterHeight,
-                ScrollControlWidth,
+                BodyRightInset,
                 headerHeight);
             SetBottomRect(
                 snapshotLinkRect,
@@ -973,13 +1093,13 @@ namespace DspProgressionStatusExporter
                 FooterHeight - 5f);
             SetTopRect(
                 scrollUpRect,
-                panelWidth - ScrollControlWidth + 2f,
+                panelWidth - BodyRightInset + 2f,
                 headerHeight + 4f,
                 ScrollControlWidth - 4f,
                 26f);
             SetBottomRect(
                 scrollDownRect,
-                panelWidth - ScrollControlWidth + 2f,
+                panelWidth - BodyRightInset + 2f,
                 FooterHeight + 4f,
                 ScrollControlWidth - 4f,
                 26f);
@@ -1029,7 +1149,7 @@ namespace DspProgressionStatusExporter
             float iconSize = 18f;
             float textLeft = 29f;
             float textWidth =
-                panelWidth - ScrollControlWidth -
+                panelWidth - BodyRightInset -
                 (OuterPadding * 2f) - textLeft;
             view.Label.rectTransform.SetSizeWithCurrentAnchors(
                 RectTransform.Axis.Horizontal, textWidth);

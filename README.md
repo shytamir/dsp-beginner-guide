@@ -154,6 +154,8 @@ The active `CUBE-01` presentation story is defined in
 - The column remains anchored below collapse/expand and stays visible in both
   panel states.
 
+The implementation is complete and awaits in-game visual acceptance.
+
 `RATE-01`, `BUFFER-01`, and the remaining panel-density ideas are deferred.
 
 ## Repository layout
