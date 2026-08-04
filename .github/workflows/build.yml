@@ -107,7 +107,8 @@ jobs:
         run: |
           ./scripts/New-ThunderstorePackage.ps1 `
             -DllPath 'src/DspProgressionStatusExporter/bin/Release/net472/DspGuideCheck.dll' `
-            -VersionNumber $env:PACKAGE_VERSION
+            -VersionNumber $env:PACKAGE_VERSION `
+            -ReadmePath 'packaging/README.md'
 
       - name: Test Thunderstore package
         id: package_test

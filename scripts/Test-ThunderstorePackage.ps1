@@ -62,6 +62,12 @@ $expectedDescription = (
 )
 $expectedDependency = 'xiaoye97-BepInEx-5.4.17'
 $expectedWebsite = 'https://github.com/shytamir/dsp-beginner-guide'
+$expectedReadmePath = Join-Path $RepositoryRoot 'packaging\README.md'
+$strictUtf8 = New-Object System.Text.UTF8Encoding($false, $true)
+$expectedReadme = [System.IO.File]::ReadAllText(
+    $expectedReadmePath,
+    $strictUtf8
+)
 
 $archive = [System.IO.Compression.ZipFile]::OpenRead(
     (Resolve-Path -LiteralPath $PackagePath)
@@ -121,6 +127,24 @@ try {
     if ([string]::IsNullOrWhiteSpace($readme) -or
         -not $readme.StartsWith('# DSP Guide Check')) {
         throw 'Package README is empty or has an unexpected heading.'
+    }
+    if ($readme -cne $expectedReadme) {
+        throw 'Package README does not match packaging/README.md.'
+    }
+    foreach ($requiredReadmeText in @(
+            'press **F8**',
+            'https://dsp-beginner-guide.pages.dev/',
+            'https://github.com/shytamir/dsp-beginner-guide'
+        )) {
+        if ($readme.IndexOf(
+                $requiredReadmeText,
+                [System.StringComparison]::OrdinalIgnoreCase
+            ) -lt 0) {
+            throw "Package README is missing required player-facing text: $requiredReadmeText"
+        }
+    }
+    if ($readme -match '(?i)snapshot') {
+        throw 'Package README must not mention snapshot export.'
     }
 
     $fontLicenseEntry = $fileEntries |
@@ -188,7 +212,7 @@ $report = @"
 | Required root files | Passed |
 | Install path | Passed |
 | Icon format and dimensions | Passed |
-| README UTF-8 and heading | Passed |
+| Dedicated player README | Passed |
 | File count | $($expectedEntries.Count) |
 | Size | $packageLength bytes |
 | SHA-256 | ``$packageHash`` |

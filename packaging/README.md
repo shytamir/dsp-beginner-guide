@@ -1,51 +1,39 @@
 # DSP Guide Check
 
-DSP Guide Check is an on-demand progression companion for
-[Dyson Sphere Program](https://store.steampowered.com/app/1366540/Dyson_Sphere_Program/).
-It reads the current save, evaluates the guide phase selected by the player,
-and presents stable objectives plus concise, phase-aware status.
+DSP Guide Check is an on-demand companion for the
+[DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
+It gives you stable objectives for the guide phase you choose and a short
+status summary based on what your factory is doing now.
 
-The player asks; the instrument answers. The panel is hidden by default,
-never changes the factory or save, and never advances phases automatically.
+## Quick start
 
-## Features
+Install the mod, load a save, and press **F8**. That is all you need to get
+started—open the panel and figure it out as you go.
 
-- Manual phase navigation through the nine critical-path phases from BLUE
-  through WHITE.
-- Stable objectives based on the
-  [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
-- Native Statistics Panel, logistics, power, Dyson, and Ray Receiver evidence.
-- Player-requested compact JSON snapshots for diagnostics.
-- A native-styled, collapsible, scrollable, and click-through panel.
-- Embedded Basic Regular presentation font with a high-contrast outline.
-- Embedded Matrix icons in the click-through Cube-rate column.
+- Press **F8** to open or close the panel.
+- Use the arrows to move between guide phases.
+- Collapse or scroll the panel when you want more room.
+- Select `DON'T PANIC` to open the published guide at the matching phase.
+
+The phase choice is always yours. DSP Guide Check evaluates the selected
+phase, but it never changes your selection, factory, or save and never shows
+unsolicited alerts.
 
 ## Installation
 
-Install with a Thunderstore-compatible mod manager, or copy the included
-`BepInEx` directory into the Dyson Sphere Program game directory.
+The simplest option is a Thunderstore-compatible mod manager. Install
+DSP Guide Check and launch the game with mods enabled; its BepInEx dependency
+will be handled for you.
 
+For a manual installation, install
 [BepInEx 5](https://thunderstore.io/c/dyson-sphere-program/p/xiaoye97/BepInEx/)
-is required.
+first, then copy the package's `BepInEx` folder into the Dyson Sphere Program
+game folder.
 
-## Use
+## Useful links
 
-Press **F8** after loading a save.
+- [Open the DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/)
+- [View the mod source and report problems](https://github.com/shytamir/dsp-beginner-guide)
 
-- F8 opens or closes the panel.
-- Previous and next move between phases.
-- `Save snapshot` writes one compact JSON file on demand.
-- `DON'T PANIC` opens the source guide at the selected phase.
-
-The selected phase belongs to the player. Runtime evidence evaluates that
-selection but never advances or regresses it automatically.
-
-## Links
-
-- [Source repository](https://github.com/shytamir/dsp-beginner-guide)
-- [Practical progression guide](https://dsp-beginner-guide.pages.dev/)
-- [Issue tracker](https://github.com/shytamir/dsp-beginner-guide/issues)
-- [Apache License 2.0](https://github.com/shytamir/dsp-beginner-guide/blob/main/LICENSE)
-
-This is an unofficial community project. Dyson Sphere Program and its assets
-belong to their respective owners.
+DSP Guide Check is an unofficial community project. Dyson Sphere Program and
+its assets belong to their respective owners.

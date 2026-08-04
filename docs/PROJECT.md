@@ -235,6 +235,9 @@ build-time public variant without the forensic export control, then changes CI
 to package only that variant. Their user stories and acceptance criteria are
 authoritative in `docs/THUNDERSTORE-PACKAGE.md`.
 
+`STORE-README-01` is implemented and awaits release-owner review of the
+packaged copy. `STORE-SNAPSHOT-01` remains queued behind that review.
+
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.
 
