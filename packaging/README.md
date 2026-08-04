@@ -25,10 +25,8 @@ The simplest option is a Thunderstore-compatible mod manager. Install
 DSP Guide Check and launch the game with mods enabled; its BepInEx dependency
 will be handled for you.
 
-For a manual installation, install
-[BepInEx 5](https://thunderstore.io/c/dyson-sphere-program/p/xiaoye97/BepInEx/)
-first, then copy the package's `BepInEx` folder into the Dyson Sphere Program
-game folder.
+For a manual installation, install [BepInEx 5](https://thunderstore.io/c/dyson-sphere-program/p/xiaoye97/BepInEx/) first, then copy the package's `BepInEx` folder 
+into the Dyson Sphere Program game folder.
 
 ## Useful links
 
