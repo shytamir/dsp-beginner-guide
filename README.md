@@ -158,16 +158,8 @@ history.
 
 ## Development status
 
-The four-story guide 2.0 migration is complete. `GUIDE2-01`, `GUIDE2-02`,
-`VIS2-01`, and `GUIDE2-03` have passed their focused runtime gates.
-
-The gap report and four bounded user stories are defined in
-[docs/GUIDE-2.0-GAP-ANALYSIS.md](docs/GUIDE-2.0-GAP-ANALYSIS.md).
-
-The separate production-risk roadmap remains paused because of a blocking
-concern. Its accepted and in-progress evidence work remains documented in
-[docs/PRODUCTION-RISK-ROADMAP.md](docs/PRODUCTION-RISK-ROADMAP.md), but it is
-not part of the guide 2.0 migration.
+Current project status and active work are managed in
+[docs/PROJECT.md](docs/PROJECT.md).
 
 ## Repository layout
 
