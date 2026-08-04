@@ -21,7 +21,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export(string saveKey)
         {
             return new Dictionary<string, object> {
-                { "contractVersion", "1.5" },
+                { "contractVersion", "1.6" },
                 { "authority", "player" },
                 { "saveKey", saveKey },
                 { "identityVersion", IdentityVersion },
@@ -132,20 +132,20 @@ namespace DspProgressionStatusExporter
     internal static class ManualPhaseNavigator
     {
         private static readonly string[] Phases = new string[] {
-            "bootstrap", "blue", "red", "ils", "yellow",
+            "blue", "red", "ils", "yellow",
             "purple", "green", "dyson", "photon", "white"
         };
 
         private static readonly HashSet<string> ValidPhases =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-                "bootstrap", "blue", "red", "ils", "yellow",
+                "blue", "red", "ils", "yellow",
                 "purple", "green", "dyson", "photon", "white"
             };
 
         public static ManualPhaseSelection Seed(
             HashSet<int> unlockedTechIds)
         {
-            string phase = "bootstrap";
+            string phase = "blue";
             if (unlockedTechIds != null)
             {
                 if (unlockedTechIds.Contains(1508) ||
@@ -173,11 +173,14 @@ namespace DspProgressionStatusExporter
             phaseId = MigrateLegacyPhase(phaseId);
             return IsValidPhase(phaseId)
                 ? phaseId.ToLowerInvariant()
-                : "bootstrap";
+                : "blue";
         }
 
         public static string MigrateLegacyPhase(string phaseId)
         {
+            if (String.Equals(
+                phaseId, "bootstrap", StringComparison.OrdinalIgnoreCase))
+                return "blue";
             if (String.Equals(phaseId, "flight", StringComparison.OrdinalIgnoreCase) ||
                 String.Equals(phaseId, "titanium", StringComparison.OrdinalIgnoreCase))
                 return "ils";

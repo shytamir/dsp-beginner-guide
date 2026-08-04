@@ -4,6 +4,12 @@
 
 ### Changed
 
+- Consolidated the former BOOTSTRAP phase into BLUE, making BLUE the first of
+  nine player-selected phases and normalizing stored BOOTSTRAP selections.
+- Merged compact starter-input and routine-hardware readiness into BLUE without
+  adding a fixed power objective or listing every healthy mall product.
+- Advanced guide selection to 1.6, guide analysis and progression to 2.7, and
+  compact snapshot schema to 2.6 for the guide 2.0 phase contract.
 - Added conservative per-planet buffer evidence from item-configured logistics
   slots set to local Supply. Remote-only, non-supply, and unproven tank
   aggregates are excluded and identified in compact diagnostics.

@@ -18,7 +18,6 @@ namespace DspProgressionStatusExporter
         }
 
         private static readonly Phase[] Phases = new Phase[] {
-            new Phase { Id = "bootstrap", Title = "Automate the starter factory", GateTechId = 0, NextTechId = 1002, NextResearch = "Electromagnetism" },
             new Phase { Id = "blue", Title = "Sustain the Blue Cube science loop", GateTechId = 1002, NextTechId = 1111, NextResearch = "Energy Matrix" },
             new Phase { Id = "red", Title = "Sustain Red Cubes without refinery deadlock", GateTechId = 1111, NextTechId = 2902, NextResearch = "Drive Engine Lv2" },
             new Phase { Id = "ils", Title = "Complete the first interplanetary logistics expedition", GateTechId = 2902, NextTechId = 1124, NextResearch = "Structure Matrix" },
@@ -37,7 +36,7 @@ namespace DspProgressionStatusExporter
             selectedPhaseId = ManualPhaseNavigator.NormalizePhase(selectedPhaseId);
             GuideProgressionEvaluation progression =
                 GuideGateEngine.EvaluatePhase(selectedPhaseId, state);
-            Phase phase = FindPhase(selectedPhaseId) ?? FindPhase("bootstrap");
+            Phase phase = FindPhase(selectedPhaseId) ?? FindPhase("blue");
             var findings = new List<object>();
 
             if (phase.Id == "red")
@@ -55,7 +54,7 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "2.6" },
+                { "analysisVersion", "2.7" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },

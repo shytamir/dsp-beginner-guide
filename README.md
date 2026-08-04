@@ -117,8 +117,8 @@ playthrough, including across autosaves, renamed save slots and game restarts.
 Critical-path sequence:
 
 ```text
-BOOTSTRAP -> BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
-          -> DYSON -> PHOTON -> WHITE
+BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
+     -> DYSON -> PHOTON -> WHITE
 ```
 
 FLIGHT and TITANIUM are checkpoints inside ILS. Optional WARP, SPHERE, and
@@ -127,6 +127,9 @@ LOGISTICS material remains in the source guide but does not receive a panel.
 ## Current contract
 
 - Objectives come from each retained phase's local readiness checklist.
+- BLUE consolidates starter-input continuity and routine-hardware
+  replenishment with the Blue science loop; it does not impose a fixed power
+  target or enumerate every healthy mall product.
 - Exact production gates are used only where that checklist names an exact
   pace: Blue 20/min, Red 20/min, and White 40/min.
 - ILS presents only the active preparation, expedition, or research-rush
@@ -139,7 +142,7 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.5 exports conclusions, provenance, collector
+- Compact snapshot schema 2.6 exports conclusions, provenance, collector
   health, and only the focused evidence needed to audit those conclusions.
 - The click-through panel uses Basic Regular with a dark outline. Only its
   explicit controls capture pointer input.
@@ -151,11 +154,10 @@ history.
 
 ## Active development
 
-Preparation is active for the public guide 2.0 edition. The migration removes
-the standalone BOOTSTRAP phase by consolidating its useful starter-factory
-evidence into BLUE, rechecks and simplifies the nine retained phase contracts,
-and replaces the Cube-rate column's flat color tiles with the six authorized
-Matrix icons.
+`GUIDE2-01` is implemented: BLUE is the first selectable phase, inherits the
+useful starter-factory evidence, and normalizes stored BOOTSTRAP selections.
+Its early-save runtime gate remains pending. `GUIDE2-02` is the next guide 2.0
+migration story, followed by the Cube-icon and cleanup stories.
 
 The gap report and four bounded user stories are defined in
 [docs/GUIDE-2.0-GAP-ANALYSIS.md](docs/GUIDE-2.0-GAP-ANALYSIS.md).

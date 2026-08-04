@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.5";
+        private const string SchemaVersion = "2.6";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -501,6 +501,11 @@ namespace DspProgressionStatusExporter
                     activePhaseSelection.IdentityVersion = identity.Version;
                     activePhaseSelection.PersistenceState =
                         "restored-stable-key";
+                    if (!String.Equals(
+                        activePhaseSelectionEntry.Value,
+                        activePhaseSelection.Serialize(),
+                        StringComparison.Ordinal))
+                        PersistPhaseSelection();
                 }
                 else
                 {

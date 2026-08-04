@@ -1,7 +1,8 @@
 # DSP Guide Check - Critical-path runtime validation
 
 This protocol uses only Dyson Sphere Program with the mod installed through
-BepInEx. It validates the guide v1.22.2 contract; no coding tools are needed.
+BepInEx. It validates the retained critical-path contract; no coding tools are
+needed.
 
 The first representative guide 1.22.2 user test completed without reported
 defects. This document remains the regression protocol for future changes.
@@ -19,25 +20,28 @@ defects. This document remains the regression protocol for future changes.
 Expected phase order:
 
 ```text
-BOOTSTRAP -> BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
-          -> DYSON -> PHOTON -> WHITE
+BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
+     -> DYSON -> PHOTON -> WHITE
 ```
 
 Confirm:
 
 - no FLIGHT, TITANIUM, SPHERE, WARP, LOGISTICS, or COMPLETE panel exists;
+- no standalone BOOTSTRAP panel exists, and a legacy BOOTSTRAP selection opens
+  on BLUE;
 - runtime evidence, pausing, research, objectives, and Mission Completed never
   change the selected phase;
 - the selection persists across a normal game restart;
 - a legacy removed selection opens on its documented retained replacement.
 
-## Checkpoint A - BOOTSTRAP through RED
+## Checkpoint A - BLUE through RED
 
 Expected:
 
-- BOOTSTRAP reports continuous starter inputs, automatic routine-building
-  replenishment, and the early power grid;
-- BLUE uses 20 Blue Cubes/min as its only rate objective and retains the
+- BLUE compactly reports continuous starter inputs and routine-hardware
+  replenishment without enumerating every healthy mall product or imposing a
+  fixed power objective;
+- BLUE uses 20 Blue Cubes/min as its science rate objective and retains the
   explicit no-hand-feeding check;
 - RED uses one combined conclusion: two Labs, 20 Red Cubes/min, and both
   refinery outputs moving;

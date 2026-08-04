@@ -33,7 +33,8 @@ warning system.
 - Adopted development authority: public guide 2.0 edition
 - Published `guide-version` metadata: `1.23.0`
 - Detailed derivation and roadmap: `docs/GUIDE-2.0-GAP-ANALYSIS.md`
-- Current runtime implementation: guide `1.22.2` pending migration
+- Current runtime implementation: guide 2.0 topology and consolidated BLUE;
+  remaining phase-contract realignment is pending
 - Completed 1.22.2 derivation: `docs/GUIDE-1.22.2-GAP-ANALYSIS.md`
 - Earlier guide v1.1 record: `docs/GUIDE-REVISION-INGESTION.md` (historical)
 
@@ -50,14 +51,15 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** preparation for the public guide 2.0 edition through `GUIDE2-01`,
-`GUIDE2-02`, `VIS2-01`, and `GUIDE2-03`.
+**Active:** public guide 2.0 migration through `GUIDE2-02`, `VIS2-01`, and
+`GUIDE2-03`.
 
-The current release remains aligned with guide 1.22.2 until those stories are
-implemented and validated. The guide 2.0 migration consolidates BOOTSTRAP into
-BLUE, realigns and simplifies the nine retained contracts, introduces the
-first purposeful game-image use in the Cube-rate column, and then removes
-superseded contracts. See `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
+`GUIDE2-01` has consolidated BOOTSTRAP into BLUE in navigation, persistence,
+analysis, focused snapshots, and deterministic contract checks. Its in-game
+early-save validation remains pending. The remaining stories realign and
+simplify the retained contracts, introduce the first purposeful game-image use
+in the Cube-rate column, and then remove superseded contracts. See
+`docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
 The production-risk roadmap is paused because of a blocking concern.
 `RISK-01` remains accepted and `RISK-02` remains implemented but has not passed
@@ -155,13 +157,13 @@ authority. Selection is keyed by playthrough creation time and stable galaxy
 descriptor, so autosaves, renamed slots, pauses, and normal restarts retain
 the same selection.
 
-The guide 2.0 target adds BOOTSTRAP to the legacy normalization set and maps it
-to BLUE. Existing mappings remain: FLIGHT and TITANIUM to ILS, SPHERE to
+BOOTSTRAP is in the legacy normalization set and maps once to BLUE. Existing
+mappings remain: FLIGHT and TITANIUM to ILS, SPHERE to
 DYSON, WARP to GREEN, and LOGISTICS or COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.5 serializes the same selected-phase conclusions used by the
+Snapshot schema 2.6 serializes the same selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. Every
 snapshot includes provenance, playtime, research and Cube aggregates,
 selection diagnostics, objective/status conclusions, focused selected-phase
@@ -189,11 +191,11 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Contract | Version |
 |---|---:|
 | Release line | 1.18.x |
-| Snapshot schema | 2.5 |
+| Snapshot schema | 2.6 |
 | Normalized state | 1.9 |
-| Guide selection | 1.5 |
-| Guide analysis | 2.6 |
-| Progression | 2.6 |
+| Guide selection | 1.6 |
+| Guide analysis | 2.7 |
+| Progression | 2.7 |
 | Panel | 2.0 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use
@@ -216,6 +218,9 @@ Accepted runtime work for the current guide-1.22.2 implementation includes:
   `DON'T PANIC` treatment;
 - an extensive representative user test with no reported functional,
   navigation, persistence, layout, footer, or performance defects.
+
+`GUIDE2-01` has deterministic build coverage but still requires its early-save
+and working-Blue-factory in-game checkpoint before runtime acceptance.
 
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.

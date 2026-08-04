@@ -52,7 +52,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "2.6" },
+                { "contractVersion", "2.7" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -69,7 +69,6 @@ namespace DspProgressionStatusExporter
         }
 
         private static readonly GateDefinition[] Gates = new GateDefinition[] {
-            new GateDefinition { Id = "bootstrap", Title = "Automate the starter factory" },
             new GateDefinition { Id = "blue", Title = "Sustain the Blue Cube science loop" },
             new GateDefinition { Id = "red", Title = "Sustain Red Cubes without refinery deadlock" },
             new GateDefinition { Id = "ils", Title = "Complete the first interplanetary logistics expedition" },
@@ -115,8 +114,7 @@ namespace DspProgressionStatusExporter
                 Basis = "Current practical conditions evaluated from normalized live evidence."
             };
 
-            if (definition.Id == "bootstrap") EvaluateBootstrap(result, state);
-            else if (definition.Id == "blue") EvaluateBlue(result, state);
+            if (definition.Id == "blue") EvaluateBlue(result, state);
             else if (definition.Id == "red") EvaluateRed(result, state);
             else if (definition.Id == "ils") EvaluateIls(result, state);
             else if (definition.Id == "yellow") EvaluateYellow(result, state);
@@ -141,22 +139,22 @@ namespace DspProgressionStatusExporter
             return result;
         }
 
-        private static void EvaluateBootstrap(GuideGateResult gate, ObservedGameState state)
-        {
-            AddCombinedFlow(gate, state, "starter-inputs",
-                "Iron, Copper, Magnetic Coils, and Circuit Boards arrive continuously",
-                new int[] { 1101, 1104, 1202, 1301 },
-                new double[] { 0.1, 0.1, 0.1, 0.1 },
-                "Connect the four starter inputs to continuous production.");
-            AddCombinedAvailability(gate, state, "starter-mall",
-                "Routine buildings replenish automatically",
-                new int[] { 2001, 2011, 2301, 2302, 2303, 2101, 2106, 2203, 2201 },
-                new long[] { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-                "Automate the routine buildings used to extend the factory.");
-        }
-
         private static void EvaluateBlue(GuideGateResult gate, ObservedGameState state)
         {
+            AddNamedFlowSet(gate, state, "starter-inputs",
+                "Starter inputs arrive continuously",
+                new int[] { 1101, 1104, 1202, 1301 },
+                new string[] { "Iron Ingots", "Copper Ingots", "Magnetic Coils", "Circuit Boards" },
+                "Connect the missing starter inputs to continuous production.");
+            AddNamedAvailabilitySet(gate, state, "starter-mall",
+                "Routine factory hardware replenishes automatically",
+                new int[] { 2001, 2011, 2301, 2302, 2303, 2101, 2106, 2203, 2201 },
+                new string[] {
+                    "Conveyor Belts", "Sorters", "Mining Machines", "Arc Smelters",
+                    "Assembling Machines", "Storage", "Storage Tanks", "Wind Turbines",
+                    "Tesla Towers"
+                },
+                "Automate the missing routine factory hardware.");
             AddFlow(gate, state, "blue-continuous",
                 "Blue Cubes (Electromagnetic Matrices) run continuously at 20/min",
                 6001, 20, true);
@@ -490,13 +488,13 @@ namespace DspProgressionStatusExporter
                     "Build or stabilize " + itemName + " at or above " + minimum + "/min."));
         }
 
-        private static void AddCombinedFlow(
+        private static void AddNamedFlowSet(
             GuideGateResult gate,
             ObservedGameState state,
             string id,
             string label,
             int[] itemIds,
-            double[] desiredRates,
+            string[] itemNames,
             string action)
         {
             if (!state.ProductionWindowReady)
@@ -507,43 +505,41 @@ namespace DspProgressionStatusExporter
                     "unknown", "Let the factory run long enough to check this objective."));
                 return;
             }
-            bool ready = true;
-            var rates = new List<string>();
+            var missing = new List<string>();
             for (int i = 0; i < itemIds.Length; i++)
             {
                 double rate = ItemRate(state, itemIds[i]);
-                if (rate < desiredRates[i]) ready = false;
-                rates.Add(Math.Round(rate, 1) + "/" +
-                    desiredRates[i] + "/min");
+                if (rate <= 0) missing.Add(itemNames[i]);
             }
+            bool ready = missing.Count == 0;
             gate.Conditions.Add(Condition(
                 id, label, ready ? "ready" : "blocked", true,
-                "Found rates: " + String.Join(", ", rates.ToArray()) + ".",
+                ready ? "All four starter inputs are producing." :
+                    "Not producing: " + String.Join(", ", missing.ToArray()) + ".",
                 "observed", ready ? null : action));
         }
 
-        private static void AddCombinedAvailability(
+        private static void AddNamedAvailabilitySet(
             GuideGateResult gate,
             ObservedGameState state,
             string id,
             string label,
             int[] itemIds,
-            long[] usefulStocks,
+            string[] itemNames,
             string action)
         {
-            bool ready = true;
-            var evidence = new List<string>();
+            var missing = new List<string>();
             for (int i = 0; i < itemIds.Length; i++)
             {
                 long stock = Owned(state, itemIds[i]);
                 double rate = ItemRate(state, itemIds[i]);
-                if (stock < usefulStocks[i] && rate <= 0) ready = false;
-                evidence.Add(stock + " owned, " +
-                    Math.Round(rate, 1) + "/min");
+                if (stock < 1 && rate <= 0) missing.Add(itemNames[i]);
             }
+            bool ready = missing.Count == 0;
             gate.Conditions.Add(Condition(
                 id, label, ready ? "ready" : "blocked", true,
-                "Found " + String.Join("; ", evidence.ToArray()) + ".",
+                ready ? "Routine factory hardware is stocked or replenishing." :
+                    "Missing: " + String.Join(", ", missing.ToArray()) + ".",
                 "derived", ready ? null : action));
         }
 

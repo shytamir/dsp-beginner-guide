@@ -27,11 +27,10 @@ namespace DspProgressionStatusExporter
 
         private static readonly Dictionary<string, int[]> PhaseItems =
             new Dictionary<string, int[]>(StringComparer.OrdinalIgnoreCase) {
-                { "bootstrap", new int[] {
+                { "blue", new int[] {
                     1101, 1104, 1202, 1301, 2001, 2011, 2301, 2302,
-                    2303, 2101, 2106, 2203, 2201
+                    2303, 2101, 2106, 2203, 2201, 6001
                 } },
-                { "blue", new int[] { 6001 } },
                 { "red", new int[] { 6002, 1114, 1120 } },
                 { "ils", new int[] {
                     1003, 1004, 1103, 1105, 1106, 1107, 1203, 1206,

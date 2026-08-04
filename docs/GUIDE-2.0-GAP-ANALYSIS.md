@@ -94,6 +94,9 @@ sampling cadence or per frame.
 
 ### GUIDE2-01 — Consolidate BOOTSTRAP into BLUE
 
+**Status:** Implemented; deterministic checks pass. Early-save and working
+Blue-factory runtime validation remain pending.
+
 **User story**
 
 As a guide reader starting a new factory, I want the first mod phase to match
@@ -239,4 +242,3 @@ not depend on the production-risk roadmap.
 - Optional WARP, SPHERE, or LOGISTICS panels.
 - Starter-system recommendation scoring, rare-resource advice, combat
   guidance, factory grading, build planning, or automatic phase selection.
-

@@ -10,7 +10,7 @@ never changes the factory or save, and never advances phases automatically.
 
 ## Features
 
-- Manual phase navigation through the ten critical-path phases from BOOTSTRAP
+- Manual phase navigation through the nine critical-path phases from BLUE
   through WHITE.
 - Stable objectives based on the
   [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).

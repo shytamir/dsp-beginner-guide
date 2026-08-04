@@ -989,7 +989,7 @@ namespace DspProgressionStatusExporter
             ResetPanelAnchor();
 
             previousPhaseRect.gameObject.SetActive(!String.Equals(
-                phaseId, "bootstrap", StringComparison.OrdinalIgnoreCase));
+                phaseId, "blue", StringComparison.OrdinalIgnoreCase));
             nextPhaseRect.gameObject.SetActive(!String.Equals(
                 phaseId, "white", StringComparison.OrdinalIgnoreCase));
 
