@@ -164,8 +164,9 @@ The adopted math, evidence safeguards, four user stories, and runtime gates
 are defined in
 [docs/PRODUCTION-RISK-ROADMAP.md](docs/PRODUCTION-RISK-ROADMAP.md).
 
-`RISK-01` is implemented and awaits its native one-minute/ten-minute runtime
-comparison gate before buffer or scoring work begins.
+`RISK-01` is accepted against native one-minute and normalized ten-minute
+Statistics Panel evidence. `RISK-02` is active and adds only conservative,
+auditable accessible-runway and proven-backpressure evidence.
 
 ## Repository layout
 

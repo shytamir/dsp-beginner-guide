@@ -47,14 +47,15 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** native production-risk foundation (`RISK-01`), implemented and
-awaiting its Statistics Panel comparison gate.
+**Active:** conservative accessible-runway and proven-backpressure evidence
+(`RISK-02`).
 
 The Cube-rate column is implemented and accepted through the full-playthrough
-test. The immediate roadmap now adds conservative production-risk analysis
-without adopting the rejected implementation package or expanding the panel
-into a dashboard. The four sequenced user stories and their runtime gates are
-defined in `docs/PRODUCTION-RISK-ROADMAP.md`.
+test. `RISK-01` is accepted against native one-minute and ten-minute Statistics
+Panel evidence. The immediate roadmap now adds conservative production-risk
+analysis without adopting the rejected implementation package or expanding
+the panel into a dashboard. The four sequenced user stories and their runtime
+gates are defined in `docs/PRODUCTION-RISK-ROADMAP.md`.
 
 ## Future considerations
 

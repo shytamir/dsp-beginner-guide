@@ -72,8 +72,10 @@ and are omitted rather than approximated from inventory movement.
 
 ### RISK-01 - Native multi-window evidence
 
-**Status:** Implemented; awaiting the required one-minute/ten-minute native
-runtime comparison checkpoint.
+**Status:** Accepted. The GREEN checkpoint preserved a blocked Quantum Chip
+line as a legitimate zero, matched the active Graviton Lens line to the native
+one-minute and normalized ten-minute views, and kept the first warming snapshot
+distinct from the later ready snapshot without a performance regression.
 
 **User story:** As the risk analyzer, I need trustworthy one-minute and
 ten-minute production and consumption evidence with explicit coverage state,
@@ -106,6 +108,8 @@ Acceptance:
   performance behavior do not regress.
 
 ### RISK-02 - Accessible runway and backpressure evidence
+
+**Status:** Active.
 
 **User story:** As the risk analyzer, I need a conservative measure of stock
 that can actually cushion current demand, so idle production with a useful
