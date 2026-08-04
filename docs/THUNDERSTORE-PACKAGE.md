@@ -76,7 +76,7 @@ Complete these stories in order before publishing the release candidate.
 
 ### STORE-README-01 — Give mod users a purpose-built store README
 
-**Status:** Implemented; release-owner review pending.
+**Status:** Completed and accepted by the release owner.
 
 **User story:** As a Thunderstore user, I want a concise README that tells me
 how to install and open DSP Guide Check, so I can start using it without
@@ -99,7 +99,7 @@ Acceptance criteria:
 
 ### STORE-SNAPSHOT-01 — Omit snapshot export from the public package
 
-**Status:** Queued after `STORE-README-01` release-owner review.
+**Status:** Active next action.
 
 **User story:** As a Thunderstore user, I want the public panel to omit the
 forensic snapshot control, so the normal mod surface stays focused on guide
