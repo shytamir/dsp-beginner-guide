@@ -58,10 +58,10 @@ runtime gates. The current runtime retains legacy selection migration and
 historical records without exposing superseded phase contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
-`RISK-01` through `RISK-03` have passed their focused runtime gates. `RISK-04`
-now implements distinct native draining and starvation glyphs on the fixed
-Cube-rate rail and is awaiting its focused in-game presentation gate. This
-roadmap remains separate from the completed guide 2.0 migration.
+`RISK-01` through `RISK-04` have passed their focused runtime gates. The
+production-risk roadmap is accepted through its native draining and starvation
+glyphs on the fixed Cube-rate rail. This roadmap remains separate from the
+completed guide 2.0 migration.
 
 ## Future considerations
 
@@ -243,10 +243,12 @@ warning clear within 15 seconds after production recovered and accepted that
 balanced transition without a fifth snapshot because an independent supporting
 line failed afterward.
 
-`RISK-04` is implemented and awaiting runtime acceptance. Deterministic tests
-cover the analyzer-selected draining, starved, and non-actionable mappings;
-the in-game gate must verify the two native glyphs, quiet omission, fixed
-collapsed placement, click-through behavior, and presentation at 4K.
+`RISK-04` passed its focused in-game presentation gate. The release owner
+confirmed quiet omission, distinct draining and starved native glyphs, fixed
+placement with the panel body collapsed, 4K legibility, click-through and F8
+behavior, intact navigation and layout, and no visible performance or log
+regression. Deterministic tests cover the analyzer-selected draining, starved,
+and non-actionable mappings.
 
 The release candidate's two Thunderstore blockers are completed and accepted
 by the release owner. `STORE-README-01` provides the dedicated player-facing

@@ -70,7 +70,7 @@ and are omitted rather than approximated from inventory movement.
 
 ## Immediate roadmap
 
-This roadmap is active at `RISK-04`. `RISK-01` through `RISK-03` are accepted.
+`RISK-01` through `RISK-04` are implemented and accepted.
 
 ### RISK-01 - Native multi-window evidence
 
@@ -217,7 +217,10 @@ Acceptance:
 
 ### RISK-04 - Native risk-signal presentation
 
-**Status:** Implemented; awaiting the focused in-game presentation gate.
+**Status:** Accepted. The focused in-game gate confirmed quiet omission,
+distinct draining and starved glyphs, fixed placement with the panel body
+collapsed, 4K legibility, click-through behavior, normal F8 hiding, intact
+navigation and layout, and no visible performance or log regression.
 
 **User story:** As a player who has opened Guide Check, I want the strongest
   actionable production risk represented by a small, distinct game-native
@@ -267,9 +270,8 @@ Implement in order: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04`.
 - `RISK-03` passed deterministic tests and its focused in-game diagnostic
   gate, including the release-owner-approved direct observation of balanced
   recovery.
-- `RISK-04` requires quiet, draining, and starved screenshots, including one
-  actionable state with the body collapsed, plus visible/hidden performance
-  and interaction checks.
+- `RISK-04` passed its quiet, draining, starved, collapsed-body, 4K,
+  visible/hidden performance, interaction, navigation, layout, and log checks.
 
 No story authorizes automatic phase changes, unsolicited alerts, combat
 guidance, broad factory scans, or adoption of the discarded package files.

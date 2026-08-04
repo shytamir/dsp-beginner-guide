@@ -8,6 +8,8 @@
   rail for the analyzer-selected production risk. Draining and starved use
   distinct embedded signals; quiet states display no glyph. Advanced the
   panel presentation contract to 2.3.
+- Accepted the RISK-04 quiet, draining, starved, collapsed-body, 4K,
+  interaction, navigation, layout, performance, and log gate.
 - Added deterministic, scope-matched production-risk scoring and
   interpretation for selected-phase items. Unknown, warming, backpressured,
   balanced, draining, and starved states remain distinct, while Current Status
