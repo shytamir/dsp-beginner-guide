@@ -61,10 +61,9 @@ $expectedEntries = @(
     'BepInEx/plugins/DSP-Guide-Check/DspGuideCheck.dll'
 )
 $expectedDescription = (
-    'DSP Guide Check is an on-demand progression companion for Dyson Sphere ' +
-    'Program. It reads the current save, evaluates the guide phase selected ' +
-    'by the player, and presents stable objectives plus concise, phase-aware ' +
-    'status.'
+    'DSP Guide Check is an on-demand companion for the DSP Practical Progression ' + 
+	'Guide. It gives you stable objectives for the guide phase you choose and a ' + 
+	'short status summary based on what your factory is doing now.'
 )
 $expectedDependency = 'xiaoye97-BepInEx-5.4.17'
 $expectedWebsite = 'https://github.com/shytamir/dsp-beginner-guide'
