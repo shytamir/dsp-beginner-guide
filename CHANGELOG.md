@@ -4,6 +4,9 @@
 
 ### Changed
 
+- Accepted the public `2.0.52` release gate: BepInEx loaded without the former
+  compile-target warning, and BLUE, ILS, DYSON, and PHOTON screenshots passed
+  the published-guide title-presentation checkpoint.
 - Aligned the hosted compile reference with the declared Thunderstore
   dependency, `xiaoye97-BepInEx-5.4.17`, and added an assembly-reference
   version check to prevent the loader warning from returning.

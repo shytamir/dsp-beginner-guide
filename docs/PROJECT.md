@@ -58,16 +58,16 @@ runtime gates. The current runtime retains legacy selection migration and
 historical records without exposing superseded phase contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
-The production-risk roadmap is paused because of a blocking concern.
-`RISK-01` remains accepted and `RISK-02` remains implemented but has not passed
-its runtime gate. Neither is part of the guide 2.0 migration.
+The production-risk roadmap is the next development activity after the release
+owner publishes the accepted Thunderstore artifact. `RISK-01` remains accepted
+and `RISK-02` remains implemented but has not passed its runtime gate. Neither
+is part of the guide 2.0 migration.
 
 ## Future considerations
 
 These ideas are recorded but are not active work:
 
-- `RATE-01` and `BUFFER-01` remain superseded by `RISK-01` through `RISK-04`,
-  but that roadmap is currently paused.
+- `RATE-01` and `BUFFER-01` remain superseded by `RISK-01` through `RISK-04`.
 - Keep completed objectives to compact single lines while reserving supporting
   detail for incomplete objectives.
 - Limit Pending to the few highest-value actions, ordered by what unlocks or
@@ -241,7 +241,7 @@ records remain in `docs/THUNDERSTORE-PACKAGE.md`.
 
 ### TITLE-PRESENTATION-01 — Match the published guide's phase titles
 
-**Status:** Implemented; human validation gate pending.
+**Status:** Accepted.
 
 **User story:** As a player moving between the guide and Guide Check, I want
 the panel's phase tag to use the same icon, bracketed name, and color as the
@@ -260,6 +260,11 @@ Acceptance criteria:
   retain their established behavior;
 - deterministic checks cover all nine colors and icon resources, followed by
   an in-game screenshot gate covering a cube phase, ILS, DYSON, and PHOTON.
+
+The release-owner gate passed on public package version `2.0.52`. BLUE, ILS,
+DYSON, and PHOTON screenshots confirmed the published-guide icons, bracketed
+phase names, colors, descriptive-title wrapping, and established controls. The
+same run confirmed that the BepInEx compile-target warning no longer appears.
 
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.

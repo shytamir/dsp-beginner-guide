@@ -127,3 +127,9 @@ was absent and non-interactive with no dead footer spacing, the remaining
 panel controls and layout worked, and the log contained no plugin error or
 exception. BepInEx emitted its non-blocking compile-target compatibility
 warning before loading the plugin successfully.
+
+The subsequent public package version `2.0.52` gate confirmed that exact
+targeting of the declared `xiaoye97-BepInEx-5.4.17` dependency removes that
+compatibility warning. The plugin loaded without an error or exception, and
+the accepted BLUE, ILS, DYSON, and PHOTON screenshots also closed the panel
+title-presentation gate.

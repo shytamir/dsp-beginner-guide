@@ -70,6 +70,10 @@ and are omitted rather than approximated from inventory movement.
 
 ## Immediate roadmap
 
+This roadmap is the next development activity after the release owner
+publishes the accepted Thunderstore artifact. Resume at the `RISK-02` runtime
+gate; `RISK-01` is already accepted.
+
 ### RISK-01 - Native multi-window evidence
 
 **Status:** Accepted. The GREEN checkpoint preserved a blocked Quantum Chip
