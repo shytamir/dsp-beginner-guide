@@ -201,3 +201,37 @@ Copyright 2026 Shy Alexander Tamir
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+# Licensing and Third-Party Game Assets Notice
+
+## Dyson Sphere Program assets
+
+*Dyson Sphere Program* was developed by Youthcat Studio and is published by
+Gamirror Games. Copyright and all other intellectual-property rights in
+*Dyson Sphere Program*, including its names, logos, icons, images, textures,
+and other game assets, remain with Youthcat Studio and/or their applicable
+rights holders. All rights are reserved by those rights holders.
+
+The unmodified game assets included in this repository, including the files
+under `assets/DSP_exported assets/`, are used with the publisher's express,
+limited permission for the DSP Practical Progression Guide and its related DSP
+Guide Check mod materials as the non-commercial community project described in
+the permission request.
+
+That permission does not transfer ownership of the game assets and must not be
+understood as a general license to modify them, use them commercially,
+redistribute them as a standalone asset collection, sublicense them, or use
+them in unrelated projects. Anyone wishing to use those assets outside the
+permitted project must obtain any necessary permission directly from the
+applicable rights holders.
+
+The privacy-sanitized permission record is preserved at
+`docs/management/game-asset-use-permission-sanitized.md`. The original email is
+held privately by the project owner and is not included in this repository.
+
+## Other repository material
+
+This notice governs the third-party game assets described above. It does not,
+by itself, grant a license to the project-authored guide text, source code,
+data, or other original material in this repository, and it does not alter any
+separate license or permission that may expressly apply to particular files.
