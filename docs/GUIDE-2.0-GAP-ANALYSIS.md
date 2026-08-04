@@ -94,8 +94,8 @@ sampling cadence or per frame.
 
 ### GUIDE2-01 — Consolidate BOOTSTRAP into BLUE
 
-**Status:** Implemented; deterministic checks pass. Early-save and working
-Blue-factory runtime validation remain pending.
+**Status:** Accepted. Early-save and working-Blue runtime checks passed with
+correct objectives, prompt completion, and no visible regression.
 
 **User story**
 
@@ -126,6 +126,9 @@ as one coherent objective rather than two panels.
   persistence, panel compactness, and focused snapshot evidence.
 
 ### GUIDE2-02 — Realign and simplify the nine phase contracts
+
+**Status:** Implemented; deterministic checks pass. Focused runtime validation
+remains pending.
 
 **User story**
 

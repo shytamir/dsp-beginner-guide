@@ -54,11 +54,10 @@ control, panel, objective contract, finding, or snapshot phase contract.
 **Active:** public guide 2.0 migration through `GUIDE2-02`, `VIS2-01`, and
 `GUIDE2-03`.
 
-`GUIDE2-01` has consolidated BOOTSTRAP into BLUE in navigation, persistence,
-analysis, focused snapshots, and deterministic contract checks. Its in-game
-early-save validation remains pending. The remaining stories realign and
-simplify the retained contracts, introduce the first purposeful game-image use
-in the Cube-rate column, and then remove superseded contracts. See
+`GUIDE2-01` has passed its early-save and working-Blue runtime gate.
+`GUIDE2-02` has realigned and simplified the retained contracts and is awaiting
+its focused runtime gate. The remaining stories introduce the first purposeful
+game-image use in the Cube-rate column and then remove superseded contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
 The production-risk roadmap is paused because of a blocking concern.
@@ -163,7 +162,7 @@ DYSON, WARP to GREEN, and LOGISTICS or COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.6 serializes the same selected-phase conclusions used by the
+Snapshot schema 2.7 serializes the same selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. Every
 snapshot includes provenance, playtime, research and Cube aggregates,
 selection diagnostics, objective/status conclusions, focused selected-phase
@@ -191,11 +190,11 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Contract | Version |
 |---|---:|
 | Release line | 1.18.x |
-| Snapshot schema | 2.6 |
+| Snapshot schema | 2.7 |
 | Normalized state | 1.9 |
 | Guide selection | 1.6 |
-| Guide analysis | 2.7 |
-| Progression | 2.7 |
+| Guide analysis | 2.8 |
+| Progression | 2.8 |
 | Panel | 2.0 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use
@@ -219,8 +218,10 @@ Accepted runtime work for the current guide-1.22.2 implementation includes:
 - an extensive representative user test with no reported functional,
   navigation, persistence, layout, footer, or performance defects.
 
-`GUIDE2-01` has deterministic build coverage but still requires its early-save
-and working-Blue-factory in-game checkpoint before runtime acceptance.
+`GUIDE2-01` passed its early-save and working-Blue-factory in-game checkpoint
+with correct objectives, prompt completion, and no visible regression.
+`GUIDE2-02` has deterministic build coverage and awaits its focused runtime
+checkpoint.
 
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.

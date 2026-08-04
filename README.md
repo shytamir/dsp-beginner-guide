@@ -142,7 +142,7 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.6 exports conclusions, provenance, collector
+- Compact snapshot schema 2.7 exports conclusions, provenance, collector
   health, and only the focused evidence needed to audit those conclusions.
 - The click-through panel uses Basic Regular with a dark outline. Only its
   explicit controls capture pointer input.
@@ -154,10 +154,9 @@ history.
 
 ## Active development
 
-`GUIDE2-01` is implemented: BLUE is the first selectable phase, inherits the
-useful starter-factory evidence, and normalizes stored BOOTSTRAP selections.
-Its early-save runtime gate remains pending. `GUIDE2-02` is the next guide 2.0
-migration story, followed by the Cube-icon and cleanup stories.
+`GUIDE2-01` has passed its early-save and working-Blue runtime gate.
+`GUIDE2-02` is implemented and awaiting its focused nine-phase runtime gate;
+the Cube-icon and cleanup stories follow it.
 
 The gap report and four bounded user stories are defined in
 [docs/GUIDE-2.0-GAP-ANALYSIS.md](docs/GUIDE-2.0-GAP-ANALYSIS.md).

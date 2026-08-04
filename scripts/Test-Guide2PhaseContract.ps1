@@ -114,4 +114,150 @@ foreach ($itemId in @(1101, 1104, 1202, 1301, 2001, 6001)) {
     }
 }
 
+$instanceFlags = [Reflection.BindingFlags]'Instance,Public,NonPublic'
+$stateType = $assembly.GetType(
+    'DspProgressionStatusExporter.ObservedGameState', $true
+)
+$flowType = $assembly.GetType(
+    'DspProgressionStatusExporter.ObservedItemFlow', $true
+)
+$recipeType = $assembly.GetType(
+    'DspProgressionStatusExporter.ObservedRecipeConfiguration', $true
+)
+$evaluatePhase = $gateEngine.GetMethod('EvaluatePhase', $flags)
+$analyzeSelected = $analyzer.GetMethod('AnalyzeSelected', $flags)
+
+function New-ObservedState {
+    [Activator]::CreateInstance($stateType, $true)
+}
+
+function Set-ObservedField {
+    param($Value, [string]$Name, $Target)
+    $Target.GetType().GetField($Name, $instanceFlags).SetValue($Target, $Value)
+}
+
+function Add-ObservedFlow {
+    param($State, [int]$ItemId, [double]$Produced, [double]$Consumed)
+    $flow = [Activator]::CreateInstance($flowType, $true)
+    Set-ObservedField $ItemId 'ItemId' $flow
+    Set-ObservedField $Produced 'ProducedPerMinute' $flow
+    Set-ObservedField $Consumed 'ConsumedPerMinute' $flow
+    $flows = $stateType.GetField('ItemFlows', $instanceFlags).GetValue($State)
+    $flows.Add($ItemId, $flow)
+}
+
+function Add-ObservedRecipe {
+    param($State, [int]$RecipeId, [int]$MachineCount)
+    $recipe = [Activator]::CreateInstance($recipeType, $true)
+    Set-ObservedField $RecipeId 'RecipeId' $recipe
+    Set-ObservedField $MachineCount 'ConfiguredMachineCount' $recipe
+    $recipes = $stateType.GetField(
+        'RecipeConfigurations', $instanceFlags
+    ).GetValue($State)
+    $recipes.Add($recipe)
+}
+
+function Get-SelectedGate {
+    param([string]$PhaseId, $State)
+    $evaluation = $evaluatePhase.Invoke($null, @($PhaseId, $State))
+    $evaluation.GetType().GetField(
+        'Gates', $instanceFlags
+    ).GetValue($evaluation)[0]
+}
+
+function Get-GateCondition {
+    param($Gate, [string]$ConditionId)
+    $conditions = $Gate.GetType().GetField(
+        'Conditions', $instanceFlags
+    ).GetValue($Gate)
+    foreach ($condition in $conditions) {
+        if ($condition.GetType().GetField(
+                'Id', $instanceFlags
+            ).GetValue($condition) -eq $ConditionId) {
+            return $condition
+        }
+    }
+    return $null
+}
+
+$redState = New-ObservedState
+Set-ObservedField $true 'ProductionWindowReady' $redState
+Add-ObservedFlow $redState 6002 20 0
+Add-ObservedRecipe $redState 18 2
+$redGate = Get-SelectedGate 'red' $redState
+$redCondition = Get-GateCondition $redGate 'red-loop'
+if ($null -eq $redCondition -or
+    $redCondition.GetType().GetField(
+        'Status', $instanceFlags
+    ).GetValue($redCondition) -ne 'ready') {
+    throw 'RED still requires refinery-output rates as a hard objective.'
+}
+
+$dysonGate = Get-SelectedGate 'dyson' (New-ObservedState)
+if ($dysonGate.GetType().GetField(
+        'Title', $instanceFlags
+    ).GetValue($dysonGate) -ne 'Build the Photon swarm') {
+    throw 'DYSON does not expose the guide 2.0 Photon-swarm title.'
+}
+
+$photonState = New-ObservedState
+Set-ObservedField $true 'ProductionWindowReady' $photonState
+Add-ObservedFlow $photonState 1208 48 0
+Add-ObservedFlow $photonState 1122 48 0
+$owned = $stateType.GetField(
+    'OwnedItemCounts', $instanceFlags
+).GetValue($photonState)
+$owned.Add(1122, [long]2000)
+$dyson = $stateType.GetField('Dyson', $instanceFlags).GetValue($photonState)
+Set-ObservedField $true 'ReceiverTelemetryAvailable' $dyson
+Set-ObservedField 4 'ConfiguredPhotonReceiverCount' $dyson
+Set-ObservedField 4 'LensedPhotonReceiverCount' $dyson
+Set-ObservedField 4 'SustainedPhotonReceiverCount' $dyson
+$photonGate = Get-SelectedGate 'photon' $photonState
+$receiverCondition = Get-GateCondition $photonGate 'photon-receivers'
+if ($null -eq $receiverCondition -or
+    $receiverCondition.GetType().GetField(
+        'Status', $instanceFlags
+    ).GetValue($receiverCondition) -ne 'ready') {
+    throw 'PHOTON does not accept four sustained lensed receivers.'
+}
+Set-ObservedField 3 'SustainedPhotonReceiverCount' $dyson
+$photonGate = Get-SelectedGate 'photon' $photonState
+$receiverCondition = Get-GateCondition $photonGate 'photon-receivers'
+if ($receiverCondition.GetType().GetField(
+        'Status', $instanceFlags
+    ).GetValue($receiverCondition) -ne 'blocked') {
+    throw 'PHOTON does not retain four-receiver continuity as a hard objective.'
+}
+
+function Assert-SingleDrainFinding {
+    param(
+        [string]$PhaseId,
+        [int]$WeakItemId,
+        [string]$ExpectedFindingId,
+        [string]$ExpectedText
+    )
+    $state = New-ObservedState
+    Set-ObservedField $true 'ProductionWindowReady' $state
+    Add-ObservedFlow $state $WeakItemId 5 10
+    $analysis = $analyzeSelected.Invoke($null, @($state, $PhaseId))
+    $findings = $analysis['findings']
+    if ($findings.Count -ne 1 -or
+        $findings[0]['id'] -ne $ExpectedFindingId -or
+        $findings[0]['claim'] -notmatch $ExpectedText) {
+        throw "$PhaseId did not emit one focused draining-input finding."
+    }
+}
+
+Assert-SingleDrainFinding 'purple' 1402 'purple-support-drain' 'Particle Broadband'
+Assert-SingleDrainFinding 'green' 1305 'green-support-drain' 'Quantum Chips'
+Assert-SingleDrainFinding 'white' 6002 'white-feeder-drain' 'Red Cubes'
+
+$purpleItems = $phaseItems['purple']
+foreach ($itemId in @(6004, 1303, 1124, 1402)) {
+    if ($purpleItems -notcontains $itemId) {
+        throw "PURPLE snapshot evidence is missing item $itemId."
+    }
+}
+
 Write-Output 'Guide 2.0 phase contract test passed.'

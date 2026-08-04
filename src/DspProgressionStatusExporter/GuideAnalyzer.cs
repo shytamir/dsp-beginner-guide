@@ -41,8 +41,26 @@ namespace DspProgressionStatusExporter
 
             if (phase.Id == "red")
                 AddRefineryCongestionFinding(findings, state);
+            if (phase.Id == "purple")
+                AddDrainingInputFinding(findings, state,
+                    "purple-support-drain", "Purple",
+                    new int[] { 1303, 1124, 1402 },
+                    new string[] { "Processors", "Carbon Nanotubes", "Particle Broadband" });
+            if (phase.Id == "green")
+                AddDrainingInputFinding(findings, state,
+                    "green-support-drain", "Green",
+                    new int[] { 1305, 1209 },
+                    new string[] { "Quantum Chips", "Graviton Lenses" });
             if (phase.Id == "photon")
                 AddPhotonPowerFinding(findings, state);
+            if (phase.Id == "white")
+                AddDrainingInputFinding(findings, state,
+                    "white-feeder-drain", "White",
+                    new int[] { 6001, 6002, 6003, 6004, 6005, 1122 },
+                    new string[] {
+                        "Blue Cubes", "Red Cubes", "Yellow Cubes",
+                        "Purple Cubes", "Green Cubes", "Antimatter"
+                    });
 
             var phaseResult = new Dictionary<string, object> {
                 { "id", phase.Id },
@@ -54,7 +72,7 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "2.7" },
+                { "analysisVersion", "2.8" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },
@@ -80,16 +98,56 @@ namespace DspProgressionStatusExporter
             List<object> findings,
             ObservedGameState state)
         {
-            if (!state.Dyson.Available) return;
+            if (!state.Dyson.Available ||
+                state.Dyson.ConfiguredPhotonReceiverCount <= 0) return;
             double requested = state.Dyson.ReceiverArrayRequestedDysonPowerWatts;
             double supplied = state.Dyson.ReceiverArraySuppliedPowerWatts;
             double available = state.Dyson.GenerationWatts;
             findings.Add(Finding(
                 "photon-receiver-power",
-                requested > available && available > 0 ? "watch" : "ready",
+                requested > available || available <= 0 ? "watch" : "ready",
                 "Photon receivers request " + FormatPower(requested) +
                     " from " + FormatPower(available) + " of Dyson generation.",
                 "The receiver array is currently supplied with " + FormatPower(supplied) + ".",
+                "high"));
+        }
+
+        private static void AddDrainingInputFinding(
+            List<object> findings,
+            ObservedGameState state,
+            string id,
+            string phaseName,
+            int[] itemIds,
+            string[] names)
+        {
+            if (!state.ProductionWindowReady) return;
+
+            int weakestIndex = -1;
+            double weakestRatio = Double.MaxValue;
+            ObservedItemFlow weakestFlow = null;
+            for (int i = 0; i < itemIds.Length; i++)
+            {
+                ObservedItemFlow flow;
+                if (!state.ItemFlows.TryGetValue(itemIds[i], out flow) ||
+                    flow == null || flow.ConsumedPerMinute <= 0 ||
+                    flow.ProducedPerMinute >= flow.ConsumedPerMinute)
+                    continue;
+                double ratio = flow.ProducedPerMinute / flow.ConsumedPerMinute;
+                if (ratio >= weakestRatio) continue;
+                weakestIndex = i;
+                weakestRatio = ratio;
+                weakestFlow = flow;
+            }
+            if (weakestIndex < 0) return;
+
+            findings.Add(Finding(
+                id,
+                weakestFlow.ProducedPerMinute <= 0 ? "blocked" : "watch",
+                names[weakestIndex] + " are draining faster than they are replenished.",
+                "Found " + Math.Round(weakestFlow.ProducedPerMinute, 1) +
+                    "/min produced and " +
+                    Math.Round(weakestFlow.ConsumedPerMinute, 1) +
+                    "/min consumed; reinforce this " + phaseName + " input.",
                 "high"));
         }
 

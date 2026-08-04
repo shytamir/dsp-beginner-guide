@@ -4,6 +4,14 @@
 
 ### Changed
 
+- Realigned the nine retained phase contracts with guide 2.0: RED now treats
+  refinery congestion as status rather than a hard gate, DYSON uses the
+  Photon-swarm contract, and PHOTON explicitly requires four sustained lensed
+  receivers.
+- Added one exceptional draining-input conclusion for PURPLE, GREEN, and
+  WHITE while keeping healthy supporting chains out of the panel.
+- Advanced guide analysis and progression to 2.8 and compact snapshot schema
+  to 2.7 for the GUIDE2-02 contract.
 - Consolidated the former BOOTSTRAP phase into BLUE, making BLUE the first of
   nine player-selected phases and normalizing stored BOOTSTRAP selections.
 - Merged compact starter-input and routine-hardware readiness into BLUE without

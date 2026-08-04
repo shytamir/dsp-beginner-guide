@@ -52,7 +52,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "2.7" },
+                { "contractVersion", "2.8" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -75,8 +75,8 @@ namespace DspProgressionStatusExporter
             new GateDefinition { Id = "yellow", Title = "Run three continuous Yellow Cube labs" },
             new GateDefinition { Id = "purple", Title = "Run three continuous Purple Cube labs" },
             new GateDefinition { Id = "green", Title = "Run two continuous Green Cube labs" },
-            new GateDefinition { Id = "dyson", Title = "Establish reliable Antimatter production" },
-            new GateDefinition { Id = "photon", Title = "Bank Antimatter for White science" },
+            new GateDefinition { Id = "dyson", Title = "Build the Photon swarm" },
+            new GateDefinition { Id = "photon", Title = "Run the Critical Photon receiver array" },
             new GateDefinition { Id = "white", Title = "Complete the main progression route" }
         };
 
@@ -169,25 +169,20 @@ namespace DspProgressionStatusExporter
             if (!state.ProductionWindowReady)
             {
                 gate.Conditions.Add(Condition(
-                    "red-loop", "Two labs sustain 20 Red Cubes (Energy Matrices) per minute without refinery deadlock",
+                    "red-loop", "Two labs sustain 20 Red Cubes (Energy Matrices) per minute",
                     "unknown", true, "Production statistics are still warming up.",
                     "unknown", "Let the factory run long enough to measure the Red science loop."));
                 return;
             }
             double red = ItemRate(state, 6002);
-            double oilOut = ItemConsumption(state, 1114);
-            double hydrogenOut = ItemConsumption(state, 1120);
             int labs = ConfiguredRecipeMachines(state, 18);
-            bool ready = labs >= 2 && red >= 20 && oilOut > 0 && hydrogenOut > 0;
+            bool ready = labs >= 2 && red >= 20;
             gate.Conditions.Add(Condition(
-                "red-loop", "Two labs sustain 20 Red Cubes (Energy Matrices) per minute while both refinery outputs keep moving",
+                "red-loop", "Two labs sustain 20 Red Cubes (Energy Matrices) per minute",
                 ready ? "ready" : "blocked", true,
                 "Found " + labs + " configured lab(s), " + Math.Round(red, 1) +
-                    " Red Cubes/min, " + Math.Round(oilOut, 1) +
-                    " Refined Oil/min leaving production, and " +
-                    Math.Round(hydrogenOut, 1) +
-                    " Hydrogen/min leaving production.",
-                "derived", ready ? null : "Sustain two Red labs and keep both refinery outputs moving."));
+                    " Red Cubes/min.",
+                "derived", ready ? null : "Configure and supply two Red Cube labs at 20/min."));
         }
 
         private static void EvaluateYellow(GuideGateResult gate, ObservedGameState state)
@@ -365,6 +360,20 @@ namespace DspProgressionStatusExporter
 
         private static void EvaluatePhoton(GuideGateResult gate, ObservedGameState state)
         {
+            bool receiverEvidence = state.Dyson.ReceiverTelemetryAvailable;
+            bool receiversReady = receiverEvidence &&
+                state.Dyson.ConfiguredPhotonReceiverCount >= 4 &&
+                state.Dyson.LensedPhotonReceiverCount >= 4 &&
+                state.Dyson.SustainedPhotonReceiverCount >= 4;
+            gate.Conditions.Add(Condition(
+                "photon-receivers", "Four lensed Ray Receivers remain continuously supplied",
+                receiversReady ? "ready" : (receiverEvidence ? "blocked" : "unknown"), true,
+                receiverEvidence
+                    ? state.Dyson.SustainedPhotonReceiverCount + "/4 sustained; " +
+                        state.Dyson.LensedPhotonReceiverCount + "/4 currently lensed."
+                    : "Receiver continuity telemetry is not ready.",
+                receiverEvidence ? "observed" : "unknown",
+                receiversReady ? null : "Keep four Photon Generation receivers lensed and continuously supplied."));
             double photons = ItemRate(state, 1208);
             double antimatterRate = ItemRate(state, 1122);
             bool productionReady = state.ProductionWindowReady && photons > 0 && antimatterRate > 0;
