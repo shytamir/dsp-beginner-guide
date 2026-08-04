@@ -1,7 +1,8 @@
 # Snapshot redesign worklist
 
-Implemented in v1.16.0 and narrowed to the critical-path-only schema 2.2 for
-guide v1.22.2.
+Implemented in v1.16.0, narrowed to the critical-path-only contract for guide
+v1.22.2, and extended by schema 2.4 with compact native one-minute and
+ten-minute production evidence.
 
 - [x] Define a compact snapshot contract around diagnostic conclusions and the exact evidence used to reach them.
 - [x] Remove duplicate normalized state from guide analysis and retain one authoritative normalized summary.

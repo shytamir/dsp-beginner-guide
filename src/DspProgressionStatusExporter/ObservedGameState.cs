@@ -14,6 +14,15 @@ namespace DspProgressionStatusExporter
         public int ObservedIntervals;
         public double ProductionActiveFraction;
         public string ProductionContinuity;
+        public bool OneMinuteAvailable;
+        public string OneMinuteStatus;
+        public bool TenMinuteAvailable;
+        public bool TenMinuteReady;
+        public string TenMinuteStatus;
+        public double TenMinuteObservedGameSeconds;
+        public double TenMinuteProducedPerMinute;
+        public double TenMinuteConsumedPerMinute;
+        public double TenMinuteNetPerMinute;
     }
 
     internal sealed class ObservedLifetimeItemTotals
@@ -216,6 +225,13 @@ namespace DspProgressionStatusExporter
         public int ProductionWatchedItemCount;
         public int ProductionItemCoverage;
         public int ProductionFactoryCount;
+        public bool ProductionTenMinuteWindowAvailable;
+        public bool ProductionTenMinuteWindowReady;
+        public string ProductionTenMinuteWindowStatus;
+        public double ProductionTenMinuteWindowSeconds;
+        public string ProductionTenMinuteReadinessSource;
+        public int ProductionTenMinuteAvailableItemCount;
+        public int ProductionTenMinuteReadyItemCount;
         public bool TrafficWindowReady;
         public double TrafficWindowSeconds;
         public double PowerWindowSeconds;
@@ -247,7 +263,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "1.7";
+            result["modelVersion"] = "1.8";
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -270,6 +286,22 @@ namespace DspProgressionStatusExporter
                 { "watchedItemCount", ProductionWatchedItemCount },
                 { "itemCoverage", ProductionItemCoverage },
                 { "factoryCount", ProductionFactoryCount },
+                { "oneMinuteWindow", new Dictionary<string, object> {
+                    { "available", ProductionWindowReady },
+                    { "ready", ProductionWindowReady },
+                    { "status", ProductionWindowReady
+                        ? "ready" : "unavailable" },
+                    { "windowGameSeconds", ProductionWindowSeconds }
+                } },
+                { "tenMinuteWindow", new Dictionary<string, object> {
+                    { "available", ProductionTenMinuteWindowAvailable },
+                    { "ready", ProductionTenMinuteWindowReady },
+                    { "status", ProductionTenMinuteWindowStatus },
+                    { "windowGameSeconds", ProductionTenMinuteWindowSeconds },
+                    { "readinessSource", ProductionTenMinuteReadinessSource },
+                    { "availableItemCount", ProductionTenMinuteAvailableItemCount },
+                    { "readyItemCount", ProductionTenMinuteReadyItemCount }
+                } },
                 { "items", ExportItemFlows() },
                 { "factoryItems", ExportFactoryItemFlows() }
             };
@@ -462,6 +494,24 @@ namespace DspProgressionStatusExporter
                 Plugin.ToInt(GetValue(production, "galaxyItemCoverage"));
             ProductionFactoryCount =
                 Plugin.ToInt(GetValue(production, "factoryCount"));
+            Dictionary<string, object> tenMinuteWindow =
+                GetDictionary(production, "tenMinuteWindow");
+            ProductionTenMinuteWindowAvailable =
+                ToBool(GetValue(tenMinuteWindow, "available"));
+            ProductionTenMinuteWindowReady =
+                ToBool(GetValue(tenMinuteWindow, "ready"));
+            ProductionTenMinuteWindowStatus =
+                ToText(GetValue(tenMinuteWindow, "status"));
+            ProductionTenMinuteWindowSeconds =
+                Plugin.ToDouble(GetValue(
+                    tenMinuteWindow, "windowGameSeconds"));
+            ProductionTenMinuteReadinessSource =
+                ToText(GetValue(tenMinuteWindow, "readinessSource"));
+            ProductionTenMinuteAvailableItemCount =
+                Plugin.ToInt(GetValue(
+                    tenMinuteWindow, "availableItemCount"));
+            ProductionTenMinuteReadyItemCount =
+                Plugin.ToInt(GetValue(tenMinuteWindow, "readyItemCount"));
             foreach (object rowObject in Enumerate(GetValue(production, "galaxy")))
             {
                 var row = rowObject as Dictionary<string, object>;
@@ -474,6 +524,10 @@ namespace DspProgressionStatusExporter
                     Produced = Plugin.ToLong(GetValue(row, "producedTotal")),
                     Consumed = Plugin.ToLong(GetValue(row, "consumedTotal"))
                 };
+                Dictionary<string, object> oneMinute =
+                    GetDictionary(row, "oneMinuteWindow");
+                Dictionary<string, object> tenMinute =
+                    GetDictionary(row, "tenMinuteWindow");
                 ItemFlows[id] = new ObservedItemFlow {
                     ItemId = id,
                     Name = ToText(GetValue(row, "name")),
@@ -482,7 +536,25 @@ namespace DspProgressionStatusExporter
                     NetPerMinute = Plugin.ToDouble(GetValue(row, "netPerMinute")),
                     ObservedIntervals = Plugin.ToInt(GetValue(row, "observedIntervals")),
                     ProductionActiveFraction = Plugin.ToDouble(GetValue(row, "productionActiveFraction")),
-                    ProductionContinuity = ToText(GetValue(row, "productionContinuity"))
+                    ProductionContinuity = ToText(GetValue(row, "productionContinuity")),
+                    OneMinuteAvailable = ToBool(
+                        GetValue(oneMinute, "available")),
+                    OneMinuteStatus = ToText(
+                        GetValue(oneMinute, "status")),
+                    TenMinuteAvailable = ToBool(
+                        GetValue(tenMinute, "available")),
+                    TenMinuteReady = ToBool(
+                        GetValue(tenMinute, "ready")),
+                    TenMinuteStatus = ToText(
+                        GetValue(tenMinute, "status")),
+                    TenMinuteObservedGameSeconds = Plugin.ToDouble(
+                        GetValue(tenMinute, "observedGameSeconds")),
+                    TenMinuteProducedPerMinute = Plugin.ToDouble(
+                        GetValue(tenMinute, "producedPerMinute")),
+                    TenMinuteConsumedPerMinute = Plugin.ToDouble(
+                        GetValue(tenMinute, "consumedPerMinute")),
+                    TenMinuteNetPerMinute = Plugin.ToDouble(
+                        GetValue(tenMinute, "netPerMinute"))
                 };
             }
 
@@ -868,7 +940,29 @@ namespace DspProgressionStatusExporter
                     { "netPerMinute", x.NetPerMinute },
                     { "observedIntervals", x.ObservedIntervals },
                     { "productionActiveFraction", x.ProductionActiveFraction },
-                    { "productionContinuity", x.ProductionContinuity }
+                    { "productionContinuity", x.ProductionContinuity },
+                    { "oneMinuteWindow", new Dictionary<string, object> {
+                        { "available", x.OneMinuteAvailable },
+                        { "status", x.OneMinuteStatus },
+                        { "producedPerMinute", x.OneMinuteAvailable
+                            ? (object)x.ProducedPerMinute : null },
+                        { "consumedPerMinute", x.OneMinuteAvailable
+                            ? (object)x.ConsumedPerMinute : null },
+                        { "netPerMinute", x.OneMinuteAvailable
+                            ? (object)x.NetPerMinute : null }
+                    } },
+                    { "tenMinuteWindow", new Dictionary<string, object> {
+                        { "available", x.TenMinuteAvailable },
+                        { "ready", x.TenMinuteReady },
+                        { "status", x.TenMinuteStatus },
+                        { "observedGameSeconds", x.TenMinuteObservedGameSeconds },
+                        { "producedPerMinute", x.TenMinuteAvailable
+                            ? (object)x.TenMinuteProducedPerMinute : null },
+                        { "consumedPerMinute", x.TenMinuteAvailable
+                            ? (object)x.TenMinuteConsumedPerMinute : null },
+                        { "netPerMinute", x.TenMinuteAvailable
+                            ? (object)x.TenMinuteNetPerMinute : null }
+                    } }
                 });
             }
             return rows;

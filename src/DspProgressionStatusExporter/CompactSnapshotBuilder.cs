@@ -176,7 +176,25 @@ namespace DspProgressionStatusExporter
                 { "sampleCount", state.ProductionSampleCount },
                 { "watchedItemCount", state.ProductionWatchedItemCount },
                 { "itemCoverage", state.ProductionItemCoverage },
-                { "factoryCount", state.ProductionFactoryCount }
+                { "factoryCount", state.ProductionFactoryCount },
+                { "windows", new Dictionary<string, object> {
+                    { "oneMinute", new Dictionary<string, object> {
+                        { "available", state.ProductionWindowReady },
+                        { "ready", state.ProductionWindowReady },
+                        { "status", state.ProductionWindowReady
+                            ? "ready" : "unavailable" },
+                        { "windowGameSeconds", state.ProductionWindowSeconds }
+                    } },
+                    { "tenMinute", new Dictionary<string, object> {
+                        { "available", state.ProductionTenMinuteWindowAvailable },
+                        { "ready", state.ProductionTenMinuteWindowReady },
+                        { "status", state.ProductionTenMinuteWindowStatus },
+                        { "windowGameSeconds", state.ProductionTenMinuteWindowSeconds },
+                        { "readinessSource", state.ProductionTenMinuteReadinessSource },
+                        { "availableItemCount", state.ProductionTenMinuteAvailableItemCount },
+                        { "readyItemCount", state.ProductionTenMinuteReadyItemCount }
+                    } }
+                } }
             };
             if (!String.IsNullOrEmpty(state.ProductionFailure))
                 production["failure"] = state.ProductionFailure;
@@ -242,6 +260,33 @@ namespace DspProgressionStatusExporter
                 { "observedIntervals", flow != null ? (object)flow.ObservedIntervals : null },
                 { "productionActiveFraction", flow != null ? (object)flow.ProductionActiveFraction : null },
                 { "productionContinuity", flow != null ? flow.ProductionContinuity : null }
+            };
+            row["nativeWindows"] = new Dictionary<string, object> {
+                { "oneMinute", new Dictionary<string, object> {
+                    { "available", flow != null && flow.OneMinuteAvailable },
+                    { "status", flow != null
+                        ? flow.OneMinuteStatus : "unavailable" },
+                    { "producedPerMinute", flow != null && flow.OneMinuteAvailable
+                        ? (object)flow.ProducedPerMinute : null },
+                    { "consumedPerMinute", flow != null && flow.OneMinuteAvailable
+                        ? (object)flow.ConsumedPerMinute : null },
+                    { "netPerMinute", flow != null && flow.OneMinuteAvailable
+                        ? (object)flow.NetPerMinute : null }
+                } },
+                { "tenMinute", new Dictionary<string, object> {
+                    { "available", flow != null && flow.TenMinuteAvailable },
+                    { "ready", flow != null && flow.TenMinuteReady },
+                    { "status", flow != null
+                        ? flow.TenMinuteStatus : "unavailable" },
+                    { "observedGameSeconds", flow != null
+                        ? (object)flow.TenMinuteObservedGameSeconds : null },
+                    { "producedPerMinute", flow != null && flow.TenMinuteAvailable
+                        ? (object)flow.TenMinuteProducedPerMinute : null },
+                    { "consumedPerMinute", flow != null && flow.TenMinuteAvailable
+                        ? (object)flow.TenMinuteConsumedPerMinute : null },
+                    { "netPerMinute", flow != null && flow.TenMinuteAvailable
+                        ? (object)flow.TenMinuteNetPerMinute : null }
+                } }
             };
             if (includeLifetime)
             {

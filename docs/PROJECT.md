@@ -47,7 +47,8 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** native production-risk foundation (`RISK-01`).
+**Active:** native production-risk foundation (`RISK-01`), implemented and
+awaiting its Statistics Panel comparison gate.
 
 The Cube-rate column is implemented and accepted through the full-playthrough
 test. The immediate roadmap now adds conservative production-risk analysis
@@ -153,7 +154,7 @@ to DYSON, WARP to GREEN, and LOGISTICS or COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.3 serializes the same selected-phase conclusions used by the
+Snapshot schema 2.4 serializes the same selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. Every
 snapshot includes provenance, playtime, research and Cube aggregates,
 selection diagnostics, objective/status conclusions, focused selected-phase
@@ -181,8 +182,8 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Contract | Version |
 |---|---:|
 | Release line | 1.18.x |
-| Snapshot schema | 2.3 |
-| Normalized state | 1.7 |
+| Snapshot schema | 2.4 |
+| Normalized state | 1.8 |
 | Guide selection | 1.5 |
 | Guide analysis | 2.6 |
 | Progression | 2.6 |
@@ -201,7 +202,7 @@ Accepted runtime work includes:
 - native one-minute production comparisons against the Statistics Panel;
 - native Dyson aggregate comparisons against the Dyson editor;
 - focused ILS, DYSON, PHOTON, and WHITE conclusions;
-- compact schema 2.3 snapshots and bounded collector diagnostics;
+- compact schema 2.4 snapshots and bounded collector diagnostics;
 - panel layout, click-through behavior, scrolling, footer actions, and hover
   behavior;
 - Basic Regular rendering with the retained outline and separate

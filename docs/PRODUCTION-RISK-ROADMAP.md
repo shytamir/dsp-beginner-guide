@@ -72,6 +72,9 @@ and are omitted rather than approximated from inventory movement.
 
 ### RISK-01 - Native multi-window evidence
 
+**Status:** Implemented; awaiting the required one-minute/ten-minute native
+runtime comparison checkpoint.
+
 **User story:** As the risk analyzer, I need trustworthy one-minute and
 ten-minute production and consumption evidence with explicit coverage state,
 so a recent slowdown can be compared with a real baseline without mistaking

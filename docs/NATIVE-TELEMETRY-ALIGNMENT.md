@@ -12,10 +12,15 @@
 
 - Production resolves each watched item through
   `FactoryProductionStat.productIndices[itemId]`, then reads
-  `ProductStat.total[1]` and `total[8]` from the compact `productPool`.
-- Entire-cluster values are the sum of the native one-minute factory
-  aggregates. Planet-factory values are retained only for Titanium and Silicon
-  route checks.
+  `ProductStat.total[1]` and `total[8]` for one minute and `total[2]` and
+  `total[9]` for ten minutes from the compact `productPool`.
+- Entire-cluster values are the sum of the native factory aggregates.
+  Ten-minute totals are divided by ten once in the collector so both windows
+  reach normalized state as items per minute. Planet-factory values are
+  retained only for Titanium and Silicon route checks.
+- Ten-minute history is marked ready only after a watched item has remained
+  observable for 600 game seconds in the current mod session. A zero native
+  aggregate remains a real zero and is never used as a readiness signal.
 - Lifetime reads use `total[6]` and `total[13]` only for the six Cubes.
 - A bounded sample history records continuity of the native one-minute windows;
   no rate is derived from lifetime-counter deltas.
@@ -27,7 +32,8 @@
   of those native aggregate totals.
 - Ejector and silo discovery now reads their dedicated component pools.
   Receiver continuity retains its accepted dedicated generator-pool sampler.
-- Schema 2.1 records source, scope, period, watch-list coverage, and Dyson
+- Schema 2.4 records source, scope, independent window availability and
+  readiness, watch-list coverage, focused window values, and Dyson
   aggregate-node coverage without exporting broad item or topology maps.
 
 ## Original production mismatch

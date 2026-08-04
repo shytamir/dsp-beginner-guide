@@ -4,6 +4,12 @@
 
 ### Changed
 
+- Added independent native one-minute and ten-minute production and
+  consumption evidence for the bounded watch set. Ten-minute totals are
+  normalized to items per minute, carry explicit per-item observation-age
+  readiness, and remain distinct from unavailable or legitimate zero values.
+- Advanced normalized state to 1.8 and compact snapshot schema to 2.4 with
+  focused multi-window provenance and selected-phase diagnostic evidence.
 - Reworked ILS into compact preparation, expedition, and research-rush
   checkpoints backed by carried inventory and planet-local cargo evidence.
 - Replaced DYSON's premature Antimatter objectives with Solar Sail production,

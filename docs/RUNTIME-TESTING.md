@@ -104,7 +104,7 @@ During the checkpoints, also confirm:
   and does not open Windows Explorer;
 - `DON'T PANIC` opens the matching retained guide anchor;
 - no noticeable new sampling hitch occurs with the panel closed or open;
-- each JSON is no larger than 256 KiB and names snapshot schema 2.2.
+- each JSON is no larger than 256 KiB and names snapshot schema 2.4.
 
 ## Testing handoff
 

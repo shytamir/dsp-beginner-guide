@@ -133,10 +133,11 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   PHOTON reports actual Photon and Antimatter rates plus receiver demand
   against available Dyson generation.
 - No phase displays a fixed factory-power objective.
-- Production uses DSP's pre-aggregated one-minute Statistics Panel values.
+- Production uses DSP's pre-aggregated one-minute and normalized ten-minute
+  Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.3 exports conclusions, provenance, collector
+- Compact snapshot schema 2.4 exports conclusions, provenance, collector
   health, and only the focused evidence needed to audit those conclusions.
 - The click-through panel uses Basic Regular with a dark outline. Only its
   explicit controls capture pointer input.
@@ -162,6 +163,9 @@ The package that inspired the feature is not an implementation dependency.
 The adopted math, evidence safeguards, four user stories, and runtime gates
 are defined in
 [docs/PRODUCTION-RISK-ROADMAP.md](docs/PRODUCTION-RISK-ROADMAP.md).
+
+`RISK-01` is implemented and awaits its native one-minute/ten-minute runtime
+comparison gate before buffer or scoring work begins.
 
 ## Repository layout
 

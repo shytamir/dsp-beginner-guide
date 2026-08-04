@@ -6,7 +6,8 @@ using System.Globalization;
 namespace DspProgressionStatusExporter
 {
     /// <summary>
-    /// Reads the same one-minute aggregates used by DSP's Statistics Panel.
+    /// Reads the same one-minute and ten-minute aggregates used by DSP's
+    /// Statistics Panel.
     /// Inventory movement is deliberately not used as a production proxy.
     /// </summary>
     internal sealed class ProductionTelemetry
@@ -14,9 +15,13 @@ namespace DspProgressionStatusExporter
         private const int MaximumSamples = 25;
         private const int ProductionPeriodIndex = 1;
         private const int ConsumptionPeriodIndex = 8;
+        private const int TenMinuteProductionPeriodIndex = 2;
+        private const int TenMinuteConsumptionPeriodIndex = 9;
         private const int LifetimeProductionIndex = 6;
         private const int LifetimeConsumptionIndex = 13;
         private const double NativePeriodSeconds = 60.0;
+        private const double TenMinutePeriodSeconds = 600.0;
+        private const double TenMinutePeriodMinutes = 10.0;
 
         // This is the union currently consumed by guide analysis, compact
         // snapshots, and the few planet-scoped route checks.
@@ -43,6 +48,12 @@ namespace DspProgressionStatusExporter
         {
             public long Produced;
             public long Consumed;
+            public bool OneMinuteAvailable;
+            public long TenMinuteProduced;
+            public long TenMinuteConsumed;
+            public bool TenMinuteAvailable;
+            public bool TenMinuteReady;
+            public double TenMinuteObservedGameSeconds;
             public long LifetimeProduced;
             public long LifetimeConsumed;
             public bool LifetimeAvailable;
@@ -64,6 +75,8 @@ namespace DspProgressionStatusExporter
 
         private readonly Queue<SamplePoint> samples =
             new Queue<SamplePoint>();
+        private readonly Dictionary<int, long> tenMinuteFirstObservedTicks =
+            new Dictionary<int, long>();
         private object sampledGameData;
         private string lastFailure;
         private int lastFactoryCount;
@@ -71,6 +84,7 @@ namespace DspProgressionStatusExporter
         public void Clear()
         {
             samples.Clear();
+            tenMinuteFirstObservedTicks.Clear();
             sampledGameData = null;
             lastFailure = null;
             lastFactoryCount = 0;
@@ -83,6 +97,7 @@ namespace DspProgressionStatusExporter
                 if (!Object.ReferenceEquals(sampledGameData, gameData))
                 {
                     samples.Clear();
+                    tenMinuteFirstObservedTicks.Clear();
                     sampledGameData = gameData;
                 }
 
@@ -103,7 +118,10 @@ namespace DspProgressionStatusExporter
                 };
                 SamplePoint previous = LastSample();
                 if (previous != null && point.GameTick < previous.GameTick)
+                {
                     samples.Clear();
+                    tenMinuteFirstObservedTicks.Clear();
+                }
 
                 var gameFactories = new List<object>();
                 foreach (object factory in Plugin.Enumerate(
@@ -146,6 +164,8 @@ namespace DspProgressionStatusExporter
                 }
                 lastFactoryCount = activeFactoryCount;
 
+                UpdateTenMinuteReadiness(point);
+
                 samples.Enqueue(point);
                 while (samples.Count > MaximumSamples) samples.Dequeue();
                 lastFailure = point.Galaxy.Count > 0
@@ -162,7 +182,12 @@ namespace DspProgressionStatusExporter
         {
             SamplePoint last = LastSample();
             bool aggregateAvailable =
-                last != null && last.Galaxy.Count > 0;
+                CountOneMinuteItems(last) > 0;
+            int tenMinuteAvailableItems = CountTenMinuteItems(last, false);
+            int tenMinuteReadyItems = CountTenMinuteItems(last, true);
+            bool tenMinuteAvailable = tenMinuteAvailableItems > 0;
+            bool tenMinuteReady = tenMinuteAvailable &&
+                tenMinuteReadyItems == tenMinuteAvailableItems;
             var result = new Dictionary<string, object> {
                 { "available", aggregateAvailable },
                 { "source", "GameData.statistics.production.factoryStatPool[*].productIndices[itemId] -> productPool[index].total" },
@@ -170,13 +195,37 @@ namespace DspProgressionStatusExporter
                 { "period", "one-minute" },
                 { "productionPeriodIndex", ProductionPeriodIndex },
                 { "consumptionPeriodIndex", ConsumptionPeriodIndex },
-                { "semantics", "Rates are DSP's pre-aggregated one-minute Statistics Panel values; inventory transfers do not affect them." },
+                { "semantics", "Rates are DSP's pre-aggregated Statistics Panel values; ten-minute totals are divided by ten to normalize them to items per minute, and inventory transfers do not affect either window." },
                 { "sampleCount", samples.Count },
                 { "watchedItemCount", WatchedItemIds.Length },
                 { "factoryCount", lastFactoryCount },
                 { "windowGameSeconds", NativePeriodSeconds },
-                { "windowReady", aggregateAvailable }
+                { "windowReady", aggregateAvailable },
+                { "oneMinuteWindow", WindowMetadata(
+                    aggregateAvailable,
+                    aggregateAvailable,
+                    aggregateAvailable ? "ready" : "unavailable",
+                    "one-minute",
+                    NativePeriodSeconds,
+                    ProductionPeriodIndex,
+                    ConsumptionPeriodIndex,
+                    "native-aggregate") },
+                { "tenMinuteWindow", WindowMetadata(
+                    tenMinuteAvailable,
+                    tenMinuteReady,
+                    tenMinuteAvailable
+                        ? (tenMinuteReady ? "ready" : "not-ready")
+                        : "unavailable",
+                    "ten-minute",
+                    TenMinutePeriodSeconds,
+                    TenMinuteProductionPeriodIndex,
+                    TenMinuteConsumptionPeriodIndex,
+                    "per-item-mod-observation-age") }
             };
+            Dictionary<string, object> tenMinuteWindow =
+                (Dictionary<string, object>)result["tenMinuteWindow"];
+            tenMinuteWindow["availableItemCount"] = tenMinuteAvailableItems;
+            tenMinuteWindow["readyItemCount"] = tenMinuteReadyItems;
             if (!String.IsNullOrEmpty(lastFailure))
                 result["lastFailure"] = lastFailure;
             if (last == null) return result;
@@ -249,15 +298,30 @@ namespace DspProgressionStatusExporter
                     Plugin.ToInt(Plugin.GetMember(stat, "itemId")) != itemId)
                     continue;
                 object totals = Plugin.GetMember(stat, "total");
-                long produced;
-                long consumed;
-                if (!TryReadTotal(totals, ProductionPeriodIndex, out produced) ||
-                    !TryReadTotal(totals, ConsumptionPeriodIndex, out consumed))
+                long produced = 0L;
+                long consumed = 0L;
+                long tenMinuteProduced = 0L;
+                long tenMinuteConsumed = 0L;
+                bool oneMinuteAvailable =
+                    TryReadTotal(totals, ProductionPeriodIndex, out produced) &&
+                    TryReadTotal(totals, ConsumptionPeriodIndex, out consumed);
+                bool tenMinuteAvailable =
+                    TryReadTotal(
+                        totals, TenMinuteProductionPeriodIndex,
+                        out tenMinuteProduced) &&
+                    TryReadTotal(
+                        totals, TenMinuteConsumptionPeriodIndex,
+                        out tenMinuteConsumed);
+                if (!oneMinuteAvailable && !tenMinuteAvailable)
                     continue;
 
                 var pair = new AggregatePair {
                     Produced = produced,
-                    Consumed = consumed
+                    Consumed = consumed,
+                    OneMinuteAvailable = oneMinuteAvailable,
+                    TenMinuteProduced = tenMinuteProduced,
+                    TenMinuteConsumed = tenMinuteConsumed,
+                    TenMinuteAvailable = tenMinuteAvailable
                 };
                 if (LifetimeItemIds.Contains(itemId))
                 {
@@ -323,6 +387,17 @@ namespace DspProgressionStatusExporter
                 }
                 pair.Produced += kv.Value.Produced;
                 pair.Consumed += kv.Value.Consumed;
+                pair.OneMinuteAvailable =
+                    pair.OneMinuteAvailable || kv.Value.OneMinuteAvailable;
+                pair.TenMinuteProduced += kv.Value.TenMinuteProduced;
+                pair.TenMinuteConsumed += kv.Value.TenMinuteConsumed;
+                pair.TenMinuteAvailable =
+                    pair.TenMinuteAvailable || kv.Value.TenMinuteAvailable;
+                pair.TenMinuteReady =
+                    pair.TenMinuteReady || kv.Value.TenMinuteReady;
+                pair.TenMinuteObservedGameSeconds = Math.Max(
+                    pair.TenMinuteObservedGameSeconds,
+                    kv.Value.TenMinuteObservedGameSeconds);
                 if (kv.Value.LifetimeAvailable)
                 {
                     pair.LifetimeAvailable = true;
@@ -343,12 +418,34 @@ namespace DspProgressionStatusExporter
             foreach (int id in ids)
             {
                 AggregatePair pair = current[id];
+                double tenMinuteProduced = NormalizePerMinute(
+                    pair.TenMinuteProduced, TenMinutePeriodMinutes);
+                double tenMinuteConsumed = NormalizePerMinute(
+                    pair.TenMinuteConsumed, TenMinutePeriodMinutes);
                 var row = new Dictionary<string, object> {
                     { "itemId", id },
                     { "name", Plugin.ItemName(id) },
                     { "producedPerMinute", (double)pair.Produced },
                     { "consumedPerMinute", (double)pair.Consumed },
-                    { "netPerMinute", (double)(pair.Produced - pair.Consumed) }
+                    { "netPerMinute", (double)(pair.Produced - pair.Consumed) },
+                    { "oneMinuteWindow", WindowValues(
+                        pair.OneMinuteAvailable,
+                        pair.OneMinuteAvailable,
+                        pair.OneMinuteAvailable ? "ready" : "unavailable",
+                        NativePeriodSeconds,
+                        pair.Produced,
+                        pair.Consumed,
+                        0.0) },
+                    { "tenMinuteWindow", WindowValues(
+                        pair.TenMinuteAvailable,
+                        pair.TenMinuteReady,
+                        pair.TenMinuteAvailable
+                            ? (pair.TenMinuteReady ? "ready" : "not-ready")
+                            : "unavailable",
+                        TenMinutePeriodSeconds,
+                        tenMinuteProduced,
+                        tenMinuteConsumed,
+                        pair.TenMinuteObservedGameSeconds) }
                 };
                 if (includeLifetime && pair.LifetimeAvailable)
                 {
@@ -408,6 +505,124 @@ namespace DspProgressionStatusExporter
             SamplePoint last = null;
             foreach (SamplePoint sample in samples) last = sample;
             return last;
+        }
+
+        private void UpdateTenMinuteReadiness(SamplePoint point)
+        {
+            foreach (var kv in point.Galaxy)
+            {
+                AggregatePair pair = kv.Value;
+                if (!pair.TenMinuteAvailable) continue;
+                long firstTick;
+                if (!tenMinuteFirstObservedTicks.TryGetValue(
+                    kv.Key, out firstTick))
+                {
+                    firstTick = point.GameTick;
+                    tenMinuteFirstObservedTicks[kv.Key] = firstTick;
+                }
+                pair.TenMinuteObservedGameSeconds = Math.Max(
+                    0.0, (point.GameTick - firstTick) / 60.0);
+                pair.TenMinuteReady =
+                    pair.TenMinuteObservedGameSeconds >=
+                    TenMinutePeriodSeconds;
+            }
+            foreach (Dictionary<int, AggregatePair> factory in
+                point.Factories.Values)
+            {
+                foreach (var kv in factory)
+                {
+                    AggregatePair pair = kv.Value;
+                    long firstTick;
+                    if (!pair.TenMinuteAvailable ||
+                        !tenMinuteFirstObservedTicks.TryGetValue(
+                            kv.Key, out firstTick))
+                        continue;
+                    pair.TenMinuteObservedGameSeconds = Math.Max(
+                        0.0, (point.GameTick - firstTick) / 60.0);
+                    pair.TenMinuteReady =
+                        pair.TenMinuteObservedGameSeconds >=
+                        TenMinutePeriodSeconds;
+                }
+            }
+        }
+
+        private static int CountOneMinuteItems(SamplePoint point)
+        {
+            if (point == null) return 0;
+            int count = 0;
+            foreach (AggregatePair pair in point.Galaxy.Values)
+                if (pair.OneMinuteAvailable) count++;
+            return count;
+        }
+
+        private static int CountTenMinuteItems(
+            SamplePoint point, bool readyOnly)
+        {
+            if (point == null) return 0;
+            int count = 0;
+            foreach (AggregatePair pair in point.Galaxy.Values)
+                if (pair.TenMinuteAvailable &&
+                    (!readyOnly || pair.TenMinuteReady))
+                    count++;
+            return count;
+        }
+
+        private static double NormalizePerMinute(
+            long windowTotal, double windowMinutes)
+        {
+            return windowMinutes > 0.0
+                ? windowTotal / windowMinutes
+                : 0.0;
+        }
+
+        private static Dictionary<string, object> WindowMetadata(
+            bool available,
+            bool ready,
+            string status,
+            string period,
+            double windowGameSeconds,
+            int productionIndex,
+            int consumptionIndex,
+            string readinessSource)
+        {
+            return new Dictionary<string, object> {
+                { "available", available },
+                { "ready", ready },
+                { "status", status },
+                { "period", period },
+                { "windowGameSeconds", windowGameSeconds },
+                { "productionPeriodIndex", productionIndex },
+                { "consumptionPeriodIndex", consumptionIndex },
+                { "readinessSource", readinessSource }
+            };
+        }
+
+        private static Dictionary<string, object> WindowValues(
+            bool available,
+            bool ready,
+            string status,
+            double windowGameSeconds,
+            double producedPerMinute,
+            double consumedPerMinute,
+            double observedGameSeconds)
+        {
+            var result = new Dictionary<string, object> {
+                { "available", available },
+                { "ready", ready },
+                { "status", status },
+                { "windowGameSeconds", windowGameSeconds },
+                { "producedPerMinute", available
+                    ? (object)producedPerMinute : null },
+                { "consumedPerMinute", available
+                    ? (object)consumedPerMinute : null },
+                { "netPerMinute", available
+                    ? (object)(producedPerMinute - consumedPerMinute) : null }
+            };
+            if (observedGameSeconds > 0.0 ||
+                (available && windowGameSeconds > NativePeriodSeconds))
+                result["observedGameSeconds"] =
+                    Math.Round(observedGameSeconds, 3);
+            return result;
         }
     }
 }
