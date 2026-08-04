@@ -148,21 +148,20 @@ history.
 
 ## Active development
 
-The active `CUBE-01` presentation story is defined in
-[docs/PROJECT.md](docs/PROJECT.md#project-status):
+The Cube-rate column is implemented and accepted. Active development now
+focuses on a conservative production-risk analyzer built through the existing
+telemetry and analysis architecture:
 
-- A click-through Cube-rate column grows from Blue through White as the player
-  selects later critical-path phases.
-- Each Cube occupies one compact square and shows only its native production
-  rate in `/m` form.
-- Rate text changes from red or orange through white to green using the
-  phase-specific minimum, comfortable, and later thresholds.
-- The column remains anchored below collapse/expand and stays visible in both
-  panel states.
+1. verify and expose native multi-window evidence;
+2. model accessible buffer runway and proven backpressure;
+3. calculate and interpret production risk deterministically; and
+4. add one quiet, click-through phase-health accent for expanded and collapsed
+   panel states.
 
-The implementation is complete and awaits in-game visual acceptance.
-
-`RATE-01`, `BUFFER-01`, and the remaining panel-density ideas are deferred.
+The package that inspired the feature is not an implementation dependency.
+The adopted math, evidence safeguards, four user stories, and runtime gates
+are defined in
+[docs/PRODUCTION-RISK-ROADMAP.md](docs/PRODUCTION-RISK-ROADMAP.md).
 
 ## Repository layout
 

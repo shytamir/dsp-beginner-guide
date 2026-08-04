@@ -47,93 +47,20 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** progressive Cube-rate column (`CUBE-01`).
+**Active:** native production-risk foundation (`RISK-01`).
 
-The current implementation is accepted against the guide 1.22.2 critical
-path. `CUBE-01` is implemented and awaits in-game visual acceptance. It has
-priority over the deferred information-quality stories and does not change
-phase objectives, navigation, or telemetry collection.
-
-### CUBE-01 - Progressive Cube-rate column
-
-**User story:** As a guide reader, I want a compact, always-visible column of
-the Cube rates established so far, so I can read matrix capacity at a glance
-without adding prose or a production dashboard to the guide panel.
-
-Presentation:
-
-- Anchor the column directly below the expand/collapse control.
-- Keep it visible and stationary when the main panel is expanded or collapsed.
-- Add one square for each Cube phase reached in the player-selected phase
-  sequence: Blue, Red, Yellow, Purple, Green, then White.
-- Give each square its Cube identity through its intrinsic Cube color; display
-  no label, icon, tooltip, or other text beyond the rate in `x/m` form.
-- Keep every square and text element non-interactive and completely
-  click-through.
-- Use the embedded Basic font and existing high-contrast outline.
-
-Rate source and formatting:
-
-- Reuse the bounded native one-minute Statistics Panel production aggregates;
-  do not add another sampler or calculate from inventories.
-- Display the native per-minute rate with up to two decimal places followed
-  by `/m`.
-- Show `--/m` in neutral white when the native rate is unavailable or its
-  observation window is not ready; unknown evidence never becomes zero.
-
-Thresholds:
-
-| Cube | Minimum | Comfortable | Later |
-|---|---:|---:|---:|
-| Blue | 20/min | 40/min | 60/min |
-| Red | 10/min | 20/min | 60/min |
-| Yellow | 15/min | 22.5/min | 60/min |
-| Purple | 12/min | 24/min | 40/min |
-| Green | 10/min | 20/min | 40/min |
-| White | 40/min | 40/min | not defined |
-
-Color policy:
-
-- Below minimum: red only for the selected phase's Cube, or the latest prior
-  Cube when the selected phase has no Cube of its own; older Cubes use orange.
-- At minimum and below comfortable: orange.
-- At comfortable and below later: white.
-- At or above the later target: green.
-- WHITE's published 40/min objective is both minimum and comfortable, so it
-  becomes white at 40/min and has no green tier.
-- Re-evaluate color whenever a refreshed native rate crosses a threshold.
-
-Phase growth and focus:
-
-- BOOTSTRAP shows no Cube squares.
-- BLUE and RED add their respective squares.
-- ILS keeps Blue and Red visible and treats Red as the focus Cube.
-- YELLOW, PURPLE, and GREEN each add and focus their own Cube.
-- DYSON and PHOTON retain the five established Cube squares and treat Green as
-  the focus Cube.
-- WHITE adds and focuses the White Cube square.
-
-Acceptance:
-
-- The column contains exactly the squares permitted by the selected phase and
-  never changes the selected phase.
-- Expanding, collapsing, scrolling, and refreshing the main panel do not move,
-  hide, duplicate, or resize the Cube column.
-- Only the focus Cube can render below-minimum red; threshold crossings update
-  the other colors according to the table.
-- The column does not capture clicks, hover, focus, scrolling, or keyboard
-  input and does not block the game world beneath it.
-- Existing navigation, panel layout, objectives, footer actions, snapshots,
-  native telemetry, and performance behavior do not regress.
+The Cube-rate column is implemented and accepted through the full-playthrough
+test. The immediate roadmap now adds conservative production-risk analysis
+without adopting the rejected implementation package or expanding the panel
+into a dashboard. The four sequenced user stories and their runtime gates are
+defined in `docs/PRODUCTION-RISK-ROADMAP.md`.
 
 ## Future considerations
 
 These ideas are recorded but are not active work:
 
-- `RATE-01`: show supporting rates only when they explain a causal,
-  actionable shortfall.
-- `BUFFER-01`: interpret idle production using demand, net deficit, and
-  available buffer before warning.
+- `RATE-01` and `BUFFER-01` are superseded by the active `RISK-01` through
+  `RISK-04` roadmap.
 - Keep completed objectives to compact single lines while reserving supporting
   detail for incomplete objectives.
 - Limit Pending to the few highest-value actions, ordered by what unlocks or
