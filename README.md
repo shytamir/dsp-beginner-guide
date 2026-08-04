@@ -8,7 +8,7 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-The current release implements guide **1.22.2**. The public guide 2.0 edition
+The current release implements guide **2.0**. The public guide 2.0 edition
 (published `guide-version` metadata `1.23.0`) is now the development authority;
 its nine-phase migration is planned and has not yet changed runtime behavior.
 
