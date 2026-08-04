@@ -191,7 +191,7 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 
 | Contract | Version |
 |---|---:|
-| Release line | 1.18.x |
+| Release line | 2.0.x |
 | Snapshot schema | 2.7 |
 | Normalized state | 1.9 |
 | Guide selection | 1.6 |
@@ -219,6 +219,9 @@ Accepted runtime work for the current implementation includes:
   `DON'T PANIC` treatment;
 - an extensive representative user test with no reported functional,
   navigation, persistence, layout, footer, or performance defects.
+- the public Thunderstore DLL with no snapshot control, no dead footer
+  interaction or spacing, intact remaining controls, and no plugin error or
+  exception in the validation log.
 
 `GUIDE2-01` passed its early-save and working-Blue-factory in-game checkpoint
 with correct objectives, prompt completion, and no visible regression.
@@ -230,15 +233,11 @@ one, three, and six Matrix icons plus interaction and refresh checks.
 `GUIDE2-03` passed its navigation, persistence, removed-contract, control,
 performance, and focused BLUE/ILS/WHITE snapshot checkpoint.
 
-The release candidate now has two ordered Thunderstore blockers. First,
-`STORE-README-01` replaces the packaged copy with a concise player-facing
-README and proves CI uses it. Second, `STORE-SNAPSHOT-01` adds a safe
-build-time public variant without the forensic export control, then changes CI
-to package only that variant. Their user stories and acceptance criteria are
-authoritative in `docs/THUNDERSTORE-PACKAGE.md`.
-
-`STORE-README-01` is completed and accepted by the release owner.
-`STORE-SNAPSHOT-01` is implemented and awaits its two-variant in-game gate.
+The release candidate's two Thunderstore blockers are completed and accepted
+by the release owner. `STORE-README-01` provides the dedicated player-facing
+README, and `STORE-SNAPSHOT-01` provides the separately validated public DLL
+without the forensic export control. Their user stories and acceptance
+records remain in `docs/THUNDERSTORE-PACKAGE.md`.
 
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.

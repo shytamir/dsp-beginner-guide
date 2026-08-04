@@ -101,7 +101,7 @@ Acceptance criteria:
 
 ### STORE-SNAPSHOT-01 — Omit snapshot export from the public package
 
-**Status:** Implemented; human validation gate pending.
+**Status:** Completed and accepted by the release owner.
 
 **User story:** As a Thunderstore user, I want the public panel to omit the
 forensic snapshot control, so the normal mod surface stays focused on guide
@@ -120,3 +120,9 @@ Acceptance criteria:
 - the store README contains no snapshot-export reference;
 - an in-game gate confirms the diagnostic control remains available, the
   public control is absent, and the remaining panel layout and controls work.
+
+The release-owner gate passed on public package version `1.18.49`: the control
+was absent and non-interactive with no dead footer spacing, the remaining
+panel controls and layout worked, and the log contained no plugin error or
+exception. BepInEx emitted its non-blocking compile-target compatibility
+warning before loading the plugin successfully.

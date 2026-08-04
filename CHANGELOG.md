@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Accepted the STORE-SNAPSHOT-01 public-build gate and advanced the release
+  line from 1.18 to 2.0.
 - Added distinct diagnostic and public build variants. The diagnostic DLL
   retains the forensic snapshot control; the public Thunderstore DLL omits
   the control and its interaction path at compile time.
