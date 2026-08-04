@@ -4,6 +4,12 @@
 
 ### Changed
 
+- Aligned the hosted compile reference with the declared Thunderstore
+  dependency, `xiaoye97-BepInEx-5.4.17`, and added an assembly-reference
+  version check to prevent the loader warning from returning.
+- Matched all nine panel phase tags to the published guide's bracketed labels,
+  exact colors, and phase icons, including ILS, DYSON, and PHOTON, and advanced
+  the panel presentation contract to 2.2.
 - Accepted the STORE-SNAPSHOT-01 public-build gate and advanced the release
   line from 1.18 to 2.0.
 - Added distinct diagnostic and public build variants. The diagnostic DLL

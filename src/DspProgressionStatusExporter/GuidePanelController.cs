@@ -31,6 +31,8 @@ namespace DspProgressionStatusExporter
             ScrollControlWidth + CubeRateColumnInset;
         private const float InteractiveControlHoverScale = 1.12f;
         private const float CompletionSeconds = 0.28f;
+        private const float PhaseTitleIconSize = 22f;
+        private const float PhaseTitleIconGap = 5f;
 #if DSP_GUIDE_SNAPSHOT_CONTROL
         private const float SnapshotFeedbackSeconds = 2f;
 #endif
@@ -341,6 +343,7 @@ namespace DspProgressionStatusExporter
         private RectTransform contentRect;
         private ScrollRect scrollRect;
         private Text titleText;
+        private Image phaseTitleIcon;
         private Text objectiveHeader;
         private Text pendingHeader;
         private Text contextHeader;
@@ -628,6 +631,12 @@ namespace DspProgressionStatusExporter
             titleText = CreateText(
                 "Title", panelObject.transform, style.HeaderText);
             titleText.alignment = TextAnchor.UpperLeft;
+            GameObject phaseTitleIconObject = CreateObject(
+                "PhaseTitleIcon", panelObject.transform, typeof(Image));
+            phaseTitleIcon = phaseTitleIconObject.GetComponent<Image>();
+            phaseTitleIcon.raycastTarget = false;
+            phaseTitleIcon.preserveAspect = true;
+            phaseTitleIcon.enabled = false;
 
             GameObject collapseButton = CreateObject(
                 "CollapseButton",
@@ -804,6 +813,11 @@ namespace DspProgressionStatusExporter
         {
             if (model == null) return;
             titleText.text = GuideRichText.Title(model.PhaseId, model.Title);
+            Sprite phaseIcon = matrixIcons != null
+                ? matrixIcons.Get(model.PhaseId)
+                : null;
+            phaseTitleIcon.sprite = phaseIcon;
+            phaseTitleIcon.enabled = phaseIcon != null;
 #if DSP_GUIDE_SNAPSHOT_CONTROL
             snapshotLinkText.text = "Save snapshot";
 #endif
@@ -1044,12 +1058,23 @@ namespace DspProgressionStatusExporter
                 previousPhaseRect, controlsRight - 28f, 10f, 26f, 28f);
             controlsRight -= 31f;
 
+            float titleLeft = OuterPadding;
+            if (phaseTitleIcon.enabled)
+            {
+                SetTopRect(
+                    phaseTitleIcon.rectTransform,
+                    titleLeft,
+                    11f,
+                    PhaseTitleIconSize,
+                    PhaseTitleIconSize);
+                titleLeft += PhaseTitleIconSize + PhaseTitleIconGap;
+            }
             float titleRight = panelWidth - controlsRight + 4f;
             float titleWidth = Mathf.Max(
-                150f, controlsRight - OuterPadding - 4f);
+                150f, controlsRight - titleLeft - 4f);
             SetTopStretchRect(
                 titleText.rectTransform,
-                OuterPadding,
+                titleLeft,
                 9f,
                 titleRight,
                 78f);
@@ -1787,12 +1812,15 @@ namespace DspProgressionStatusExporter
         {
             private static readonly Dictionary<string, Color> PhaseColors =
                 new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase) {
-                    { "blue", new Color(0.22f, 0.72f, 1f) },
-                    { "red", new Color(1f, 0.31f, 0.35f) },
-                    { "yellow", new Color(1f, 0.76f, 0.18f) },
-                    { "purple", new Color(0.72f, 0.42f, 1f) },
-                    { "green", new Color(0.27f, 0.9f, 0.48f) },
-                    { "white", new Color(0.94f, 0.94f, 0.96f) }
+                    { "blue", new Color32(90, 184, 255, 255) },
+                    { "red", new Color32(255, 107, 107, 255) },
+                    { "ils", new Color32(79, 209, 197, 255) },
+                    { "yellow", new Color32(255, 209, 102, 255) },
+                    { "purple", new Color32(199, 146, 234, 255) },
+                    { "green", new Color32(101, 217, 140, 255) },
+                    { "dyson", new Color32(221, 111, 93, 255) },
+                    { "photon", new Color32(224, 175, 104, 255) },
+                    { "white", new Color32(233, 238, 247, 255) }
                 };
 
             private static readonly string[] CubePhrases = new string[] {
@@ -1814,7 +1842,8 @@ namespace DspProgressionStatusExporter
             {
                 Color color = PhaseColor(phaseId);
                 return Colorize(
-                    Escape((phaseId ?? "Guide").ToUpperInvariant()),
+                    "[" + Escape(
+                        (phaseId ?? "Guide").ToUpperInvariant()) + "]",
                     color) + "  —  " + Cubes(title);
             }
 

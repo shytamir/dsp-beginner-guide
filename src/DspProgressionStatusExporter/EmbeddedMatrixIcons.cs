@@ -17,7 +17,10 @@ namespace DspProgressionStatusExporter
                 { "yellow", "c-matrix.png" },
                 { "purple", "i-matrix.png" },
                 { "green", "g-matrix.png" },
-                { "white", "u-matrix.png" }
+                { "white", "u-matrix.png" },
+                { "ils", "1605.png" },
+                { "dyson", "solar-collector.png" },
+                { "photon", "photon-capacitor-full.png" }
             };
 
         private readonly Dictionary<string, Sprite> sprites =
@@ -66,7 +69,7 @@ namespace DspProgressionStatusExporter
                 byte[] bytes = ReadResource(resourceName);
                 texture = new Texture2D(
                     2, 2, TextureFormat.RGBA32, false);
-                texture.name = "DSPGuideCheck-" + cubeId + "-matrix";
+                texture.name = "DSPGuideCheck-" + cubeId + "-phase-icon";
                 texture.filterMode = FilterMode.Bilinear;
                 texture.wrapMode = TextureWrapMode.Clamp;
                 if (!texture.LoadImage(bytes, true) ||

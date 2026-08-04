@@ -197,7 +197,7 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Guide selection | 1.6 |
 | Guide analysis | 2.8 |
 | Progression | 2.8 |
-| Panel | 2.1 |
+| Panel | 2.2 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use
 the same three-number version; assembly/file metadata adds `.0`, and
@@ -238,6 +238,28 @@ by the release owner. `STORE-README-01` provides the dedicated player-facing
 README, and `STORE-SNAPSHOT-01` provides the separately validated public DLL
 without the forensic export control. Their user stories and acceptance
 records remain in `docs/THUNDERSTORE-PACKAGE.md`.
+
+### TITLE-PRESENTATION-01 — Match the published guide's phase titles
+
+**Status:** Implemented; human validation gate pending.
+
+**User story:** As a player moving between the guide and Guide Check, I want
+the panel's phase tag to use the same icon, bracketed name, and color as the
+published guide, so I can recognize my phase immediately without translating
+between two presentations.
+
+Acceptance criteria:
+
+- all nine retained phases use the exact published-guide tag colors;
+- each title places the published-guide phase icon before `[PHASE]`, using the
+  six Matrix icons plus the guide's ILS, DYSON, and PHOTON icons;
+- the descriptive title remains readable and keeps its existing wrapping;
+- missing icon resources fail softly to a text-only title;
+- icons are loaded once, cached, non-interactive, and disposed with the panel;
+- navigation, collapse, scrolling, the rate column, and both build variants
+  retain their established behavior;
+- deterministic checks cover all nine colors and icon resources, followed by
+  an in-game screenshot gate covering a cube phase, ILS, DYSON, and PHOTON.
 
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.

@@ -51,10 +51,40 @@ foreach ($resourceName in @(
         'DspGuideCheck.MatrixIcons.c-matrix.png',
         'DspGuideCheck.MatrixIcons.i-matrix.png',
         'DspGuideCheck.MatrixIcons.g-matrix.png',
-        'DspGuideCheck.MatrixIcons.u-matrix.png'
+        'DspGuideCheck.MatrixIcons.u-matrix.png',
+        'DspGuideCheck.MatrixIcons.1605.png',
+        'DspGuideCheck.MatrixIcons.solar-collector.png',
+        'DspGuideCheck.MatrixIcons.photon-capacitor-full.png'
     )) {
     if ($resources -cnotcontains $resourceName) {
         throw "Matrix icon resource is missing: $resourceName"
+    }
+}
+
+$richText = $assembly.GetType(
+    'DspProgressionStatusExporter.GuidePanelController+GuideRichText', $true
+)
+$titleMethod = $richText.GetMethod('Title', $flags)
+$phaseTitleColors = [ordered]@{
+    blue = '5AB8FF'
+    red = 'FF6B6B'
+    ils = '4FD1C5'
+    yellow = 'FFD166'
+    purple = 'C792EA'
+    green = '65D98C'
+    dyson = 'DD6F5D'
+    photon = 'E0AF68'
+    white = 'E9EEF7'
+}
+foreach ($entry in $phaseTitleColors.GetEnumerator()) {
+    $renderedTitle = $titleMethod.Invoke(
+        $null,
+        @($entry.Key, 'Presentation check')
+    )
+    $expectedTag = '<color=#' + $entry.Value + '>[' +
+        $entry.Key.ToUpperInvariant() + ']</color>'
+    if (-not $renderedTitle.StartsWith($expectedTag)) {
+        throw "Phase title presentation mismatch for $($entry.Key)."
     }
 }
 
@@ -301,8 +331,8 @@ $panelSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\GuidePanelModel.cs'
 )
-if (-not $panelSource.Contains('{ "contractVersion", "2.1" }')) {
-    throw 'Panel model contract version is not 2.1.'
+if (-not $panelSource.Contains('{ "contractVersion", "2.2" }')) {
+    throw 'Panel model contract version is not 2.2.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',
