@@ -156,16 +156,16 @@ readiness text states it.
 
 | Phase | Stable readiness contract |
 |---|---|
-| BOOTSTRAP | Inputs arrive continuously; routine mall hardware replenishes automatically; the grid supplies roughly 5-10 MW. |
-| BLUE | Blue Cubes run continuously at 20/min or better; research is not hand-fed; roughly 5-10 MW is available. |
+| BOOTSTRAP | Inputs arrive continuously; routine mall hardware replenishes automatically. |
+| BLUE | Blue Cubes run continuously at 20/min or better; research is not hand-fed. |
 | RED | Two Labs sustain 20 Red Cubes/min while Hydrogen and Refined Oil both leave the Refineries. |
-| ILS | Prepare the trip; establish powered remote Titanium and Silicon smelting; return with 860 Titanium Ingots and 520 High-Purity Silicon; complete the finite 200-Yellow-Cube purchase; deploy two ILS towers and five Vessels; make both resources arrive home automatically. |
+| ILS | Show one active checkpoint at a time: required technology and carried outpost essentials before launch; same-planet Titanium and Silicon production plus locally stored return cargo during the expedition; then the current research-chain target, missing protected components, and activated Titanium and Silicon ILS routes during the rush. |
 | YELLOW | Three configured Yellow-Cube Labs produce continuously. |
 | PURPLE | Three configured Purple-Cube Labs produce continuously. |
 | GREEN | Two configured Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. |
-| DYSON | Critical Photons become Antimatter reliably, and Antimatter reaches the science district without hand-carrying. |
-| PHOTON | At least 2,000 Antimatter is stored, plus an explicit player check that the rising trend can support WHITE. |
-| WHITE | Universe Matrix is researched; all six inputs reach the Labs continuously; ten Labs sustain 40 White Cubes/min; Mission Completed consumes or has consumed 4,000 White Cubes. |
+| DYSON | Solar Sails are produced and launched, and the active swarm generates power. |
+| PHOTON | Critical Photon and Antimatter production is running; actual rates are shown against the 48/min receiver-array reference; 2,000 stored Antimatter marks the midpoint. Current Status compares total receiver demand with available Dyson generation. |
+| WHITE | Universe Matrix is researched; ten Labs sustain 40 White Cubes/min with the stored White Cube count shown; Mission Completed consumes or has consumed 4,000 White Cubes. |
 
 Supporting production and soft reference paces appear only when they explain
 a real, actionable shortfall. Healthy supporting chains do not create rows of
@@ -226,7 +226,7 @@ to DYSON, WARP to GREEN, and LOGISTICS or COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.2 serializes the same selected-phase conclusions used by the
+Snapshot schema 2.3 serializes the same selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. Every
 snapshot includes provenance, playtime, research and Cube aggregates,
 selection diagnostics, objective/status conclusions, focused selected-phase
@@ -254,11 +254,11 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Contract | Version |
 |---|---:|
 | Release line | 1.18.x |
-| Snapshot schema | 2.2 |
-| Normalized state | 1.6 |
+| Snapshot schema | 2.3 |
+| Normalized state | 1.7 |
 | Guide selection | 1.5 |
-| Guide analysis | 2.5 |
-| Progression | 2.5 |
+| Guide analysis | 2.6 |
+| Progression | 2.6 |
 | Panel | 2.0 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use
@@ -274,7 +274,7 @@ Accepted runtime work includes:
 - native one-minute production comparisons against the Statistics Panel;
 - native Dyson aggregate comparisons against the Dyson editor;
 - focused ILS, DYSON, PHOTON, and WHITE conclusions;
-- compact schema 2.2 snapshots and bounded collector diagnostics;
+- compact schema 2.3 snapshots and bounded collector diagnostics;
 - panel layout, click-through behavior, scrolling, footer actions, and hover
   behavior;
 - Basic Regular rendering with the retained outline and separate

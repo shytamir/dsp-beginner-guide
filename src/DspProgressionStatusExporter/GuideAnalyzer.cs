@@ -25,8 +25,8 @@ namespace DspProgressionStatusExporter
             new Phase { Id = "yellow", Title = "Run three continuous Yellow Cube labs", GateTechId = 1124, NextTechId = 1312, NextResearch = "Information Matrix" },
             new Phase { Id = "purple", Title = "Run three continuous Purple Cube labs", GateTechId = 1312, NextTechId = 1705, NextResearch = "Gravity Matrix" },
             new Phase { Id = "green", Title = "Run two continuous Green Cube labs", GateTechId = 1705, NextTechId = 1505, NextResearch = "Planetary Ionosphere Utilization" },
-            new Phase { Id = "dyson", Title = "Establish reliable Antimatter production", GateTechId = 1505, NextTechId = 1506, NextResearch = "Dirac Inversion Mechanism" },
-            new Phase { Id = "photon", Title = "Bank Antimatter for White science", GateTechId = 1506, NextTechId = 1507, NextResearch = "Universe Matrix" },
+            new Phase { Id = "dyson", Title = "Build and sustain the Dyson swarm", GateTechId = 1505, NextTechId = 1506, NextResearch = "Dirac Inversion Mechanism" },
+            new Phase { Id = "photon", Title = "Run the critical-photon receiver array", GateTechId = 1506, NextTechId = 1507, NextResearch = "Universe Matrix" },
             new Phase { Id = "white", Title = "Complete the main progression route", GateTechId = 1507, NextTechId = 1508, NextResearch = "Mission Completed" }
         };
 
@@ -40,9 +40,10 @@ namespace DspProgressionStatusExporter
             Phase phase = FindPhase(selectedPhaseId) ?? FindPhase("bootstrap");
             var findings = new List<object>();
 
-            if (phase.Id == "red" || phase.Id == "ils")
+            if (phase.Id == "red")
                 AddRefineryCongestionFinding(findings, state);
-            AddPowerFinding(findings, state);
+            if (phase.Id == "photon")
+                AddPhotonPowerFinding(findings, state);
 
             var phaseResult = new Dictionary<string, object> {
                 { "id", phase.Id },
@@ -54,7 +55,7 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "2.5" },
+                { "analysisVersion", "2.6" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },
@@ -76,26 +77,32 @@ namespace DspProgressionStatusExporter
             return null;
         }
 
-        private static void AddPowerFinding(
+        private static void AddPhotonPowerFinding(
             List<object> findings,
             ObservedGameState state)
         {
-            foreach (ObservedPowerState power in state.PowerPlanets)
-            {
-                if (power.Observations < 2 || power.MinimumSatisfaction >= 0.99)
-                    continue;
-                string status = power.MinimumSatisfaction < 0.90
-                    ? "blocked" : "watch";
-                findings.Add(Finding(
-                    "power-satisfaction-" + power.PlanetId,
-                    status,
-                    (power.PlanetName ?? ("Planet " + power.PlanetId)) +
-                        " power satisfaction fell to " +
-                        Math.Round(power.MinimumSatisfaction * 100.0, 1) + "%.",
-                    "Found across " + power.Observations +
-                        " rolling power samples.",
-                    "high"));
-            }
+            if (!state.Dyson.Available) return;
+            double requested = state.Dyson.ReceiverArrayRequestedDysonPowerWatts;
+            double supplied = state.Dyson.ReceiverArraySuppliedPowerWatts;
+            double available = state.Dyson.GenerationWatts;
+            findings.Add(Finding(
+                "photon-receiver-power",
+                requested > available && available > 0 ? "watch" : "ready",
+                "Photon receivers request " + FormatPower(requested) +
+                    " from " + FormatPower(available) + " of Dyson generation.",
+                "The receiver array is currently supplied with " + FormatPower(supplied) + ".",
+                "high"));
+        }
+
+        private static string FormatPower(double watts)
+        {
+            if (watts >= 1000000000.0)
+                return Math.Round(watts / 1000000000.0, 3) + " GW";
+            if (watts >= 1000000.0)
+                return Math.Round(watts / 1000000.0, 1) + " MW";
+            if (watts >= 1000.0)
+                return Math.Round(watts / 1000.0, 1) + " kW";
+            return Math.Round(watts, 0) + " W";
         }
 
         private static void AddRefineryCongestionFinding(

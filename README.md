@@ -127,10 +127,16 @@ LOGISTICS material remains in the source guide but does not receive a panel.
 - Objectives come from each retained phase's local readiness checklist.
 - Exact production gates are used only where that checklist names an exact
   pace: Blue 20/min, Red 20/min, and White 40/min.
+- ILS presents only the active preparation, expedition, or research-rush
+  checkpoint and uses planet-local cargo evidence rather than global stock.
+- DYSON reports Solar Sail production, launches, and swarm generation;
+  PHOTON reports actual Photon and Antimatter rates plus receiver demand
+  against available Dyson generation.
+- No phase displays a fixed factory-power objective.
 - Production uses DSP's pre-aggregated one-minute Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.2 exports conclusions, provenance, collector
+- Compact snapshot schema 2.3 exports conclusions, provenance, collector
   health, and only the focused evidence needed to audit those conclusions.
 - The click-through panel uses Basic Regular with a dark outline. Only its
   explicit controls capture pointer input.

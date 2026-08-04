@@ -12,6 +12,18 @@ namespace DspProgressionStatusExporter
             6001, 6002, 6003, 6004, 6005, 6006
         };
 
+        private static readonly int[] IlsPlayerItems = {
+            2001, 2011, 2101, 2201, 2203, 2204, 2301, 2302
+        };
+
+        private static readonly int[] IlsCargoItems = {
+            1003, 1004, 1105, 1106
+        };
+
+        private static readonly int[] IlsReserveItems = {
+            1103, 1107, 1203, 1206, 1303, 2104, 5002, 6003
+        };
+
         private static readonly Dictionary<string, int[]> PhaseItems =
             new Dictionary<string, int[]>(StringComparer.OrdinalIgnoreCase) {
                 { "bootstrap", new int[] {
@@ -20,12 +32,16 @@ namespace DspProgressionStatusExporter
                 } },
                 { "blue", new int[] { 6001 } },
                 { "red", new int[] { 6002, 1114, 1120 } },
-                { "ils", new int[] { 1106, 1105, 1003, 6003, 2104, 5002 } },
+                { "ils", new int[] {
+                    1003, 1004, 1103, 1105, 1106, 1107, 1203, 1206,
+                    1303, 2001, 2011, 2101, 2104, 2201, 2203, 2204,
+                    2301, 2302, 5002, 6003
+                } },
                 { "yellow", new int[] { 6003 } },
                 { "purple", new int[] { 6004 } },
                 { "green", new int[] { 6005, 1305, 1209 } },
-                { "dyson", new int[] { 1208, 1122 } },
-                { "photon", new int[] { 1122 } },
+                { "dyson", new int[] { 1501 } },
+                { "photon", new int[] { 1208, 1122 } },
                 { "white", new int[] { 6001, 6002, 6003, 6004, 6005, 6006, 1122 } }
             };
 
@@ -290,8 +306,134 @@ namespace DspProgressionStatusExporter
                 }
                 result["stellarStationCount"] = stationCount;
                 result["deployedVesselCount"] = vesselCount;
+                result["stageEvidence"] = IlsStageEvidence(state);
             }
             return result;
+        }
+
+        private static Dictionary<string, object> IlsStageEvidence(
+            ObservedGameState state)
+        {
+            return new Dictionary<string, object> {
+                { "playerPlanetId", state.PlayerPlanetId },
+                { "playerInventory", CountEvidence(
+                    state.PlayerItemCounts, IlsPlayerItems) },
+                { "planetCargo", IlsPlanetCargoEvidence(state) },
+                { "protectedReserve", CountEvidence(
+                    BestIlsReserve(state), IlsReserveItems) }
+            };
+        }
+
+        private static List<object> IlsPlanetCargoEvidence(
+            ObservedGameState state)
+        {
+            var planetIds = new HashSet<int>();
+            foreach (int planetId in state.PlanetItemCounts.Keys)
+                planetIds.Add(planetId);
+            foreach (ObservedFactoryItemFlow flow in state.FactoryItemFlows)
+                if (Array.IndexOf(IlsCargoItems, flow.ItemId) >= 0)
+                    planetIds.Add(flow.PlanetId);
+
+            var sorted = new List<int>(planetIds);
+            sorted.Sort();
+            var rows = new List<object>();
+            foreach (int planetId in sorted)
+            {
+                Dictionary<int, long> counts;
+                if (!state.PlanetItemCounts.TryGetValue(planetId, out counts))
+                    counts = new Dictionary<int, long>();
+                var production = new Dictionary<int, double>();
+                foreach (ObservedFactoryItemFlow flow in state.FactoryItemFlows)
+                {
+                    if (flow.PlanetId != planetId ||
+                        Array.IndexOf(IlsCargoItems, flow.ItemId) < 0)
+                        continue;
+                    double rate;
+                    production.TryGetValue(flow.ItemId, out rate);
+                    production[flow.ItemId] = rate + flow.ProducedPerMinute;
+                }
+                if (!HasCount(counts, IlsCargoItems) && production.Count == 0)
+                    continue;
+                string planetName;
+                state.PlanetNames.TryGetValue(planetId, out planetName);
+                rows.Add(new Dictionary<string, object> {
+                    { "planetId", planetId },
+                    { "planetName", planetName ?? "" },
+                    { "items", CountAndProductionEvidence(
+                        counts, production, IlsCargoItems) }
+                });
+            }
+            return rows;
+        }
+
+        private static Dictionary<int, long> BestIlsReserve(
+            ObservedGameState state)
+        {
+            Dictionary<int, long> counts;
+            if (state.PlayerPlanetId > 0 &&
+                state.PlanetItemCounts.TryGetValue(
+                    state.PlayerPlanetId, out counts))
+                return counts;
+            Dictionary<int, long> best = new Dictionary<int, long>();
+            long bestTotal = -1;
+            foreach (Dictionary<int, long> candidate in state.PlanetItemCounts.Values)
+            {
+                long total = 0;
+                foreach (int itemId in IlsReserveItems)
+                {
+                    long count;
+                    if (candidate.TryGetValue(itemId, out count)) total += count;
+                }
+                if (total <= bestTotal) continue;
+                best = candidate;
+                bestTotal = total;
+            }
+            return best;
+        }
+
+        private static List<object> CountEvidence(
+            Dictionary<int, long> counts,
+            int[] itemIds)
+        {
+            return CountAndProductionEvidence(
+                counts, new Dictionary<int, double>(), itemIds);
+        }
+
+        private static List<object> CountAndProductionEvidence(
+            Dictionary<int, long> counts,
+            Dictionary<int, double> production,
+            int[] itemIds)
+        {
+            var rows = new List<object>();
+            foreach (int itemId in itemIds)
+            {
+                long count;
+                double rate;
+                counts.TryGetValue(itemId, out count);
+                production.TryGetValue(itemId, out rate);
+                var row = new Dictionary<string, object> {
+                    { "itemId", itemId },
+                    { "name", Plugin.ItemName(itemId) },
+                    { "count", count }
+                };
+                if (production.Count > 0)
+                    row["producedPerMinute"] = rate;
+                rows.Add(row);
+            }
+            return rows;
+        }
+
+        private static bool HasCount(
+            Dictionary<int, long> counts,
+            int[] itemIds)
+        {
+            foreach (int itemId in itemIds)
+            {
+                long count;
+                if (counts.TryGetValue(itemId, out count) && count > 0)
+                    return true;
+            }
+            return false;
         }
 
         private static Dictionary<string, object> RecipeEvidence(

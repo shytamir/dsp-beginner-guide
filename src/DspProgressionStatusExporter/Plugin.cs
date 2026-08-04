@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.2";
+        private const string SchemaVersion = "2.3";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -1620,9 +1620,11 @@ namespace DspProgressionStatusExporter
         {
             var d = new Dictionary<string, object>();
             var aggregate = new Dictionary<int, long>();
+            var playerInventory = new Dictionary<int, long>();
 
             // Personal inventory and fuel are included because they are also owned stock.
-            MergeStorageCounts(aggregate, GetMember(player, "package", "packageStorage"));
+            MergeStorageCounts(playerInventory, GetMember(player, "package", "packageStorage"));
+            MergeCounts(aggregate, playerInventory);
             object mecha = GetMember(player, "mecha");
             MergeStorageCounts(aggregate, GetMember(mecha, "reactorStorage", "fuelStorage", "fuelChamber"));
             MergeStorageCounts(aggregate, GetMember(player, "deliveryPackage"));
@@ -1645,6 +1647,7 @@ namespace DspProgressionStatusExporter
             }
 
             d["allOwnedItems"] = NamedCountRows(aggregate);
+            d["playerInventoryItems"] = NamedCountRows(playerInventory);
             d["factoryPlanetItems"] = byPlanet;
             d["scope"] = "Player inventory + delivery inventory + mecha fuel/reactor storage + factory depots/storage components + tanks + logistics station storage.";
             d["note"] = "Counts intentionally exclude materials currently inside machine input/output buffers, belts, sorters, miners, assemblers, labs, fractionators, ejectors, silos, and other in-process entities.";

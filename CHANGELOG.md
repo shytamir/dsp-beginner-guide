@@ -4,6 +4,18 @@
 
 ### Changed
 
+- Reworked ILS into compact preparation, expedition, and research-rush
+  checkpoints backed by carried inventory and planet-local cargo evidence.
+- Replaced DYSON's premature Antimatter objectives with Solar Sail production,
+  launch, population, and swarm-generation status.
+- Replaced PHOTON's manual pace check with actual Critical Photon and
+  Antimatter rates, the 2,000-Antimatter midpoint, and receiver demand versus
+  available Dyson generation.
+- Removed fixed factory-power rows from every phase and removed WHITE's
+  redundant six-input objective while adding its stored White Cube count.
+- Advanced the normalized state contract to 1.7 and guide analysis/progression
+  contracts to 2.6 and snapshot schema to 2.3, including focused ILS
+  player-inventory, planet-local cargo, and protected-reserve evidence.
 - Added the CUBE-01 click-through Cube-rate column. It grows from Blue through
   White with the selected phase, reuses native one-minute production rates,
   and presents per-minute rates with phase-aware threshold colors.

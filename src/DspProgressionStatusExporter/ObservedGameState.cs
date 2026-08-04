@@ -188,6 +188,10 @@ namespace DspProgressionStatusExporter
         public readonly HashSet<int> QueuedTechIds = new HashSet<int>();
         public readonly Dictionary<int, string> TechNames = new Dictionary<int, string>();
         public readonly Dictionary<int, long> OwnedItemCounts = new Dictionary<int, long>();
+        public readonly Dictionary<int, long> PlayerItemCounts = new Dictionary<int, long>();
+        public readonly Dictionary<int, Dictionary<int, long>> PlanetItemCounts =
+            new Dictionary<int, Dictionary<int, long>>();
+        public readonly Dictionary<int, string> PlanetNames = new Dictionary<int, string>();
         public readonly Dictionary<int, long> FactoryBuildingCounts = new Dictionary<int, long>();
         public readonly Dictionary<int, ObservedItemFlow> ItemFlows = new Dictionary<int, ObservedItemFlow>();
         public readonly Dictionary<int, ObservedLifetimeItemTotals> LifetimeItemTotals =
@@ -216,6 +220,7 @@ namespace DspProgressionStatusExporter
         public double TrafficWindowSeconds;
         public double PowerWindowSeconds;
         public bool RecipeTelemetryAvailable;
+        public int PlayerPlanetId;
 
         public static ObservedGameState Build(
             Dictionary<string, object> legacySnapshot,
@@ -225,6 +230,7 @@ namespace DspProgressionStatusExporter
             Dictionary<string, object> recipes)
         {
             var state = new ObservedGameState();
+            state.ReadLocation(GetDictionary(legacySnapshot, "location"));
             state.ReadResearch(GetDictionary(legacySnapshot, "research"));
             state.ReadOwnedItems(GetDictionary(legacySnapshot, "ownedInventorySummary"));
             state.ReadBuildingCounts(GetDictionary(legacySnapshot, "progressionSummary"));
@@ -241,7 +247,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "1.6";
+            result["modelVersion"] = "1.7";
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -251,6 +257,9 @@ namespace DspProgressionStatusExporter
             result["unlockedTechIds"] = SortedIds(UnlockedTechIds);
             result["queuedTechIds"] = SortedIds(QueuedTechIds);
             result["ownedItemCounts"] = ExportCounts();
+            result["playerPlanetId"] = PlayerPlanetId;
+            result["playerItemCounts"] = ExportCounts(PlayerItemCounts);
+            result["planetItemCounts"] = ExportPlanetItemCounts();
             var production = new Dictionary<string, object> {
                 { "available", ProductionWindowReady },
                 { "windowGameSeconds", ProductionWindowSeconds },
@@ -310,6 +319,11 @@ namespace DspProgressionStatusExporter
             }
         }
 
+        private void ReadLocation(Dictionary<string, object> location)
+        {
+            PlayerPlanetId = Plugin.ToInt(GetValue(location, "playerPlanetId"));
+        }
+
         private void ReadOwnedItems(Dictionary<string, object> summary)
         {
             foreach (object rowObject in Enumerate(GetValue(summary, "allOwnedItems")))
@@ -318,6 +332,32 @@ namespace DspProgressionStatusExporter
                 if (row == null) continue;
                 int id = Plugin.ToInt(GetValue(row, "id"));
                 if (id > 0) OwnedItemCounts[id] = Plugin.ToLong(GetValue(row, "count"));
+            }
+            ReadCountRows(GetValue(summary, "playerInventoryItems"), PlayerItemCounts);
+            foreach (object planetObject in Enumerate(GetValue(summary, "factoryPlanetItems")))
+            {
+                var planetRow = planetObject as Dictionary<string, object>;
+                if (planetRow == null) continue;
+                Dictionary<string, object> planet = GetDictionary(planetRow, "planet");
+                int planetId = Plugin.ToInt(GetValue(planet, "id"));
+                if (planetId <= 0) continue;
+                string planetName = ToText(GetValue(planet, "name"));
+                if (!String.IsNullOrEmpty(planetName)) PlanetNames[planetId] = planetName;
+                var counts = new Dictionary<int, long>();
+                ReadCountRows(GetValue(planetRow, "contents"), counts);
+                PlanetItemCounts[planetId] = counts;
+            }
+        }
+
+        private static void ReadCountRows(object rows, Dictionary<int, long> destination)
+        {
+            foreach (object rowObject in Enumerate(rows))
+            {
+                var row = rowObject as Dictionary<string, object>;
+                if (row == null) continue;
+                int id = Plugin.ToInt(GetValue(row, "id"));
+                if (id <= 0) id = Plugin.ToInt(GetValue(row, "itemId"));
+                if (id > 0) destination[id] = Plugin.ToLong(GetValue(row, "count"));
             }
         }
 
@@ -891,11 +931,30 @@ namespace DspProgressionStatusExporter
 
         private List<object> ExportCounts()
         {
-            var ids = new List<int>(OwnedItemCounts.Keys);
+            return ExportCounts(OwnedItemCounts);
+        }
+
+        private static List<object> ExportCounts(Dictionary<int, long> counts)
+        {
+            var ids = new List<int>(counts.Keys);
             ids.Sort();
             var rows = new List<object>();
             foreach (int id in ids)
-                rows.Add(new Dictionary<string, object> { { "itemId", id }, { "count", OwnedItemCounts[id] } });
+                rows.Add(new Dictionary<string, object> { { "itemId", id }, { "count", counts[id] } });
+            return rows;
+        }
+
+        private List<object> ExportPlanetItemCounts()
+        {
+            var planetIds = new List<int>(PlanetItemCounts.Keys);
+            planetIds.Sort();
+            var rows = new List<object>();
+            foreach (int planetId in planetIds)
+                rows.Add(new Dictionary<string, object> {
+                    { "planetId", planetId },
+                    { "planetName", PlanetNames.ContainsKey(planetId) ? PlanetNames[planetId] : "" },
+                    { "items", ExportCounts(PlanetItemCounts[planetId]) }
+                });
             return rows;
         }
 
