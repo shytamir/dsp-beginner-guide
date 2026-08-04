@@ -7,6 +7,7 @@ namespace DspProgressionStatusExporter
     internal static class CompactSnapshotBuilder
     {
         private const int ReceiverDetailLimit = 8;
+        private const int BufferSourceDetailLimit = 12;
 
         private static readonly int[] CubeIds = {
             6001, 6002, 6003, 6004, 6005, 6006
@@ -138,7 +139,7 @@ namespace DspProgressionStatusExporter
         {
             var rows = new List<object>();
             foreach (int id in CubeIds)
-                rows.Add(ItemEvidence(state, id, true));
+                rows.Add(ItemEvidence(state, id, true, false));
             return rows;
         }
 
@@ -232,14 +233,15 @@ namespace DspProgressionStatusExporter
                 ids = new int[0];
             var rows = new List<object>();
             foreach (int id in ids)
-                rows.Add(ItemEvidence(state, id, false));
+                rows.Add(ItemEvidence(state, id, false, true));
             return rows;
         }
 
         private static Dictionary<string, object> ItemEvidence(
             ObservedGameState state,
             int itemId,
-            bool includeLifetime)
+            bool includeLifetime,
+            bool includeBufferEvidence)
         {
             ObservedItemFlow flow;
             ObservedLifetimeItemTotals totals;
@@ -295,7 +297,94 @@ namespace DspProgressionStatusExporter
                 row["lifetimeConsumed"] =
                     totals != null ? (object)totals.Consumed : null;
             }
+            if (includeBufferEvidence)
+                row["buffer"] = BufferEvidence(state, itemId);
             return row;
+        }
+
+        private static Dictionary<string, object> BufferEvidence(
+            ObservedGameState state, int itemId)
+        {
+            ObservedItemBufferEvidence item;
+            if (!state.ItemBuffers.TryGetValue(itemId, out item))
+            {
+                return new Dictionary<string, object> {
+                    { "sourcePolicy", "Item-configured logistics slots in local Supply mode only." },
+                    { "scopePolicy", "Planet-local stock and planet-local native consumption." },
+                    { "importsExportsIncluded", false },
+                    { "eligibleSourceAvailable", false },
+                    { "accessibleCount", 0L },
+                    { "accessibleCapacity", 0L },
+                    { "backpressureStatus", "unknown" },
+                    { "scopes", new List<object>() },
+                    { "excludedSources", new List<object>() }
+                };
+            }
+
+            var scopes = new List<object>();
+            foreach (ObservedBufferScopeEvidence scope in item.Scopes)
+            {
+                int included = Math.Min(
+                    scope.Contributors.Count, BufferSourceDetailLimit);
+                var contributors = new List<object>();
+                for (int i = 0; i < included; i++)
+                    contributors.Add(BufferSource(scope.Contributors[i]));
+                scopes.Add(new Dictionary<string, object> {
+                    { "planetId", scope.PlanetId },
+                    { "planetName", scope.PlanetName },
+                    { "accessibleCount", scope.AccessibleCount },
+                    { "accessibleCapacity", scope.AccessibleCapacity },
+                    { "demandEvidenceAvailable", scope.DemandEvidenceAvailable },
+                    { "demandPerMinute", scope.DemandEvidenceAvailable
+                        ? (object)scope.DemandPerMinute : null },
+                    { "runwayAvailable", scope.RunwayAvailable },
+                    { "runwayMinutes", scope.RunwayAvailable
+                        ? (object)scope.RunwayMinutes : null },
+                    { "backpressureStatus", scope.BackpressureStatus },
+                    { "contributorCount", scope.Contributors.Count },
+                    { "contributors", contributors },
+                    { "contributorsTruncated",
+                        scope.Contributors.Count > included }
+                });
+            }
+
+            int excludedIncluded = Math.Min(
+                item.ExcludedSources.Count, BufferSourceDetailLimit);
+            var excluded = new List<object>();
+            for (int i = 0; i < excludedIncluded; i++)
+                excluded.Add(BufferSource(item.ExcludedSources[i]));
+            return new Dictionary<string, object> {
+                { "sourcePolicy", "Item-configured logistics slots in local Supply mode only." },
+                { "scopePolicy", "Planet-local stock and planet-local native consumption." },
+                { "importsExportsIncluded", false },
+                { "eligibleSourceAvailable", item.Scopes.Count > 0 },
+                { "accessibleCount", item.AccessibleCount },
+                { "accessibleCapacity", item.AccessibleCapacity },
+                { "backpressureStatus", item.BackpressureStatus },
+                { "scopes", scopes },
+                { "excludedSourceCount", item.ExcludedSources.Count },
+                { "excludedSources", excluded },
+                { "excludedSourcesTruncated",
+                    item.ExcludedSources.Count > excludedIncluded }
+            };
+        }
+
+        private static Dictionary<string, object> BufferSource(
+            ObservedBufferSourceEvidence source)
+        {
+            var result = new Dictionary<string, object> {
+                { "sourceType", source.SourceType },
+                { "planetId", source.PlanetId },
+                { "planetName", source.PlanetName },
+                { "stationId", source.StationId },
+                { "count", source.Count },
+                { "capacity", source.Capacity },
+                { "localLogic", source.LocalLogic },
+                { "remoteLogic", source.RemoteLogic }
+            };
+            if (!String.IsNullOrEmpty(source.ExclusionReason))
+                result["exclusionReason"] = source.ExclusionReason;
+            return result;
         }
 
         private static Dictionary<string, object> LogisticsEvidence(

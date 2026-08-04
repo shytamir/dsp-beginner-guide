@@ -47,8 +47,8 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** conservative accessible-runway and proven-backpressure evidence
-(`RISK-02`).
+**Active:** runtime acceptance of conservative accessible-runway and
+proven-backpressure evidence (`RISK-02`).
 
 The Cube-rate column is implemented and accepted through the full-playthrough
 test. `RISK-01` is accepted against native one-minute and ten-minute Statistics
@@ -155,7 +155,7 @@ to DYSON, WARP to GREEN, and LOGISTICS or COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.4 serializes the same selected-phase conclusions used by the
+Snapshot schema 2.5 serializes the same selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. Every
 snapshot includes provenance, playtime, research and Cube aggregates,
 selection diagnostics, objective/status conclusions, focused selected-phase
@@ -183,8 +183,8 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Contract | Version |
 |---|---:|
 | Release line | 1.18.x |
-| Snapshot schema | 2.4 |
-| Normalized state | 1.8 |
+| Snapshot schema | 2.5 |
+| Normalized state | 1.9 |
 | Guide selection | 1.5 |
 | Guide analysis | 2.6 |
 | Progression | 2.6 |

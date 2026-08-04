@@ -137,7 +137,7 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.4 exports conclusions, provenance, collector
+- Compact snapshot schema 2.5 exports conclusions, provenance, collector
   health, and only the focused evidence needed to audit those conclusions.
 - The click-through panel uses Basic Regular with a dark outline. Only its
   explicit controls capture pointer input.
@@ -165,8 +165,10 @@ are defined in
 [docs/PRODUCTION-RISK-ROADMAP.md](docs/PRODUCTION-RISK-ROADMAP.md).
 
 `RISK-01` is accepted against native one-minute and normalized ten-minute
-Statistics Panel evidence. `RISK-02` is active and adds only conservative,
-auditable accessible-runway and proven-backpressure evidence.
+Statistics Panel evidence. `RISK-02` is implemented and awaiting its runtime
+gate. It counts only item-configured, planet-local logistics slots set to
+local Supply; remote-only, unrelated, and unproven aggregate storage remain
+explicitly excluded.
 
 ## Repository layout
 

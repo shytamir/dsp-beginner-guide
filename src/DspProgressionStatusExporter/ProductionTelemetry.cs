@@ -40,7 +40,7 @@ namespace DspProgressionStatusExporter
         };
 
         private static readonly HashSet<int> FactoryScopedItemIds =
-            new HashSet<int> { 1003, 1004, 1105, 1106 };
+            new HashSet<int>(WatchedItemIds);
         private static readonly HashSet<int> LifetimeItemIds =
             new HashSet<int> { 6001, 6002, 6003, 6004, 6005, 6006 };
 

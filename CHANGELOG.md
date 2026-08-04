@@ -4,6 +4,13 @@
 
 ### Changed
 
+- Added conservative per-planet buffer evidence from item-configured logistics
+  slots set to local Supply. Remote-only, non-supply, and unproven tank
+  aggregates are excluded and identified in compact diagnostics.
+- Added runway against planet-local native one-minute demand and tri-state
+  backpressure evidence without changing player-facing risk interpretation.
+- Advanced normalized state to 1.9 and compact snapshot schema to 2.5 for the
+  RISK-02 runtime gate.
 - Added independent native one-minute and ten-minute production and
   consumption evidence for the bounded watch set. Ten-minute totals are
   normalized to items per minute, carry explicit per-item observation-age

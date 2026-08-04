@@ -109,7 +109,7 @@ Acceptance:
 
 ### RISK-02 - Accessible runway and backpressure evidence
 
-**Status:** Active.
+**Status:** Implemented; awaiting runtime gate.
 
 **User story:** As the risk analyzer, I need a conservative measure of stock
 that can actually cushion current demand, so idle production with a useful
@@ -130,6 +130,19 @@ Scope:
   suppresses risk.
 - Verify native import/export rate fields and scope separately before adding
   them to effective production or demand.
+
+Implemented policy:
+
+- Eligible runway is limited to item-configured logistics slots set to local
+  Supply and is evaluated per planet.
+- Runway uses the same planet's native one-minute consumption evidence.
+- Backpressure is proven only when every eligible contributor in that scope
+  is full; otherwise it is not proven, or unknown when no eligible source
+  exists.
+- Remote-only slots, non-supply slots, and tank aggregates are excluded with
+  an explicit reason in snapshot evidence.
+- Import and export rates are not used because their runtime meaning and scope
+  have not been independently verified.
 
 Acceptance:
 

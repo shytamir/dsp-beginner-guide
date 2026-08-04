@@ -100,6 +100,51 @@ namespace DspProgressionStatusExporter
         public long Capacity;
     }
 
+    internal sealed class ObservedBufferSourceEvidence
+    {
+        public int PlanetId;
+        public string PlanetName;
+        public int StationId;
+        public string SourceType;
+        public int ItemId;
+        public string Name;
+        public long Count;
+        public long Capacity;
+        public string LocalLogic;
+        public string RemoteLogic;
+        public string ExclusionReason;
+    }
+
+    internal sealed class ObservedBufferScopeEvidence
+    {
+        public int PlanetId;
+        public string PlanetName;
+        public int ItemId;
+        public string Name;
+        public long AccessibleCount;
+        public long AccessibleCapacity;
+        public bool DemandEvidenceAvailable;
+        public double DemandPerMinute;
+        public bool RunwayAvailable;
+        public double RunwayMinutes;
+        public string BackpressureStatus;
+        public readonly List<ObservedBufferSourceEvidence> Contributors =
+            new List<ObservedBufferSourceEvidence>();
+    }
+
+    internal sealed class ObservedItemBufferEvidence
+    {
+        public int ItemId;
+        public string Name;
+        public long AccessibleCount;
+        public long AccessibleCapacity;
+        public string BackpressureStatus;
+        public readonly List<ObservedBufferScopeEvidence> Scopes =
+            new List<ObservedBufferScopeEvidence>();
+        public readonly List<ObservedBufferSourceEvidence> ExcludedSources =
+            new List<ObservedBufferSourceEvidence>();
+    }
+
     internal sealed class ObservedRecipeConfiguration
     {
         public int FactoryIndex;
@@ -211,6 +256,8 @@ namespace DspProgressionStatusExporter
         public readonly List<ObservedStationSlot> StationSlots = new List<ObservedStationSlot>();
         public readonly List<ObservedStationState> Stations = new List<ObservedStationState>();
         public readonly Dictionary<int, ObservedCapacity> TankStorage = new Dictionary<int, ObservedCapacity>();
+        public readonly Dictionary<int, ObservedItemBufferEvidence> ItemBuffers =
+            new Dictionary<int, ObservedItemBufferEvidence>();
         public readonly List<ObservedRecipeConfiguration> RecipeConfigurations =
             new List<ObservedRecipeConfiguration>();
         public readonly ObservedDysonState Dyson = new ObservedDysonState();
@@ -253,6 +300,7 @@ namespace DspProgressionStatusExporter
             state.ReadTanks(GetValue(legacySnapshot, "factories"));
             state.ReadStations(GetValue(legacySnapshot, "factories"));
             state.ReadProduction(production);
+            state.BuildBufferEvidence();
             state.ReadTraffic(traffic);
             state.ReadPower(power);
             state.ReadRecipes(recipes);
@@ -263,7 +311,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "1.8";
+            result["modelVersion"] = "1.9";
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -330,6 +378,7 @@ namespace DspProgressionStatusExporter
             result["tankStorage"] = ExportCapacities();
             result["stationSlots"] = ExportStationSlots();
             result["stations"] = ExportStations();
+            result["itemBuffers"] = ExportItemBuffers();
             return result;
         }
 
@@ -582,6 +631,154 @@ namespace DspProgressionStatusExporter
                     });
                 }
             }
+        }
+
+        private void BuildBufferEvidence()
+        {
+            foreach (ObservedItemFlow flow in ItemFlows.Values)
+                GetOrCreateItemBuffer(flow.ItemId, flow.Name);
+
+            var demandByScope = new Dictionary<string, double>();
+            foreach (ObservedFactoryItemFlow flow in FactoryItemFlows)
+            {
+                if (flow.ItemId <= 0 || flow.PlanetId <= 0) continue;
+                string key = BufferScopeKey(flow.ItemId, flow.PlanetId);
+                double demand;
+                demandByScope.TryGetValue(key, out demand);
+                demandByScope[key] = demand + flow.ConsumedPerMinute;
+            }
+
+            var scopes = new Dictionary<string, ObservedBufferScopeEvidence>();
+            foreach (ObservedStationSlot slot in StationSlots)
+            {
+                if (slot.ItemId <= 0) continue;
+                ObservedItemBufferEvidence item = GetOrCreateItemBuffer(
+                    slot.ItemId, slot.Name);
+                var source = new ObservedBufferSourceEvidence {
+                    PlanetId = slot.PlanetId,
+                    PlanetName = slot.PlanetName,
+                    StationId = slot.StationId,
+                    SourceType = slot.IsStellar
+                        ? "interstellar-logistics-slot"
+                        : "planetary-logistics-slot",
+                    ItemId = slot.ItemId,
+                    Name = slot.Name,
+                    Count = slot.Count,
+                    Capacity = slot.Maximum,
+                    LocalLogic = slot.LocalLogic,
+                    RemoteLogic = slot.RemoteLogic
+                };
+
+                if (slot.Maximum > 0 && IsSupplyLogic(slot.LocalLogic))
+                {
+                    string key = BufferScopeKey(slot.ItemId, slot.PlanetId);
+                    ObservedBufferScopeEvidence scope;
+                    if (!scopes.TryGetValue(key, out scope))
+                    {
+                        scope = new ObservedBufferScopeEvidence {
+                            PlanetId = slot.PlanetId,
+                            PlanetName = slot.PlanetName,
+                            ItemId = slot.ItemId,
+                            Name = slot.Name,
+                            BackpressureStatus = "unknown"
+                        };
+                        scopes[key] = scope;
+                        item.Scopes.Add(scope);
+                    }
+                    scope.AccessibleCount += slot.Count;
+                    scope.AccessibleCapacity += slot.Maximum;
+                    scope.Contributors.Add(source);
+                    item.AccessibleCount += slot.Count;
+                    item.AccessibleCapacity += slot.Maximum;
+                }
+                else
+                {
+                    source.ExclusionReason = slot.Maximum <= 0
+                        ? "capacity-unavailable"
+                        : IsSupplyLogic(slot.RemoteLogic)
+                            ? "remote-only"
+                            : "not-local-supply";
+                    item.ExcludedSources.Add(source);
+                }
+            }
+
+            foreach (KeyValuePair<int, ObservedCapacity> pair in TankStorage)
+            {
+                ObservedItemBufferEvidence item = GetOrCreateItemBuffer(
+                    pair.Key, Plugin.ItemName(pair.Key));
+                item.ExcludedSources.Add(new ObservedBufferSourceEvidence {
+                    SourceType = "tank-storage-aggregate",
+                    ItemId = pair.Key,
+                    Name = item.Name,
+                    Count = pair.Value.Count,
+                    Capacity = pair.Value.Capacity,
+                    ExclusionReason = "accessibility-not-proven"
+                });
+            }
+
+            foreach (ObservedItemBufferEvidence item in ItemBuffers.Values)
+            {
+                bool hasNotProven = false;
+                bool hasProven = false;
+                foreach (ObservedBufferScopeEvidence scope in item.Scopes)
+                {
+                    double demand;
+                    scope.DemandEvidenceAvailable = demandByScope.TryGetValue(
+                        BufferScopeKey(scope.ItemId, scope.PlanetId), out demand);
+                    scope.DemandPerMinute = demand;
+                    scope.RunwayAvailable =
+                        scope.DemandEvidenceAvailable && demand > 0.0;
+                    if (scope.RunwayAvailable)
+                        scope.RunwayMinutes = scope.AccessibleCount / demand;
+
+                    bool full = scope.Contributors.Count > 0;
+                    foreach (ObservedBufferSourceEvidence source in scope.Contributors)
+                    {
+                        if (source.Capacity <= 0 || source.Count < source.Capacity)
+                        {
+                            full = false;
+                            break;
+                        }
+                    }
+                    scope.BackpressureStatus = full ? "proven" : "not-proven";
+                    hasProven |= full;
+                    hasNotProven |= !full;
+                }
+                item.BackpressureStatus = hasNotProven
+                    ? "not-proven"
+                    : hasProven ? "proven" : "unknown";
+            }
+        }
+
+        private ObservedItemBufferEvidence GetOrCreateItemBuffer(
+            int itemId, string name)
+        {
+            ObservedItemBufferEvidence item;
+            if (!ItemBuffers.TryGetValue(itemId, out item))
+            {
+                item = new ObservedItemBufferEvidence {
+                    ItemId = itemId,
+                    Name = String.IsNullOrEmpty(name)
+                        ? Plugin.ItemName(itemId) : name,
+                    BackpressureStatus = "unknown"
+                };
+                ItemBuffers[itemId] = item;
+            }
+            else if (String.IsNullOrEmpty(item.Name) && !String.IsNullOrEmpty(name))
+            {
+                item.Name = name;
+            }
+            return item;
+        }
+
+        private static string BufferScopeKey(int itemId, int planetId)
+        {
+            return itemId.ToString() + ":" + planetId.ToString();
+        }
+
+        private static bool IsSupplyLogic(string value)
+        {
+            return String.Equals(value, "Supply", StringComparison.OrdinalIgnoreCase);
         }
 
         private void ReadTraffic(Dictionary<string, object> traffic)
@@ -1185,6 +1382,71 @@ namespace DspProgressionStatusExporter
                     { "workShipCount", x.WorkShipCount }
                 });
             return rows;
+        }
+
+        private List<object> ExportItemBuffers()
+        {
+            var ids = new List<int>(ItemBuffers.Keys);
+            ids.Sort();
+            var rows = new List<object>();
+            foreach (int id in ids)
+            {
+                ObservedItemBufferEvidence item = ItemBuffers[id];
+                var scopes = new List<object>();
+                foreach (ObservedBufferScopeEvidence scope in item.Scopes)
+                {
+                    var contributors = new List<object>();
+                    foreach (ObservedBufferSourceEvidence source in scope.Contributors)
+                        contributors.Add(ExportBufferSource(source));
+                    scopes.Add(new Dictionary<string, object> {
+                        { "planetId", scope.PlanetId },
+                        { "planetName", scope.PlanetName },
+                        { "accessibleCount", scope.AccessibleCount },
+                        { "accessibleCapacity", scope.AccessibleCapacity },
+                        { "demandEvidenceAvailable", scope.DemandEvidenceAvailable },
+                        { "demandPerMinute", scope.DemandEvidenceAvailable
+                            ? (object)scope.DemandPerMinute : null },
+                        { "runwayAvailable", scope.RunwayAvailable },
+                        { "runwayMinutes", scope.RunwayAvailable
+                            ? (object)scope.RunwayMinutes : null },
+                        { "backpressureStatus", scope.BackpressureStatus },
+                        { "contributors", contributors }
+                    });
+                }
+                var excluded = new List<object>();
+                foreach (ObservedBufferSourceEvidence source in item.ExcludedSources)
+                    excluded.Add(ExportBufferSource(source));
+                rows.Add(new Dictionary<string, object> {
+                    { "itemId", item.ItemId },
+                    { "name", item.Name },
+                    { "accessibleCount", item.AccessibleCount },
+                    { "accessibleCapacity", item.AccessibleCapacity },
+                    { "backpressureStatus", item.BackpressureStatus },
+                    { "scopes", scopes },
+                    { "excludedSources", excluded }
+                });
+            }
+            return rows;
+        }
+
+        private static Dictionary<string, object> ExportBufferSource(
+            ObservedBufferSourceEvidence source)
+        {
+            var result = new Dictionary<string, object> {
+                { "sourceType", source.SourceType },
+                { "planetId", source.PlanetId },
+                { "planetName", source.PlanetName },
+                { "stationId", source.StationId },
+                { "itemId", source.ItemId },
+                { "name", source.Name },
+                { "count", source.Count },
+                { "capacity", source.Capacity },
+                { "localLogic", source.LocalLogic },
+                { "remoteLogic", source.RemoteLogic }
+            };
+            if (!String.IsNullOrEmpty(source.ExclusionReason))
+                result["exclusionReason"] = source.ExclusionReason;
+            return result;
         }
 
         private static List<object> SortedIds(HashSet<int> values)
