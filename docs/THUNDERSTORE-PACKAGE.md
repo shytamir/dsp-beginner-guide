@@ -69,3 +69,48 @@ The workflow:
 The GitHub artifact is a transport container. Its
 `DSPGuideCheck-M.m.N.zip` member is the package intended for a mod manager or
 Thunderstore upload.
+
+## Release-blocking next actions
+
+Complete these stories in order before publishing the release candidate.
+
+### STORE-README-01 — Give mod users a purpose-built store README
+
+**User story:** As a Thunderstore user, I want a concise README that tells me
+how to install and open DSP Guide Check, so I can start using it without
+reading development or telemetry documentation.
+
+Acceptance criteria:
+
+- `packaging/README.md` is the authoritative store README, and CI explicitly
+  packages that file rather than the repository-root README;
+- it links to the published practical progression guide and the mod source
+  repository;
+- its quick start encourages the player to install the mod, load a save, press
+  F8, and discover the panel directly;
+- it explains only the player-facing installation, controls, behavior, and
+  support path needed on the store page;
+- it does not mention snapshot export, schema details, build tooling, or other
+  developer-facing internals;
+- package validation proves the ZIP contains the dedicated README, and the
+  rendered copy is presented to the release owner for final review.
+
+### STORE-SNAPSHOT-01 — Omit snapshot export from the public package
+
+**User story:** As a Thunderstore user, I want the public panel to omit the
+forensic snapshot control, so the normal mod surface stays focused on guide
+progression while maintainers retain a diagnostic build when needed.
+
+Acceptance criteria:
+
+- a build-time switch disables creation, layout, visibility, and interaction
+  of the `Save snapshot` control without panel exceptions or dead space;
+- the ordinary diagnostic build retains snapshot export, while a distinct
+  public build omits its control;
+- the build-time switch and both local variants are implemented and validated
+  before the hosted workflow is changed;
+- CI produces identifiable diagnostic and public DLL variants, and only the
+  public no-control DLL enters the Thunderstore ZIP;
+- the store README contains no snapshot-export reference;
+- an in-game gate confirms the diagnostic control remains available, the
+  public control is absent, and the remaining panel layout and controls work.

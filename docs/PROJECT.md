@@ -228,6 +228,13 @@ one, three, and six Matrix icons plus interaction and refresh checks.
 `GUIDE2-03` passed its navigation, persistence, removed-contract, control,
 performance, and focused BLUE/ILS/WHITE snapshot checkpoint.
 
+The release candidate now has two ordered Thunderstore blockers. First,
+`STORE-README-01` replaces the packaged copy with a concise player-facing
+README and proves CI uses it. Second, `STORE-SNAPSHOT-01` adds a safe
+build-time public variant without the forensic export control, then changes CI
+to package only that variant. Their user stories and acceptance criteria are
+authoritative in `docs/THUNDERSTORE-PACKAGE.md`.
+
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.
 
