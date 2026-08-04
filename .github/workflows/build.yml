@@ -49,19 +49,26 @@ jobs:
             -Sequence ${{ github.run_number }} `
             -Commit '${{ github.sha }}'
 
-      - name: Download official BepInEx 5 compile reference
+      - name: Download Thunderstore BepInEx 5.4.17 compile reference
         id: bepinex
         shell: pwsh
         run: |
-          $archive = Join-Path $env:RUNNER_TEMP 'BepInEx_win_x64_5.4.23.5.zip'
+          $archive = Join-Path $env:RUNNER_TEMP 'xiaoye97-BepInEx-5.4.17.zip'
           $referenceRoot = Join-Path $env:RUNNER_TEMP 'bepinex-reference'
-          $uri = 'https://github.com/BepInEx/BepInEx/releases/download/' +
-            'v5.4.23.5/BepInEx_win_x64_5.4.23.5.zip'
+          $uri = 'https://thunderstore.io/package/download/' +
+            'xiaoye97/BepInEx/5.4.17/'
           Invoke-WebRequest -Uri $uri -OutFile $archive
           Expand-Archive -LiteralPath $archive -DestinationPath $referenceRoot
-          $reference = Join-Path $referenceRoot 'BepInEx\core\BepInEx.dll'
+          $reference = Join-Path $referenceRoot `
+            'BepInExPack\BepInEx\core\BepInEx.dll'
           if (-not (Test-Path -LiteralPath $reference -PathType Leaf)) {
             throw "BepInEx compile reference was not found at $reference."
+          }
+          $referenceVersion = (
+            [Reflection.AssemblyName]::GetAssemblyName($reference)
+          ).Version.ToString()
+          if ($referenceVersion -cne '5.4.17.0') {
+            throw "BepInEx reference version is $referenceVersion; expected 5.4.17.0."
           }
           "CI_BEPINEX_PATH=$reference" >> $env:GITHUB_ENV
 
@@ -101,6 +108,7 @@ jobs:
             -ExpectedReleaseLabel $env:RELEASE_LABEL `
             -ExpectedSemanticVersion $env:SEMANTIC_VERSION `
             -ExpectedAssemblyVersion $env:ASSEMBLY_VERSION `
+            -ExpectedBepInExReferenceVersion '5.4.17.0' `
             -ReportPath 'artifacts/DIAGNOSTIC-TEST-REPORT.md'
           ./scripts/Test-SnapshotControlVariant.ps1 `
             -DllPath 'artifacts/build/diagnostic/DspGuideCheck.dll' `
@@ -134,6 +142,7 @@ jobs:
             -ExpectedReleaseLabel $env:RELEASE_LABEL `
             -ExpectedSemanticVersion $env:SEMANTIC_VERSION `
             -ExpectedAssemblyVersion $env:ASSEMBLY_VERSION `
+            -ExpectedBepInExReferenceVersion '5.4.17.0' `
             -ReportPath 'artifacts/PUBLIC-TEST-REPORT.md'
           ./scripts/Test-SnapshotControlVariant.ps1 `
             -DllPath 'artifacts/build/public/DspGuideCheck.dll' `

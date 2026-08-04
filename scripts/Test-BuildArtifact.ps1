@@ -12,6 +12,9 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$ExpectedAssemblyVersion,
 
+    [Parameter(Mandatory = $true)]
+    [string]$ExpectedBepInExReferenceVersion,
+
     [string]$RepositoryRoot = (Split-Path -Parent $PSScriptRoot),
 
     [string]$ReportPath = (
@@ -85,6 +88,18 @@ $assemblyName = [Reflection.AssemblyName]::GetAssemblyName(
 Assert-Equal 'Assembly version' $ExpectedAssemblyVersion `
     $assemblyName.Version.ToString()
 
+$reflectionAssembly = [Reflection.Assembly]::ReflectionOnlyLoadFrom(
+    (Resolve-Path -LiteralPath $DllPath)
+)
+$bepInExReference = $reflectionAssembly.GetReferencedAssemblies() |
+    Where-Object { $_.Name -ceq 'BepInEx' } |
+    Select-Object -First 1
+if ($null -eq $bepInExReference) {
+    throw 'Built DLL does not reference BepInEx.'
+}
+Assert-Equal 'BepInEx assembly reference' $ExpectedBepInExReferenceVersion `
+    $bepInExReference.Version.ToString()
+
 $fileInfo = [System.Diagnostics.FileVersionInfo]::GetVersionInfo(
     (Resolve-Path -LiteralPath $DllPath)
 )
@@ -105,6 +120,7 @@ $report = @"
 | Release label | ``$ExpectedReleaseLabel`` |
 | Semantic version | ``$ExpectedSemanticVersion`` |
 | BepInEx plugin version | ``$ExpectedSemanticVersion`` |
+| BepInEx assembly reference | ``$ExpectedBepInExReferenceVersion`` |
 | Assembly/file version | ``$ExpectedAssemblyVersion`` |
 | Size | $length bytes |
 | SHA-256 | ``$hash`` |

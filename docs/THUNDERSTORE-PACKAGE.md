@@ -57,7 +57,8 @@ The workflow:
 
 1. checks out the triggering commit;
 2. derives the build versions;
-3. restores compile references;
+3. restores compile references, using the exact Thunderstore dependency
+   `xiaoye97-BepInEx-5.4.17` for BepInEx;
 4. builds and verifies the default diagnostic DLL with snapshot control;
 5. builds and verifies the public DLL without snapshot control;
 6. renders the manifest template and packages only the public DLL in the exact
