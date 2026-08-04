@@ -219,8 +219,11 @@ Provide the three screenshots and a short pass/fail note for steps 4 and 5.
 
 ### GUIDE2-03 — Prune superseded contracts and close the migration
 
-**Status:** Implemented; deterministic checks pass. The final navigation,
-persistence, and representative snapshot gate remains pending.
+**Status:** Accepted. Deterministic checks and the manual nine-phase navigation,
+ILS persistence, removed-contract, control, and performance sweep passed.
+Plugin 1.18.43 schema 2.7 snapshots supplied focused BLUE, ILS, and WHITE
+evidence without truncation or superseded phase routing. This completes the
+guide 2.0 migration.
 
 **User story**
 

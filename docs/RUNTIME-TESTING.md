@@ -104,7 +104,7 @@ presents `Mission Accomplished!` without navigating elsewhere.
 - No noticeable sampling hitch occurs with the panel closed or open.
 - Each JSON is no larger than 256 KiB and names snapshot schema `2.7`.
 
-## GUIDE2-03 final migration gate
+## Migration closure regression sweep
 
 1. Navigate from BLUE through WHITE and back to BLUE once. Confirm the exact
    nine-phase order and both endpoint behaviors.

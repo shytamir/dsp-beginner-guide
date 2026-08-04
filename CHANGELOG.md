@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Accepted the GUIDE2-03 navigation, persistence, removed-contract, and focused
+  BLUE/ILS/WHITE snapshot gate, completing the guide 2.0 migration.
 - Accepted the VIS2-01 Matrix-icon presentation gate on bright and dark
   backgrounds with one, three, and six visible Cubes, including interaction
   and refresh checks.

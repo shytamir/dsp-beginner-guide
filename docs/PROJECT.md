@@ -34,7 +34,7 @@ warning system.
 - Published `guide-version` metadata: `1.23.0`
 - Detailed derivation and roadmap: `docs/GUIDE-2.0-GAP-ANALYSIS.md`
 - Current runtime implementation: guide 2.0 topology, phase contracts, and
-  Matrix-icon column; superseded-contract cleanup awaits its final gate
+  Matrix-icon column with superseded-contract cleanup complete
 - Completed 1.22.2 derivation: `docs/GUIDE-1.22.2-GAP-ANALYSIS.md`
 - Earlier guide v1.1 record: `docs/GUIDE-REVISION-INGESTION.md` (historical)
 
@@ -51,12 +51,11 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** the final `GUIDE2-03` guide 2.0 migration gate.
+**Guide 2.0 migration:** complete.
 
-`GUIDE2-01`, `GUIDE2-02`, and `VIS2-01` have passed their focused runtime
-gates. `GUIDE2-03` removes superseded current-runtime contracts while retaining
-legacy selection migration and historical records; it awaits the final
-navigation, persistence, and snapshot sweep. See
+`GUIDE2-01`, `GUIDE2-02`, `VIS2-01`, and `GUIDE2-03` have passed their focused
+runtime gates. The current runtime retains legacy selection migration and
+historical records without exposing superseded phase contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
 The production-risk roadmap is paused because of a blocking concern.
@@ -226,8 +225,8 @@ phase contracts, exceptional supporting-branch findings, DYSON title and
 objectives, and PHOTON receiver status.
 `VIS2-01` passed its bright- and dark-background presentation checkpoint with
 one, three, and six Matrix icons plus interaction and refresh checks.
-`GUIDE2-03` has deterministic cleanup coverage and awaits its final navigation,
-persistence, and snapshot checkpoint.
+`GUIDE2-03` passed its navigation, persistence, removed-contract, control,
+performance, and focused BLUE/ILS/WHITE snapshot checkpoint.
 
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.

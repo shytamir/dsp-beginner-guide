@@ -154,16 +154,16 @@ panel contracts have completed in-game acceptance. Packaging has passed its
 automated contract checks. See [CHANGELOG.md](CHANGELOG.md) for release
 history.
 
-## Active development
+## Development status
 
-`GUIDE2-01`, `GUIDE2-02`, and `VIS2-01` have passed their focused runtime
-gates. `GUIDE2-03` cleanup is implemented and awaits the final migration gate.
+The four-story guide 2.0 migration is complete. `GUIDE2-01`, `GUIDE2-02`,
+`VIS2-01`, and `GUIDE2-03` have passed their focused runtime gates.
 
 The gap report and four bounded user stories are defined in
 [docs/GUIDE-2.0-GAP-ANALYSIS.md](docs/GUIDE-2.0-GAP-ANALYSIS.md).
 
-The production-risk roadmap is paused because of a blocking concern. Its
-accepted and in-progress evidence work remains documented in
+The separate production-risk roadmap remains paused because of a blocking
+concern. Its accepted and in-progress evidence work remains documented in
 [docs/PRODUCTION-RISK-ROADMAP.md](docs/PRODUCTION-RISK-ROADMAP.md), but it is
 not part of the guide 2.0 migration.
 
