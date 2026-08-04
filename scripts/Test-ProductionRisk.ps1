@@ -41,6 +41,7 @@ function Invoke-Risk {
         TenMinuteConsumedPerMinute = 100.0
         RunwayAvailable = $false
         RunwayMinutes = 0.0
+        AccessibleCount = 0.0
         BackpressureStatus = 'unknown'
         ExactTargetPerMinute = 0.0
     }
@@ -106,11 +107,15 @@ if (-not $target.TargetDeficit) {
 $draining = Assert-State 'Draining buffer' `
     @{ ProducedPerMinute = 40.0; ConsumedPerMinute = 80.0;
        TenMinuteProducedPerMinute = 100.0; RunwayAvailable = $true;
-       RunwayMinutes = 0.25 } `
+       RunwayMinutes = 0.25; AccessibleCount = 20.0 } `
     'draining' $true
 if ([double]$draining.Score -le 0.0 -or
     [double]$draining.Score -ge 0.7) {
     throw 'The draining fixture did not retain a moderate continuous score.'
+}
+if (-not $draining.DepletionMinutesAvailable -or
+    [Math]::Abs([double]$draining.DepletionMinutes - 0.5) -gt 0.0001) {
+    throw 'The draining fixture did not compute net-depletion time.'
 }
 $starved = Assert-State 'Actual starvation' `
     @{ ProducedPerMinute = 0.0; ConsumedPerMinute = 80.0;
@@ -244,25 +249,137 @@ $panelBuilder = $assembly.GetType(
     'DspProgressionStatusExporter.GuidePanelModelBuilder', $true
 )
 $buildPanel = $panelBuilder.GetMethod('Build', $flags)
-$panel = $buildPanel.Invoke($null, @($analysis, $state, $null, $null))
+$stabilizerType = $assembly.GetType(
+    'DspProgressionStatusExporter.GuidePanelRiskStabilizer', $true
+)
+$stabilizer = [Activator]::CreateInstance($stabilizerType, $true)
+$panel = $buildPanel.Invoke(
+    $null, @($analysis, $state, $null, $null, $stabilizer))
 $context = $panel.GetType().GetField('Context', $flags).GetValue($panel)
-if ($context.Count -ne 1) {
-    throw 'Current Status rendered more than one conclusion.'
+if ($context.Count -ne 2) {
+    throw 'Current Status did not combine the risk with the remaining context.'
+}
+if ($context[0].Label -cne 'Quantum Chips starved - expect stoppage' -or
+    -not [String]::IsNullOrEmpty($context[0].Detail)) {
+    throw 'The starved Current Status row is not compact.'
+}
+$nextActions = $panel.GetType().GetField(
+    'NextActions', $flags).GetValue($panel)
+if ($nextActions.Count -ne 1 -or
+    $nextActions[0].Label -cne 'Restart Quantum Chips production') {
+    throw 'The starved risk did not produce one separate Next Action.'
 }
 $riskSignalField = $panel.GetType().GetField('RiskSignal', $flags)
 if ($riskSignalField.GetValue($panel).ToString() -cne 'Starved') {
     throw 'Starved production risk did not select the starved panel glyph.'
 }
-$selectedRisk = $riskSummary['selected']
+$actionableRisks = $riskSummary['actionable']
+$selectedRisk = $actionableRisks[0]
 $selectedRisk['state'] = 'draining'
-$panel = $buildPanel.Invoke($null, @($analysis, $state, $null, $null))
+$selectedRisk['depletionMinutesAvailable'] = $true
+$selectedRisk['depletionMinutes'] = 3.5
+$panel = $buildPanel.Invoke(
+    $null, @($analysis, $state, $null, $null, $stabilizer))
 if ($riskSignalField.GetValue($panel).ToString() -cne 'Draining') {
     throw 'Draining production risk did not select the draining panel glyph.'
 }
+$objectives = $panel.GetType().GetField('Objectives', $flags).GetValue($panel)
+$greenInputs = $objectives | Where-Object { $_.Id -ceq 'green-inputs' }
+if ($null -eq $greenInputs -or
+    $greenInputs.Detail -notmatch 'Quantum Chips buffer: about 3.5 min') {
+    throw 'A tracked draining objective did not receive the depletion estimate.'
+}
 $selectedRisk['actionable'] = $false
-$panel = $buildPanel.Invoke($null, @($analysis, $state, $null, $null))
+$panel = $buildPanel.Invoke(
+    $null, @($analysis, $state, $null, $null, $stabilizer))
 if ($riskSignalField.GetValue($panel).ToString() -cne 'None') {
     throw 'A non-actionable production risk selected a panel glyph.'
+}
+
+function New-PanelRisk {
+    param(
+        [int]$ItemId,
+        [string]$Name,
+        [string]$State,
+        [double]$Minutes
+    )
+    $risk = [Collections.Generic.Dictionary[string,object]]::new()
+    $risk.Add('itemId', $ItemId)
+    $risk.Add('name', $Name)
+    $risk.Add('state', $State)
+    $risk.Add('actionable', $true)
+    $risk.Add('depletionMinutesAvailable', $true)
+    $risk.Add('depletionMinutes', $Minutes)
+    return $risk
+}
+
+$stabilizer.Reset()
+$actionableRisks.Clear()
+$riskA = New-PanelRisk 1305 'Quantum Chips' 'draining' 3.0
+$riskB = New-PanelRisk 1209 'Graviton Lenses' 'draining' 4.0
+$riskC = New-PanelRisk 6005 'Green Cubes' 'draining' 5.0
+$riskD = New-PanelRisk 1402 'Particle Broadband' 'draining' 1.0
+foreach ($risk in @($riskA, $riskB, $riskC)) {
+    $actionableRisks.Add($risk)
+}
+$panel = $buildPanel.Invoke(
+    $null, @($analysis, $state, $null, $null, $stabilizer))
+$context = $panel.GetType().GetField('Context', $flags).GetValue($panel)
+$riskIds = ($context | ForEach-Object Id) -join ','
+if ($riskIds -cne
+    'production-risk-1305,production-risk-1209,production-risk-6005') {
+    throw 'The initial bounded risk list did not follow analyzer order.'
+}
+
+$actionableRisks.Clear()
+foreach ($risk in @($riskD, $riskB, $riskA, $riskC)) {
+    $actionableRisks.Add($risk)
+}
+$panel = $buildPanel.Invoke(
+    $null, @($analysis, $state, $null, $null, $stabilizer))
+$context = $panel.GetType().GetField('Context', $flags).GetValue($panel)
+$riskIds = ($context | ForEach-Object Id) -join ','
+if ($riskIds -cne
+    'production-risk-1305,production-risk-1209,production-risk-6005') {
+    throw 'A same-severity newcomer displaced or reordered incumbents.'
+}
+
+$riskD['state'] = 'starved'
+$panel = $buildPanel.Invoke(
+    $null, @($analysis, $state, $null, $null, $stabilizer))
+$context = $panel.GetType().GetField('Context', $flags).GetValue($panel)
+$riskIds = ($context | ForEach-Object Id) -join ','
+if ($riskIds -cne
+    'production-risk-1402,production-risk-1305,production-risk-1209') {
+    throw 'A critical newcomer did not displace the lowest urgent incumbent.'
+}
+
+$actionableRisks.Clear()
+foreach ($risk in @($riskD, $riskB, $riskC)) {
+    $actionableRisks.Add($risk)
+}
+$panel = $buildPanel.Invoke(
+    $null, @($analysis, $state, $null, $null, $stabilizer))
+$context = $panel.GetType().GetField('Context', $flags).GetValue($panel)
+$riskIds = ($context | ForEach-Object Id) -join ','
+if ($riskIds -cne
+    'production-risk-1402,production-risk-1209,production-risk-6005') {
+    throw 'Clearing an incumbent did not free its slot deterministically.'
+}
+
+$riskD['state'] = 'draining'
+$analysis['phase']['id'] = 'white'
+$actionableRisks.Clear()
+foreach ($risk in @($riskD, $riskB, $riskA, $riskC)) {
+    $actionableRisks.Add($risk)
+}
+$panel = $buildPanel.Invoke(
+    $null, @($analysis, $state, $null, $null, $stabilizer))
+$context = $panel.GetType().GetField('Context', $flags).GetValue($panel)
+$riskIds = ($context | ForEach-Object Id) -join ','
+if ($riskIds -cne
+    'production-risk-1402,production-risk-1209,production-risk-1305') {
+    throw 'A phase change did not start a fresh bounded selection.'
 }
 
 Write-Output 'Production risk tests passed.'

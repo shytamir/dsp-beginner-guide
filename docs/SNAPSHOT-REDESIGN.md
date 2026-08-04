@@ -2,8 +2,9 @@
 
 Implemented in v1.16.0, narrowed to the critical-path-only contract for guide
 v1.22.2, extended by schema 2.4 with compact native one-minute and ten-minute
-production evidence, and extended by schema 2.8 with the selected
-production-risk state and score terms.
+production evidence, extended by schema 2.8 with the selected production-risk
+state and score terms, and extended by schema 2.9 with the bounded ordered
+actionable-risk list and trustworthy net-depletion estimate.
 
 - [x] Define a compact snapshot contract around diagnostic conclusions and the exact evidence used to reach them.
 - [x] Remove duplicate normalized state from guide analysis and retain one authoritative normalized summary.

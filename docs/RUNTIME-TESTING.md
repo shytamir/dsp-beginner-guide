@@ -11,7 +11,57 @@ tools are needed.
    before judging production objectives.
 3. Open the panel with F8 and select phases only with Previous and Next.
 4. Use `Save snapshot` only for a checkpoint whose conclusion needs audit.
-5. Confirm each new snapshot names schema `2.8` and guide analysis `2.9`.
+5. Give requested snapshots the checkpoint names below; repository-side
+   validation checks schema and analysis contracts.
+
+## RISK-05 bounded interpreted presentation gate
+
+Use the latest diagnostic DLL and a mature WHITE save whose Cube inputs and
+White Cube production have ten-minute history. Keep the WHITE phase selected
+unless a step explicitly says otherwise.
+
+1. **Quiet baseline:** run all Cube inputs and White Cube production normally.
+   Open the panel and capture Current Status with no production-risk rows and
+   no Next Actions section. Save `RISK-05-QUIET.json`.
+2. **One draining risk:** disconnect one upstream Cube production line while
+   White Cube labs continue consuming that Cube from belts or storage. Wait
+   for the panel to report `<Cube> draining - check soon`. Capture the compact
+   Current Status row and the paired `Increase <Cube> production` row under
+   Next Actions. Neither row should contain rates, baselines, scores, scope,
+   or evidence prose.
+3. **Three draining risks:** disconnect two more Cube production lines while
+   their buffered Cubes continue reaching the White labs. Wait until three
+   compact draining rows and three paired Next Actions appear. Capture the
+   expanded panel and save `RISK-05-THREE.json`.
+4. **Same-severity stability:** disconnect a fourth Cube production line.
+   Observe at least three complete 15-second panel refreshes. The original
+   three draining members and their relative order must remain unchanged; the
+   fourth draining candidate must not churn into the full list solely because
+   its rates or estimate differ.
+5. **Critical promotion:** stop White Cube production itself by cutting one
+   required input immediately before the White Cube labs, while leaving the
+   three earlier upstream deficits established. Once `White Cubes starved -
+   expect stoppage` appears, confirm it moves ahead of the draining rows and
+   displaces no more than the lowest displayed urgent member. Its paired action
+   must read `Restart White Cubes production`. Save `RISK-05-STARVED.json`.
+6. **Recovery and reset:** restore one displayed draining line and confirm its
+   cleared row frees a slot. Switch to PHOTON and back to WHITE; confirm the
+   list is freshly selected from the currently actionable candidates. Close
+   with F8, reopen, and confirm the same fresh deterministic selection.
+7. **Tracked buffer estimate:** select GREEN. Use a local-supply Quantum Chip
+   buffer, keep Green Cube consumption active, and reduce Quantum Chip
+   production below consumption while chips remain accessible. Confirm the
+   Quantum Chips objective adds one short `Quantum Chips buffer: about X min`
+   note. Do not expect a note if the buffer is empty or its local evidence is
+   unavailable. Save `RISK-05-BUFFER.json`.
+
+At 4K, confirm Current Status and Next Actions remain readable without an
+absurdly tall panel, scrolling still reaches every section, the fixed risk
+glyph follows the strongest displayed state, collapse/F8/navigation remain
+normal, and rows remain click-through. Leave the panel visible for one minute
+and hidden for one minute and report any visible hitch, plugin exception, or
+new log error. The attached snapshots are for repository-side contract and
+evidence validation; no JSON field inspection is required from the tester.
 
 ## RISK-04 native risk-signal presentation gate
 
@@ -95,8 +145,9 @@ Starter-system reconnaissance advice does not appear as an objective.
 - PURPLE requires three configured Purple-Cube Labs producing continuously.
 - GREEN requires two configured Green-Cube Labs producing continuously plus
   visible Quantum Chip and Graviton Lens storage.
-- A genuinely draining PURPLE or GREEN supporting input produces at most one
-  focused Current Status finding; healthy supporting chains add no clutter.
+- Genuinely draining PURPLE or GREEN supporting inputs produce at most three
+  compact Current Status rows with paired Next Actions; healthy supporting
+  chains add no clutter.
 - Soft pace bands remain in the Cube-rate column rather than becoming hard
   objective rows.
 
@@ -120,9 +171,10 @@ Expected objective rows:
 2. Ten Labs sustain 40 White Cubes/min, with stored White Cubes shown.
 3. Mission Completed consumes or has consumed 4,000 White Cubes.
 
-The six feeder inputs are not repeated as objective prose. One genuinely
-draining feeder may appear in Current Status. After Mission Completed, WHITE
-presents `Mission Accomplished!` without navigating elsewhere.
+The six feeder inputs are not repeated as objective prose. Up to three
+genuinely draining feeders may appear as compact Current Status rows with
+paired Next Actions. After Mission Completed, WHITE presents
+`Mission Accomplished!` without navigating elsewhere.
 
 ## Panel and export regression
 
@@ -135,7 +187,7 @@ presents `Mission Accomplished!` without navigating elsewhere.
   does not open Windows Explorer.
 - `DON'T PANIC` opens the matching retained guide anchor.
 - No noticeable sampling hitch occurs with the panel closed or open.
-- Each JSON is no larger than 256 KiB and names snapshot schema `2.8`.
+- Each JSON is no larger than 256 KiB and names snapshot schema `2.9`.
 
 ## Migration closure regression sweep
 

@@ -19,6 +19,7 @@ namespace DspProgressionStatusExporter
         public double TenMinuteConsumedPerMinute;
         public bool RunwayAvailable;
         public double RunwayMinutes;
+        public double AccessibleCount;
         public string BackpressureStatus;
         public double ExactTargetPerMinute;
     }
@@ -41,6 +42,8 @@ namespace DspProgressionStatusExporter
         public bool TargetDeficit;
         public bool RunwayAvailable;
         public double RunwayMinutes;
+        public bool DepletionMinutesAvailable;
+        public double DepletionMinutes;
         public string BackpressureStatus;
         public double ProducedPerMinute;
         public double ConsumedPerMinute;
@@ -70,6 +73,9 @@ namespace DspProgressionStatusExporter
                 { "runwayAvailable", RunwayAvailable },
                 { "runwayMinutes", RunwayAvailable
                     ? (object)Math.Round(RunwayMinutes, 3) : null },
+                { "depletionMinutesAvailable", DepletionMinutesAvailable },
+                { "depletionMinutes", DepletionMinutesAvailable
+                    ? (object)Math.Round(DepletionMinutes, 3) : null },
                 { "backpressureStatus", BackpressureStatus }
             };
         }
@@ -150,6 +156,17 @@ namespace DspProgressionStatusExporter
                 ExceedsTolerance(
                     result.ExactTargetPerMinute,
                     result.ProducedPerMinute);
+
+            double netDepletionPerMinute =
+                result.ConsumedPerMinute - result.ProducedPerMinute;
+            if (result.RunwayAvailable && result.DemandDeficit &&
+                netDepletionPerMinute > Tolerance(result.ConsumedPerMinute))
+            {
+                result.DepletionMinutesAvailable = true;
+                result.DepletionMinutes = Math.Max(
+                    0.0,
+                    input.AccessibleCount / netDepletionPerMinute);
+            }
 
             if (!result.DemandDeficit && !result.TargetDeficit)
             {

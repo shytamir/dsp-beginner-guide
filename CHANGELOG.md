@@ -4,6 +4,14 @@
 
 ### Changed
 
+- Replaced the single verbose production-risk conclusion with up to three
+  stable compact condition rows and paired recommendations in a separate Next
+  Actions section. Initial priority is starvation, trustworthy net-depletion
+  time, then phase item order; same-severity newcomers cannot churn a full
+  incumbent list.
+- Added truthful accessible-stock/net-deficit depletion estimates for tracked
+  objectives, advanced guide analysis to 3.0, panel presentation to 2.4, and
+  compact snapshot schema to 2.9 for the RISK-05 runtime gate.
 - Added a fixed, click-through native DSP signal glyph beside the Cube-rate
   rail for the analyzer-selected production risk. Draining and starved use
   distinct embedded signals; quiet states display no glyph. Advanced the

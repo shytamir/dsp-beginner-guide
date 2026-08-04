@@ -338,8 +338,8 @@ $panelSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\GuidePanelModel.cs'
 )
-if (-not $panelSource.Contains('{ "contractVersion", "2.3" }')) {
-    throw 'Panel model contract version is not 2.3.'
+if (-not $panelSource.Contains('{ "contractVersion", "2.4" }')) {
+    throw 'Panel model contract version is not 2.4.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

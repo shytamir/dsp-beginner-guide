@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.8";
+        private const string SchemaVersion = "2.9";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -68,6 +68,8 @@ namespace DspProgressionStatusExporter
         private readonly float[] maximumTelemetryStageMs = new float[4];
         private readonly GuidePanelController guidePanel =
             new GuidePanelController();
+        private readonly GuidePanelRiskStabilizer riskPresentation =
+            new GuidePanelRiskStabilizer();
         private float nextGuidePanelRefreshAt;
         private Coroutine guidePanelRefreshCoroutine;
         private string lastSnapshotFileName;
@@ -164,6 +166,7 @@ namespace DspProgressionStatusExporter
             }
 
             guidePanel.Prepare();
+            riskPresentation.Reset();
             object data = GetStatic(gameMainType, "data");
             object player = GetStatic(gameMainType, "mainPlayer");
             GuidePanelModel model = BuildLiveGuidePanelModel(data, player);
@@ -268,7 +271,8 @@ namespace DspProgressionStatusExporter
                         guideAnalysis,
                         observedState,
                         lastSnapshotFileName,
-                        lastSnapshotDirectory);
+                        lastSnapshotDirectory,
+                        riskPresentation);
                 Dictionary<string, object> snapshot =
                     CompactSnapshotBuilder.Build(
                         SchemaVersion,
@@ -349,7 +353,8 @@ namespace DspProgressionStatusExporter
                     analysis,
                     observed,
                     lastSnapshotFileName,
-                    lastSnapshotDirectory);
+                    lastSnapshotDirectory,
+                    riskPresentation);
                 return model;
             }
             catch (Exception ex)
@@ -470,7 +475,8 @@ namespace DspProgressionStatusExporter
                         analysis,
                         observed,
                         lastSnapshotFileName,
-                        lastSnapshotDirectory);
+                        lastSnapshotDirectory,
+                        riskPresentation);
                 if (guidePanel.IsVisible)
                     guidePanel.UpdateModel(model);
             }

@@ -5,7 +5,7 @@
 DSP Guide Check is the passive, on-demand runtime companion to the DSP
 Practical Progression Guide. F8 recalls the phase selected for the current
 playthrough, measures that phase's stable readiness objectives, and presents
-one concise, useful status conclusion.
+a bounded set of concise, useful status conclusions and immediate actions.
 
 The player asks; the instrument answers. It is not an autopilot, factory
 score, build designer, combat adviser, optional-route tracker, or unsolicited
@@ -18,8 +18,8 @@ warning system.
 - Objectives remain stable while a phase is selected.
 - Hard objectives, reference paces, warnings, and player judgments remain
   distinct.
-- Current Status communicates an actionable conclusion rather than every
-  available rate.
+- Current Status communicates at most three actionable conclusions rather
+  than every available rate; recommendations remain separate in Next Actions.
 - The panel is hidden by default and never alerts by itself.
 - F8 never saves; `Save snapshot` is the deliberate forensic export.
 - The mod is read-only with respect to the game and save state.
@@ -60,24 +60,20 @@ historical records without exposing superseded phase contracts. See
 
 `RISK-01` through `RISK-04` have passed their focused runtime gates. The
 production-risk roadmap is accepted through its native draining and starvation
-glyphs on the fixed Cube-rate rail. This roadmap remains separate from the
-completed guide 2.0 migration.
+glyphs on the fixed Cube-rate rail. `RISK-05` now implements bounded, stable,
+plain-language risk rows and separate Next Actions and awaits its focused
+runtime gate. This roadmap remains separate from the completed guide 2.0
+migration.
 
 ## Future considerations
 
 These ideas are recorded but are not active work:
 
-- `RATE-01` and `BUFFER-01` remain superseded by `RISK-01` through `RISK-04`.
+- `RATE-01` and `BUFFER-01` remain superseded by `RISK-01` through `RISK-05`.
 - Keep completed objectives to compact single lines while reserving supporting
   detail for incomplete objectives.
-- Limit Pending to the few highest-value actions, ordered by what unlocks or
-  constrains progress, without repeating every incomplete objective.
-- Limit Current Status to exceptional findings rather than every available
-  healthy fact.
 - Use a quiet-success conclusion such as `No immediate constraints found`
   when the analyzer has nothing actionable to report.
-- Stabilize conclusions across insignificant fluctuations so the panel does
-  not rewrite itself on minor rate noise.
 - Reserve explicit player checks for important judgments the runtime genuinely
   cannot observe, and present each only once.
 
@@ -160,11 +156,11 @@ DYSON, WARP to GREEN, and LOGISTICS or COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.8 serializes the same selected-phase conclusions used by the
+Snapshot schema 2.9 serializes the same selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. Every
 snapshot includes provenance, playtime, research and Cube aggregates,
 selection diagnostics, objective/status conclusions, focused selected-phase
-evidence, the strongest production-risk state and score terms, collector
+evidence, the ordered actionable production-risk list and score terms, collector
 coverage and performance, and explicit omission or truncation markers.
 
 Broad factory, technology, station-slot, inventory, topology, and all-item
@@ -185,6 +181,15 @@ selected draining or starved risk; quiet states show no glyph. All established
 sizes, spacing, and bounded hover behavior remain. `DON'T PANIC` retains its
 separate bright-red Comic Sans presentation.
 
+Current Status presents at most three stable production-risk rows using only
+the item name plus `draining` or `starved`; it omits forensic evidence. Paired
+recommendations appear in a separate Next Actions section. Initial ordering is
+severity, trustworthy net-depletion time, then phase item order. Incumbents
+retain membership and same-severity order while actionable; only a new starved
+risk may displace a displayed draining risk. A tracked objective may show one
+short buffer estimate when authoritative local stock and net-deficit rates
+support it.
+
 The Basic font falls back softly to the captured native Goal font if private
 runtime registration is unavailable. Its SIL Open Font License notice is
 embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
@@ -194,12 +199,12 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Contract | Version |
 |---|---:|
 | Release line | 2.0.x |
-| Snapshot schema | 2.8 |
+| Snapshot schema | 2.9 |
 | Normalized state | 2.0 |
 | Guide selection | 1.6 |
-| Guide analysis | 2.9 |
+| Guide analysis | 3.0 |
 | Progression | 2.8 |
-| Panel | 2.3 |
+| Panel | 2.4 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use
 the same three-number version; assembly/file metadata adds `.0`, and
@@ -214,7 +219,7 @@ Accepted runtime work for the current implementation includes:
 - native one-minute production comparisons against the Statistics Panel;
 - native Dyson aggregate comparisons against the Dyson editor;
 - focused ILS, DYSON, PHOTON, and WHITE conclusions;
-- compact schema 2.8 snapshots and bounded collector diagnostics;
+- compact schema 2.9 snapshots and bounded collector diagnostics;
 - panel layout, click-through behavior, scrolling, footer actions, and hover
   behavior;
 - Basic Regular rendering with the retained outline and separate
@@ -249,6 +254,12 @@ placement with the panel body collapsed, 4K legibility, click-through and F8
 behavior, intact navigation and layout, and no visible performance or log
 regression. Deterministic tests cover the analyzer-selected draining, starved,
 and non-actionable mappings.
+
+`RISK-05` is implemented and awaiting runtime acceptance. Deterministic tests
+cover truthful net-depletion time, compact status and action text, the
+three-row bound, incumbent retention, same-severity stability, and immediate
+critical promotion. The focused in-game gate remains authoritative for
+presentation, session continuity, layout, interaction, and performance.
 
 The release candidate's two Thunderstore blockers are completed and accepted
 by the release owner. `STORE-README-01` provides the dedicated player-facing

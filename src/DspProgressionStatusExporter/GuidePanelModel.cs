@@ -64,6 +64,8 @@ namespace DspProgressionStatusExporter
             new List<GuidePanelRowModel>();
         public readonly List<GuidePanelRowModel> Context =
             new List<GuidePanelRowModel>();
+        public readonly List<GuidePanelRowModel> NextActions =
+            new List<GuidePanelRowModel>();
         public readonly List<GuidePanelCubeRateModel> CubeRates =
             new List<GuidePanelCubeRateModel>();
 
@@ -78,9 +80,12 @@ namespace DspProgressionStatusExporter
             var context = new List<object>();
             foreach (GuidePanelRowModel row in Context)
                 context.Add(row.Export());
+            var nextActions = new List<object>();
+            foreach (GuidePanelRowModel row in NextActions)
+                nextActions.Add(row.Export());
 
             return new Dictionary<string, object> {
-                { "contractVersion", "2.3" },
+                { "contractVersion", "2.4" },
                 { "phaseId", PhaseId },
                 { "phaseSelectionAuthority", "player" },
                 { "title", Title },
@@ -91,8 +96,9 @@ namespace DspProgressionStatusExporter
                 { "objectives", objectives },
                 { "pending", pending },
                 { "currentStatus", context },
+                { "nextActions", nextActions },
                 { "stabilityRule",
-                    "Objective identities and order remain fixed while phaseId is unchanged; only their measured status and detail update." }
+                    "Objectives remain fixed. Up to three risk rows retain membership and same-severity order while actionable; only a higher-severity newcomer may displace an incumbent." }
             };
         }
     }
@@ -143,7 +149,8 @@ namespace DspProgressionStatusExporter
             Dictionary<string, object> analysis,
             ObservedGameState observedState,
             string snapshotFileName,
-            string snapshotDirectory)
+            string snapshotDirectory,
+            GuidePanelRiskStabilizer riskStabilizer)
         {
             var model = new GuidePanelModel {
                 PhaseId = "unknown",
@@ -182,30 +189,131 @@ namespace DspProgressionStatusExporter
                 ? "Main progression complete."
                 : "Current phase objectives";
 
-            ApplyRiskSignal(
-                model,
+            List<GuidePanelRiskModel> riskCandidates = ReadRiskCandidates(
                 AsDictionary(Get(analysis, "productionRisk")));
-            AddContext(model, AsList(Get(analysis, "findings")));
+            List<GuidePanelRiskModel> displayedRisks = riskStabilizer != null
+                ? riskStabilizer.Select(model.PhaseId, riskCandidates)
+                : FirstRisks(riskCandidates);
+            ApplyRiskPresentation(model, displayedRisks);
+            AddObjectiveDepletionNotes(model, displayedRisks);
+            AddContext(
+                model,
+                AsList(Get(analysis, "findings")),
+                GuidePanelRiskStabilizer.Limit - model.Context.Count);
             return model;
         }
 
-        private static void ApplyRiskSignal(
-            GuidePanelModel model,
+        private static List<GuidePanelRiskModel> ReadRiskCandidates(
             Dictionary<string, object> productionRisk)
         {
-            Dictionary<string, object> selected = AsDictionary(
-                Get(productionRisk, "selected"));
-            if (selected == null ||
-                !Boolean(Get(selected, "actionable"), false))
-                return;
+            var result = new List<GuidePanelRiskModel>();
+            List<object> actionable = AsList(Get(productionRisk, "actionable"));
+            if (actionable == null) return result;
+            foreach (object value in actionable)
+            {
+                Dictionary<string, object> risk = AsDictionary(value);
+                if (risk == null ||
+                    !Boolean(Get(risk, "actionable"), false))
+                    continue;
+                int itemId = Integer(Get(risk, "itemId"), 0);
+                string name = Text(Get(risk, "name"), null);
+                string state = Text(Get(risk, "state"), null);
+                if (itemId <= 0 || String.IsNullOrEmpty(name) ||
+                    (!String.Equals(
+                        state, "draining", StringComparison.OrdinalIgnoreCase) &&
+                     !String.Equals(
+                        state, "starved", StringComparison.OrdinalIgnoreCase)))
+                    continue;
+                result.Add(new GuidePanelRiskModel {
+                    Id = "production-risk-" + itemId,
+                    ItemId = itemId,
+                    Name = name,
+                    State = state,
+                    DepletionMinutesAvailable = Boolean(
+                        Get(risk, "depletionMinutesAvailable"), false),
+                    DepletionMinutes = Number(
+                        Get(risk, "depletionMinutes"), 0.0)
+                });
+            }
+            return result;
+        }
 
-            string state = Text(Get(selected, "state"), null);
-            if (String.Equals(
-                state, "draining", StringComparison.OrdinalIgnoreCase))
-                model.RiskSignal = GuidePanelRiskSignal.Draining;
-            else if (String.Equals(
-                state, "starved", StringComparison.OrdinalIgnoreCase))
-                model.RiskSignal = GuidePanelRiskSignal.Starved;
+        private static List<GuidePanelRiskModel> FirstRisks(
+            List<GuidePanelRiskModel> candidates)
+        {
+            return candidates.GetRange(
+                0,
+                Math.Min(GuidePanelRiskStabilizer.Limit, candidates.Count));
+        }
+
+        private static void ApplyRiskPresentation(
+            GuidePanelModel model,
+            List<GuidePanelRiskModel> risks)
+        {
+            foreach (GuidePanelRiskModel risk in risks)
+            {
+                bool starved = String.Equals(
+                    risk.State, "starved", StringComparison.OrdinalIgnoreCase);
+                if (starved)
+                    model.RiskSignal = GuidePanelRiskSignal.Starved;
+                else if (model.RiskSignal == GuidePanelRiskSignal.None)
+                    model.RiskSignal = GuidePanelRiskSignal.Draining;
+
+                model.Context.Add(new GuidePanelRowModel {
+                    Id = risk.Id,
+                    Status = starved ? "blocked" : "watch",
+                    Label = risk.Name + (starved
+                        ? " starved - expect stoppage"
+                        : " draining - check soon"),
+                    Detail = null,
+                    Required = false,
+                    Completed = false
+                });
+                model.NextActions.Add(new GuidePanelRowModel {
+                    Id = "action-" + risk.ItemId,
+                    Status = starved ? "blocked" : "watch",
+                    Label = (starved ? "Restart " : "Increase ") +
+                        risk.Name + " production",
+                    Detail = null,
+                    Required = false,
+                    Completed = false
+                });
+            }
+        }
+
+        private static void AddObjectiveDepletionNotes(
+            GuidePanelModel model,
+            List<GuidePanelRiskModel> risks)
+        {
+            foreach (GuidePanelRiskModel risk in risks)
+            {
+                if (!risk.DepletionMinutesAvailable ||
+                    risk.DepletionMinutes <= 0.0)
+                    continue;
+                foreach (GuidePanelRowModel objective in model.Objectives)
+                {
+                    if (String.IsNullOrEmpty(objective.Label) ||
+                        objective.Label.IndexOf(
+                            risk.Name,
+                            StringComparison.OrdinalIgnoreCase) < 0)
+                        continue;
+                    string note = risk.Name + " buffer: about " +
+                        FormatMinutes(risk.DepletionMinutes) + ".";
+                    objective.Detail = String.IsNullOrEmpty(objective.Detail)
+                        ? note : objective.Detail + " " + note;
+                    break;
+                }
+            }
+        }
+
+        private static string FormatMinutes(double minutes)
+        {
+            if (minutes < 1.0) return "under 1 min";
+            return Math.Round(
+                minutes,
+                minutes < 10.0 ? 1 : 0).ToString(
+                    minutes < 10.0 ? "0.0" : "0",
+                    CultureInfo.InvariantCulture) + " min";
         }
 
         private static void AddCubeRates(
@@ -395,9 +503,10 @@ namespace DspProgressionStatusExporter
 
         private static void AddContext(
             GuidePanelModel model,
-            List<object> findings)
+            List<object> findings,
+            int availableRows)
         {
-            if (findings == null) return;
+            if (findings == null || availableRows <= 0) return;
             var candidates = new List<ContextCandidate>();
             int sourceOrder = 0;
             foreach (object item in findings)
@@ -406,6 +515,9 @@ namespace DspProgressionStatusExporter
                 if (finding == null) continue;
                 string id = Text(Get(finding, "id"), null);
                 if (String.IsNullOrEmpty(id))
+                    continue;
+                if (id.StartsWith(
+                    "production-risk-", StringComparison.OrdinalIgnoreCase))
                     continue;
                 string claim = Text(Get(finding, "claim"), null);
                 if (String.IsNullOrEmpty(claim)) continue;
@@ -428,7 +540,7 @@ namespace DspProgressionStatusExporter
                     ? priority
                     : left.SourceOrder.CompareTo(right.SourceOrder);
             });
-            int count = Math.Min(1, candidates.Count);
+            int count = Math.Min(availableRows, candidates.Count);
             for (int i = 0; i < count; i++)
                 model.Context.Add(candidates[i].Row);
         }
@@ -516,6 +628,12 @@ namespace DspProgressionStatusExporter
         private static int Integer(object value, int fallback)
         {
             try { return value == null ? fallback : Convert.ToInt32(value); }
+            catch { return fallback; }
+        }
+
+        private static double Number(object value, double fallback)
+        {
+            try { return value == null ? fallback : Convert.ToDouble(value); }
             catch { return fallback; }
         }
     }

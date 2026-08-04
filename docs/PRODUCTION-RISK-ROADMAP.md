@@ -70,7 +70,8 @@ and are omitted rather than approximated from inventory movement.
 
 ## Immediate roadmap
 
-`RISK-01` through `RISK-04` are implemented and accepted.
+`RISK-01` through `RISK-04` are accepted. `RISK-05` is implemented and awaits
+its focused runtime presentation gate.
 
 ### RISK-01 - Native multi-window evidence
 
@@ -186,9 +187,9 @@ Scope:
   rate noise do not cause presentation flicker.
 - Return `Unknown` when required evidence is unavailable and `Warming` only
   when coverage evidence supports it.
-- Translate only the strongest actionable selected-phase finding into concise
-  player language. Do not add an item dashboard or generic troubleshooting
-  checklist.
+- Retain deterministic actionable selected-phase results for a bounded
+  presentation consumer while preserving one strongest forensic selection.
+  Do not add an item dashboard or generic troubleshooting checklist.
 - Add deterministic tests for startup, backpressure, pulsed output, stable
   sufficiency, chronic deficit, draining buffers, and actual starvation.
 
@@ -201,8 +202,8 @@ Implemented policy:
 - A five-percent or 0.5-item/minute deadband suppresses insignificant rate
   noise, while native one-minute windows smooth pulsed recipes.
 - Unknown, warming, backpressured, and balanced results are quiet. Draining
-  and starved results are actionable, and only the strongest selected-phase
-  conclusion reaches Current Status.
+  and starved results are actionable and deterministically ordered for the
+  bounded presentation contract.
 - Compact diagnostics retain the selected state, severity, score, baseline,
   drop, thinness, deficit flags, runway, and backpressure status.
 
@@ -213,7 +214,8 @@ Acceptance:
 - A stable but chronically undersized line is reported as a deficit when
   demand or an exact guide target proves one.
 - The same normalized evidence always produces the same score and diagnosis.
-- Current Status still presents at most one actionable conclusion.
+- Actionable results remain deterministic and separately distinguish urgent
+  draining from critical starvation.
 
 ### RISK-04 - Native risk-signal presentation
 
@@ -258,9 +260,58 @@ Acceptance:
 - Existing title and Cube icons, rate text, navigation, layout, snapshots,
   click-through behavior, and performance do not regress.
 
+### RISK-05 - Bounded interpreted risk presentation
+
+**Status:** Implemented; awaiting the focused in-game presentation gate.
+
+**User story:** As a player responding to production trouble, I want a small,
+stable list of plain-language conditions and immediate actions, so I can see
+what needs attention without reading forensic statistics or watching the list
+churn as rates fluctuate.
+
+Scope:
+
+- Present at most three actionable production risks in Current Status.
+- Use only the established player terms: `<item> draining - check soon` and
+  `<item> starved - expect stoppage`. Do not render rates, baselines, scores,
+  scope terminology, or forensic evidence in those rows.
+- Put the matching recommendation in a distinct Next Actions section:
+  `Increase <item> production` or `Restart <item> production`.
+- Rank initial candidates by starved before draining, then shortest
+  trustworthy net-depletion time, then the phase's declared item order.
+- Preserve displayed membership and same-severity order while each item stays
+  actionable. A same-severity newcomer cannot displace an incumbent merely
+  because its estimate changes. A new starved item may immediately displace
+  the lowest displayed draining item. Phase changes and a newly opened panel
+  start a fresh selection.
+- Derive a trustworthy depletion estimate only from authoritative accessible
+  stock divided by the positive net deficit (`consumption - production`). If
+  a displayed risk names a tracked objective, append one short buffer estimate
+  there; omit the estimate when its inputs are unavailable or it is empty.
+- Keep detailed rates, scores, scope, runway, and evidence in the deliberate
+  snapshot rather than normal panel prose.
+- Keep existing non-production findings eligible only for unused slots within
+  the same three-row Current Status bound.
+
+Acceptance:
+
+- One to three simultaneous risks produce the same number of compact Current
+  Status rows and paired Next Actions without evidence-detail text.
+- A fourth same-severity candidate neither replaces nor reorders three active
+  incumbents across refreshes.
+- A new starved candidate is promoted ahead of draining rows and displaces at
+  most the lowest urgent incumbent when the list is full.
+- Clearing an incumbent frees its slot; changing phase or reopening the panel
+  recomputes a fresh deterministic selection.
+- A tracked draining objective shows a concise net-depletion estimate only
+  when authoritative local stock and rates support it.
+- Objective identity/order, navigation, glyph behavior, collapse, scrolling,
+  click-through, snapshots, layout, and performance do not regress.
+
 ## Delivery order and gates
 
-Implement in order: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04`.
+Implement in order: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04` ->
+`RISK-05`.
 
 - `RISK-01` requires a user checkpoint comparing 1-minute and 10-minute native
   rates before buffer or scoring work begins.
@@ -272,6 +323,9 @@ Implement in order: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04`.
   recovery.
 - `RISK-04` passed its quiet, draining, starved, collapsed-body, 4K,
   visible/hidden performance, interaction, navigation, layout, and log checks.
+- `RISK-05` requires compact one-, three-, and four-candidate presentation,
+  critical promotion, recovery, phase/session reset, trustworthy buffer-note,
+  interaction, layout, performance, log, and diagnostic snapshot checks.
 
 No story authorizes automatic phase changes, unsolicited alerts, combat
 guidance, broad factory scans, or adoption of the discarded package files.

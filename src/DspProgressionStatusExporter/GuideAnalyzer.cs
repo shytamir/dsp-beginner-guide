@@ -25,6 +25,12 @@ namespace DspProgressionStatusExporter
             public double ExactTargetPerMinute;
         }
 
+        private sealed class OrderedRisk
+        {
+            public ProductionRiskResult Result;
+            public int PhaseOrder;
+        }
+
         private static readonly Phase[] Phases = new Phase[] {
             new Phase { Id = "blue", Title = "Sustain the Blue Cube science loop", GateTechId = 1002, NextTechId = 1111, NextResearch = "Energy Matrix" },
             new Phase { Id = "red", Title = "Sustain Red Cubes without refinery deadlock", GateTechId = 1111, NextTechId = 2902, NextResearch = "Drive Engine Lv2" },
@@ -113,7 +119,7 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "2.9" },
+                { "analysisVersion", "3.0" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },
@@ -153,12 +159,15 @@ namespace DspProgressionStatusExporter
         {
             selected = null;
             int evaluated = 0;
+            var orderedRisks = new List<OrderedRisk>();
             RiskItemSpec[] specs;
             if (!RiskItems.TryGetValue(phaseId ?? "", out specs))
                 specs = new RiskItemSpec[0];
 
-            foreach (RiskItemSpec spec in specs)
+            for (int specIndex = 0; specIndex < specs.Length; specIndex++)
             {
+                RiskItemSpec spec = specs[specIndex];
+                ProductionRiskResult itemRisk = null;
                 ObservedItemBufferEvidence buffer;
                 bool hasLocalScopes = state.ItemBuffers.TryGetValue(
                     spec.ItemId, out buffer) && buffer.Scopes.Count > 0;
@@ -170,7 +179,7 @@ namespace DspProgressionStatusExporter
                             ProductionRiskAnalyzer.Evaluate(
                                 PlanetRiskInput(state, spec, scope));
                         evaluated++;
-                        selected = WorseRisk(selected, result);
+                        itemRisk = WorseRisk(itemRisk, result);
                     }
                     if (spec.ExactTargetPerMinute > 0.0)
                     {
@@ -181,7 +190,7 @@ namespace DspProgressionStatusExporter
                         ProductionRiskResult targetResult =
                             ProductionRiskAnalyzer.Evaluate(targetInput);
                         evaluated++;
-                        selected = WorseRisk(selected, targetResult);
+                        itemRisk = WorseRisk(itemRisk, targetResult);
                     }
                 }
                 else
@@ -190,16 +199,49 @@ namespace DspProgressionStatusExporter
                         ProductionRiskAnalyzer.Evaluate(
                             ClusterRiskInput(state, spec));
                     evaluated++;
-                    selected = WorseRisk(selected, result);
+                    itemRisk = WorseRisk(itemRisk, result);
                 }
+                selected = WorseRisk(selected, itemRisk);
+                if (itemRisk != null && itemRisk.Actionable)
+                    orderedRisks.Add(new OrderedRisk {
+                        Result = itemRisk,
+                        PhaseOrder = specIndex
+                    });
             }
 
+            orderedRisks.Sort(CompareOrderedRisks);
+            if (orderedRisks.Count > 0)
+                selected = orderedRisks[0].Result;
+            var actionable = new List<object>();
+            foreach (OrderedRisk risk in orderedRisks)
+                actionable.Add(risk.Result.Export());
+
             return new Dictionary<string, object> {
-                { "contractVersion", "1.0" },
+                { "contractVersion", "1.1" },
                 { "basis", "Deterministic selected-phase evaluation from scope-matched native rates and conservative accessible-buffer evidence." },
                 { "evaluatedItemScopes", evaluated },
+                { "actionable", actionable },
                 { "selected", selected != null ? (object)selected.Export() : null }
             };
+        }
+
+        private static int CompareOrderedRisks(
+            OrderedRisk left,
+            OrderedRisk right)
+        {
+            int severity = RiskRank(right.Result.State).CompareTo(
+                RiskRank(left.Result.State));
+            if (severity != 0) return severity;
+            if (left.Result.DepletionMinutesAvailable !=
+                right.Result.DepletionMinutesAvailable)
+                return left.Result.DepletionMinutesAvailable ? -1 : 1;
+            if (left.Result.DepletionMinutesAvailable)
+            {
+                int depletion = left.Result.DepletionMinutes.CompareTo(
+                    right.Result.DepletionMinutes);
+                if (depletion != 0) return depletion;
+            }
+            return left.PhaseOrder.CompareTo(right.PhaseOrder);
         }
 
         private static ProductionRiskInput ClusterRiskInput(
@@ -270,6 +312,7 @@ namespace DspProgressionStatusExporter
                 TenMinuteConsumedPerMinute = tenMinuteConsumed,
                 RunwayAvailable = scope.RunwayAvailable,
                 RunwayMinutes = scope.RunwayMinutes,
+                AccessibleCount = scope.AccessibleCount,
                 BackpressureStatus = scope.BackpressureStatus,
                 // Exact guide targets are cluster contracts. They are not
                 // applied to a single local buffer scope.
@@ -286,6 +329,14 @@ namespace DspProgressionStatusExporter
             int candidateRank = RiskRank(candidate.State);
             if (candidateRank > currentRank) return candidate;
             if (candidateRank < currentRank) return current;
+            if (candidate.DepletionMinutesAvailable !=
+                current.DepletionMinutesAvailable)
+                return candidate.DepletionMinutesAvailable
+                    ? candidate : current;
+            if (candidate.DepletionMinutesAvailable &&
+                candidate.DepletionMinutes != current.DepletionMinutes)
+                return candidate.DepletionMinutes < current.DepletionMinutes
+                    ? candidate : current;
             return candidate.Score > current.Score ? candidate : current;
         }
 

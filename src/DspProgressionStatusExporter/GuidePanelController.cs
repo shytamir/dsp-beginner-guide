@@ -348,6 +348,7 @@ namespace DspProgressionStatusExporter
         private Text objectiveHeader;
         private Text pendingHeader;
         private Text contextHeader;
+        private Text nextActionsHeader;
 #if DSP_GUIDE_SNAPSHOT_CONTROL
         private Text snapshotLinkText;
 #endif
@@ -385,6 +386,7 @@ namespace DspProgressionStatusExporter
         private readonly List<RowView> objectiveViews = new List<RowView>();
         private readonly List<RowView> pendingViews = new List<RowView>();
         private readonly List<RowView> contextViews = new List<RowView>();
+        private readonly List<RowView> nextActionViews = new List<RowView>();
         private readonly List<CubeRateView> cubeRateViews =
             new List<CubeRateView>();
 
@@ -528,6 +530,8 @@ namespace DspProgressionStatusExporter
                 pendingViews, unscaledDeltaTime);
             changed |= AnimateRows(
                 contextViews, unscaledDeltaTime);
+            changed |= AnimateRows(
+                nextActionViews, unscaledDeltaTime);
 #if DSP_GUIDE_SNAPSHOT_CONTROL
             if (snapshotFeedbackRemaining > 0f)
             {
@@ -565,6 +569,7 @@ namespace DspProgressionStatusExporter
             objectiveViews.Clear();
             pendingViews.Clear();
             contextViews.Clear();
+            nextActionViews.Clear();
             cubeRateViews.Clear();
         }
 
@@ -574,6 +579,7 @@ namespace DspProgressionStatusExporter
             objectiveViews.Clear();
             pendingViews.Clear();
             contextViews.Clear();
+            nextActionViews.Clear();
             cubeRateViews.Clear();
             phaseId = null;
             Font fallbackFont = FindFont();
@@ -752,6 +758,9 @@ namespace DspProgressionStatusExporter
             contextHeader = CreateText(
                 "ContextHeader", contentObject.transform, style.GroupText);
             contextHeader.text = "Current Status";
+            nextActionsHeader = CreateText(
+                "NextActionsHeader", contentObject.transform, style.GroupText);
+            nextActionsHeader.text = "Next Actions";
 
 #if DSP_GUIDE_SNAPSHOT_CONTROL
             snapshotLinkText = CreateFooterLink(
@@ -854,6 +863,12 @@ namespace DspProgressionStatusExporter
                 RebuildRows(contextViews, model.Context, "Context");
             else
                 UpdateRows(contextViews, model.Context);
+
+            if (!RowsMatch(nextActionViews, model.NextActions))
+                RebuildRows(
+                    nextActionViews, model.NextActions, "NextAction");
+            else
+                UpdateRows(nextActionViews, model.NextActions);
 
             ApplyCubeRates(model.CubeRates);
             ApplyRiskSignal(model.RiskSignal);
@@ -1172,6 +1187,11 @@ namespace DspProgressionStatusExporter
                 pendingHeader, pendingViews, ref y, pendingViews.Count > 0);
             LayoutSection(
                 contextHeader, contextViews, ref y, contextViews.Count > 0);
+            LayoutSection(
+                nextActionsHeader,
+                nextActionViews,
+                ref y,
+                nextActionViews.Count > 0);
             float contentHeight = y + 5f;
             contentRect.sizeDelta = new Vector2(0f, contentHeight);
 
