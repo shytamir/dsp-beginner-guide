@@ -70,8 +70,7 @@ and are omitted rather than approximated from inventory movement.
 
 ## Immediate roadmap
 
-This roadmap is active at the `RISK-03` runtime gate. `RISK-01` and `RISK-02`
-are accepted.
+This roadmap is active at `RISK-04`. `RISK-01` through `RISK-03` are accepted.
 
 ### RISK-01 - Native multi-window evidence
 
@@ -163,7 +162,13 @@ Acceptance:
 
 ### RISK-03 - Deterministic risk engine and interpreter
 
-**Status:** Implemented; awaiting runtime gate.
+**Status:** Accepted. Sequential GREEN-phase snapshots on Comae Berenices III
+confirmed quiet warming and proven backpressure, an amber draining Quantum
+Chip line, and red starvation at zero accessible runway while Current Status
+remained capped at one actionable conclusion. The release owner directly
+observed the warning clear within 15 seconds of restored production and
+accepted balanced recovery without a snapshot after an independent supporting
+line subsequently failed.
 
 **User story:** As a player, I want the mod to distinguish warming, balanced,
 backpressured, draining, and starved production, so I receive a useful cause
@@ -251,7 +256,9 @@ Implement in order: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04`.
 - `RISK-02` passed with full, draining, empty, and mixed-storage snapshots.
   Remote-only exclusion remains a focused regression checkpoint if remote
   logic changes.
-- `RISK-03` requires deterministic tests before an in-game diagnostic pass.
+- `RISK-03` passed deterministic tests and its focused in-game diagnostic
+  gate, including the release-owner-approved direct observation of balanced
+  recovery.
 - `RISK-04` requires expanded and collapsed screenshots plus a performance
   check with the panel visible and hidden.
 

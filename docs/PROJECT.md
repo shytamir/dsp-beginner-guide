@@ -58,10 +58,9 @@ runtime gates. The current runtime retains legacy selection migration and
 historical records without exposing superseded phase contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
-`RISK-03`, deterministic risk scoring and interpretation, is implemented and
-awaiting its focused runtime gate. `RISK-01` and `RISK-02` have passed their
-focused runtime gates. This roadmap remains separate from the completed guide
-2.0 migration.
+`RISK-01` through `RISK-03` have passed their focused runtime gates. `RISK-04`,
+quiet phase-health presentation, is the next production-risk story. This
+roadmap remains separate from the completed guide 2.0 migration.
 
 ## Future considerations
 
@@ -232,6 +231,14 @@ objectives, and PHOTON receiver status.
 one, three, and six Matrix icons plus interaction and refresh checks.
 `GUIDE2-03` passed its navigation, persistence, removed-contract, control,
 performance, and focused BLUE/ILS/WHITE snapshot checkpoint.
+
+`RISK-03` passed its focused GREEN-phase runtime gate on diagnostic version
+`2.0.58`. Sequential snapshots confirmed quiet warming and proven
+backpressure, one amber draining conclusion, and one red starvation conclusion
+while objectives remained stable. The release owner directly observed the
+warning clear within 15 seconds after production recovered and accepted that
+balanced transition without a fifth snapshot because an independent supporting
+line failed afterward.
 
 The release candidate's two Thunderstore blockers are completed and accepted
 by the release owner. `STORE-README-01` provides the dedicated player-facing
