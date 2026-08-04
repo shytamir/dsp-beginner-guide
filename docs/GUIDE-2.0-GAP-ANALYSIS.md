@@ -127,8 +127,12 @@ as one coherent objective rather than two panels.
 
 ### GUIDE2-02 — Realign and simplify the nine phase contracts
 
-**Status:** Implemented; deterministic checks pass. Focused runtime validation
-remains pending.
+**Status:** Implemented; deterministic checks pass. An August 4 runtime attempt
+used plugin 1.18.37 with snapshot schema 2.6 and therefore predated this
+contract's analysis 2.8 and schema 2.7 changes. It exposed and prompted a fix
+for the stale panel-facing DYSON title, but cannot validate the new focused
+PURPLE, GREEN, or WHITE findings. Focused runtime validation remains pending
+against a current build.
 
 **User story**
 

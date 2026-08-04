@@ -24,7 +24,7 @@ namespace DspProgressionStatusExporter
             new Phase { Id = "yellow", Title = "Run three continuous Yellow Cube labs", GateTechId = 1124, NextTechId = 1312, NextResearch = "Information Matrix" },
             new Phase { Id = "purple", Title = "Run three continuous Purple Cube labs", GateTechId = 1312, NextTechId = 1705, NextResearch = "Gravity Matrix" },
             new Phase { Id = "green", Title = "Run two continuous Green Cube labs", GateTechId = 1705, NextTechId = 1505, NextResearch = "Planetary Ionosphere Utilization" },
-            new Phase { Id = "dyson", Title = "Build and sustain the Dyson swarm", GateTechId = 1505, NextTechId = 1506, NextResearch = "Dirac Inversion Mechanism" },
+            new Phase { Id = "dyson", Title = "Build the Photon swarm", GateTechId = 1505, NextTechId = 1506, NextResearch = "Dirac Inversion Mechanism" },
             new Phase { Id = "photon", Title = "Run the critical-photon receiver array", GateTechId = 1506, NextTechId = 1507, NextResearch = "Universe Matrix" },
             new Phase { Id = "white", Title = "Complete the main progression route", GateTechId = 1507, NextTechId = 1508, NextResearch = "Mission Completed" }
         };

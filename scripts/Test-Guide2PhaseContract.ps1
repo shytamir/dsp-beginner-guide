@@ -89,6 +89,14 @@ if ($phases[0].GetType().GetField('Id').GetValue($phases[0]) -ne 'blue' -or
     $phases.Count -ne 9) {
     throw 'Guide analysis does not expose the nine-phase BLUE-first contract.'
 }
+$dysonPhase = $phases | Where-Object {
+    $_.GetType().GetField('Id').GetValue($_) -eq 'dyson'
+}
+if ($dysonPhase.GetType().GetField(
+        'Title'
+    ).GetValue($dysonPhase) -ne 'Build the Photon swarm') {
+    throw 'Guide analysis does not expose the guide 2.0 DYSON title.'
+}
 
 $gateEngine = $assembly.GetType(
     'DspProgressionStatusExporter.GuideGateEngine', $true
