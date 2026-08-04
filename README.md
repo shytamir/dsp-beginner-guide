@@ -156,8 +156,8 @@ history.
 
 ## Active development
 
-`GUIDE2-01` and `GUIDE2-02` have passed their focused runtime gates. `VIS2-01`
-is implemented and awaiting its visual runtime gate; the cleanup story follows.
+`GUIDE2-01`, `GUIDE2-02`, and `VIS2-01` have passed their focused runtime
+gates. `GUIDE2-03` cleanup is implemented and awaits the final migration gate.
 
 The gap report and four bounded user stories are defined in
 [docs/GUIDE-2.0-GAP-ANALYSIS.md](docs/GUIDE-2.0-GAP-ANALYSIS.md).

@@ -51,9 +51,6 @@ namespace DspProgressionStatusExporter
                 if (key == "phase") phase = value;
                 else if (key == "seed") seed = value;
             }
-            if (String.Equals(
-                phase, "complete", StringComparison.OrdinalIgnoreCase))
-                phase = "white";
             phase = ManualPhaseNavigator.MigrateLegacyPhase(phase);
             if (!ManualPhaseNavigator.IsValidPhase(phase)) return null;
             return new ManualPhaseSelection {

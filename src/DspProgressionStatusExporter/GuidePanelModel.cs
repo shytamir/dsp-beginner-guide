@@ -72,7 +72,7 @@ namespace DspProgressionStatusExporter
                 context.Add(row.Export());
 
             return new Dictionary<string, object> {
-                { "contractVersion", "2.0" },
+                { "contractVersion", "2.1" },
                 { "phaseId", PhaseId },
                 { "phaseSelectionAuthority", "player" },
                 { "title", Title },
@@ -129,12 +129,6 @@ namespace DspProgressionStatusExporter
                 Minimum = 40, Comfortable = 40, Later = null
             }
         };
-
-        private static readonly HashSet<string> SuppressedContextIds =
-            new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-                "phase-matrix-rate",
-                "dyson-generation-shortfall"
-            };
 
         public static GuidePanelModel Build(
             Dictionary<string, object> analysis,
@@ -380,7 +374,7 @@ namespace DspProgressionStatusExporter
                 Dictionary<string, object> finding = AsDictionary(item);
                 if (finding == null) continue;
                 string id = Text(Get(finding, "id"), null);
-                if (String.IsNullOrEmpty(id) || SuppressedContextIds.Contains(id))
+                if (String.IsNullOrEmpty(id))
                     continue;
                 string claim = Text(Get(finding, "claim"), null);
                 if (String.IsNullOrEmpty(claim)) continue;
@@ -419,40 +413,6 @@ namespace DspProgressionStatusExporter
                 evidence, label, status, id);
 
             if (String.Equals(
-                id, "gas-giant-opportunity", StringComparison.OrdinalIgnoreCase))
-            {
-                label =
-                    "Gas Giant Exploitation is available while gas demand is substantial.";
-                detail = null;
-            }
-            else if (String.Equals(
-                id, "fire-ice-graphene-route", StringComparison.OrdinalIgnoreCase))
-            {
-                label =
-                    "Fire Ice is supplying Graphene\u2014a great fallback for Sulfuric Acid.";
-                detail = null;
-            }
-            else if (String.Equals(
-                id,
-                "fractionator-deuterium-route",
-                StringComparison.OrdinalIgnoreCase))
-            {
-                label = "Fractionators are supplying Deuterium.";
-                detail = "Acceptable optional path.";
-            }
-            else if (String.Equals(
-                id, "combat-investment", StringComparison.OrdinalIgnoreCase))
-            {
-                label = "Substantial combat investment found.";
-                detail = "Acceptable optional path.";
-            }
-            else if (String.Equals(
-                id, "dyson-route-choice", StringComparison.OrdinalIgnoreCase))
-            {
-                label = "Permanent Dyson Sphere construction is active.";
-                detail = "Sphere route selected.";
-            }
-            else if (String.Equals(
                 id, "refined-oil-congestion", StringComparison.OrdinalIgnoreCase))
             {
                 detail = PlayerFacingText.NetOilRate(evidence);
@@ -652,18 +612,6 @@ namespace DspProgressionStatusExporter
                 result, "guide practical", "desired");
             result = ReplaceInsensitive(
                 result,
-                "This is reported as a divergence in priorities, not as an error.",
-                "Acceptable optional path.");
-            result = ReplaceInsensitive(
-                result,
-                "This is reported as a divergence, not an error.",
-                "Acceptable optional path.");
-            result = ReplaceInsensitive(
-                result,
-                "The guide permits this alternative when it fits the factory.",
-                "Acceptable optional path.");
-            result = ReplaceInsensitive(
-                result,
                 "A full byproduct path can stop Hydrogen production.",
                 "Use Hydrogen or expand storage to avoid bottlenecks.");
             return TrimSentences(Normalize(result));
@@ -753,10 +701,6 @@ namespace DspProgressionStatusExporter
                 result,
                 "practical target",
                 "desired target");
-            result = ReplaceInsensitive(
-                result,
-                "The guide permits this alternative",
-                "Acceptable optional path");
             result = ReplaceInsensitive(result, "â€“", "\u2013");
             var protectedTerms = new Dictionary<string, string>();
             int token = 0;

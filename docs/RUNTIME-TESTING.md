@@ -1,11 +1,8 @@
-# DSP Guide Check - Critical-path runtime validation
+# DSP Guide Check - Guide 2.0 runtime validation
 
 This protocol uses only Dyson Sphere Program with the mod installed through
-BepInEx. It validates the retained critical-path contract; no coding tools are
-needed.
-
-The first representative guide 1.22.2 user test completed without reported
-defects. This document remains the regression protocol for future changes.
+BepInEx. It validates the current nine-phase guide 2.0 contract; no coding
+tools are needed.
 
 ## Preparation
 
@@ -13,7 +10,8 @@ defects. This document remains the regression protocol for future changes.
 2. Load a representative save and let the game run for at least one minute
    before judging production objectives.
 3. Open the panel with F8 and select phases only with Previous and Next.
-4. Use `Save snapshot` for a checkpoint whose visible conclusion needs audit.
+4. Use `Save snapshot` only for a checkpoint whose conclusion needs audit.
+5. Confirm each new snapshot names schema `2.7` and guide analysis `2.8`.
 
 ## Navigation and persistence
 
@@ -26,92 +24,103 @@ BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
 
 Confirm:
 
-- no FLIGHT, TITANIUM, SPHERE, WARP, LOGISTICS, or COMPLETE panel exists;
-- no standalone BOOTSTRAP panel exists, and a legacy BOOTSTRAP selection opens
-  on BLUE;
+- Previous on BLUE stays on BLUE and Next on WHITE stays on WHITE;
+- no FLIGHT, TITANIUM, SPHERE, WARP, LOGISTICS, COMPLETE, or standalone
+  BOOTSTRAP panel exists;
 - runtime evidence, pausing, research, objectives, and Mission Completed never
   change the selected phase;
 - the selection persists across a normal game restart;
-- a legacy removed selection opens on its documented retained replacement.
+- a stored legacy selection, when available, opens on its documented retained
+  replacement without exposing the removed phase.
 
-## Checkpoint A - BLUE through RED
+## BLUE and RED
 
-Expected:
+- BLUE combines continuous starter inputs, routine-hardware replenishment,
+  Blue Cubes at 20/min, and the explicit no-hand-feeding player check.
+- BLUE does not impose a fixed power objective or enumerate every healthy mall
+  product.
+- RED requires two configured Labs sustaining 20 Red Cubes/min.
+- Refined Oil congestion may appear as one Current Status warning but never as
+  a second hard RED objective.
 
-- BLUE compactly reports continuous starter inputs and routine-hardware
-  replenishment without enumerating every healthy mall product or imposing a
-  fixed power objective;
-- BLUE uses 20 Blue Cubes/min as its science rate objective and retains the
-  explicit no-hand-feeding check;
-- RED uses one combined conclusion: two Labs, 20 Red Cubes/min, and both
-  refinery outputs moving;
-- no future-phase research or comfort pace blocks these phases.
+## ILS expedition
 
-## Checkpoint B - ILS expedition
+Only one checkpoint appears at a time:
 
-Exercise a save before departure and one after automatic delivery if
-available. Confirm that one stable checklist covers:
+1. Before launch: required technology, carried essentials, independent power,
+   and the explicit remote-outpost player check.
+2. During the expedition: same-planet Titanium and Silicon production plus
+   860 Titanium Ingots and 520 High-Purity Silicon in local storage.
+3. During the research rush: the current research target, protected build
+   reserve, two ILS towers, five Vessels, and active Titanium/Silicon routes.
 
-- Drive Engine Lv2 and Titanium Smelting;
-- trip loadout and the explicit remote-outpost player check;
-- powered remote Titanium and Silicon production;
-- 860 Titanium Ingots and 520 High-Purity Silicon returned;
-- the finite 200-Yellow-Cube purchase;
-- two ILS towers and five Logistics Vessels;
-- Titanium and Silicon arriving home automatically.
+Starter-system reconnaissance advice does not appear as an objective.
 
-No objective should claim that an outpost plan or route exists without
-positive evidence.
+## YELLOW through GREEN
 
-## Checkpoint C - YELLOW through GREEN
+- YELLOW requires three configured Yellow-Cube Labs producing continuously.
+- PURPLE requires three configured Purple-Cube Labs producing continuously.
+- GREEN requires two configured Green-Cube Labs producing continuously plus
+  visible Quantum Chip and Graviton Lens storage.
+- A genuinely draining PURPLE or GREEN supporting input produces at most one
+  focused Current Status finding; healthy supporting chains add no clutter.
+- Soft pace bands remain in the Cube-rate column rather than becoming hard
+  objective rows.
 
-Expected:
+## DYSON and PHOTON
 
-- YELLOW requires three configured Labs with continuous production;
-- PURPLE requires three configured Labs with continuous production;
-- GREEN requires two configured Labs with continuous production plus visible
-  Quantum Chip and Graviton Lens storage;
-- none of these phases acquires an old numeric dashboard rate gate;
-- healthy supporting chains do not create completed objective clutter.
+- DYSON is titled `Build the Photon swarm` and requires Solar Sail production,
+  launches, active sails, and useful swarm generation.
+- Antimatter is a handoff cue to PHOTON, not a DYSON objective or automatic
+  navigation trigger.
+- PHOTON requires four lensed, continuously supplied Ray Receivers, running
+  Critical Photon and Antimatter production, and 2,000 stored Antimatter.
+- Actual Photon and Antimatter rates use 48/min only as receiver-array
+  reference context.
+- Current Status compares receiver demand with available Dyson generation.
 
-## Checkpoint D - DYSON and PHOTON
-
-Expected:
-
-- DYSON requires reliable Critical Photon-to-Antimatter production and
-  automatic delivery to science;
-- sail pace, launch duty, receiver details, generation, 48/min, and 1.655 GW
-  remain diagnostic evidence rather than readiness gates;
-- PHOTON requires 2,000 stored Antimatter and retains one explicit player
-  check that the rising rate is sufficient for the planned WHITE run;
-- a receiver or conversion failure produces at most one useful causal status.
-
-## Checkpoint E - WHITE
+## WHITE
 
 Expected objective rows:
 
-1. Universe Matrix is researched;
-2. all five Matrix colors and Antimatter reach the Labs continuously;
-3. ten Labs sustain 40 White Cubes/min;
-4. Mission Completed consumes or has consumed 4,000 White Cubes.
+1. Universe Matrix is researched.
+2. Ten Labs sustain 40 White Cubes/min, with stored White Cubes shown.
+3. Mission Completed consumes or has consumed 4,000 White Cubes.
 
-After Mission Completed, WHITE presents `Mission Accomplished!` without
-navigating or exposing a later phase.
+The six feeder inputs are not repeated as objective prose. One genuinely
+draining feeder may appear in Current Status. After Mission Completed, WHITE
+presents `Mission Accomplished!` without navigating elsewhere.
 
-## Cross-contract regression check
+## Panel and export regression
 
-During the checkpoints, also confirm:
+- F8 never saves a snapshot.
+- Navigation, collapse, scrolling, footer controls, and layout behave normally.
+- The Cube-rate column shows the applicable Matrix icons in Blue-to-White
+  order, remains click-through and visible while collapsed, and updates rate
+  text without a visible hitch.
+- `Save snapshot` writes one JSON, turns green for two seconds on success, and
+  does not open Windows Explorer.
+- `DON'T PANIC` opens the matching retained guide anchor.
+- No noticeable sampling hitch occurs with the panel closed or open.
+- Each JSON is no larger than 256 KiB and names snapshot schema `2.7`.
 
-- F8 never saves a snapshot;
-- navigation, collapse, scrolling, footer controls, and layout behave normally;
-- `Save snapshot` writes one JSON, turns green for two seconds on success,
-  and does not open Windows Explorer;
-- `DON'T PANIC` opens the matching retained guide anchor;
-- no noticeable new sampling hitch occurs with the panel closed or open;
-- each JSON is no larger than 256 KiB and names snapshot schema 2.4.
+## GUIDE2-03 final migration gate
 
-## Testing handoff
+1. Navigate from BLUE through WHITE and back to BLUE once. Confirm the exact
+   nine-phase order and both endpoint behaviors.
+2. Stop on ILS, close the game normally, restart the same playthrough, and
+   confirm ILS remains selected.
+3. Save fresh BLUE, ILS, and WHITE snapshots. Together with the accepted
+   PURPLE/GREEN and DYSON/PHOTON evidence, these cover the retained early,
+   expedition, Matrix, Dyson, receiver, and completion families.
+4. Search the visible panels and those three JSON files by inspection: no
+   removed phase may appear as the selected phase, objective contract, Current
+   Status finding, or evidence route. A legacy-normalization diagnostic is
+   allowed only when a legacy stored selection was actually migrated.
+5. Confirm the BLUE snapshot includes starter and Blue evidence, the ILS
+   snapshot includes its active checkpoint evidence, and the WHITE snapshot
+   includes Cube/Antimatter evidence without broad factory dumps.
 
-Please return the most informative snapshots, screenshots only for visible
-mismatches, and notes identifying any objective that disagreed with the game.
-Also report navigation, persistence, layout, footer, or performance regressions.
+Return the three snapshots and a short pass/fail note for navigation,
+persistence, removed-contract absence, controls, and performance. Screenshots
+are needed only for a visible mismatch.

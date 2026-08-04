@@ -125,9 +125,24 @@ $snapshotBuilder = $assembly.GetType(
     'DspProgressionStatusExporter.CompactSnapshotBuilder', $true
 )
 $phaseItems = $snapshotBuilder.GetField('PhaseItems', $flags).GetValue($null)
-if ($phaseItems.ContainsKey('bootstrap') -or
-    -not $phaseItems.ContainsKey('blue')) {
-    throw 'Snapshot evidence routing still exposes BOOTSTRAP.'
+if ($phaseItems.Count -ne 9) {
+    throw 'Snapshot evidence routing does not expose exactly nine phases.'
+}
+foreach ($phaseId in @(
+        'blue', 'red', 'ils', 'yellow', 'purple',
+        'green', 'dyson', 'photon', 'white'
+    )) {
+    if (-not $phaseItems.ContainsKey($phaseId)) {
+        throw "Snapshot evidence routing is missing $phaseId."
+    }
+}
+foreach ($removedPhaseId in @(
+        'bootstrap', 'flight', 'titanium', 'sphere',
+        'warp', 'logistics', 'complete'
+    )) {
+    if ($phaseItems.ContainsKey($removedPhaseId)) {
+        throw "Snapshot evidence routing still exposes $removedPhaseId."
+    }
 }
 $blueItems = $phaseItems['blue']
 foreach ($itemId in @(1101, 1104, 1202, 1301, 2001, 6001)) {
@@ -279,6 +294,27 @@ $purpleItems = $phaseItems['purple']
 foreach ($itemId in @(6004, 1303, 1124, 1402)) {
     if ($purpleItems -notcontains $itemId) {
         throw "PURPLE snapshot evidence is missing item $itemId."
+    }
+}
+
+$panelSource = Get-Content -Raw -LiteralPath (
+    Join-Path (Split-Path -Parent $PSScriptRoot) `
+        'src\DspProgressionStatusExporter\GuidePanelModel.cs'
+)
+if (-not $panelSource.Contains('{ "contractVersion", "2.1" }')) {
+    throw 'Panel model contract version is not 2.1.'
+}
+foreach ($obsoleteFindingId in @(
+        'gas-giant-opportunity',
+        'fire-ice-graphene-route',
+        'fractionator-deuterium-route',
+        'combat-investment',
+        'dyson-route-choice',
+        'phase-matrix-rate',
+        'dyson-generation-shortfall'
+    )) {
+    if ($panelSource.Contains($obsoleteFindingId)) {
+        throw "Panel presentation still translates $obsoleteFindingId."
     }
 }
 

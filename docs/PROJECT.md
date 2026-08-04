@@ -33,8 +33,8 @@ warning system.
 - Adopted development authority: public guide 2.0 edition
 - Published `guide-version` metadata: `1.23.0`
 - Detailed derivation and roadmap: `docs/GUIDE-2.0-GAP-ANALYSIS.md`
-- Current runtime implementation: guide 2.0 topology and phase contracts;
-  the Matrix-icon column awaits its visual gate and cleanup remains pending
+- Current runtime implementation: guide 2.0 topology, phase contracts, and
+  Matrix-icon column; superseded-contract cleanup awaits its final gate
 - Completed 1.22.2 derivation: `docs/GUIDE-1.22.2-GAP-ANALYSIS.md`
 - Earlier guide v1.1 record: `docs/GUIDE-REVISION-INGESTION.md` (historical)
 
@@ -51,12 +51,12 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** public guide 2.0 migration through the `VIS2-01` runtime gate and
-`GUIDE2-03`.
+**Active:** the final `GUIDE2-03` guide 2.0 migration gate.
 
-`GUIDE2-01` and `GUIDE2-02` have passed their focused runtime gates. `VIS2-01`
-implements the first purposeful game-image use in the Cube-rate column and
-awaits its visual gate; `GUIDE2-03` then removes superseded contracts. See
+`GUIDE2-01`, `GUIDE2-02`, and `VIS2-01` have passed their focused runtime
+gates. `GUIDE2-03` removes superseded current-runtime contracts while retaining
+legacy selection migration and historical records; it awaits the final
+navigation, persistence, and snapshot sweep. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
 The production-risk roadmap is paused because of a blocking concern.
@@ -207,11 +207,11 @@ diagnostics append the triggering commit hash.
 Accepted runtime work for the current implementation includes:
 
 - player-owned navigation and per-playthrough persistence;
-- the ten-phase guide 1.22.2 critical-path objective inventory;
+- the nine-phase guide 2.0 critical-path objective inventory;
 - native one-minute production comparisons against the Statistics Panel;
 - native Dyson aggregate comparisons against the Dyson editor;
 - focused ILS, DYSON, PHOTON, and WHITE conclusions;
-- compact schema 2.4 snapshots and bounded collector diagnostics;
+- compact schema 2.7 snapshots and bounded collector diagnostics;
 - panel layout, click-through behavior, scrolling, footer actions, and hover
   behavior;
 - Basic Regular rendering with the retained outline and separate
@@ -224,8 +224,10 @@ with correct objectives, prompt completion, and no visible regression.
 `GUIDE2-02` passed its focused runtime checkpoint with correct navigation,
 phase contracts, exceptional supporting-branch findings, DYSON title and
 objectives, and PHOTON receiver status.
-`VIS2-01` has deterministic embedded-resource coverage and awaits its focused
-in-game presentation checkpoint.
+`VIS2-01` passed its bright- and dark-background presentation checkpoint with
+one, three, and six Matrix icons plus interaction and refresh checks.
+`GUIDE2-03` has deterministic cleanup coverage and awaits its final navigation,
+persistence, and snapshot checkpoint.
 
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.
@@ -241,8 +243,8 @@ inputs only and are never redistributed.
 - `docs/GUIDE-REVISION-INGESTION.md`: superseded guide v1.1 adoption record.
 - `docs/GUIDE-1.22.2-GAP-ANALYSIS.md`: derivation and completed migration
   stories for the previous critical path.
-- `docs/GUIDE-2.0-GAP-ANALYSIS.md`: current authority comparison and planned
-  nine-phase migration stories.
+- `docs/GUIDE-2.0-GAP-ANALYSIS.md`: current authority comparison and nine-phase
+  migration acceptance record.
 - `CHANGELOG.md`: release-by-release behavior, including retired optional
   route contracts.
 

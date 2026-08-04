@@ -4,6 +4,14 @@
 
 ### Changed
 
+- Accepted the VIS2-01 Matrix-icon presentation gate on bright and dark
+  backgrounds with one, three, and six visible Cubes, including interaction
+  and refresh checks.
+- Removed orphaned optional-route presentation translations and obsolete
+  finding suppression from the current nine-phase runtime path.
+- Replaced the superseded guide-1.22.2 runtime protocol with the guide 2.0
+  objectives, schema 2.7 export contract, Matrix icons, and final migration
+  gate.
 - Replaced the Cube-rate column's flat color tiles with six cached, embedded
   Matrix icons while retaining outlined threshold-colored rate text and a
   text-only soft fallback.

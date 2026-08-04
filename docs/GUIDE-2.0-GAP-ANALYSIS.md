@@ -7,9 +7,9 @@
 - Published `guide-version` metadata: `1.23.0`
 - Review date: 2026-08-04
 
-This report compares the published guide with the current DSP Guide Check
-contract. It is preparation only: no runtime, analysis, snapshot, navigation,
-or panel code changes are part of this pass.
+This report compares the published guide with the DSP Guide Check baseline at
+the start of migration. It began as a planning record; each story status now
+records the implementation and runtime gates completed afterward.
 
 The retained mod scope is the guide's default critical path only:
 
@@ -41,7 +41,7 @@ stories.
 
 ## Gap inventory
 
-| Area | Published guide 2.0 | Current mod | Required disposition | Story |
+| Area | Published guide 2.0 | Pre-migration baseline | Required disposition | Story |
 |---|---|---|---|---|
 | Phase topology | Starter factory work is part of BLUE; there is no standalone BOOTSTRAP phase. | Navigation, analysis, snapshots, persistence, and links still expose ten phases including BOOTSTRAP. | Remove BOOTSTRAP as a selectable contract, fold its useful evidence into a compact BLUE presentation, and normalize a stored BOOTSTRAP selection to BLUE. | `GUIDE2-01` |
 | BLUE | Covers the starter factory, unattended Blue research, and enough grid headroom to begin RED. | Starter automation and Blue readiness are split across two panels. | Preserve the useful factory-readiness evidence without copying every mall item or imposing a fixed power target. | `GUIDE2-01` |
@@ -171,8 +171,10 @@ context so that the companion teaches without becoming a rate dashboard.
 
 ### VIS2-01 — Replace Cube-rate color tiles with Matrix icons
 
-**Status:** Implemented; deterministic checks pass. Focused in-game
-presentation validation remains pending.
+**Status:** Accepted. Bright- and dark-background checks passed with one,
+three, and six visible Matrix icons. Identity, order, rate legibility,
+alignment, collapse independence, click-through behavior, controls, and
+refresh performance matched the contract.
 
 **User story**
 
@@ -217,6 +219,9 @@ Provide the three screenshots and a short pass/fail note for steps 4 and 5.
 
 ### GUIDE2-03 — Prune superseded contracts and close the migration
 
+**Status:** Implemented; deterministic checks pass. The final navigation,
+persistence, and representative snapshot gate remains pending.
+
 **User story**
 
 As a maintainer, I want obsolete guide-1.22.2 and BOOTSTRAP-only contracts
@@ -253,8 +258,8 @@ diagnostics have one current authority without losing useful audit evidence.
 GUIDE2-01 -> GUIDE2-02 -> VIS2-01 -> GUIDE2-03
 ```
 
-`VIS2-01` can be implemented after the nine-phase topology is stable. It does
-not depend on the production-risk roadmap.
+`VIS2-01` was implemented after the nine-phase topology stabilized. The
+migration remains independent of the production-risk roadmap.
 
 ## Explicitly deferred
 
