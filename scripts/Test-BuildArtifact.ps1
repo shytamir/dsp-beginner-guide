@@ -88,7 +88,7 @@ $assemblyName = [Reflection.AssemblyName]::GetAssemblyName(
 Assert-Equal 'Assembly version' $ExpectedAssemblyVersion `
     $assemblyName.Version.ToString()
 
-$reflectionAssembly = [Reflection.Assembly]::ReflectionOnlyLoadFrom(
+$reflectionAssembly = [Reflection.Assembly]::LoadFile(
     (Resolve-Path -LiteralPath $DllPath)
 )
 $bepInExReference = $reflectionAssembly.GetReferencedAssemblies() |
