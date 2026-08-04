@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Accepted the GUIDE2-02 nine-phase runtime gate, including focused RED,
+  PURPLE, GREEN, DYSON, PHOTON, and WHITE checkpoints.
 - Corrected the panel-facing DYSON title to `Build the Photon swarm` and added
   deterministic coverage so analysis and progression cannot diverge again.
 - Realigned the nine retained phase contracts with guide 2.0: RED now treats

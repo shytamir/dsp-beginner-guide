@@ -9,8 +9,8 @@ The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
 The current release implements guide **2.0**. The public guide 2.0 edition
-(published `guide-version` metadata `1.23.0`) is now the development authority;
-its nine-phase migration is planned and has not yet changed runtime behavior.
+(published `guide-version` metadata `1.23.0`) is the development authority for
+the implemented nine-phase contract.
 
 ## Features
 
@@ -154,9 +154,8 @@ history.
 
 ## Active development
 
-`GUIDE2-01` has passed its early-save and working-Blue runtime gate.
-`GUIDE2-02` is implemented and awaiting its focused nine-phase runtime gate;
-the Cube-icon and cleanup stories follow it.
+`GUIDE2-01` and `GUIDE2-02` have passed their focused runtime gates. The
+Cube-icon and cleanup stories follow them.
 
 The gap report and four bounded user stories are defined in
 [docs/GUIDE-2.0-GAP-ANALYSIS.md](docs/GUIDE-2.0-GAP-ANALYSIS.md).

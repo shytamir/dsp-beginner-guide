@@ -51,13 +51,11 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** public guide 2.0 migration through `GUIDE2-02`, `VIS2-01`, and
-`GUIDE2-03`.
+**Active:** public guide 2.0 migration through `VIS2-01` and `GUIDE2-03`.
 
-`GUIDE2-01` has passed its early-save and working-Blue runtime gate.
-`GUIDE2-02` has realigned and simplified the retained contracts and is awaiting
-its focused runtime gate. The remaining stories introduce the first purposeful
-game-image use in the Cube-rate column and then remove superseded contracts. See
+`GUIDE2-01` and `GUIDE2-02` have passed their focused runtime gates. The
+remaining stories introduce the first purposeful game-image use in the
+Cube-rate column and then remove superseded contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
 The production-risk roadmap is paused because of a blocking concern.
@@ -203,7 +201,7 @@ diagnostics append the triggering commit hash.
 
 ## Validation status
 
-Accepted runtime work for the current guide-1.22.2 implementation includes:
+Accepted runtime work for the current implementation includes:
 
 - player-owned navigation and per-playthrough persistence;
 - the ten-phase guide 1.22.2 critical-path objective inventory;
@@ -220,8 +218,9 @@ Accepted runtime work for the current guide-1.22.2 implementation includes:
 
 `GUIDE2-01` passed its early-save and working-Blue-factory in-game checkpoint
 with correct objectives, prompt completion, and no visible regression.
-`GUIDE2-02` has deterministic build coverage and awaits its focused runtime
-checkpoint.
+`GUIDE2-02` passed its focused runtime checkpoint with correct navigation,
+phase contracts, exceptional supporting-branch findings, DYSON title and
+objectives, and PHOTON receiver status.
 
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.
