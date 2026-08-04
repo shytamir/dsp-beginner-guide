@@ -11,7 +11,30 @@ tools are needed.
    before judging production objectives.
 3. Open the panel with F8 and select phases only with Previous and Next.
 4. Use `Save snapshot` only for a checkpoint whose conclusion needs audit.
-5. Confirm each new snapshot names schema `2.7` and guide analysis `2.8`.
+5. Confirm each new snapshot names schema `2.8` and guide analysis `2.9`.
+
+## RISK-03 production diagnosis gate
+
+Use the diagnostic DLL and a mature GREEN save with Quantum Chips produced,
+consumed, and buffered through a dedicated Local Supply logistics slot. After
+loading the save, keep the mod running for 600 game seconds before judging a
+history-ready result; the first earlier checkpoint must remain `warming` and
+quiet.
+
+Capture focused snapshots for:
+
+1. warming history before the 600-second observation age;
+2. a full Local Supply output slot with proven backpressure;
+3. a partial, draining slot with production meaningfully below demand;
+4. an empty slot after an established line stops while demand remains; and
+5. restored production meeting demand.
+
+Inspect `guide.productionRisk.selected`. The expected states are `warming`,
+`backpressured`, `draining`, `starved`, and `balanced`, respectively. Warming,
+backpressured, and balanced states add no production-risk Current Status row.
+Draining and starved states add at most one matching actionable row, and the
+same snapshot records the score terms and scope. Navigation, objectives,
+controls, snapshot size, and panel refresh must not regress.
 
 ## Navigation and persistence
 
@@ -102,7 +125,7 @@ presents `Mission Accomplished!` without navigating elsewhere.
   does not open Windows Explorer.
 - `DON'T PANIC` opens the matching retained guide anchor.
 - No noticeable sampling hitch occurs with the panel closed or open.
-- Each JSON is no larger than 256 KiB and names snapshot schema `2.7`.
+- Each JSON is no larger than 256 KiB and names snapshot schema `2.8`.
 
 ## Migration closure regression sweep
 

@@ -54,6 +54,12 @@ namespace DspProgressionStatusExporter
         public string Name;
         public double ProducedPerMinute;
         public double ConsumedPerMinute;
+        public bool OneMinuteAvailable;
+        public bool TenMinuteAvailable;
+        public bool TenMinuteReady;
+        public double TenMinuteObservedGameSeconds;
+        public double TenMinuteProducedPerMinute;
+        public double TenMinuteConsumedPerMinute;
         public double ProductionActiveFraction;
         public string ProductionContinuity;
     }
@@ -311,7 +317,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "1.9";
+            result["modelVersion"] = "2.0";
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -618,6 +624,10 @@ namespace DspProgressionStatusExporter
                 {
                     var row = rowObject as Dictionary<string, object>;
                     if (row == null) continue;
+                    Dictionary<string, object> oneMinute =
+                        GetDictionary(row, "oneMinuteWindow");
+                    Dictionary<string, object> tenMinute =
+                        GetDictionary(row, "tenMinuteWindow");
                     FactoryItemFlows.Add(new ObservedFactoryItemFlow {
                         FactoryIndex = factoryIndex,
                         PlanetId = planetId,
@@ -626,6 +636,18 @@ namespace DspProgressionStatusExporter
                         Name = ToText(GetValue(row, "name")),
                         ProducedPerMinute = Plugin.ToDouble(GetValue(row, "producedPerMinute")),
                         ConsumedPerMinute = Plugin.ToDouble(GetValue(row, "consumedPerMinute")),
+                        OneMinuteAvailable = ToBool(
+                            GetValue(oneMinute, "available")),
+                        TenMinuteAvailable = ToBool(
+                            GetValue(tenMinute, "available")),
+                        TenMinuteReady = ToBool(
+                            GetValue(tenMinute, "ready")),
+                        TenMinuteObservedGameSeconds = Plugin.ToDouble(
+                            GetValue(tenMinute, "observedGameSeconds")),
+                        TenMinuteProducedPerMinute = Plugin.ToDouble(
+                            GetValue(tenMinute, "producedPerMinute")),
+                        TenMinuteConsumedPerMinute = Plugin.ToDouble(
+                            GetValue(tenMinute, "consumedPerMinute")),
                         ProductionActiveFraction = Plugin.ToDouble(GetValue(row, "productionActiveFraction")),
                         ProductionContinuity = ToText(GetValue(row, "productionContinuity"))
                     });
@@ -1187,6 +1209,12 @@ namespace DspProgressionStatusExporter
                     { "planetName", x.PlanetName }, { "itemId", x.ItemId },
                     { "name", x.Name }, { "producedPerMinute", x.ProducedPerMinute },
                     { "consumedPerMinute", x.ConsumedPerMinute },
+                    { "oneMinuteAvailable", x.OneMinuteAvailable },
+                    { "tenMinuteAvailable", x.TenMinuteAvailable },
+                    { "tenMinuteReady", x.TenMinuteReady },
+                    { "tenMinuteObservedGameSeconds", x.TenMinuteObservedGameSeconds },
+                    { "tenMinuteProducedPerMinute", x.TenMinuteProducedPerMinute },
+                    { "tenMinuteConsumedPerMinute", x.TenMinuteConsumedPerMinute },
                     { "productionActiveFraction", x.ProductionActiveFraction },
                     { "productionContinuity", x.ProductionContinuity }
                 });

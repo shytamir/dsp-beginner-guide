@@ -207,8 +207,13 @@ function Add-ObservedFlow {
     param($State, [int]$ItemId, [double]$Produced, [double]$Consumed)
     $flow = [Activator]::CreateInstance($flowType, $true)
     Set-ObservedField $ItemId 'ItemId' $flow
+    Set-ObservedField $true 'OneMinuteAvailable' $flow
     Set-ObservedField $Produced 'ProducedPerMinute' $flow
     Set-ObservedField $Consumed 'ConsumedPerMinute' $flow
+    Set-ObservedField $true 'TenMinuteAvailable' $flow
+    Set-ObservedField $true 'TenMinuteReady' $flow
+    Set-ObservedField $Produced 'TenMinuteProducedPerMinute' $flow
+    Set-ObservedField $Consumed 'TenMinuteConsumedPerMinute' $flow
     $flows = $stateType.GetField('ItemFlows', $instanceFlags).GetValue($State)
     $flows.Add($ItemId, $flow)
 }
@@ -316,9 +321,9 @@ function Assert-SingleDrainFinding {
     }
 }
 
-Assert-SingleDrainFinding 'purple' 1402 'purple-support-drain' 'Particle Broadband'
-Assert-SingleDrainFinding 'green' 1305 'green-support-drain' 'Quantum Chips'
-Assert-SingleDrainFinding 'white' 6002 'white-feeder-drain' 'Red Cubes'
+Assert-SingleDrainFinding 'purple' 1402 'production-risk-1402' 'Particle Broadband'
+Assert-SingleDrainFinding 'green' 1305 'production-risk-1305' 'Quantum Chips'
+Assert-SingleDrainFinding 'white' 6002 'production-risk-6002' 'Red Cubes'
 
 $purpleItems = $phaseItems['purple']
 foreach ($itemId in @(6004, 1303, 1124, 1402)) {

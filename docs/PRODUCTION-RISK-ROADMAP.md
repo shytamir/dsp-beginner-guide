@@ -70,7 +70,8 @@ and are omitted rather than approximated from inventory movement.
 
 ## Immediate roadmap
 
-This roadmap is active at `RISK-03`. `RISK-01` and `RISK-02` are accepted.
+This roadmap is active at the `RISK-03` runtime gate. `RISK-01` and `RISK-02`
+are accepted.
 
 ### RISK-01 - Native multi-window evidence
 
@@ -162,7 +163,7 @@ Acceptance:
 
 ### RISK-03 - Deterministic risk engine and interpreter
 
-**Status:** Active.
+**Status:** Implemented; awaiting runtime gate.
 
 **User story:** As a player, I want the mod to distinguish warming, balanced,
 backpressured, draining, and starved production, so I receive a useful cause
@@ -185,6 +186,20 @@ Scope:
   checklist.
 - Add deterministic tests for startup, backpressure, pulsed output, stable
   sufficiency, chronic deficit, draining buffers, and actual starvation.
+
+Implemented policy:
+
+- Buffered items combine planet-local one- and ten-minute native rates only
+  with the matching planet's accessible runway and backpressure evidence.
+- Unbuffered items and exact phase targets use the entire-cluster native
+  scope; an exact target remains separate from the deterioration score.
+- A five-percent or 0.5-item/minute deadband suppresses insignificant rate
+  noise, while native one-minute windows smooth pulsed recipes.
+- Unknown, warming, backpressured, and balanced results are quiet. Draining
+  and starved results are actionable, and only the strongest selected-phase
+  conclusion reaches Current Status.
+- Compact diagnostics retain the selected state, severity, score, baseline,
+  drop, thinness, deficit flags, runway, and backpressure status.
 
 Acceptance:
 

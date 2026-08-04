@@ -113,6 +113,8 @@ jobs:
           ./scripts/Test-SnapshotControlVariant.ps1 `
             -DllPath 'artifacts/build/diagnostic/DspGuideCheck.dll' `
             -ExpectedVariant diagnostic
+          ./scripts/Test-ProductionRisk.ps1 `
+            -DllPath 'artifacts/build/diagnostic/DspGuideCheck.dll'
 
       - name: Build public DLL
         id: public_build

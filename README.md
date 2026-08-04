@@ -145,8 +145,9 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.7 exports conclusions, provenance, collector
-  health, and only the focused evidence needed to audit those conclusions.
+- Compact snapshot schema 2.8 exports conclusions, production-risk terms,
+  provenance, collector health, and only the focused evidence needed to audit
+  those conclusions.
 - The click-through panel uses Basic Regular with a dark outline and embeds
   the six Matrix icons beside Cube rates. Only its explicit controls capture
   pointer input.

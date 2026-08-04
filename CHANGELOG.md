@@ -4,6 +4,16 @@
 
 ### Changed
 
+- Added deterministic, scope-matched production-risk scoring and
+  interpretation for selected-phase items. Unknown, warming, backpressured,
+  balanced, draining, and starved states remain distinct, while Current Status
+  is capped at the strongest actionable conclusion.
+- Retained per-factory ten-minute rates in normalized state so planet-local
+  runway is never combined with a cluster-wide history baseline, and added
+  deterministic coverage for startup, backpressure, pulsed output, noise,
+  chronic and exact-target deficits, draining buffers, and starvation.
+- Advanced normalized state to 2.0, guide analysis to 2.9, and compact
+  snapshot schema to 2.8 for the RISK-03 runtime gate.
 - Accepted the RISK-02 full, draining, empty, and mixed-storage runtime gate;
   remote-only exclusion remains a focused regression checkpoint if remote
   logic changes rather than a blocker for the guide's local component flows.

@@ -16,8 +16,9 @@
   `total[9]` for ten minutes from the compact `productPool`.
 - Entire-cluster values are the sum of the native factory aggregates.
   Ten-minute totals are divided by ten once in the collector so both windows
-  reach normalized state as items per minute. Planet-factory values are
-  retained only for Titanium and Silicon route checks.
+  reach normalized state as items per minute. Planet-factory values retain
+  both windows for Titanium and Silicon route checks and for scope-matched
+  production-risk evaluation against planet-local accessible runway.
 - Ten-minute history is marked ready only after a watched item has remained
   observable for 600 game seconds in the current mod session. A zero native
   aggregate remains a real zero and is never used as a readiness signal.

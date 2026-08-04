@@ -397,7 +397,7 @@ namespace DspProgressionStatusExporter
                     ? priority
                     : left.SourceOrder.CompareTo(right.SourceOrder);
             });
-            int count = Math.Min(6, candidates.Count);
+            int count = Math.Min(1, candidates.Count);
             for (int i = 0; i < count; i++)
                 model.Context.Add(candidates[i].Row);
         }

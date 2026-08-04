@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace DspProgressionStatusExporter
 {
@@ -17,6 +18,13 @@ namespace DspProgressionStatusExporter
             public string NextResearch;
         }
 
+        private sealed class RiskItemSpec
+        {
+            public int ItemId;
+            public string Name;
+            public double ExactTargetPerMinute;
+        }
+
         private static readonly Phase[] Phases = new Phase[] {
             new Phase { Id = "blue", Title = "Sustain the Blue Cube science loop", GateTechId = 1002, NextTechId = 1111, NextResearch = "Energy Matrix" },
             new Phase { Id = "red", Title = "Sustain Red Cubes without refinery deadlock", GateTechId = 1111, NextTechId = 2902, NextResearch = "Drive Engine Lv2" },
@@ -29,6 +37,50 @@ namespace DspProgressionStatusExporter
             new Phase { Id = "white", Title = "Complete the main progression route", GateTechId = 1507, NextTechId = 1508, NextResearch = "Mission Completed" }
         };
 
+        private static readonly Dictionary<string, RiskItemSpec[]> RiskItems =
+            new Dictionary<string, RiskItemSpec[]>(StringComparer.OrdinalIgnoreCase) {
+                { "blue", new RiskItemSpec[] {
+                    RiskItem(6001, "Blue Cubes", 20.0)
+                } },
+                { "red", new RiskItemSpec[] {
+                    RiskItem(6002, "Red Cubes", 20.0)
+                } },
+                { "ils", new RiskItemSpec[] {
+                    RiskItem(1106, "Titanium Ingots", 0.0),
+                    RiskItem(1105, "High-Purity Silicon", 0.0)
+                } },
+                { "yellow", new RiskItemSpec[] {
+                    RiskItem(6003, "Yellow Cubes", 0.0)
+                } },
+                { "purple", new RiskItemSpec[] {
+                    RiskItem(1303, "Processors", 0.0),
+                    RiskItem(1124, "Carbon Nanotubes", 0.0),
+                    RiskItem(1402, "Particle Broadband", 0.0),
+                    RiskItem(6004, "Purple Cubes", 0.0)
+                } },
+                { "green", new RiskItemSpec[] {
+                    RiskItem(1305, "Quantum Chips", 0.0),
+                    RiskItem(1209, "Graviton Lenses", 0.0),
+                    RiskItem(6005, "Green Cubes", 0.0)
+                } },
+                { "dyson", new RiskItemSpec[] {
+                    RiskItem(1501, "Solar Sails", 0.0)
+                } },
+                { "photon", new RiskItemSpec[] {
+                    RiskItem(1208, "Critical Photons", 0.0),
+                    RiskItem(1122, "Antimatter", 0.0)
+                } },
+                { "white", new RiskItemSpec[] {
+                    RiskItem(6001, "Blue Cubes", 0.0),
+                    RiskItem(6002, "Red Cubes", 0.0),
+                    RiskItem(6003, "Yellow Cubes", 0.0),
+                    RiskItem(6004, "Purple Cubes", 0.0),
+                    RiskItem(6005, "Green Cubes", 0.0),
+                    RiskItem(1122, "Antimatter", 0.0),
+                    RiskItem(6006, "White Cubes", 40.0)
+                } }
+            };
+
         public static Dictionary<string, object> AnalyzeSelected(
             ObservedGameState state,
             string selectedPhaseId)
@@ -39,28 +91,17 @@ namespace DspProgressionStatusExporter
             Phase phase = FindPhase(selectedPhaseId) ?? FindPhase("blue");
             var findings = new List<object>();
 
+            ProductionRiskResult selectedRisk;
+            Dictionary<string, object> productionRisk =
+                AnalyzeProductionRisk(state, phase.Id, out selectedRisk);
+            if (selectedRisk != null && selectedRisk.Actionable)
+                findings.Add(RiskFinding(selectedRisk));
+
             if (phase.Id == "red")
                 AddRefineryCongestionFinding(findings, state);
-            if (phase.Id == "purple")
-                AddDrainingInputFinding(findings, state,
-                    "purple-support-drain", "Purple",
-                    new int[] { 1303, 1124, 1402 },
-                    new string[] { "Processors", "Carbon Nanotubes", "Particle Broadband" });
-            if (phase.Id == "green")
-                AddDrainingInputFinding(findings, state,
-                    "green-support-drain", "Green",
-                    new int[] { 1305, 1209 },
-                    new string[] { "Quantum Chips", "Graviton Lenses" });
             if (phase.Id == "photon")
                 AddPhotonPowerFinding(findings, state);
-            if (phase.Id == "white")
-                AddDrainingInputFinding(findings, state,
-                    "white-feeder-drain", "White",
-                    new int[] { 6001, 6002, 6003, 6004, 6005, 1122 },
-                    new string[] {
-                        "Blue Cubes", "Red Cubes", "Yellow Cubes",
-                        "Purple Cubes", "Green Cubes", "Antimatter"
-                    });
+            KeepStrongestFinding(findings);
 
             var phaseResult = new Dictionary<string, object> {
                 { "id", phase.Id },
@@ -72,11 +113,12 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "2.8" },
+                { "analysisVersion", "2.9" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },
                 { "normalizedState", state.Export() },
+                { "productionRisk", productionRisk },
                 { "findings", findings },
                 { "limitations", new List<object> {
                     "A technology unlock proves availability, not that the corresponding factory objective is complete.",
@@ -94,6 +136,239 @@ namespace DspProgressionStatusExporter
             return null;
         }
 
+        private static RiskItemSpec RiskItem(
+            int itemId, string name, double exactTargetPerMinute)
+        {
+            return new RiskItemSpec {
+                ItemId = itemId,
+                Name = name,
+                ExactTargetPerMinute = exactTargetPerMinute
+            };
+        }
+
+        private static Dictionary<string, object> AnalyzeProductionRisk(
+            ObservedGameState state,
+            string phaseId,
+            out ProductionRiskResult selected)
+        {
+            selected = null;
+            int evaluated = 0;
+            RiskItemSpec[] specs;
+            if (!RiskItems.TryGetValue(phaseId ?? "", out specs))
+                specs = new RiskItemSpec[0];
+
+            foreach (RiskItemSpec spec in specs)
+            {
+                ObservedItemBufferEvidence buffer;
+                bool hasLocalScopes = state.ItemBuffers.TryGetValue(
+                    spec.ItemId, out buffer) && buffer.Scopes.Count > 0;
+                if (hasLocalScopes)
+                {
+                    foreach (ObservedBufferScopeEvidence scope in buffer.Scopes)
+                    {
+                        ProductionRiskResult result =
+                            ProductionRiskAnalyzer.Evaluate(
+                                PlanetRiskInput(state, spec, scope));
+                        evaluated++;
+                        selected = WorseRisk(selected, result);
+                    }
+                    if (spec.ExactTargetPerMinute > 0.0)
+                    {
+                        ProductionRiskInput targetInput =
+                            ClusterRiskInput(state, spec);
+                        targetInput.BackpressureStatus =
+                            buffer.BackpressureStatus;
+                        ProductionRiskResult targetResult =
+                            ProductionRiskAnalyzer.Evaluate(targetInput);
+                        evaluated++;
+                        selected = WorseRisk(selected, targetResult);
+                    }
+                }
+                else
+                {
+                    ProductionRiskResult result =
+                        ProductionRiskAnalyzer.Evaluate(
+                            ClusterRiskInput(state, spec));
+                    evaluated++;
+                    selected = WorseRisk(selected, result);
+                }
+            }
+
+            return new Dictionary<string, object> {
+                { "contractVersion", "1.0" },
+                { "basis", "Deterministic selected-phase evaluation from scope-matched native rates and conservative accessible-buffer evidence." },
+                { "evaluatedItemScopes", evaluated },
+                { "selected", selected != null ? (object)selected.Export() : null }
+            };
+        }
+
+        private static ProductionRiskInput ClusterRiskInput(
+            ObservedGameState state,
+            RiskItemSpec spec)
+        {
+            ObservedItemFlow flow;
+            state.ItemFlows.TryGetValue(spec.ItemId, out flow);
+            return new ProductionRiskInput {
+                ItemId = spec.ItemId,
+                Name = spec.Name,
+                Scope = "entire-star-cluster",
+                OneMinuteAvailable = flow != null && flow.OneMinuteAvailable,
+                ProducedPerMinute = flow != null
+                    ? flow.ProducedPerMinute : 0.0,
+                ConsumedPerMinute = flow != null
+                    ? flow.ConsumedPerMinute : 0.0,
+                TenMinuteAvailable = flow != null && flow.TenMinuteAvailable,
+                TenMinuteReady = flow != null && flow.TenMinuteReady,
+                TenMinuteProducedPerMinute = flow != null
+                    ? flow.TenMinuteProducedPerMinute : 0.0,
+                TenMinuteConsumedPerMinute = flow != null
+                    ? flow.TenMinuteConsumedPerMinute : 0.0,
+                BackpressureStatus = "unknown",
+                ExactTargetPerMinute = spec.ExactTargetPerMinute
+            };
+        }
+
+        private static ProductionRiskInput PlanetRiskInput(
+            ObservedGameState state,
+            RiskItemSpec spec,
+            ObservedBufferScopeEvidence scope)
+        {
+            bool found = false;
+            bool oneMinuteAvailable = false;
+            bool tenMinuteAvailable = false;
+            bool tenMinuteReady = true;
+            double produced = 0.0;
+            double consumed = 0.0;
+            double tenMinuteProduced = 0.0;
+            double tenMinuteConsumed = 0.0;
+            foreach (ObservedFactoryItemFlow flow in state.FactoryItemFlows)
+            {
+                if (flow.ItemId != spec.ItemId ||
+                    flow.PlanetId != scope.PlanetId)
+                    continue;
+                found = true;
+                oneMinuteAvailable |= flow.OneMinuteAvailable;
+                tenMinuteAvailable |= flow.TenMinuteAvailable;
+                tenMinuteReady &= flow.TenMinuteReady;
+                produced += flow.ProducedPerMinute;
+                consumed += flow.ConsumedPerMinute;
+                tenMinuteProduced += flow.TenMinuteProducedPerMinute;
+                tenMinuteConsumed += flow.TenMinuteConsumedPerMinute;
+            }
+            return new ProductionRiskInput {
+                ItemId = spec.ItemId,
+                Name = spec.Name,
+                Scope = "planet-local",
+                PlanetId = scope.PlanetId,
+                PlanetName = scope.PlanetName,
+                OneMinuteAvailable = found && oneMinuteAvailable,
+                ProducedPerMinute = produced,
+                ConsumedPerMinute = consumed,
+                TenMinuteAvailable = found && tenMinuteAvailable,
+                TenMinuteReady = found && tenMinuteReady,
+                TenMinuteProducedPerMinute = tenMinuteProduced,
+                TenMinuteConsumedPerMinute = tenMinuteConsumed,
+                RunwayAvailable = scope.RunwayAvailable,
+                RunwayMinutes = scope.RunwayMinutes,
+                BackpressureStatus = scope.BackpressureStatus,
+                // Exact guide targets are cluster contracts. They are not
+                // applied to a single local buffer scope.
+                ExactTargetPerMinute = 0.0
+            };
+        }
+
+        private static ProductionRiskResult WorseRisk(
+            ProductionRiskResult current,
+            ProductionRiskResult candidate)
+        {
+            if (current == null) return candidate;
+            int currentRank = RiskRank(current.State);
+            int candidateRank = RiskRank(candidate.State);
+            if (candidateRank > currentRank) return candidate;
+            if (candidateRank < currentRank) return current;
+            return candidate.Score > current.Score ? candidate : current;
+        }
+
+        private static int RiskRank(string state)
+        {
+            if (state == "starved") return 6;
+            if (state == "draining") return 5;
+            if (state == "warming") return 4;
+            if (state == "unknown") return 3;
+            if (state == "backpressured") return 2;
+            return 1;
+        }
+
+        private static Dictionary<string, object> RiskFinding(
+            ProductionRiskResult result)
+        {
+            string claim;
+            if (result.State == "starved")
+                claim = result.Name + " production is starved.";
+            else if (result.DemandDeficit)
+                claim = result.Name +
+                    " are draining faster than they are replenished.";
+            else
+                claim = result.Name + " production is below the phase target.";
+
+            string evidence = "Found " + Rate(result.ProducedPerMinute) +
+                "/min produced";
+            if (result.ConsumedPerMinute > 0.0)
+                evidence += " and " + Rate(result.ConsumedPerMinute) +
+                    "/min consumed";
+            if (result.ExactTargetPerMinute > 0.0)
+                evidence += " against a " +
+                    Rate(result.ExactTargetPerMinute) + "/min target";
+            if (result.RunwayAvailable)
+                evidence += "; accessible runway is " +
+                    Rate(result.RunwayMinutes) + " min";
+            evidence += "; the ten-minute production baseline is " +
+                Rate(result.BaselinePerMinute) + "/min. " +
+                (result.State == "starved"
+                    ? "Restore the upstream supply or stopped production line."
+                    : "Increase production before the deficit consumes its buffer.");
+
+            return new Dictionary<string, object> {
+                { "id", "production-risk-" + result.ItemId },
+                { "status", result.State == "starved" ? "blocked" : "watch" },
+                { "claim", claim },
+                { "evidence", evidence },
+                { "confidence", "high" },
+                { "priority", result.State == "starved" ? 20 : 30 },
+                { "risk", result.Export() }
+            };
+        }
+
+        private static string Rate(double value)
+        {
+            return Math.Round(value, 1).ToString(
+                "0.0", CultureInfo.InvariantCulture);
+        }
+
+        private static void KeepStrongestFinding(List<object> findings)
+        {
+            if (findings.Count <= 1) return;
+            object strongest = findings[0];
+            int strongestPriority = FindingPriority(strongest);
+            for (int i = 1; i < findings.Count; i++)
+            {
+                int priority = FindingPriority(findings[i]);
+                if (priority >= strongestPriority) continue;
+                strongest = findings[i];
+                strongestPriority = priority;
+            }
+            findings.Clear();
+            findings.Add(strongest);
+        }
+
+        private static int FindingPriority(object value)
+        {
+            var finding = value as Dictionary<string, object>;
+            object priority;
+            return finding != null && finding.TryGetValue("priority", out priority)
+                ? Convert.ToInt32(priority, CultureInfo.InvariantCulture) : 100;
+        }
+
         private static void AddPhotonPowerFinding(
             List<object> findings,
             ObservedGameState state)
@@ -103,52 +378,16 @@ namespace DspProgressionStatusExporter
             double requested = state.Dyson.ReceiverArrayRequestedDysonPowerWatts;
             double supplied = state.Dyson.ReceiverArraySuppliedPowerWatts;
             double available = state.Dyson.GenerationWatts;
+            string status = requested > available || available <= 0
+                ? "watch" : "ready";
             findings.Add(Finding(
                 "photon-receiver-power",
-                requested > available || available <= 0 ? "watch" : "ready",
+                status,
                 "Photon receivers request " + FormatPower(requested) +
                     " from " + FormatPower(available) + " of Dyson generation.",
                 "The receiver array is currently supplied with " + FormatPower(supplied) + ".",
-                "high"));
-        }
-
-        private static void AddDrainingInputFinding(
-            List<object> findings,
-            ObservedGameState state,
-            string id,
-            string phaseName,
-            int[] itemIds,
-            string[] names)
-        {
-            if (!state.ProductionWindowReady) return;
-
-            int weakestIndex = -1;
-            double weakestRatio = Double.MaxValue;
-            ObservedItemFlow weakestFlow = null;
-            for (int i = 0; i < itemIds.Length; i++)
-            {
-                ObservedItemFlow flow;
-                if (!state.ItemFlows.TryGetValue(itemIds[i], out flow) ||
-                    flow == null || flow.ConsumedPerMinute <= 0 ||
-                    flow.ProducedPerMinute >= flow.ConsumedPerMinute)
-                    continue;
-                double ratio = flow.ProducedPerMinute / flow.ConsumedPerMinute;
-                if (ratio >= weakestRatio) continue;
-                weakestIndex = i;
-                weakestRatio = ratio;
-                weakestFlow = flow;
-            }
-            if (weakestIndex < 0) return;
-
-            findings.Add(Finding(
-                id,
-                weakestFlow.ProducedPerMinute <= 0 ? "blocked" : "watch",
-                names[weakestIndex] + " are draining faster than they are replenished.",
-                "Found " + Math.Round(weakestFlow.ProducedPerMinute, 1) +
-                    "/min produced and " +
-                    Math.Round(weakestFlow.ConsumedPerMinute, 1) +
-                    "/min consumed; reinforce this " + phaseName + " input.",
-                "high"));
+                "high",
+                status == "watch" ? 10 : 80));
         }
 
         private static string FormatPower(double watts)
@@ -194,7 +433,8 @@ namespace DspProgressionStatusExporter
                 "Refined Oil tanks are " + Math.Round(fill * 100.0, 1) +
                     "% full; " + remaining + ".",
                 "Use Refined Oil or expand storage to avoid refinery bottlenecks.",
-                "high"));
+                "high",
+                10));
         }
 
         private static Dictionary<string, object> Finding(
@@ -202,14 +442,16 @@ namespace DspProgressionStatusExporter
             string status,
             string claim,
             string evidence,
-            string confidence)
+            string confidence,
+            int priority)
         {
             return new Dictionary<string, object> {
                 { "id", id },
                 { "status", status },
                 { "claim", claim },
                 { "evidence", evidence },
-                { "confidence", confidence }
+                { "confidence", confidence },
+                { "priority", priority }
             };
         }
     }

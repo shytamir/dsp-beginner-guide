@@ -58,9 +58,10 @@ runtime gates. The current runtime retains legacy selection migration and
 historical records without exposing superseded phase contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
-The production-risk roadmap is active at `RISK-03`, deterministic risk scoring
-and interpretation. `RISK-01` and `RISK-02` have passed their focused runtime
-gates. This roadmap remains separate from the completed guide 2.0 migration.
+`RISK-03`, deterministic risk scoring and interpretation, is implemented and
+awaiting its focused runtime gate. `RISK-01` and `RISK-02` have passed their
+focused runtime gates. This roadmap remains separate from the completed guide
+2.0 migration.
 
 ## Future considerations
 
@@ -159,12 +160,12 @@ DYSON, WARP to GREEN, and LOGISTICS or COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.7 serializes the same selected-phase conclusions used by the
+Snapshot schema 2.8 serializes the same selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. Every
 snapshot includes provenance, playtime, research and Cube aggregates,
 selection diagnostics, objective/status conclusions, focused selected-phase
-evidence, collector coverage and performance, and explicit omission or
-truncation markers.
+evidence, the strongest production-risk state and score terms, collector
+coverage and performance, and explicit omission or truncation markers.
 
 Broad factory, technology, station-slot, inventory, topology, and all-item
 dumps are excluded. Receiver detail is capped, and the export is rejected
@@ -191,10 +192,10 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Contract | Version |
 |---|---:|
 | Release line | 2.0.x |
-| Snapshot schema | 2.7 |
-| Normalized state | 1.9 |
+| Snapshot schema | 2.8 |
+| Normalized state | 2.0 |
 | Guide selection | 1.6 |
-| Guide analysis | 2.8 |
+| Guide analysis | 2.9 |
 | Progression | 2.8 |
 | Panel | 2.2 |
 
@@ -211,7 +212,7 @@ Accepted runtime work for the current implementation includes:
 - native one-minute production comparisons against the Statistics Panel;
 - native Dyson aggregate comparisons against the Dyson editor;
 - focused ILS, DYSON, PHOTON, and WHITE conclusions;
-- compact schema 2.7 snapshots and bounded collector diagnostics;
+- compact schema 2.8 snapshots and bounded collector diagnostics;
 - panel layout, click-through behavior, scrolling, footer actions, and hover
   behavior;
 - Basic Regular rendering with the retained outline and separate
