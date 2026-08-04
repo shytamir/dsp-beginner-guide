@@ -58,8 +58,9 @@ runtime gates. The current runtime retains legacy selection migration and
 historical records without exposing superseded phase contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
-`RISK-01` through `RISK-03` have passed their focused runtime gates. `RISK-04`,
-quiet phase-health presentation, is the next production-risk story. This
+`RISK-01` through `RISK-03` have passed their focused runtime gates. `RISK-04`
+now implements distinct native draining and starvation glyphs on the fixed
+Cube-rate rail and is awaiting its focused in-game presentation gate. This
 roadmap remains separate from the completed guide 2.0 migration.
 
 ## Future considerations
@@ -178,7 +179,9 @@ deliberate `Save snapshot` control; the public Thunderstore build excludes
 that control and its interaction path at compile time. The panel has no
 obstructive background. Text uses embedded Basic Regular with a two-pixel dark outline.
 The fixed Cube-rate column uses six cached embedded Matrix icons with outlined
-threshold-colored rate text and a text-only soft fallback. All established
+threshold-colored rate text and a text-only soft fallback. A separate,
+click-through native signal glyph appears beside that rail for the analyzer's
+selected draining or starved risk; quiet states show no glyph. All established
 sizes, spacing, and bounded hover behavior remain. `DON'T PANIC` retains its
 separate bright-red Comic Sans presentation.
 
@@ -196,7 +199,7 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Guide selection | 1.6 |
 | Guide analysis | 2.9 |
 | Progression | 2.8 |
-| Panel | 2.2 |
+| Panel | 2.3 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use
 the same three-number version; assembly/file metadata adds `.0`, and
@@ -239,6 +242,11 @@ while objectives remained stable. The release owner directly observed the
 warning clear within 15 seconds after production recovered and accepted that
 balanced transition without a fifth snapshot because an independent supporting
 line failed afterward.
+
+`RISK-04` is implemented and awaiting runtime acceptance. Deterministic tests
+cover the analyzer-selected draining, starved, and non-actionable mappings;
+the in-game gate must verify the two native glyphs, quiet omission, fixed
+collapsed placement, click-through behavior, and presentation at 4K.
 
 The release candidate's two Thunderstore blockers are completed and accepted
 by the release owner. `STORE-README-01` provides the dedicated player-facing

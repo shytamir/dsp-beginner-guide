@@ -13,8 +13,8 @@ The underlying feature remains valuable and is adopted as a product goal:
   output backpressure;
 - account for accessible supply runway where its scope is provable;
 - translate the result into one useful player-facing diagnosis; and
-- expose the selected phase's worst actionable risk through a quiet visual
-  accent that works while the text panel is collapsed.
+- expose the selected phase's worst actionable risk through a quiet,
+  game-native signal glyph on the fixed Cube-rate rail.
 
 The implementation must extend the existing collector, normalized state,
 analyzer, panel-model, and UI layers. It must not introduce a second factory
@@ -215,37 +215,45 @@ Acceptance:
 - The same normalized evidence always produces the same score and diagnosis.
 - Current Status still presents at most one actionable conclusion.
 
-### RISK-04 - Quiet phase-health presentation
+### RISK-04 - Native risk-signal presentation
 
-**User story:** As a player who has requested the guide panel, I want a subtle
-  phase-health signal that remains visible when its text is collapsed, so I
-  can notice an actionable production risk without turning the mod into an
-  unsolicited HUD or opening a diagnostic dashboard.
+**Status:** Implemented; awaiting the focused in-game presentation gate.
+
+**User story:** As a player who has opened Guide Check, I want the strongest
+  actionable production risk represented by a small, distinct game-native
+  signal icon on the panel's fixed Cube-rate column, so I can recognize a
+  developing shortage or stopped supply at a glance without decoding another
+  color scale.
 
 Scope:
 
-- Add one small, click-through accent to the existing Cube-rate column or its
-  anchor; do not introduce a modal, accordion, new navigation control, or
-  obstructive background.
-- Derive its color from the cached worst actionable result for the selected
-  phase: quiet/neutral, amber, or red.
-- Show the accent only while the player-requested panel session is present,
-  including its collapsed state. F8-hidden means fully hidden.
+- Add one 28-pixel, click-through glyph beside the existing Cube-rate column;
+  do not introduce a modal, accordion, new navigation control, obstructive
+  background, or severity-color scale.
+- Map the analyzer-selected `draining` state to DSP signal 402 and `starved`
+  to the distinct DSP signal 404. Preserve each embedded icon's native color.
+- Render no glyph for unknown, warming, backpressured, balanced, or otherwise
+  non-actionable states.
+- Read only the analyzer's already-selected result. The panel model and UI do
+  not rescore findings or choose a different priority.
+- Keep the glyph fixed on the collapse-proof Cube-rate rail. Show it only
+  while the player-requested panel session is present; F8-hidden means hidden.
 - Do not pulse, flash, animate continuously, capture input, or change phase.
-- In the expanded panel, let the existing Current Status line carry the
-  interpreter's cause and next action.
-- Include the displayed severity, selected finding, score terms, and evidence
-  readiness in the deliberate compact snapshot.
+- Load, cache, and dispose the embedded resources with the existing panel
+  icons. Missing or undecodable resources fail softly by omitting the glyph.
+- Defer finding prioritization and richer presentation in the panel body to a
+  later story.
 
 Acceptance:
 
-- Collapsing the text panel retains the same cached phase-health color without
-  recomputing or moving the Cube-rate column.
-- Expanding it presents one matching diagnosis, not a list of every evaluated
-  item.
-- Warming, unknown, and backpressured states do not render as critical.
-- Panel click-through, navigation, Cube thresholds, layout, snapshots, and
-  performance do not regress.
+- Draining and starved display different, immediately recognizable native
+  glyphs at a legible 4K scale; they are not color variants of one mark.
+- Collapsing the panel body retains the same glyph in the same rail-relative
+  position, without recomputing the selected risk.
+- Quiet states display no glyph, and hiding the panel hides it completely.
+- The indicator is fixed, non-interactive, and non-animated.
+- Existing title and Cube icons, rate text, navigation, layout, snapshots,
+  click-through behavior, and performance do not regress.
 
 ## Delivery order and gates
 
@@ -259,8 +267,9 @@ Implement in order: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04`.
 - `RISK-03` passed deterministic tests and its focused in-game diagnostic
   gate, including the release-owner-approved direct observation of balanced
   recovery.
-- `RISK-04` requires expanded and collapsed screenshots plus a performance
-  check with the panel visible and hidden.
+- `RISK-04` requires quiet, draining, and starved screenshots, including one
+  actionable state with the body collapsed, plus visible/hidden performance
+  and interaction checks.
 
 No story authorizes automatic phase changes, unsolicited alerts, combat
 guidance, broad factory scans, or adoption of the discarded package files.

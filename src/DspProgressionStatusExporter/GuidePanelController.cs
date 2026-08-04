@@ -33,6 +33,7 @@ namespace DspProgressionStatusExporter
         private const float CompletionSeconds = 0.28f;
         private const float PhaseTitleIconSize = 22f;
         private const float PhaseTitleIconGap = 5f;
+        private const float RiskSignalIconSize = 28f;
 #if DSP_GUIDE_SNAPSHOT_CONTROL
         private const float SnapshotFeedbackSeconds = 2f;
 #endif
@@ -365,6 +366,7 @@ namespace DspProgressionStatusExporter
         private RectTransform previousPhaseRect;
         private RectTransform nextPhaseRect;
         private RectTransform cubeRateColumnRect;
+        private Image riskSignalIcon;
         private Image collapseImage;
         private Text collapseFallbackText;
         private NativeGoalStyle style;
@@ -434,6 +436,8 @@ namespace DspProgressionStatusExporter
                 "click-through-except-interactive-controls";
             result["cubeRateColumn"] =
                 "native-one-minute-rates-click-through-fixed-below-collapse";
+            result["riskSignalIndicator"] =
+                "native-glyph-click-through-fixed-on-cube-rate-column";
             result["textOutline"] = true;
             result["presentationFontSource"] =
                 presentationFont != null
@@ -685,6 +689,14 @@ namespace DspProgressionStatusExporter
                 "CubeRateColumn", panelObject.transform);
             cubeRateColumnRect =
                 cubeRateColumn.GetComponent<RectTransform>();
+            GameObject riskSignalObject = CreateObject(
+                "ProductionRiskSignal",
+                cubeRateColumn.transform,
+                typeof(Image));
+            riskSignalIcon = riskSignalObject.GetComponent<Image>();
+            riskSignalIcon.raycastTarget = false;
+            riskSignalIcon.preserveAspect = true;
+            riskSignalIcon.enabled = false;
 
             CreateHeaderControl(
                 "PreviousPhase",
@@ -844,10 +856,28 @@ namespace DspProgressionStatusExporter
                 UpdateRows(contextViews, model.Context);
 
             ApplyCubeRates(model.CubeRates);
+            ApplyRiskSignal(model.RiskSignal);
 
             Layout();
             if (phaseChanged)
                 contentRect.anchoredPosition = Vector2.zero;
+        }
+
+        private void ApplyRiskSignal(GuidePanelRiskSignal signal)
+        {
+            string resourceId = null;
+            if (signal == GuidePanelRiskSignal.Draining)
+                resourceId = "risk-draining";
+            else if (signal == GuidePanelRiskSignal.Starved)
+                resourceId = "risk-starved";
+
+            Sprite sprite = matrixIcons != null && resourceId != null
+                ? matrixIcons.Get(resourceId)
+                : null;
+            riskSignalIcon.sprite = sprite;
+            riskSignalIcon.color = Color.white;
+            riskSignalIcon.enabled = sprite != null;
+            riskSignalIcon.rectTransform.SetAsLastSibling();
         }
 
         private void ApplyCubeRates(List<GuidePanelCubeRateModel> rates)
@@ -1104,6 +1134,12 @@ namespace DspProgressionStatusExporter
                     i * (CubeRateSquareSize + CubeRateGap),
                     CubeRateSquareSize,
                     CubeRateSquareSize);
+            SetTopRect(
+                riskSignalIcon.rectTransform,
+                -(RiskSignalIconSize + 1f),
+                3f,
+                RiskSignalIconSize,
+                RiskSignalIconSize);
             if (collapseImage != null)
                 collapseImage.rectTransform.localEulerAngles =
                     new Vector3(0f, 0f, collapsed ? 180f : 0f);

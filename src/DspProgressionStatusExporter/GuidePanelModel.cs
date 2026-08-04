@@ -36,6 +36,13 @@ namespace DspProgressionStatusExporter
         Later
     }
 
+    internal enum GuidePanelRiskSignal
+    {
+        None,
+        Draining,
+        Starved
+    }
+
     internal sealed class GuidePanelCubeRateModel
     {
         public string CubeId;
@@ -50,6 +57,7 @@ namespace DspProgressionStatusExporter
         public string Subtitle;
         public string SnapshotFileName;
         public string SnapshotDirectory;
+        public GuidePanelRiskSignal RiskSignal;
         public readonly List<GuidePanelRowModel> Objectives =
             new List<GuidePanelRowModel>();
         public readonly List<GuidePanelRowModel> Pending =
@@ -72,13 +80,14 @@ namespace DspProgressionStatusExporter
                 context.Add(row.Export());
 
             return new Dictionary<string, object> {
-                { "contractVersion", "2.2" },
+                { "contractVersion", "2.3" },
                 { "phaseId", PhaseId },
                 { "phaseSelectionAuthority", "player" },
                 { "title", Title },
                 { "subtitle", Subtitle },
                 { "snapshotFileName", SnapshotFileName },
                 { "snapshotDirectory", SnapshotDirectory },
+                { "riskSignal", RiskSignal.ToString().ToLowerInvariant() },
                 { "objectives", objectives },
                 { "pending", pending },
                 { "currentStatus", context },
@@ -173,8 +182,30 @@ namespace DspProgressionStatusExporter
                 ? "Main progression complete."
                 : "Current phase objectives";
 
+            ApplyRiskSignal(
+                model,
+                AsDictionary(Get(analysis, "productionRisk")));
             AddContext(model, AsList(Get(analysis, "findings")));
             return model;
+        }
+
+        private static void ApplyRiskSignal(
+            GuidePanelModel model,
+            Dictionary<string, object> productionRisk)
+        {
+            Dictionary<string, object> selected = AsDictionary(
+                Get(productionRisk, "selected"));
+            if (selected == null ||
+                !Boolean(Get(selected, "actionable"), false))
+                return;
+
+            string state = Text(Get(selected, "state"), null);
+            if (String.Equals(
+                state, "draining", StringComparison.OrdinalIgnoreCase))
+                model.RiskSignal = GuidePanelRiskSignal.Draining;
+            else if (String.Equals(
+                state, "starved", StringComparison.OrdinalIgnoreCase))
+                model.RiskSignal = GuidePanelRiskSignal.Starved;
         }
 
         private static void AddCubeRates(

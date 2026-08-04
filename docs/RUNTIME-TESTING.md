@@ -13,28 +13,38 @@ tools are needed.
 4. Use `Save snapshot` only for a checkpoint whose conclusion needs audit.
 5. Confirm each new snapshot names schema `2.8` and guide analysis `2.9`.
 
-## RISK-03 production diagnosis gate
+## RISK-04 native risk-signal presentation gate
 
-Use the diagnostic DLL and a mature GREEN save with Quantum Chips produced,
-consumed, and buffered through a dedicated Local Supply logistics slot. After
-loading the save, keep the mod running for 600 game seconds before judging a
-history-ready result; the first earlier checkpoint must remain `warming` and
-quiet.
+Use the latest diagnostic DLL and the same mature GREEN save used for RISK-03.
+Keep GREEN selected throughout. Let the game run until ten-minute history is
+ready before producing the actionable states.
 
-Capture focused snapshots for:
+Capture these states:
 
-1. warming history before the 600-second observation age;
-2. a full Local Supply output slot with proven backpressure;
-3. a partial, draining slot with production meaningfully below demand;
-4. an empty slot after an established line stops while demand remains; and
-5. restored production meeting demand.
+1. **Quiet:** run the Quantum Chip line with production meeting consumption,
+   or stop consumption while its accessible output storage is full. Open the
+   panel and confirm no extra signal glyph appears beside the Cube-rate rail.
+2. **Draining:** keep the Green Cube consumers running, then disconnect or
+   pause enough upstream Quantum Chip assemblers that recent production stays
+   below consumption while accessible Quantum Chips remain buffered. Wait for
+   `Quantum Chips are draining faster than they are replenished`. Capture the
+   expanded panel showing DSP signal 402 beside the Cube-rate rail.
+3. **Collapse-proof:** without changing that factory state, collapse the panel
+   body and capture the same glyph in the same rail-relative position.
+4. **Starved:** empty the accessible Quantum Chip supply by removing buffered
+   chips and clearing or disconnecting belts feeding the consumer logistics
+   station, while Green Cube consumption demand remains established. Keep the
+   upstream chip line stopped. Wait for `Quantum Chips production is starved`
+   and capture the expanded panel showing the distinct DSP signal 404 glyph.
 
-Inspect `guide.productionRisk.selected`. The expected states are `warming`,
-`backpressured`, `draining`, `starved`, and `balanced`, respectively. Warming,
-backpressured, and balanced states add no production-risk Current Status row.
-Draining and starved states add at most one matching actionable row, and the
-same snapshot records the score terms and scope. Navigation, objectives,
-controls, snapshot size, and panel refresh must not regress.
+At 4K, confirm both glyphs are easy to distinguish at a glance, retain their
+native colors, do not flash or animate, and do not capture clicks. Toggle F8
+to confirm the glyph disappears with the panel. Switch once to an adjacent
+phase and back to confirm navigation, title/Cube icons, Cube-rate text, and
+layout still refresh normally. Leave the panel visible for one minute and
+hidden for one minute; report any visible hitch, plugin exception, or new log
+error. Snapshots are optional supporting evidence, not a human field-check
+requirement.
 
 ## Navigation and persistence
 

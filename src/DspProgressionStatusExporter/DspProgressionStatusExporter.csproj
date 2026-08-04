@@ -38,6 +38,10 @@
                       LogicalName="DspGuideCheck.MatrixIcons.solar-collector.png" />
     <EmbeddedResource Include="..\..\assets\DSP_exported assets\Texture2D\Recipes (items)\photon-capacitor-full.png"
                       LogicalName="DspGuideCheck.MatrixIcons.photon-capacitor-full.png" />
+    <EmbeddedResource Include="..\..\assets\DSP_exported assets\Texture2D\Signal\signal-402.png"
+                      LogicalName="DspGuideCheck.MatrixIcons.signal-402.png" />
+    <EmbeddedResource Include="..\..\assets\DSP_exported assets\Texture2D\Signal\signal-404.png"
+                      LogicalName="DspGuideCheck.MatrixIcons.signal-404.png" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseCiReferences)' != 'true'">

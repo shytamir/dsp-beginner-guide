@@ -54,7 +54,9 @@ foreach ($resourceName in @(
         'DspGuideCheck.MatrixIcons.u-matrix.png',
         'DspGuideCheck.MatrixIcons.1605.png',
         'DspGuideCheck.MatrixIcons.solar-collector.png',
-        'DspGuideCheck.MatrixIcons.photon-capacitor-full.png'
+        'DspGuideCheck.MatrixIcons.photon-capacitor-full.png',
+        'DspGuideCheck.MatrixIcons.signal-402.png',
+        'DspGuideCheck.MatrixIcons.signal-404.png'
     )) {
     if ($resources -cnotcontains $resourceName) {
         throw "Matrix icon resource is missing: $resourceName"
@@ -336,8 +338,8 @@ $panelSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\GuidePanelModel.cs'
 )
-if (-not $panelSource.Contains('{ "contractVersion", "2.2" }')) {
-    throw 'Panel model contract version is not 2.2.'
+if (-not $panelSource.Contains('{ "contractVersion", "2.3" }')) {
+    throw 'Panel model contract version is not 2.3.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

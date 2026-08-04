@@ -4,6 +4,10 @@
 
 ### Changed
 
+- Added a fixed, click-through native DSP signal glyph beside the Cube-rate
+  rail for the analyzer-selected production risk. Draining and starved use
+  distinct embedded signals; quiet states display no glyph. Advanced the
+  panel presentation contract to 2.3.
 - Added deterministic, scope-matched production-risk scoring and
   interpretation for selected-phase items. Unknown, warming, backpressured,
   balanced, draining, and starved states remain distinct, while Current Status

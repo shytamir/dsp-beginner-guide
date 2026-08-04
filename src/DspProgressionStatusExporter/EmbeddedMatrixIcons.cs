@@ -20,7 +20,9 @@ namespace DspProgressionStatusExporter
                 { "white", "u-matrix.png" },
                 { "ils", "1605.png" },
                 { "dyson", "solar-collector.png" },
-                { "photon", "photon-capacitor-full.png" }
+                { "photon", "photon-capacitor-full.png" },
+                { "risk-draining", "signal-402.png" },
+                { "risk-starved", "signal-404.png" }
             };
 
         private readonly Dictionary<string, Sprite> sprites =
@@ -69,13 +71,13 @@ namespace DspProgressionStatusExporter
                 byte[] bytes = ReadResource(resourceName);
                 texture = new Texture2D(
                     2, 2, TextureFormat.RGBA32, false);
-                texture.name = "DSPGuideCheck-" + cubeId + "-phase-icon";
+                texture.name = "DSPGuideCheck-" + cubeId + "-panel-icon";
                 texture.filterMode = FilterMode.Bilinear;
                 texture.wrapMode = TextureWrapMode.Clamp;
                 if (!texture.LoadImage(bytes, true) ||
                     texture.width <= 0 || texture.height <= 0)
                     throw new InvalidOperationException(
-                        "Embedded Matrix icon could not be decoded.");
+                        "Embedded panel icon could not be decoded.");
 
                 sprite = Sprite.Create(
                     texture,
@@ -84,7 +86,7 @@ namespace DspProgressionStatusExporter
                     100f);
                 if (sprite == null)
                     throw new InvalidOperationException(
-                        "Embedded Matrix icon sprite could not be created.");
+                        "Embedded panel icon sprite could not be created.");
                 sprite.name = texture.name;
                 textures.Add(texture);
                 sprites[cubeId] = sprite;
@@ -106,7 +108,7 @@ namespace DspProgressionStatusExporter
             {
                 if (stream == null)
                     throw new InvalidOperationException(
-                        "Embedded Matrix icon resource was not found.");
+                        "Embedded panel icon resource was not found.");
                 using (var memory = new MemoryStream())
                 {
                     stream.CopyTo(memory);

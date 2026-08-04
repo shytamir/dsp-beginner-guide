@@ -249,5 +249,20 @@ $context = $panel.GetType().GetField('Context', $flags).GetValue($panel)
 if ($context.Count -ne 1) {
     throw 'Current Status rendered more than one conclusion.'
 }
+$riskSignalField = $panel.GetType().GetField('RiskSignal', $flags)
+if ($riskSignalField.GetValue($panel).ToString() -cne 'Starved') {
+    throw 'Starved production risk did not select the starved panel glyph.'
+}
+$selectedRisk = $riskSummary['selected']
+$selectedRisk['state'] = 'draining'
+$panel = $buildPanel.Invoke($null, @($analysis, $state, $null, $null))
+if ($riskSignalField.GetValue($panel).ToString() -cne 'Draining') {
+    throw 'Draining production risk did not select the draining panel glyph.'
+}
+$selectedRisk['actionable'] = $false
+$panel = $buildPanel.Invoke($null, @($analysis, $state, $null, $null))
+if ($riskSignalField.GetValue($panel).ToString() -cne 'None') {
+    throw 'A non-actionable production risk selected a panel glyph.'
+}
 
 Write-Output 'Production risk tests passed.'

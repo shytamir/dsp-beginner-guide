@@ -24,6 +24,8 @@ the implemented nine-phase contract.
 - Player-requested JSON snapshots for diagnostics and guide development.
 - Native-styled, collapsible and scrollable panel.
 - Embedded Matrix icons in the click-through Cube-rate column.
+- Distinct native signal glyphs for a developing shortage or stopped supply;
+  quiet production states add no indicator.
 - Embedded Basic Regular presentation font with the existing high-contrast
   outline; `DON'T PANIC` retains its separate Comic Sans treatment.
 - No unsolicited notifications, automatic phase changes or factory actions.
