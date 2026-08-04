@@ -8,12 +8,14 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-The current development contract follows guide **1.22.2** and supports only
-the ten critical-path phases from BOOTSTRAP through WHITE.
+The current release implements guide **1.22.2**. The public guide 2.0 edition
+(published `guide-version` metadata `1.23.0`) is now the development authority;
+its nine-phase migration is planned and has not yet changed runtime behavior.
 
 ## Features
 
-- Manual phase navigation through the ten critical-path phases.
+- Manual phase navigation through the currently implemented ten critical-path
+  phases.
 - Stable phase objectives based on the
   [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
 - Native Statistics Panel production evidence plus focused logistics, power,
@@ -149,26 +151,19 @@ history.
 
 ## Active development
 
-The Cube-rate column is implemented and accepted. Active development now
-focuses on a conservative production-risk analyzer built through the existing
-telemetry and analysis architecture:
+Preparation is active for the public guide 2.0 edition. The migration removes
+the standalone BOOTSTRAP phase by consolidating its useful starter-factory
+evidence into BLUE, rechecks and simplifies the nine retained phase contracts,
+and replaces the Cube-rate column's flat color tiles with the six authorized
+Matrix icons.
 
-1. verify and expose native multi-window evidence;
-2. model accessible buffer runway and proven backpressure;
-3. calculate and interpret production risk deterministically; and
-4. add one quiet, click-through phase-health accent for expanded and collapsed
-   panel states.
+The gap report and four bounded user stories are defined in
+[docs/GUIDE-2.0-GAP-ANALYSIS.md](docs/GUIDE-2.0-GAP-ANALYSIS.md).
 
-The package that inspired the feature is not an implementation dependency.
-The adopted math, evidence safeguards, four user stories, and runtime gates
-are defined in
-[docs/PRODUCTION-RISK-ROADMAP.md](docs/PRODUCTION-RISK-ROADMAP.md).
-
-`RISK-01` is accepted against native one-minute and normalized ten-minute
-Statistics Panel evidence. `RISK-02` is implemented and awaiting its runtime
-gate. It counts only item-configured, planet-local logistics slots set to
-local Supply; remote-only, unrelated, and unproven aggregate storage remain
-explicitly excluded.
+The production-risk roadmap is paused because of a blocking concern. Its
+accepted and in-progress evidence work remains documented in
+[docs/PRODUCTION-RISK-ROADMAP.md](docs/PRODUCTION-RISK-ROADMAP.md), but it is
+not part of the guide 2.0 migration.
 
 ## Repository layout
 
@@ -190,6 +185,7 @@ explicitly excluded.
 See [docs/PROJECT.md](docs/PROJECT.md) for product and evidence contracts and
 [docs/RUNTIME-TESTING.md](docs/RUNTIME-TESTING.md) for the focused runtime
 validation protocol. The current
+[guide 2.0 gap analysis](docs/GUIDE-2.0-GAP-ANALYSIS.md), completed
 [guide v1.22.2 gap analysis](docs/GUIDE-1.22.2-GAP-ANALYSIS.md), earlier
 [guide authority and ingestion record](docs/GUIDE-REVISION-INGESTION.md), and
 [native telemetry alignment contract](docs/NATIVE-TELEMETRY-ALIGNMENT.md)

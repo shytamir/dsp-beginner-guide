@@ -30,15 +30,18 @@ warning system.
 ## Current guide authority
 
 - Published guide: <https://dsp-beginner-guide.pages.dev/>
-- Adopted guide version: `1.22.2`
-- Detailed derivation: `docs/GUIDE-1.22.2-GAP-ANALYSIS.md`
+- Adopted development authority: public guide 2.0 edition
+- Published `guide-version` metadata: `1.23.0`
+- Detailed derivation and roadmap: `docs/GUIDE-2.0-GAP-ANALYSIS.md`
+- Current runtime implementation: guide `1.22.2` pending migration
+- Completed 1.22.2 derivation: `docs/GUIDE-1.22.2-GAP-ANALYSIS.md`
 - Earlier guide v1.1 record: `docs/GUIDE-REVISION-INGESTION.md` (historical)
 
-The active phase sequence is:
+The target phase sequence is:
 
 ```text
-BOOTSTRAP -> BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
-          -> DYSON -> PHOTON -> WHITE
+BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
+     -> DYSON -> PHOTON -> WHITE
 ```
 
 FLIGHT and TITANIUM are checkpoints inside ILS. WARP, SPHERE, LOGISTICS,
@@ -47,22 +50,25 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** runtime acceptance of conservative accessible-runway and
-proven-backpressure evidence (`RISK-02`).
+**Active:** preparation for the public guide 2.0 edition through `GUIDE2-01`,
+`GUIDE2-02`, `VIS2-01`, and `GUIDE2-03`.
 
-The Cube-rate column is implemented and accepted through the full-playthrough
-test. `RISK-01` is accepted against native one-minute and ten-minute Statistics
-Panel evidence. The immediate roadmap now adds conservative production-risk
-analysis without adopting the rejected implementation package or expanding
-the panel into a dashboard. The four sequenced user stories and their runtime
-gates are defined in `docs/PRODUCTION-RISK-ROADMAP.md`.
+The current release remains aligned with guide 1.22.2 until those stories are
+implemented and validated. The guide 2.0 migration consolidates BOOTSTRAP into
+BLUE, realigns and simplifies the nine retained contracts, introduces the
+first purposeful game-image use in the Cube-rate column, and then removes
+superseded contracts. See `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
+
+The production-risk roadmap is paused because of a blocking concern.
+`RISK-01` remains accepted and `RISK-02` remains implemented but has not passed
+its runtime gate. Neither is part of the guide 2.0 migration.
 
 ## Future considerations
 
 These ideas are recorded but are not active work:
 
-- `RATE-01` and `BUFFER-01` are superseded by the active `RISK-01` through
-  `RISK-04` roadmap.
+- `RATE-01` and `BUFFER-01` remain superseded by `RISK-01` through `RISK-04`,
+  but that roadmap is currently paused.
 - Keep completed objectives to compact single lines while reserving supporting
   detail for incomplete objectives.
 - Limit Pending to the few highest-value actions, ordered by what unlocks or
@@ -85,14 +91,13 @@ readiness text states it.
 
 | Phase | Stable readiness contract |
 |---|---|
-| BOOTSTRAP | Inputs arrive continuously; routine mall hardware replenishes automatically. |
-| BLUE | Blue Cubes run continuously at 20/min or better; research is not hand-fed. |
-| RED | Two Labs sustain 20 Red Cubes/min while Hydrogen and Refined Oil both leave the Refineries. |
+| BLUE | Starter inputs and routine hardware replenish; Blue Cubes run continuously at 20/min or better; research is not hand-fed. The 15–20 MW planning target is not a fixed objective. |
+| RED | Two Labs sustain 20 Red Cubes/min while Refined Oil retains a continuing outlet; Hydrogen or Refined Oil congestion remains a concise diagnostic warning rather than another objective row. |
 | ILS | Show one active checkpoint at a time: required technology and carried outpost essentials before launch; same-planet Titanium and Silicon production plus locally stored return cargo during the expedition; then the current research-chain target, missing protected components, and activated Titanium and Silicon ILS routes during the rush. |
 | YELLOW | Three configured Yellow-Cube Labs produce continuously. |
 | PURPLE | Three configured Purple-Cube Labs produce continuously. |
 | GREEN | Two configured Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. |
-| DYSON | Solar Sails are produced and launched, and the active swarm generates power. |
+| DYSON | The Photon swarm produces and launches Solar Sails and generates useful power. Reliable Antimatter is a handoff cue to PHOTON, not a duplicate DYSON objective. |
 | PHOTON | Critical Photon and Antimatter production is running; actual rates are shown against the 48/min receiver-array reference; 2,000 stored Antimatter marks the midpoint. Current Status compares total receiver demand with available Dyson generation. |
 | WHITE | Universe Matrix is researched; ten Labs sustain 40 White Cubes/min with the stored White Cube count shown; Mission Completed consumes or has consumed 4,000 White Cubes. |
 
@@ -150,8 +155,9 @@ authority. Selection is keyed by playthrough creation time and stable galaxy
 descriptor, so autosaves, renamed slots, pauses, and normal restarts retain
 the same selection.
 
-Legacy removed selections normalize once: FLIGHT and TITANIUM to ILS, SPHERE
-to DYSON, WARP to GREEN, and LOGISTICS or COMPLETE to WHITE.
+The guide 2.0 target adds BOOTSTRAP to the legacy normalization set and maps it
+to BLUE. Existing mappings remain: FLIGHT and TITANIUM to ILS, SPHERE to
+DYSON, WARP to GREEN, and LOGISTICS or COMPLETE to WHITE.
 
 ## Snapshot contract
 
@@ -196,7 +202,7 @@ diagnostics append the triggering commit hash.
 
 ## Validation status
 
-Accepted runtime work includes:
+Accepted runtime work for the current guide-1.22.2 implementation includes:
 
 - player-owned navigation and per-playthrough persistence;
 - the ten-phase guide 1.22.2 critical-path objective inventory;
@@ -224,7 +230,9 @@ inputs only and are never redistributed.
 
 - `docs/GUIDE-REVISION-INGESTION.md`: superseded guide v1.1 adoption record.
 - `docs/GUIDE-1.22.2-GAP-ANALYSIS.md`: derivation and completed migration
-  stories for the current critical path.
+  stories for the previous critical path.
+- `docs/GUIDE-2.0-GAP-ANALYSIS.md`: current authority comparison and planned
+  nine-phase migration stories.
 - `CHANGELOG.md`: release-by-release behavior, including retired optional
   route contracts.
 
