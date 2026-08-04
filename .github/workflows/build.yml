@@ -74,7 +74,7 @@ jobs:
             -p:UseCiReferences=true `
             "-p:CiBepInExPath=$env:CI_BEPINEX_PATH"
 
-      - name: Build release DLL
+      - name: Build diagnostic DLL
         id: build
         shell: pwsh
         run: |
@@ -89,24 +89,62 @@ jobs:
             "-p:FileVersion=$env:ASSEMBLY_VERSION" `
             "-p:InformationalVersion=$env:RELEASE_LABEL" `
             -p:IncludeSourceRevisionInInformationalVersion=false `
-            -p:ContinuousIntegrationBuild=true
+            -p:ContinuousIntegrationBuild=true `
+            --output artifacts/build/diagnostic
 
-      - name: Test release artifact
+      - name: Test diagnostic DLL
         id: test
         shell: pwsh
         run: |
           ./scripts/Test-BuildArtifact.ps1 `
-            -DllPath 'src/DspProgressionStatusExporter/bin/Release/net472/DspGuideCheck.dll' `
+            -DllPath 'artifacts/build/diagnostic/DspGuideCheck.dll' `
             -ExpectedReleaseLabel $env:RELEASE_LABEL `
             -ExpectedSemanticVersion $env:SEMANTIC_VERSION `
-            -ExpectedAssemblyVersion $env:ASSEMBLY_VERSION
+            -ExpectedAssemblyVersion $env:ASSEMBLY_VERSION `
+            -ReportPath 'artifacts/DIAGNOSTIC-TEST-REPORT.md'
+          ./scripts/Test-SnapshotControlVariant.ps1 `
+            -DllPath 'artifacts/build/diagnostic/DspGuideCheck.dll' `
+            -ExpectedVariant diagnostic
+
+      - name: Build public DLL
+        id: public_build
+        shell: pwsh
+        run: |
+          dotnet build `
+            src/DspProgressionStatusExporter/DspProgressionStatusExporter.csproj `
+            --configuration Release `
+            --no-restore `
+            -p:UseCiReferences=true `
+            "-p:CiBepInExPath=$env:CI_BEPINEX_PATH" `
+            "-p:Version=$env:SEMANTIC_VERSION" `
+            "-p:AssemblyVersion=$env:ASSEMBLY_VERSION" `
+            "-p:FileVersion=$env:ASSEMBLY_VERSION" `
+            "-p:InformationalVersion=$env:RELEASE_LABEL" `
+            -p:IncludeSourceRevisionInInformationalVersion=false `
+            -p:ContinuousIntegrationBuild=true `
+            -p:IncludeSnapshotControl=false `
+            --output artifacts/build/public
+
+      - name: Test public DLL
+        id: public_test
+        shell: pwsh
+        run: |
+          ./scripts/Test-BuildArtifact.ps1 `
+            -DllPath 'artifacts/build/public/DspGuideCheck.dll' `
+            -ExpectedReleaseLabel $env:RELEASE_LABEL `
+            -ExpectedSemanticVersion $env:SEMANTIC_VERSION `
+            -ExpectedAssemblyVersion $env:ASSEMBLY_VERSION `
+            -ReportPath 'artifacts/PUBLIC-TEST-REPORT.md'
+          ./scripts/Test-SnapshotControlVariant.ps1 `
+            -DllPath 'artifacts/build/public/DspGuideCheck.dll' `
+            -ExpectedVariant public
 
       - name: Build Thunderstore package
         id: package
         shell: pwsh
         run: |
           ./scripts/New-ThunderstorePackage.ps1 `
-            -DllPath 'src/DspProgressionStatusExporter/bin/Release/net472/DspGuideCheck.dll' `
+            -DllPath 'artifacts/build/public/DspGuideCheck.dll' `
             -VersionNumber $env:PACKAGE_VERSION `
             -ReadmePath 'packaging/README.md'
 
@@ -116,7 +154,8 @@ jobs:
         run: |
           ./scripts/Test-ThunderstorePackage.ps1 `
             -PackagePath "artifacts/packages/DSPGuideCheck-$env:PACKAGE_VERSION.zip" `
-            -ExpectedVersion $env:PACKAGE_VERSION
+            -ExpectedVersion $env:PACKAGE_VERSION `
+            -ExpectedDllPath 'artifacts/build/public/DspGuideCheck.dll'
 
       - name: Upload installable package and reports
         id: upload
@@ -125,8 +164,11 @@ jobs:
           name: DSPGuideCheck-${{ steps.version.outputs.package_version }}
           path: |
             artifacts/packages/DSPGuideCheck-${{ steps.version.outputs.package_version }}.zip
+            artifacts/build/diagnostic/DspGuideCheck.dll
+            artifacts/build/public/DspGuideCheck.dll
             artifacts/BUILD-INFO.txt
-            artifacts/TEST-REPORT.md
+            artifacts/DIAGNOSTIC-TEST-REPORT.md
+            artifacts/PUBLIC-TEST-REPORT.md
             artifacts/PACKAGE-REPORT.md
           if-no-files-found: error
           retention-days: 30
@@ -142,6 +184,8 @@ jobs:
           RESTORE_STATUS: ${{ steps.restore.outcome }}
           BUILD_STATUS: ${{ steps.build.outcome }}
           TEST_STATUS: ${{ steps.test.outcome }}
+          PUBLIC_BUILD_STATUS: ${{ steps.public_build.outcome }}
+          PUBLIC_TEST_STATUS: ${{ steps.public_test.outcome }}
           PACKAGE_STATUS: ${{ steps.package.outcome }}
           PACKAGE_TEST_STATUS: ${{ steps.package_test.outcome }}
           UPLOAD_STATUS: ${{ steps.upload.outcome }}
@@ -169,8 +213,10 @@ jobs:
           | Generate version | $env:VERSION_STATUS |
           | Acquire BepInEx reference | $env:BEPINEX_STATUS |
           | Restore reference packages | $env:RESTORE_STATUS |
-          | Build DLL | $env:BUILD_STATUS |
-          | Test DLL | $env:TEST_STATUS |
+          | Build diagnostic DLL | $env:BUILD_STATUS |
+          | Test diagnostic DLL | $env:TEST_STATUS |
+          | Build public DLL | $env:PUBLIC_BUILD_STATUS |
+          | Test public DLL | $env:PUBLIC_TEST_STATUS |
           | Build Thunderstore package | $env:PACKAGE_STATUS |
           | Test Thunderstore package | $env:PACKAGE_TEST_STATUS |
           | Publish artifact | $env:UPLOAD_STATUS |

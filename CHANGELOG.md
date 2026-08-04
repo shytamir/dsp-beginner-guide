@@ -4,6 +4,11 @@
 
 ### Changed
 
+- Added distinct diagnostic and public build variants. The diagnostic DLL
+  retains the forensic snapshot control; the public Thunderstore DLL omits
+  the control and its interaction path at compile time.
+- Updated hosted packaging to test both variant markers and package only the
+  exact validated public DLL.
 - Accepted the GUIDE2-03 navigation, persistence, removed-contract, and focused
   BLUE/ILS/WHITE snapshot gate, completing the guide 2.0 migration.
 - Accepted the VIS2-01 Matrix-icon presentation gate on bright and dark

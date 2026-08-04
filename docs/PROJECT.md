@@ -174,8 +174,10 @@ rather than written above 256 KiB. See `docs/SNAPSHOT-REDESIGN.md`.
 ## Panel contract
 
 The panel is click-through except for phase navigation, collapse, explicit
-scrolling, `Save snapshot`, and `DON'T PANIC`. It has no obstructive panel
-background. Text uses embedded Basic Regular with a two-pixel dark outline.
+scrolling, and `DON'T PANIC`. The default diagnostic build also provides the
+deliberate `Save snapshot` control; the public Thunderstore build excludes
+that control and its interaction path at compile time. The panel has no
+obstructive background. Text uses embedded Basic Regular with a two-pixel dark outline.
 The fixed Cube-rate column uses six cached embedded Matrix icons with outlined
 threshold-colored rate text and a text-only soft fallback. All established
 sizes, spacing, and bounded hover behavior remain. `DON'T PANIC` retains its
@@ -236,16 +238,17 @@ to package only that variant. Their user stories and acceptance criteria are
 authoritative in `docs/THUNDERSTORE-PACKAGE.md`.
 
 `STORE-README-01` is completed and accepted by the release owner.
-`STORE-SNAPSHOT-01` is the active next action.
+`STORE-SNAPSHOT-01` is implemented and awaits its two-variant in-game gate.
 
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.
 
 ## Release packaging
 
-Hosted builds publish `DspGuideCheck.dll` in the Thunderstore-compatible ZIP
-defined by `docs/THUNDERSTORE-PACKAGE.md`. Game and Unity assemblies are build
-inputs only and are never redistributed.
+Hosted builds produce separately validated diagnostic and public
+`DspGuideCheck.dll` variants. Only the public variant enters the
+Thunderstore-compatible ZIP defined by `docs/THUNDERSTORE-PACKAGE.md`. Game
+and Unity assemblies are build inputs only and are never redistributed.
 
 ## Historical records
 

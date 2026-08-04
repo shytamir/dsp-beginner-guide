@@ -11,6 +11,8 @@
     <Description>An on-demand progression companion for Dyson Sphere Program.</Description>
     <GameRoot Condition="'$(GameRoot)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Dyson Sphere Program</GameRoot>
     <UseCiReferences Condition="'$(UseCiReferences)' == ''">false</UseCiReferences>
+    <IncludeSnapshotControl Condition="'$(IncludeSnapshotControl)' == ''">true</IncludeSnapshotControl>
+    <DefineConstants Condition="'$(IncludeSnapshotControl)' == 'true'">$(DefineConstants);DSP_GUIDE_SNAPSHOT_CONTROL</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

@@ -7,6 +7,9 @@ param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
     [string]$ExpectedVersion,
 
+    [Parameter(Mandatory = $true)]
+    [string]$ExpectedDllPath,
+
     [string]$RepositoryRoot = (Split-Path -Parent $PSScriptRoot),
 
     [string]$ReportPath = (
@@ -45,6 +48,9 @@ function Read-ZipText {
 
 if (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf)) {
     throw "Package was not found: $PackagePath"
+}
+if (-not (Test-Path -LiteralPath $ExpectedDllPath -PathType Leaf)) {
+    throw "Expected public DLL was not found: $ExpectedDllPath"
 }
 
 $expectedEntries = @(
@@ -188,6 +194,27 @@ try {
     if ($dllEntry.Length -le 0) {
         throw 'Packaged DLL is empty.'
     }
+    $expectedDllHash = (
+        Get-FileHash -LiteralPath $ExpectedDllPath -Algorithm SHA256
+    ).Hash.ToLowerInvariant()
+    $dllStream = $dllEntry.Open()
+    try {
+        $sha256 = [System.Security.Cryptography.SHA256]::Create()
+        try {
+            $packagedDllHash = [BitConverter]::ToString(
+                $sha256.ComputeHash($dllStream)
+            ).Replace('-', '').ToLowerInvariant()
+        }
+        finally {
+            $sha256.Dispose()
+        }
+    }
+    finally {
+        $dllStream.Dispose()
+    }
+    if ($packagedDllHash -cne $expectedDllHash) {
+        throw 'Packaged DLL does not match the expected public build.'
+    }
 }
 finally {
     $archive.Dispose()
@@ -213,6 +240,7 @@ $report = @"
 | Install path | Passed |
 | Icon format and dimensions | Passed |
 | Dedicated player README | Passed |
+| Public DLL identity | Passed |
 | File count | $($expectedEntries.Count) |
 | Size | $packageLength bytes |
 | SHA-256 | ``$packageHash`` |

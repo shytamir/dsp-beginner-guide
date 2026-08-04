@@ -31,16 +31,20 @@ namespace DspProgressionStatusExporter
             ScrollControlWidth + CubeRateColumnInset;
         private const float InteractiveControlHoverScale = 1.12f;
         private const float CompletionSeconds = 0.28f;
+#if DSP_GUIDE_SNAPSHOT_CONTROL
         private const float SnapshotFeedbackSeconds = 2f;
+#endif
         private const string SourceGuideUrl =
             "https://dsp-beginner-guide.pages.dev/#";
         private const string DontPanicLabel = "DON'T\nPANIC";
         private static readonly Color DontPanicColor =
             new Color(1f, 0.04f, 0.07f, 1f);
+#if DSP_GUIDE_SNAPSHOT_CONTROL
         private static readonly Color SnapshotSuccessColor =
             new Color(0.23f, 1f, 0.44f, 1f);
         private static readonly Color SnapshotFailureColor =
             new Color(1f, 0.22f, 0.18f, 1f);
+#endif
         private static readonly Color TextOutlineColor =
             new Color(0f, 0f, 0f, 0.9f);
         private static readonly Color SelectedControlOutlineColor =
@@ -340,13 +344,17 @@ namespace DspProgressionStatusExporter
         private Text objectiveHeader;
         private Text pendingHeader;
         private Text contextHeader;
+#if DSP_GUIDE_SNAPSHOT_CONTROL
         private Text snapshotLinkText;
+#endif
         private Text sourceGuideLinkText;
         private Font dontPanicFont;
         private bool ownsDontPanicFont;
         private EmbeddedBasicFont presentationFont;
         private EmbeddedMatrixIcons matrixIcons;
+#if DSP_GUIDE_SNAPSHOT_CONTROL
         private RectTransform snapshotLinkRect;
+#endif
         private RectTransform sourceGuideLinkRect;
         private RectTransform scrollUpRect;
         private RectTransform scrollDownRect;
@@ -359,12 +367,16 @@ namespace DspProgressionStatusExporter
         private NativeGoalStyle style;
         private bool collapsed;
         private string phaseId;
+#if DSP_GUIDE_SNAPSHOT_CONTROL
         private Func<bool> snapshotAction;
+#endif
         private Action<string> navigationAction;
         private bool bodyCanScroll;
         private float panelWidth;
+#if DSP_GUIDE_SNAPSHOT_CONTROL
         private Color snapshotLinkDefaultColor;
         private float snapshotFeedbackRemaining;
+#endif
         private readonly List<RowView> objectiveViews = new List<RowView>();
         private readonly List<RowView> pendingViews = new List<RowView>();
         private readonly List<RowView> contextViews = new List<RowView>();
@@ -381,10 +393,12 @@ namespace DspProgressionStatusExporter
             EnsureCreated();
         }
 
+#if DSP_GUIDE_SNAPSHOT_CONTROL
         public void SetSnapshotAction(Func<bool> action)
         {
             snapshotAction = action;
         }
+#endif
 
         public void SetNavigationAction(Action<string> action)
         {
@@ -485,7 +499,9 @@ namespace DspProgressionStatusExporter
 
         public void Hide()
         {
+#if DSP_GUIDE_SNAPSHOT_CONTROL
             ResetSnapshotFeedback();
+#endif
             ResetInteractiveControlScales();
             if (panelObject != null) panelObject.SetActive(false);
         }
@@ -505,6 +521,7 @@ namespace DspProgressionStatusExporter
                 pendingViews, unscaledDeltaTime);
             changed |= AnimateRows(
                 contextViews, unscaledDeltaTime);
+#if DSP_GUIDE_SNAPSHOT_CONTROL
             if (snapshotFeedbackRemaining > 0f)
             {
                 snapshotFeedbackRemaining = Mathf.Max(
@@ -515,6 +532,7 @@ namespace DspProgressionStatusExporter
                     changed = true;
                 }
             }
+#endif
 
             if (changed) Canvas.ForceUpdateCanvases();
         }
@@ -714,6 +732,7 @@ namespace DspProgressionStatusExporter
                 "ContextHeader", contentObject.transform, style.GroupText);
             contextHeader.text = "Current Status";
 
+#if DSP_GUIDE_SNAPSHOT_CONTROL
             snapshotLinkText = CreateFooterLink(
                 "SnapshotLink",
                 panelObject.transform,
@@ -721,6 +740,7 @@ namespace DspProgressionStatusExporter
                 SaveSnapshot,
                 out snapshotLinkRect);
             snapshotLinkDefaultColor = snapshotLinkText.color;
+#endif
             sourceGuideLinkText = CreateFooterLink(
                 "SourceGuideLink",
                 panelObject.transform,
@@ -784,7 +804,9 @@ namespace DspProgressionStatusExporter
         {
             if (model == null) return;
             titleText.text = GuideRichText.Title(model.PhaseId, model.Title);
+#if DSP_GUIDE_SNAPSHOT_CONTROL
             snapshotLinkText.text = "Save snapshot";
+#endif
             sourceGuideLinkText.text = DontPanicLabel;
 
             bool phaseChanged = !String.Equals(
@@ -1066,7 +1088,9 @@ namespace DspProgressionStatusExporter
             if (collapsed)
             {
                 viewportRect.gameObject.SetActive(false);
+#if DSP_GUIDE_SNAPSHOT_CONTROL
                 snapshotLinkRect.gameObject.SetActive(false);
+#endif
                 sourceGuideLinkRect.gameObject.SetActive(false);
                 scrollUpRect.gameObject.SetActive(false);
                 scrollDownRect.gameObject.SetActive(false);
@@ -1075,7 +1099,9 @@ namespace DspProgressionStatusExporter
             }
 
             viewportRect.gameObject.SetActive(true);
+#if DSP_GUIDE_SNAPSHOT_CONTROL
             snapshotLinkRect.gameObject.SetActive(true);
+#endif
             sourceGuideLinkRect.gameObject.SetActive(true);
 
             float y = 2f;
@@ -1100,12 +1126,14 @@ namespace DspProgressionStatusExporter
                 FooterHeight,
                 BodyRightInset,
                 headerHeight);
+#if DSP_GUIDE_SNAPSHOT_CONTROL
             SetBottomRect(
                 snapshotLinkRect,
                 OuterPadding,
                 4f,
                 118f,
                 FooterHeight - 5f);
+#endif
             SetBottomRect(
                 sourceGuideLinkRect,
                 panelWidth - OuterPadding - 98f,
@@ -1432,6 +1460,7 @@ namespace DspProgressionStatusExporter
             control.SetActive(false);
         }
 
+#if DSP_GUIDE_SNAPSHOT_CONTROL
         private void SaveSnapshot()
         {
             bool succeeded = false;
@@ -1462,6 +1491,7 @@ namespace DspProgressionStatusExporter
             if (snapshotLinkText != null)
                 snapshotLinkText.color = snapshotLinkDefaultColor;
         }
+#endif
 
         private void OpenSourceGuide()
         {
@@ -1577,7 +1607,9 @@ namespace DspProgressionStatusExporter
             ResetScale(nextPhaseRect);
             ResetScale(scrollUpRect);
             ResetScale(scrollDownRect);
+#if DSP_GUIDE_SNAPSHOT_CONTROL
             ResetScale(snapshotLinkRect);
+#endif
             ResetScale(sourceGuideLinkRect);
         }
 

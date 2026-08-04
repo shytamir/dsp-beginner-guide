@@ -106,10 +106,12 @@ Press **F8** after loading a save:
 
 - F8 opens or closes the panel.
 - Previous and next move between phases.
-- `Save snapshot` writes one JSON file. The control turns green for two
-  seconds when the write succeeds or red when it fails.
 - The bright-red `DON'T PANIC` control opens the source guide at the selected
   phase.
+
+The repository's default diagnostic build also includes `Save snapshot`. It
+writes one JSON file and gives two seconds of green or red footer feedback.
+The public Thunderstore build omits that control.
 
 The initial phase is seeded once from the latest researched Cube. The selected
 phase is then owned entirely by the player and retained separately per

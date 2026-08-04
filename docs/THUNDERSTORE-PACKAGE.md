@@ -3,9 +3,9 @@
 ## Purpose
 
 The hosted build produces one installable Thunderstore package for DSP Guide
-Check. The repository source layout and C# namespace remain unchanged; the
-public assembly and package identity are `DspGuideCheck.dll` and
-`DSPGuideCheck`.
+Check plus separate diagnostic and public DLL artifacts. The repository source
+layout and C# namespace remain unchanged; the public assembly and package
+identity are `DspGuideCheck.dll` and `DSPGuideCheck`.
 
 ## ZIP layout
 
@@ -58,13 +58,15 @@ The workflow:
 1. checks out the triggering commit;
 2. derives the build versions;
 3. restores compile references;
-4. builds `DspGuideCheck.dll`;
-5. verifies DLL identity and version metadata;
-6. renders the manifest template and creates the exact ZIP layout;
+4. builds and verifies the default diagnostic DLL with snapshot control;
+5. builds and verifies the public DLL without snapshot control;
+6. renders the manifest template and packages only the public DLL in the exact
+   ZIP layout;
 7. verifies file names, casing, count, manifest fields, dependency, font
-   license, UTF-8
-   README, 256 by 256 PNG icon, and non-empty DLL;
-8. uploads the installable ZIP with build and package reports beside it.
+   license, UTF-8 README, 256 by 256 PNG icon, and an exact public-DLL hash
+   match;
+8. uploads the installable ZIP, both identifiable DLL variants, and their
+   build and package reports.
 
 The GitHub artifact is a transport container. Its
 `DSPGuideCheck-M.m.N.zip` member is the package intended for a mod manager or
@@ -99,7 +101,7 @@ Acceptance criteria:
 
 ### STORE-SNAPSHOT-01 — Omit snapshot export from the public package
 
-**Status:** Active next action.
+**Status:** Implemented; human validation gate pending.
 
 **User story:** As a Thunderstore user, I want the public panel to omit the
 forensic snapshot control, so the normal mod surface stays focused on guide

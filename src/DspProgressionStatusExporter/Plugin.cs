@@ -83,7 +83,9 @@ namespace DspProgressionStatusExporter
                 "General",
                 "SnapshotKey",
                 new KeyboardShortcut(KeyCode.F8),
-                "Press while playing to open or close the Guide Check panel. Snapshots are saved from the panel footer."
+                BuildFeatures.SnapshotControlEnabled
+                    ? "Press while playing to open or close the Guide Check panel. Snapshots are saved from the panel footer."
+                    : "Press while playing to open or close the Guide Check panel."
             );
             includeDiagnostics = Config.Bind(
                 "General",
@@ -94,7 +96,9 @@ namespace DspProgressionStatusExporter
 
             gameMainType = FindType("GameMain");
             ldbType = FindType("LDB");
+#if DSP_GUIDE_SNAPSHOT_CONTROL
             guidePanel.SetSnapshotAction(SaveSnapshotFromPanel);
+#endif
             guidePanel.SetNavigationAction(HandleGuideNavigation);
 
             Log.LogInfo("DSP Guide Check loaded. Press " + snapshotKey.Value + " while playing.");
