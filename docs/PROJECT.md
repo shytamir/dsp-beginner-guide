@@ -58,10 +58,9 @@ runtime gates. The current runtime retains legacy selection migration and
 historical records without exposing superseded phase contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
-The production-risk roadmap is the next development activity after the release
-owner publishes the accepted Thunderstore artifact. `RISK-01` remains accepted
-and `RISK-02` remains implemented but has not passed its runtime gate. Neither
-is part of the guide 2.0 migration.
+The production-risk roadmap is active at `RISK-03`, deterministic risk scoring
+and interpretation. `RISK-01` and `RISK-02` have passed their focused runtime
+gates. This roadmap remains separate from the completed guide 2.0 migration.
 
 ## Future considerations
 

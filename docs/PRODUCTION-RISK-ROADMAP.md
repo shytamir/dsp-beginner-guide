@@ -70,9 +70,7 @@ and are omitted rather than approximated from inventory movement.
 
 ## Immediate roadmap
 
-This roadmap is the next development activity after the release owner
-publishes the accepted Thunderstore artifact. Resume at the `RISK-02` runtime
-gate; `RISK-01` is already accepted.
+This roadmap is active at `RISK-03`. `RISK-01` and `RISK-02` are accepted.
 
 ### RISK-01 - Native multi-window evidence
 
@@ -113,7 +111,13 @@ Acceptance:
 
 ### RISK-02 - Accessible runway and backpressure evidence
 
-**Status:** Implemented; awaiting runtime gate.
+**Status:** Accepted. Sequential GREEN-phase checkpoints on Comae Berenices III
+proved a full authoritative Local Supply slot as backpressured, preserved
+finite runway while the slot drained, exposed zero runway when empty, and did
+not count 427 Quantum Chips held in a mixed depot as accessible stock. The
+remote-only configuration remains a focused regression checkpoint if remote
+logic changes; it is not a blocker for the guide's locally supplied component
+flows.
 
 **User story:** As the risk analyzer, I need a conservative measure of stock
 that can actually cushion current demand, so idle production with a useful
@@ -157,6 +161,8 @@ Acceptance:
 - Snapshot evidence identifies which buffer sources contributed to a result.
 
 ### RISK-03 - Deterministic risk engine and interpreter
+
+**Status:** Active.
 
 **User story:** As a player, I want the mod to distinguish warming, balanced,
 backpressured, draining, and starved production, so I receive a useful cause
@@ -227,8 +233,9 @@ Implement in order: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04`.
 
 - `RISK-01` requires a user checkpoint comparing 1-minute and 10-minute native
   rates before buffer or scoring work begins.
-- `RISK-02` requires snapshots from full, draining, empty, remote-only, and
-  mixed-storage cases.
+- `RISK-02` passed with full, draining, empty, and mixed-storage snapshots.
+  Remote-only exclusion remains a focused regression checkpoint if remote
+  logic changes.
 - `RISK-03` requires deterministic tests before an in-game diagnostic pass.
 - `RISK-04` requires expanded and collapsed screenshots plus a performance
   check with the panel visible and hidden.

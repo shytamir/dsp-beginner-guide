@@ -4,6 +4,9 @@
 
 ### Changed
 
+- Accepted the RISK-02 full, draining, empty, and mixed-storage runtime gate;
+  remote-only exclusion remains a focused regression checkpoint if remote
+  logic changes rather than a blocker for the guide's local component flows.
 - Accepted the public `2.0.52` release gate: BepInEx loaded without the former
   compile-target warning, and BLUE, ILS, DYSON, and PHOTON screenshots passed
   the published-guide title-presentation checkpoint.
