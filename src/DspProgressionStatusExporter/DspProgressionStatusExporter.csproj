@@ -18,6 +18,18 @@
                       LogicalName="DspGuideCheck.Fonts.Basic-Regular.ttf" />
     <EmbeddedResource Include="Assets\Fonts\Basic-OFL.txt"
                       LogicalName="DspGuideCheck.Fonts.Basic-OFL.txt" />
+    <EmbeddedResource Include="..\..\assets\DSP_exported assets\Texture2D\Recipes (items)\t-matrix.png"
+                      LogicalName="DspGuideCheck.MatrixIcons.t-matrix.png" />
+    <EmbeddedResource Include="..\..\assets\DSP_exported assets\Texture2D\Recipes (items)\e-matrix.png"
+                      LogicalName="DspGuideCheck.MatrixIcons.e-matrix.png" />
+    <EmbeddedResource Include="..\..\assets\DSP_exported assets\Texture2D\Recipes (items)\c-matrix.png"
+                      LogicalName="DspGuideCheck.MatrixIcons.c-matrix.png" />
+    <EmbeddedResource Include="..\..\assets\DSP_exported assets\Texture2D\Recipes (items)\i-matrix.png"
+                      LogicalName="DspGuideCheck.MatrixIcons.i-matrix.png" />
+    <EmbeddedResource Include="..\..\assets\DSP_exported assets\Texture2D\Recipes (items)\g-matrix.png"
+                      LogicalName="DspGuideCheck.MatrixIcons.g-matrix.png" />
+    <EmbeddedResource Include="..\..\assets\DSP_exported assets\Texture2D\Recipes (items)\u-matrix.png"
+                      LogicalName="DspGuideCheck.MatrixIcons.u-matrix.png" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseCiReferences)' != 'true'">
@@ -35,6 +47,10 @@
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(GameRoot)\DSPGAME_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(GameRoot)\DSPGAME_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">

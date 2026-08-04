@@ -33,8 +33,8 @@ warning system.
 - Adopted development authority: public guide 2.0 edition
 - Published `guide-version` metadata: `1.23.0`
 - Detailed derivation and roadmap: `docs/GUIDE-2.0-GAP-ANALYSIS.md`
-- Current runtime implementation: guide 2.0 topology and consolidated BLUE;
-  remaining phase-contract realignment is pending
+- Current runtime implementation: guide 2.0 topology and phase contracts;
+  the Matrix-icon column awaits its visual gate and cleanup remains pending
 - Completed 1.22.2 derivation: `docs/GUIDE-1.22.2-GAP-ANALYSIS.md`
 - Earlier guide v1.1 record: `docs/GUIDE-REVISION-INGESTION.md` (historical)
 
@@ -51,11 +51,12 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 ## Project status
 
-**Active:** public guide 2.0 migration through `VIS2-01` and `GUIDE2-03`.
+**Active:** public guide 2.0 migration through the `VIS2-01` runtime gate and
+`GUIDE2-03`.
 
-`GUIDE2-01` and `GUIDE2-02` have passed their focused runtime gates. The
-remaining stories introduce the first purposeful game-image use in the
-Cube-rate column and then remove superseded contracts. See
+`GUIDE2-01` and `GUIDE2-02` have passed their focused runtime gates. `VIS2-01`
+implements the first purposeful game-image use in the Cube-rate column and
+awaits its visual gate; `GUIDE2-03` then removes superseded contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
 The production-risk roadmap is paused because of a blocking concern.
@@ -175,9 +176,11 @@ rather than written above 256 KiB. See `docs/SNAPSHOT-REDESIGN.md`.
 
 The panel is click-through except for phase navigation, collapse, explicit
 scrolling, `Save snapshot`, and `DON'T PANIC`. It has no obstructive panel
-background. Text uses embedded Basic Regular with a two-pixel dark outline;
-all established sizes, spacing, colors, and bounded hover behavior remain.
-`DON'T PANIC` retains its separate bright-red Comic Sans presentation.
+background. Text uses embedded Basic Regular with a two-pixel dark outline.
+The fixed Cube-rate column uses six cached embedded Matrix icons with outlined
+threshold-colored rate text and a text-only soft fallback. All established
+sizes, spacing, and bounded hover behavior remain. `DON'T PANIC` retains its
+separate bright-red Comic Sans presentation.
 
 The Basic font falls back softly to the captured native Goal font if private
 runtime registration is unavailable. Its SIL Open Font License notice is
@@ -193,7 +196,7 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Guide selection | 1.6 |
 | Guide analysis | 2.8 |
 | Progression | 2.8 |
-| Panel | 2.0 |
+| Panel | 2.1 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use
 the same three-number version; assembly/file metadata adds `.0`, and
@@ -221,6 +224,8 @@ with correct objectives, prompt completion, and no visible regression.
 `GUIDE2-02` passed its focused runtime checkpoint with correct navigation,
 phase contracts, exceptional supporting-branch findings, DYSON title and
 objectives, and PHOTON receiver status.
+`VIS2-01` has deterministic embedded-resource coverage and awaits its focused
+in-game presentation checkpoint.
 
 `docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
 changes. Compilation alone never proves in-game presentation or conclusions.

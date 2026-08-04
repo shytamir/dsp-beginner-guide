@@ -18,6 +18,7 @@ never changes the factory or save, and never advances phases automatically.
 - Player-requested compact JSON snapshots for diagnostics.
 - A native-styled, collapsible, scrollable, and click-through panel.
 - Embedded Basic Regular presentation font with a high-contrast outline.
+- Embedded Matrix icons in the click-through Cube-rate column.
 
 ## Installation
 

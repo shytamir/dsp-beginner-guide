@@ -171,6 +171,9 @@ context so that the companion teaches without becoming a rate dashboard.
 
 ### VIS2-01 — Replace Cube-rate color tiles with Matrix icons
 
+**Status:** Implemented; deterministic checks pass. Focused in-game
+presentation validation remains pending.
+
 **User story**
 
 As a player glancing at Cube production, I want each rate paired with its
@@ -194,10 +197,23 @@ cluttering the guide panel.
 
 **Validation gate**
 
-- Capture bright- and dark-background screenshots with one, three, and six
-  visible Cubes.
-- Verify icon identity, rate legibility, threshold transitions, alignment,
-  click-through behavior, collapse independence, and absence of new hitches.
+1. On BLUE, open the panel over bright terrain and capture the one-icon column.
+   Confirm the Blue Matrix identity, `/m` legibility, and red text below the
+   focused minimum or the expected orange, white, or green threshold color.
+2. On YELLOW, open the panel over a dark factory and capture Blue, Red, and
+   Yellow. Confirm icon order, 44-pixel-slot alignment, and outlined rate
+   legibility without flat color-tile backgrounds.
+3. On WHITE, capture all six icons. Confirm Blue through White identity and
+   order, no overlap or clipping, and rate colors that match the displayed
+   values. Collapse and expand once; the column must remain visible and fixed.
+4. With the panel open, click or drag the world through an icon and rate, then
+   use each explicit panel control. The column must remain click-through while
+   navigation, collapse, scrolling, snapshot, and guide-link controls work.
+5. Navigate BLUE → YELLOW → WHITE and leave WHITE open for at least one
+   production refresh. Report any visible hitch, repeated icon decode symptom,
+   missing icon, or unexpected allocation-related pause.
+
+Provide the three screenshots and a short pass/fail note for steps 4 and 5.
 
 ### GUIDE2-03 — Prune superseded contracts and close the migration
 

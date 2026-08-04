@@ -4,6 +4,10 @@
 
 ### Changed
 
+- Replaced the Cube-rate column's flat color tiles with six cached, embedded
+  Matrix icons while retaining outlined threshold-colored rate text and a
+  text-only soft fallback.
+- Advanced the panel presentation contract to 2.1 for the VIS2-01 icon column.
 - Accepted the GUIDE2-02 nine-phase runtime gate, including focused RED,
   PURPLE, GREEN, DYSON, PHOTON, and WHITE checkpoints.
 - Corrected the panel-facing DYSON title to `Build the Photon swarm` and added

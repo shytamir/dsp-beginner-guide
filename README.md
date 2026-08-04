@@ -23,6 +23,7 @@ the implemented nine-phase contract.
 - Sixty-second receiver continuity tracking for the PHOTON phase.
 - Player-requested JSON snapshots for diagnostics and guide development.
 - Native-styled, collapsible and scrollable panel.
+- Embedded Matrix icons in the click-through Cube-rate column.
 - Embedded Basic Regular presentation font with the existing high-contrast
   outline; `DON'T PANIC` retains its separate Comic Sans treatment.
 - No unsolicited notifications, automatic phase changes or factory actions.
@@ -144,8 +145,9 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Dyson system and editor aggregates.
 - Compact snapshot schema 2.7 exports conclusions, provenance, collector
   health, and only the focused evidence needed to audit those conclusions.
-- The click-through panel uses Basic Regular with a dark outline. Only its
-  explicit controls capture pointer input.
+- The click-through panel uses Basic Regular with a dark outline and embeds
+  the six Matrix icons beside Cube rates. Only its explicit controls capture
+  pointer input.
 
 The critical-path migration, telemetry alignment, persistence, snapshot, and
 panel contracts have completed in-game acceptance. Packaging has passed its
@@ -154,8 +156,8 @@ history.
 
 ## Active development
 
-`GUIDE2-01` and `GUIDE2-02` have passed their focused runtime gates. The
-Cube-icon and cleanup stories follow them.
+`GUIDE2-01` and `GUIDE2-02` have passed their focused runtime gates. `VIS2-01`
+is implemented and awaiting its visual runtime gate; the cleanup story follows.
 
 The gap report and four bounded user stories are defined in
 [docs/GUIDE-2.0-GAP-ANALYSIS.md](docs/GUIDE-2.0-GAP-ANALYSIS.md).

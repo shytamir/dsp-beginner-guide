@@ -62,7 +62,7 @@ namespace DspProgressionStatusExporter
         private sealed class CubeRateView
         {
             public GameObject Root;
-            public Image Background;
+            public Image Icon;
             public Text Rate;
             public string CubeId;
         }
@@ -345,6 +345,7 @@ namespace DspProgressionStatusExporter
         private Font dontPanicFont;
         private bool ownsDontPanicFont;
         private EmbeddedBasicFont presentationFont;
+        private EmbeddedMatrixIcons matrixIcons;
         private RectTransform snapshotLinkRect;
         private RectTransform sourceGuideLinkRect;
         private RectTransform scrollUpRect;
@@ -533,6 +534,9 @@ namespace DspProgressionStatusExporter
             if (presentationFont != null)
                 presentationFont.Dispose();
             presentationFont = null;
+            if (matrixIcons != null)
+                matrixIcons.Dispose();
+            matrixIcons = null;
             objectiveViews.Clear();
             pendingViews.Clear();
             contextViews.Clear();
@@ -552,6 +556,7 @@ namespace DspProgressionStatusExporter
             presentationFont = EmbeddedBasicFont.Load(
                 style.InfoText.Font,
                 style.InfoText.FontSize);
+            matrixIcons = EmbeddedMatrixIcons.Load();
             style.HeaderText.Font = presentationFont.Font;
             style.GroupText.Font = presentationFont.Font;
             style.InfoText.Font = presentationFont.Font;
@@ -833,18 +838,24 @@ namespace DspProgressionStatusExporter
                 {
                     GameObject root = CreateObject(
                         "CubeRate-" + rate.CubeId,
-                        cubeRateColumnRect,
-                        typeof(Image));
-                    Image background = root.GetComponent<Image>();
-                    background.raycastTarget = false;
+                        cubeRateColumnRect);
+                    GameObject iconObject = CreateObject(
+                        "Icon", root.transform, typeof(Image));
+                    Image icon = iconObject.GetComponent<Image>();
+                    icon.raycastTarget = false;
+                    icon.preserveAspect = true;
+                    RectTransform iconRect = icon.rectTransform;
+                    iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    iconRect.pivot = new Vector2(0.5f, 0.5f);
+                    iconRect.sizeDelta = new Vector2(36f, 36f);
+                    iconRect.anchoredPosition = new Vector2(0f, 4f);
                     Text text = CreateText(
                         "Rate", root.transform, style.InfoText);
-                    text.alignment = TextAnchor.MiddleCenter;
                     text.fontSize = Math.Max(10, style.InfoText.FontSize - 1);
-                    Stretch(text.rectTransform, 2f, 2f, 2f, 2f);
                     cubeRateViews.Add(new CubeRateView {
                         Root = root,
-                        Background = background,
+                        Icon = icon,
                         Rate = text,
                         CubeId = rate.CubeId
                     });
@@ -855,25 +866,35 @@ namespace DspProgressionStatusExporter
             {
                 GuidePanelCubeRateModel rate = rates[i];
                 CubeRateView view = cubeRateViews[i];
-                view.Background.color = CubeBackgroundColor(rate.CubeId);
+                Sprite sprite = matrixIcons != null
+                    ? matrixIcons.Get(rate.CubeId)
+                    : null;
+                view.Icon.sprite = sprite;
+                view.Icon.enabled = sprite != null;
                 view.Rate.text = rate.RateText;
                 view.Rate.color = CubeRateTextColor(rate.Level);
+                LayoutCubeRate(view, sprite != null);
             }
         }
 
-        private static Color CubeBackgroundColor(string cubeId)
+        private static void LayoutCubeRate(
+            CubeRateView view,
+            bool hasIcon)
         {
-            if (String.Equals(cubeId, "blue", StringComparison.OrdinalIgnoreCase))
-                return new Color(0.05f, 0.62f, 1f, 0.38f);
-            if (String.Equals(cubeId, "red", StringComparison.OrdinalIgnoreCase))
-                return new Color(1f, 0.12f, 0.16f, 0.38f);
-            if (String.Equals(cubeId, "yellow", StringComparison.OrdinalIgnoreCase))
-                return new Color(1f, 0.72f, 0.04f, 0.38f);
-            if (String.Equals(cubeId, "purple", StringComparison.OrdinalIgnoreCase))
-                return new Color(0.68f, 0.18f, 1f, 0.38f);
-            if (String.Equals(cubeId, "green", StringComparison.OrdinalIgnoreCase))
-                return new Color(0.12f, 0.9f, 0.32f, 0.38f);
-            return new Color(0.9f, 0.94f, 1f, 0.38f);
+            RectTransform rect = view.Rate.rectTransform;
+            if (!hasIcon)
+            {
+                view.Rate.alignment = TextAnchor.MiddleCenter;
+                Stretch(rect, 1f, 1f, 1f, 1f);
+                return;
+            }
+
+            view.Rate.alignment = TextAnchor.LowerCenter;
+            rect.anchorMin = new Vector2(0f, 0f);
+            rect.anchorMax = new Vector2(1f, 0f);
+            rect.pivot = new Vector2(0.5f, 0f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(0f, 18f);
         }
 
         private static Color CubeRateTextColor(CubeRateLevel level)

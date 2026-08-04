@@ -44,6 +44,20 @@ $assembly = [Reflection.Assembly]::LoadFrom(
 )
 $flags = [Reflection.BindingFlags]'Static,Public,NonPublic'
 
+$resources = $assembly.GetManifestResourceNames()
+foreach ($resourceName in @(
+        'DspGuideCheck.MatrixIcons.t-matrix.png',
+        'DspGuideCheck.MatrixIcons.e-matrix.png',
+        'DspGuideCheck.MatrixIcons.c-matrix.png',
+        'DspGuideCheck.MatrixIcons.i-matrix.png',
+        'DspGuideCheck.MatrixIcons.g-matrix.png',
+        'DspGuideCheck.MatrixIcons.u-matrix.png'
+    )) {
+    if ($resources -cnotcontains $resourceName) {
+        throw "Matrix icon resource is missing: $resourceName"
+    }
+}
+
 $navigator = $assembly.GetType(
     'DspProgressionStatusExporter.ManualPhaseNavigator', $true
 )
