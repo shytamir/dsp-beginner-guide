@@ -27,4 +27,7 @@ Keep the product invariants in `docs/PROJECT.md` intact:
 - the mod remains passive and read-only.
 
 Build against a local DSP installation and verify that the panel, navigation,
-scrolling, footer controls and deliberate snapshot action still work.
+scrolling, fixed Cube rail, `DON'T PANIC`, and the diagnostic snapshot action
+still work. The product is in maintenance mode; proposed features should
+identify the published-guide change, reproducible defect, or in-scope unmet
+player need they address.

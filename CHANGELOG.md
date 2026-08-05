@@ -4,6 +4,13 @@
 
 ### Changed
 
+- Accepted `PANIC-01` in both runtime variants: the source-guide control is
+  collision-free, collapse-proof, responsive to Cube-count changes,
+  independent of diagnostic snapshot control, and clean in the plugin log.
+- Declared the adopted guide 2.0 product complete and in maintenance mode.
+  Moved completed roadmaps, migration stories, implementation audits, and
+  feature-specific validation gates under `docs/archive/`; current docs now
+  contain only maintained contracts and reusable operating procedures.
 - Moved `DON'T PANIC` from the collapsible footer to the fixed Cube-rate rail,
   directly below and right-aligned with its last visible Cube. Public builds
   no longer reserve an otherwise empty footer, and panel presentation is 2.5.
@@ -156,7 +163,7 @@
 - Removed the remaining filled backgrounds from the scroll controls.
 - Changed the active LOGISTICS phase label to bright green.
 
-### Validation pending
+### Historical validation request
 
 - Confirm outline visibility, selected-route emphasis, transparent controls,
   hover behavior, and the LOGISTICS color in DSP.
@@ -168,7 +175,7 @@
 - Kept the Next phase control available in WHITE so the player can enter
   LOGISTICS manually. Next is now hidden only in LOGISTICS.
 
-### Validation pending
+### Historical validation request
 
 - Confirm WHITE shows Next, Next selects LOGISTICS, and LOGISTICS hides Next
   in DSP.
@@ -184,7 +191,7 @@
   text outline.
 - Made all non-interactive panel surfaces click-through.
 
-### Validation pending
+### Historical validation request
 
 - Confirm text clarity, hover behavior, selected-route emphasis, and
   click-through input in DSP.
@@ -207,7 +214,7 @@
 - Updated guide titles, terminology, evidence watch lists, compact snapshot
   selection, and documentation for the revised phase inventory.
 
-### Validation pending
+### Historical validation request
 
 - Exercise representative early, middle, optional-route, late, WHITE, and
   LOGISTICS saves with the v1.18 runtime protocol.
@@ -245,7 +252,7 @@
 - Added production and Dyson source, scope, period and coverage provenance to
   normalized state 1.5 and snapshot schema 2.1.
 
-### Validation pending
+### Historical validation request
 
 - Compare saved evidence with the in-game one-minute, entire-cluster
   Statistics Panel and Dyson editor/detail surfaces.
@@ -275,8 +282,8 @@
 - Added compact collector coverage and optional performance timing diagnostics,
   explicit omission markers, receiver-detail truncation and a 256 KiB export
   limit.
-- Synchronized plugin, assembly, exporter and schema provenance in every
-  future snapshot.
+- Synchronized plugin, assembly, exporter and schema provenance in subsequent
+  snapshots.
 
 ## 1.15.1 - 2026-07-30
 
@@ -287,11 +294,10 @@
 - Added one-time migration from the currently loaded legacy phase key.
 - Added compact phase-persistence provenance to snapshot selection diagnostics.
 
-### Planned
+### Documentation
 
-- Added `docs/SNAPSHOT-REDESIGN.md` as the high-level implementation worklist
-  for replacing the oversized forensic snapshot with a compact diagnostic
-  contract.
+- Added the snapshot-redesign worklist that subsequently produced the compact
+  diagnostic contract. The completed record now resides under `docs/archive/`.
 
 ## 1.15.0 - 2026-07-27
 

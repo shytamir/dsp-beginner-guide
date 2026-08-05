@@ -14,7 +14,7 @@ the implemented nine-phase contract.
 
 ## Features
 
-- Manual phase navigation through the currently implemented ten critical-path
+- Manual phase navigation through the implemented nine critical-path
   phases.
 - Stable phase objectives based on the
   [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
@@ -161,10 +161,11 @@ panel contracts have completed in-game acceptance. Packaging has passed its
 automated contract checks. See [CHANGELOG.md](CHANGELOG.md) for release
 history.
 
-## Development status
+## Project status
 
-Current project status and active work are managed in
-[docs/PROJECT.md](docs/PROJECT.md).
+The product is complete for the adopted guide 2.0 contract and is in
+maintenance mode. [docs/PROJECT.md](docs/PROJECT.md) is the sole authority for
+current project state and maintenance scope.
 
 ## Repository layout
 
@@ -183,15 +184,11 @@ Current project status and active work are managed in
 └── README.md
 ```
 
-See [docs/PROJECT.md](docs/PROJECT.md) for product and evidence contracts and
-[docs/RUNTIME-TESTING.md](docs/RUNTIME-TESTING.md) for the focused runtime
-validation protocol. The current
-[guide 2.0 gap analysis](docs/GUIDE-2.0-GAP-ANALYSIS.md), completed
-[guide v1.22.2 gap analysis](docs/GUIDE-1.22.2-GAP-ANALYSIS.md), earlier
-[guide authority and ingestion record](docs/GUIDE-REVISION-INGESTION.md), and
-[native telemetry alignment contract](docs/NATIVE-TELEMETRY-ALIGNMENT.md)
-record the published source, the re-derived phase contracts, and their
-evidence mapping.
+See [docs/PROJECT.md](docs/PROJECT.md) for the current product contract,
+[docs/RUNTIME-TESTING.md](docs/RUNTIME-TESTING.md) for maintenance regression,
+and [docs/NATIVE-TELEMETRY-ALIGNMENT.md](docs/NATIVE-TELEMETRY-ALIGNMENT.md) for
+runtime evidence sources. Completed planning and validation records are kept
+under [docs/archive/](docs/archive/README.md).
 
 ## Development and contributions
 

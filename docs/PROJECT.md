@@ -1,11 +1,28 @@
 # DSP Guide Check - Project Definition
 
-## Purpose
+## Product state
 
-DSP Guide Check is the passive, on-demand runtime companion to the DSP
-Practical Progression Guide. F8 recalls the phase selected for the current
-playthrough, measures that phase's stable readiness objectives, and presents
-a bounded set of concise, useful status conclusions and immediate actions.
+DSP Guide Check is complete for the adopted DSP Practical Progression Guide
+2.0 contract and is in maintenance mode.
+
+There is no active implementation roadmap. Work resumes only for:
+
+- a meaningful change to the published guide;
+- a reproducible defect or compatibility regression;
+- an accepted feature request within the existing product scope;
+- required maintenance of the game, BepInEx, build, or package contract.
+
+Completed stories, migrations, roadmaps, and validation gates are historical
+records under [`docs/archive/`](archive/README.md). They do not represent open
+work or override this document.
+
+## Purpose and scope
+
+DSP Guide Check is the passive, on-demand runtime companion to the
+[DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
+F8 recalls the phase selected for the current playthrough, evaluates that
+phase's stable readiness objectives, and presents a bounded set of concise
+status conclusions and immediate actions.
 
 The player asks; the instrument answers. It is not an autopilot, factory
 score, build designer, combat adviser, optional-route tracker, or unsolicited
@@ -18,27 +35,20 @@ warning system.
 - Objectives remain stable while a phase is selected.
 - Hard objectives, reference paces, warnings, and player judgments remain
   distinct.
-- Current Status communicates at most three actionable conclusions rather
-  than every available rate; recommendations remain separate in Next Actions.
+- Current Status shows at most three actionable conclusions; recommendations
+  remain separate in Next Actions.
 - The panel is hidden by default and never alerts by itself.
-- F8 never saves; `Save snapshot` is the deliberate forensic export.
-- The mod is read-only with respect to the game and save state.
+- F8 never saves; `Save snapshot` is the deliberate diagnostic export.
+- The mod is read-only with respect to game and save state.
 - Collection, normalization, analysis, panel modeling, and UI remain separate.
 - Missing or renamed runtime evidence fails softly.
 - Combat and optional guide routes remain outside scope.
 
-## Current guide authority
+## Guide authority
 
-- Published guide: <https://dsp-beginner-guide.pages.dev/>
-- Adopted development authority: public guide 2.0 edition
-- Published `guide-version` metadata: `1.23.0`
-- Detailed derivation and roadmap: `docs/GUIDE-2.0-GAP-ANALYSIS.md`
-- Current runtime implementation: guide 2.0 topology, phase contracts, and
-  Matrix-icon column with superseded-contract cleanup complete
-- Completed 1.22.2 derivation: `docs/GUIDE-1.22.2-GAP-ANALYSIS.md`
-- Earlier guide v1.1 record: `docs/GUIDE-REVISION-INGESTION.md` (historical)
-
-The target phase sequence is:
+- Adopted authority: public guide 2.0 edition.
+- Published `guide-version` metadata: `1.23.0`.
+- Current implementation: the nine-phase default critical path.
 
 ```text
 BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
@@ -49,40 +59,6 @@ FLIGHT and TITANIUM are checkpoints inside ILS. WARP, SPHERE, LOGISTICS,
 COMPLETE, and other optional or post-completion routes have no navigation
 control, panel, objective contract, finding, or snapshot phase contract.
 
-## Project status
-
-**Guide 2.0 migration:** complete.
-
-**Lifecycle:** maintenance mode. New work waits for a meaningful published
-guide change or an accepted in-scope feature request. `PANIC-01` is the final
-bounded presentation adjustment entering this mode and awaits its focused
-runtime gate.
-
-`GUIDE2-01`, `GUIDE2-02`, `VIS2-01`, and `GUIDE2-03` have passed their focused
-runtime gates. The current runtime retains legacy selection migration and
-historical records without exposing superseded phase contracts. See
-`docs/GUIDE-2.0-GAP-ANALYSIS.md`.
-
-`RISK-01` through `RISK-05` have passed their focused runtime gates. The
-production-risk roadmap is complete, including its native draining and
-starvation glyphs, bounded stable plain-language risk rows, trustworthy buffer
-estimate, and separate Next Actions. This roadmap remains separate from the
-completed guide 2.0 migration.
-
-## Future considerations
-
-These ideas are recorded but are not active work:
-
-- `RATE-01` and `BUFFER-01` remain superseded by `RISK-01` through `RISK-05`.
-- Keep completed objectives to compact single lines while reserving supporting
-  detail for incomplete objectives.
-- Use a quiet-success conclusion such as `No immediate constraints found`
-  when the analyzer has nothing actionable to report.
-- Reserve explicit player checks for important judgments the runtime genuinely
-  cannot observe, and present each only once.
-
-## Objective authority
-
 The phase-local `Ready to move on when` checklist is authoritative. The ILS
 mission additionally uses its manifest, `Before flying home`, and `Done when`
 checkpoints. A numerical pace becomes a hard objective only when the local
@@ -90,20 +66,20 @@ readiness text states it.
 
 | Phase | Stable readiness contract |
 |---|---|
-| BLUE | Starter inputs and routine hardware replenish; Blue Cubes run continuously at 20/min or better; research is not hand-fed. The 15–20 MW planning target is not a fixed objective. |
-| RED | Two Labs sustain 20 Red Cubes/min while Refined Oil retains a continuing outlet; Hydrogen or Refined Oil congestion remains a concise diagnostic warning rather than another objective row. |
-| ILS | Show one active checkpoint at a time: required technology and carried outpost essentials before launch; same-planet Titanium and Silicon production plus locally stored return cargo during the expedition; then the current research-chain target, missing protected components, and activated Titanium and Silicon ILS routes during the rush. |
+| BLUE | Starter inputs and routine hardware replenish; Blue Cubes run continuously at 20/min or better; research is not hand-fed. |
+| RED | Two Labs sustain 20 Red Cubes/min while Refined Oil retains a continuing outlet. |
+| ILS | Show one active checkpoint at a time: preparation before launch; same-planet Titanium and Silicon production plus return cargo during the expedition; then research, protected components, and active Titanium and Silicon ILS routes during the rush. |
 | YELLOW | Three configured Yellow-Cube Labs produce continuously. |
 | PURPLE | Three configured Purple-Cube Labs produce continuously. |
 | GREEN | Two configured Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. |
-| DYSON | The Photon swarm produces and launches Solar Sails and generates useful power. Reliable Antimatter is a handoff cue to PHOTON, not a duplicate DYSON objective. |
-| PHOTON | Critical Photon and Antimatter production is running; actual rates are shown against the 48/min receiver-array reference; 2,000 stored Antimatter marks the midpoint. Current Status compares total receiver demand with available Dyson generation. |
-| WHITE | Universe Matrix is researched; ten Labs sustain 40 White Cubes/min with the stored White Cube count shown; Mission Completed consumes or has consumed 4,000 White Cubes. |
+| DYSON | The Photon swarm produces and launches Solar Sails and generates useful power. |
+| PHOTON | Critical Photon and Antimatter production runs; actual rates appear against the 48/min receiver-array reference; 2,000 stored Antimatter marks the midpoint. |
+| WHITE | Universe Matrix is researched; ten Labs sustain 40 White Cubes/min with stored White Cubes shown; Mission Completed consumes or has consumed 4,000 White Cubes. |
 
 Supporting production and soft reference paces appear only when they explain
-a real, actionable shortfall. Healthy supporting chains do not create rows of
-completed clutter. Mission Completed changes the WHITE presentation to
-`Mission Accomplished!` without navigating elsewhere.
+a real, actionable shortfall. Healthy supporting chains do not create
+completed clutter. Mission Completed changes WHITE to `Mission Accomplished!`
+without navigating elsewhere.
 
 ## Architecture
 
@@ -113,7 +89,7 @@ Live DSP runtime
 Collectors and rolling samplers
     |
 Normalized ObservedGameState
-    |-- compact forensic JSON snapshot
+    |-- compact diagnostic JSON snapshot
     `-- selected-phase analysis
             |
         GuidePanelModel
@@ -128,77 +104,73 @@ phase. `ManualPhaseNavigation.cs` owns per-playthrough selection.
 `GuidePanelModel.cs` is presentation-ready data, and
 `GuidePanelController.cs` contains Unity UI behavior only.
 
-## Evidence policy
+## Evidence contract
 
 - Production rates come from DSP's pre-aggregated one-minute Statistics Panel
   values for a bounded watch set, not inventory deltas or lifetime-rate math.
-- Lifetime counters are separate and retained only where aggregate Cube totals
-  are useful.
+- Scope-matched ten-minute values support production-risk interpretation only
+  after their current-session history is ready.
+- Lifetime counters remain separate and are used only for aggregate Cube
+  totals.
 - Dyson generation, sail population, structure progress, and cell progress
   come from native Dyson system and editor aggregates.
-- Ejectors, silos, and Ray Receivers retain dedicated component-pool collectors
-  for operational facts absent from those aggregates.
+- Ejectors, silos, and Ray Receivers retain dedicated component-pool
+  collectors for facts absent from those aggregates.
 - ILS station configuration, vessel deployment, traffic, research, inventory,
   and power evidence are collected only for retained consumers.
-- Evidence unavailable through the expected runtime member remains unknown;
-  a different proxy is not silently substituted.
+- Unavailable expected evidence remains unknown; another proxy is not silently
+  substituted.
 
-The native telemetry derivation and accepted comparison are documented in
-`docs/NATIVE-TELEMETRY-ALIGNMENT.md`.
+See [Native telemetry reference](NATIVE-TELEMETRY-ALIGNMENT.md) for exact
+runtime sources.
 
 ## Selection and persistence
 
 The latest researched Cube seeds a phase only when the playthrough has no
 valid stored selection. Thereafter Previous and Next are the sole phase-change
-authority. Selection is keyed by playthrough creation time and stable galaxy
-descriptor, so autosaves, renamed slots, pauses, and normal restarts retain
-the same selection.
+authority. Selection is keyed by playthrough creation time and a stable galaxy
+descriptor so autosaves, renamed slots, pauses, and restarts retain it.
 
-BOOTSTRAP is in the legacy normalization set and maps once to BLUE. Existing
-mappings remain: FLIGHT and TITANIUM to ILS, SPHERE to
-DYSON, WARP to GREEN, and LOGISTICS or COMPLETE to WHITE.
+Legacy selections normalize once: BOOTSTRAP to BLUE; FLIGHT and TITANIUM to
+ILS; SPHERE to DYSON; WARP to GREEN; LOGISTICS and COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.9 serializes the same selected-phase conclusions used by the
-panel plus only the evidence needed to audit implemented functions. Every
-snapshot includes provenance, playtime, research and Cube aggregates,
-selection diagnostics, objective/status conclusions, focused selected-phase
-evidence, the ordered actionable production-risk list and score terms, collector
-coverage and performance, and explicit omission or truncation markers.
+Snapshot schema 2.9 serializes the selected-phase conclusions used by the
+panel plus only the evidence needed to audit implemented functions. It
+includes provenance, playtime, research and Cube aggregates, selection
+diagnostics, focused evidence, ordered production risks, collector coverage,
+performance, and explicit omission or truncation markers.
 
 Broad factory, technology, station-slot, inventory, topology, and all-item
-dumps are excluded. Receiver detail is capped, and the export is rejected
-rather than written above 256 KiB. See `docs/SNAPSHOT-REDESIGN.md`.
+dumps are excluded. Receiver detail is capped, and exports above 256 KiB are
+rejected rather than written.
 
 ## Panel contract
 
 The panel is click-through except for phase navigation, collapse, explicit
-scrolling, and `DON'T PANIC`. The default diagnostic build also provides the
-deliberate `Save snapshot` control; the public Thunderstore build excludes
-that control and its interaction path at compile time. The panel has no
-obstructive background. Text uses embedded Basic Regular with a two-pixel dark outline.
-The fixed Cube-rate column uses six cached embedded Matrix icons with outlined
-threshold-colored rate text and a text-only soft fallback. A separate,
-click-through native signal glyph appears beside that rail for the analyzer's
-selected draining or starved risk; quiet states show no glyph. All established
-sizes, spacing, and bounded hover behavior remain. `DON'T PANIC` retains its
-separate bright-red Comic Sans presentation. It belongs to the fixed,
-collapse-proof Cube-rate rail and sits directly below its last visible Cube
-with their right edges aligned.
+scrolling, `DON'T PANIC`, and the diagnostic build's `Save snapshot` control.
+The public Thunderstore build omits snapshot control and its interaction path
+at compile time.
 
-Current Status presents at most three stable production-risk rows using only
-the item name plus `draining` or `starved`; it omits forensic evidence. Paired
-recommendations appear in a separate Next Actions section. Initial ordering is
-severity, trustworthy net-depletion time, then phase item order. Incumbents
-retain membership and same-severity order while actionable; only a new starved
-risk may displace a displayed draining risk. A tracked objective may show one
-short buffer estimate when authoritative local stock and net-deficit rates
-support it.
+Text uses embedded Basic Regular with a two-pixel dark outline. Published-guide
+icons, bracketed phase tags, and colors identify all nine phases. The fixed
+Cube-rate rail uses six cached Matrix icons with outlined threshold-colored
+rate text and a text-only soft fallback.
 
-The Basic font falls back softly to the captured native Goal font if private
-runtime registration is unavailable. Its SIL Open Font License notice is
-embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
+A native draining or starved glyph appears beside that rail for the strongest
+displayed risk; quiet states show no glyph. `DON'T PANIC` retains its bright-red
+Comic Sans treatment directly below the last visible Cube, right-aligned with
+the Cube square. The entire rail, risk glyph, and guide control remain visible
+when the panel body is collapsed.
+
+Current Status presents at most three stable risk rows containing only the
+item name plus `draining` or `starved`. Paired recommendations appear in Next
+Actions. Initial ordering is severity, trustworthy net-depletion time, then
+phase item order. Incumbents retain membership and same-severity order while
+actionable; only a newly starved risk may displace a displayed draining risk.
+A tracked objective may show one short buffer estimate when authoritative
+local stock and net-deficit rates support it.
 
 ## Contracts
 
@@ -212,140 +184,24 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Progression | 2.8 |
 | Panel | 2.5 |
 
-The CI run number supplies the release patch. BepInEx and Thunderstore use
-the same three-number version; assembly/file metadata adds `.0`, and
-diagnostics append the triggering commit hash.
+The CI run number supplies the release patch. BepInEx and Thunderstore use the
+same three-number version; assembly and file metadata add `.0`, and diagnostic
+metadata includes the triggering commit hash.
 
-## Validation status
+## Release and maintenance
 
-Accepted runtime work for the current implementation includes:
+Hosted builds produce separately verified diagnostic and public DLLs. Only
+the public DLL enters the Thunderstore-compatible ZIP. Game and Unity
+assemblies are build inputs only and are never redistributed. See the
+[Thunderstore package contract](THUNDERSTORE-PACKAGE.md).
 
-- player-owned navigation and per-playthrough persistence;
-- the nine-phase guide 2.0 critical-path objective inventory;
-- native one-minute production comparisons against the Statistics Panel;
-- native Dyson aggregate comparisons against the Dyson editor;
-- focused ILS, DYSON, PHOTON, and WHITE conclusions;
-- compact schema 2.9 snapshots and bounded collector diagnostics;
-- panel layout, click-through behavior, scrolling, footer actions, and hover
-  behavior;
-- Basic Regular rendering with the retained outline and separate
-  `DON'T PANIC` treatment;
-- an extensive representative user test with no reported functional,
-  navigation, persistence, layout, footer, or performance defects.
-- the public Thunderstore DLL with no snapshot control, no dead footer
-  interaction or spacing, intact remaining controls, and no plugin error or
-  exception in the validation log.
+The maintained regression procedure is [RUNTIME-TESTING.md](RUNTIME-TESTING.md).
+Compilation alone never proves in-game presentation or runtime conclusions.
 
-`GUIDE2-01` passed its early-save and working-Blue-factory in-game checkpoint
-with correct objectives, prompt completion, and no visible regression.
-`GUIDE2-02` passed its focused runtime checkpoint with correct navigation,
-phase contracts, exceptional supporting-branch findings, DYSON title and
-objectives, and PHOTON receiver status.
-`VIS2-01` passed its bright- and dark-background presentation checkpoint with
-one, three, and six Matrix icons plus interaction and refresh checks.
-`GUIDE2-03` passed its navigation, persistence, removed-contract, control,
-performance, and focused BLUE/ILS/WHITE snapshot checkpoint.
+When maintenance work is accepted:
 
-`RISK-03` passed its focused GREEN-phase runtime gate on diagnostic version
-`2.0.58`. Sequential snapshots confirmed quiet warming and proven
-backpressure, one amber draining conclusion, and one red starvation conclusion
-while objectives remained stable. The release owner directly observed the
-warning clear within 15 seconds after production recovered and accepted that
-balanced transition without a fifth snapshot because an independent supporting
-line failed afterward.
-
-`RISK-04` passed its focused in-game presentation gate. The release owner
-confirmed quiet omission, distinct draining and starved native glyphs, fixed
-placement with the panel body collapsed, 4K legibility, click-through and F8
-behavior, intact navigation and layout, and no visible performance or log
-regression. Deterministic tests cover the analyzer-selected draining, starved,
-and non-actionable mappings.
-
-`RISK-05` passed its focused in-game gate. Three simultaneous GREEN risks—
-Quantum Chips, Graviton Lenses, and their converged Green Cube—confirmed the
-three compact Current Status rows and three paired Next Actions. The release
-owner also accepted critical promotion, recovery, phase/session reset,
-buffer-note behavior, interaction, layout, performance, and clean logs with no
-new issue or regression. A fourth simultaneous end-product candidate was not
-reproduced in game; same-severity incumbent retention remains covered by the
-deterministic contract test and is a non-blocking focused regression checkpoint.
-
-### PANIC-01 — Keep the source-guide control clear and available
-
-**Status:** Implemented; awaiting focused runtime validation.
-
-**User story:** As a player using Guide Check on either a short or collapsed
-panel, I want the small `DON'T PANIC` source-guide control to remain available
-without colliding with Cube rates, so I can open the selected guide phase from
-every panel state.
-
-Acceptance criteria:
-
-- the control belongs to the fixed Cube-rate/risk-indicator rail rather than
-  the collapsible panel body or footer;
-- it appears immediately below the last currently displayed Cube, with its
-  right edge aligned to the Cube square;
-- it remains visible and interactive while the panel body is collapsed;
-- short and scrollable expanded panels do not overlap the control with Cube
-  rates, body text, scrolling controls, or the diagnostic snapshot control;
-- its label, bright-red Comic Sans treatment, bounded hover, selected-phase
-  guide link, and public/diagnostic behavior remain unchanged;
-- the public build reserves no empty footer after the move;
-- a focused in-game screenshot and interaction gate covers expanded and
-  collapsed layouts, including one short panel.
-
-The release candidate's two Thunderstore blockers are completed and accepted
-by the release owner. `STORE-README-01` provides the dedicated player-facing
-README, and `STORE-SNAPSHOT-01` provides the separately validated public DLL
-without the forensic export control. Their user stories and acceptance
-records remain in `docs/THUNDERSTORE-PACKAGE.md`.
-
-### TITLE-PRESENTATION-01 — Match the published guide's phase titles
-
-**Status:** Accepted.
-
-**User story:** As a player moving between the guide and Guide Check, I want
-the panel's phase tag to use the same icon, bracketed name, and color as the
-published guide, so I can recognize my phase immediately without translating
-between two presentations.
-
-Acceptance criteria:
-
-- all nine retained phases use the exact published-guide tag colors;
-- each title places the published-guide phase icon before `[PHASE]`, using the
-  six Matrix icons plus the guide's ILS, DYSON, and PHOTON icons;
-- the descriptive title remains readable and keeps its existing wrapping;
-- missing icon resources fail softly to a text-only title;
-- icons are loaded once, cached, non-interactive, and disposed with the panel;
-- navigation, collapse, scrolling, the rate column, and both build variants
-  retain their established behavior;
-- deterministic checks cover all nine colors and icon resources, followed by
-  an in-game screenshot gate covering a cube phase, ILS, DYSON, and PHOTON.
-
-The release-owner gate passed on public package version `2.0.52`. BLUE, ILS,
-DYSON, and PHOTON screenshots confirmed the published-guide icons, bracketed
-phase names, colors, descriptive-title wrapping, and established controls. The
-same run confirmed that the BepInEx compile-target warning no longer appears.
-
-`docs/RUNTIME-TESTING.md` remains the regression protocol for future runtime
-changes. Compilation alone never proves in-game presentation or conclusions.
-
-## Release packaging
-
-Hosted builds produce separately validated diagnostic and public
-`DspGuideCheck.dll` variants. Only the public variant enters the
-Thunderstore-compatible ZIP defined by `docs/THUNDERSTORE-PACKAGE.md`. Game
-and Unity assemblies are build inputs only and are never redistributed.
-
-## Historical records
-
-- `docs/GUIDE-REVISION-INGESTION.md`: superseded guide v1.1 adoption record.
-- `docs/GUIDE-1.22.2-GAP-ANALYSIS.md`: derivation and completed migration
-  stories for the previous critical path.
-- `docs/GUIDE-2.0-GAP-ANALYSIS.md`: current authority comparison and nine-phase
-  migration acceptance record.
-- `CHANGELOG.md`: release-by-release behavior, including retired optional
-  route contracts.
-
-Historical documents describe the release in which they were written; they
-do not override this current project definition.
+1. preserve the product invariants and layer boundaries above;
+2. update only the contracts affected by the change;
+3. run deterministic checks and both applicable build variants;
+4. require a focused DSP checkpoint for runtime or presentation behavior;
+5. archive completed story and gate records instead of accumulating them here.
