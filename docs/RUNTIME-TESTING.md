@@ -14,7 +14,14 @@ tools are needed.
 5. Give requested snapshots the checkpoint names below; repository-side
    validation checks schema and analysis contracts.
 
-## RISK-05 bounded interpreted presentation gate
+## RISK-05 bounded interpreted presentation regression
+
+The focused gate is accepted. Three simultaneous GREEN risks passed the
+compact Current Status, paired Next Actions, critical promotion, recovery,
+reset, buffer-note, interaction, layout, performance, and log checks. A fourth
+simultaneous end-product candidate was not reproduced in game; its
+same-severity retention rule remains deterministically covered and is a
+non-blocking checkpoint for a future natural four-candidate case.
 
 Use the latest diagnostic DLL and a mature WHITE save whose Cube inputs and
 White Cube production have ten-minute history. Keep the WHITE phase selected

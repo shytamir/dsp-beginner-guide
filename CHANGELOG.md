@@ -12,6 +12,11 @@
 - Added truthful accessible-stock/net-deficit depletion estimates for tracked
   objectives, advanced guide analysis to 3.0, panel presentation to 2.4, and
   compact snapshot schema to 2.9 for the RISK-05 runtime gate.
+- Accepted the RISK-05 three-risk GREEN presentation, paired actions, critical
+  promotion, recovery, reset, buffer-note, interaction, layout, performance,
+  and log gate with no discovered regression. Four-candidate churn remains a
+  non-blocking deterministic regression checkpoint because no natural
+  four-end-product case was reproduced in game.
 - Added a fixed, click-through native DSP signal glyph beside the Cube-rate
   rail for the analyzer-selected production risk. Draining and starved use
   distinct embedded signals; quiet states display no glyph. Advanced the

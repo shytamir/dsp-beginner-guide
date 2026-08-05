@@ -68,10 +68,10 @@ Import and export terms may enter the formula only after an equivalent native
 rate and matching scope have been verified. Until then they remain unavailable
 and are omitted rather than approximated from inventory movement.
 
-## Immediate roadmap
+## Roadmap status
 
-`RISK-01` through `RISK-04` are accepted. `RISK-05` is implemented and awaits
-its focused runtime presentation gate.
+`RISK-01` through `RISK-05` are implemented and accepted. The production-risk
+roadmap is complete.
 
 ### RISK-01 - Native multi-window evidence
 
@@ -262,7 +262,15 @@ Acceptance:
 
 ### RISK-05 - Bounded interpreted risk presentation
 
-**Status:** Implemented; awaiting the focused in-game presentation gate.
+**Status:** Accepted. A focused GREEN-phase gate confirmed three simultaneous
+risks spanning Quantum Chips, Graviton Lenses, and their converged Green Cube;
+three compact Current Status rows; three paired Next Actions; critical
+promotion, recovery, phase/session reset, buffer-note behavior, interaction,
+layout, performance, and clean logs. No regression or new issue was found.
+The release owner did not reproduce a fourth simultaneous end-product
+candidate in game. Same-severity incumbent retention remains deterministically
+covered and is a non-blocking focused regression checkpoint if a natural
+four-candidate case is identified.
 
 **User story:** As a player responding to production trouble, I want a small,
 stable list of plain-language conditions and immediate actions, so I can see
@@ -323,9 +331,11 @@ Implement in order: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04` ->
   recovery.
 - `RISK-04` passed its quiet, draining, starved, collapsed-body, 4K,
   visible/hidden performance, interaction, navigation, layout, and log checks.
-- `RISK-05` requires compact one-, three-, and four-candidate presentation,
-  critical promotion, recovery, phase/session reset, trustworthy buffer-note,
-  interaction, layout, performance, log, and diagnostic snapshot checks.
+- `RISK-05` passed compact one- and three-risk presentation, critical
+  promotion, recovery, phase/session reset, trustworthy buffer-note,
+  interaction, layout, performance, and log checks. Four-candidate churn was
+  not reproduced in game; its deterministic coverage is accepted as
+  sufficient and the scenario remains a non-blocking regression checkpoint.
 
 No story authorizes automatic phase changes, unsolicited alerts, combat
 guidance, broad factory scans, or adoption of the discarded package files.

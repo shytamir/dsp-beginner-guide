@@ -58,12 +58,11 @@ runtime gates. The current runtime retains legacy selection migration and
 historical records without exposing superseded phase contracts. See
 `docs/GUIDE-2.0-GAP-ANALYSIS.md`.
 
-`RISK-01` through `RISK-04` have passed their focused runtime gates. The
-production-risk roadmap is accepted through its native draining and starvation
-glyphs on the fixed Cube-rate rail. `RISK-05` now implements bounded, stable,
-plain-language risk rows and separate Next Actions and awaits its focused
-runtime gate. This roadmap remains separate from the completed guide 2.0
-migration.
+`RISK-01` through `RISK-05` have passed their focused runtime gates. The
+production-risk roadmap is complete, including its native draining and
+starvation glyphs, bounded stable plain-language risk rows, trustworthy buffer
+estimate, and separate Next Actions. This roadmap remains separate from the
+completed guide 2.0 migration.
 
 ## Future considerations
 
@@ -255,11 +254,14 @@ behavior, intact navigation and layout, and no visible performance or log
 regression. Deterministic tests cover the analyzer-selected draining, starved,
 and non-actionable mappings.
 
-`RISK-05` is implemented and awaiting runtime acceptance. Deterministic tests
-cover truthful net-depletion time, compact status and action text, the
-three-row bound, incumbent retention, same-severity stability, and immediate
-critical promotion. The focused in-game gate remains authoritative for
-presentation, session continuity, layout, interaction, and performance.
+`RISK-05` passed its focused in-game gate. Three simultaneous GREEN risks—
+Quantum Chips, Graviton Lenses, and their converged Green Cube—confirmed the
+three compact Current Status rows and three paired Next Actions. The release
+owner also accepted critical promotion, recovery, phase/session reset,
+buffer-note behavior, interaction, layout, performance, and clean logs with no
+new issue or regression. A fourth simultaneous end-product candidate was not
+reproduced in game; same-severity incumbent retention remains covered by the
+deterministic contract test and is a non-blocking focused regression checkpoint.
 
 The release candidate's two Thunderstore blockers are completed and accepted
 by the release owner. `STORE-README-01` provides the dedicated player-facing
