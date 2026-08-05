@@ -53,6 +53,11 @@ control, panel, objective contract, finding, or snapshot phase contract.
 
 **Guide 2.0 migration:** complete.
 
+**Lifecycle:** maintenance mode. New work waits for a meaningful published
+guide change or an accepted in-scope feature request. `PANIC-01` is the final
+bounded presentation adjustment entering this mode and awaits its focused
+runtime gate.
+
 `GUIDE2-01`, `GUIDE2-02`, `VIS2-01`, and `GUIDE2-03` have passed their focused
 runtime gates. The current runtime retains legacy selection migration and
 historical records without exposing superseded phase contracts. See
@@ -178,7 +183,9 @@ threshold-colored rate text and a text-only soft fallback. A separate,
 click-through native signal glyph appears beside that rail for the analyzer's
 selected draining or starved risk; quiet states show no glyph. All established
 sizes, spacing, and bounded hover behavior remain. `DON'T PANIC` retains its
-separate bright-red Comic Sans presentation.
+separate bright-red Comic Sans presentation. It belongs to the fixed,
+collapse-proof Cube-rate rail and sits directly below its last visible Cube
+with their right edges aligned.
 
 Current Status presents at most three stable production-risk rows using only
 the item name plus `draining` or `starved`; it omits forensic evidence. Paired
@@ -203,7 +210,7 @@ embedded in the assembly and exposed as `Basic-OFL.txt` in public packages.
 | Guide selection | 1.6 |
 | Guide analysis | 3.0 |
 | Progression | 2.8 |
-| Panel | 2.4 |
+| Panel | 2.5 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use
 the same three-number version; assembly/file metadata adds `.0`, and
@@ -262,6 +269,30 @@ buffer-note behavior, interaction, layout, performance, and clean logs with no
 new issue or regression. A fourth simultaneous end-product candidate was not
 reproduced in game; same-severity incumbent retention remains covered by the
 deterministic contract test and is a non-blocking focused regression checkpoint.
+
+### PANIC-01 — Keep the source-guide control clear and available
+
+**Status:** Implemented; awaiting focused runtime validation.
+
+**User story:** As a player using Guide Check on either a short or collapsed
+panel, I want the small `DON'T PANIC` source-guide control to remain available
+without colliding with Cube rates, so I can open the selected guide phase from
+every panel state.
+
+Acceptance criteria:
+
+- the control belongs to the fixed Cube-rate/risk-indicator rail rather than
+  the collapsible panel body or footer;
+- it appears immediately below the last currently displayed Cube, with its
+  right edge aligned to the Cube square;
+- it remains visible and interactive while the panel body is collapsed;
+- short and scrollable expanded panels do not overlap the control with Cube
+  rates, body text, scrolling controls, or the diagnostic snapshot control;
+- its label, bright-red Comic Sans treatment, bounded hover, selected-phase
+  guide link, and public/diagnostic behavior remain unchanged;
+- the public build reserves no empty footer after the move;
+- a focused in-game screenshot and interaction gate covers expanded and
+  collapsed layouts, including one short panel.
 
 The release candidate's two Thunderstore blockers are completed and accepted
 by the release owner. `STORE-README-01` provides the dedicated player-facing

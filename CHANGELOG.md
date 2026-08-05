@@ -4,6 +4,9 @@
 
 ### Changed
 
+- Moved `DON'T PANIC` from the collapsible footer to the fixed Cube-rate rail,
+  directly below and right-aligned with its last visible Cube. Public builds
+  no longer reserve an otherwise empty footer, and panel presentation is 2.5.
 - Replaced the single verbose production-risk conclusion with up to three
   stable compact condition rows and paired recommendations in a separate Next
   Actions section. Initial priority is starvation, trustworthy net-depletion

@@ -338,8 +338,24 @@ $panelSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\GuidePanelModel.cs'
 )
-if (-not $panelSource.Contains('{ "contractVersion", "2.4" }')) {
-    throw 'Panel model contract version is not 2.4.'
+if (-not $panelSource.Contains('{ "contractVersion", "2.5" }')) {
+    throw 'Panel model contract version is not 2.5.'
+}
+$controllerSource = Get-Content -Raw -LiteralPath (
+    Join-Path (Split-Path -Parent $PSScriptRoot) `
+        'src\DspProgressionStatusExporter\GuidePanelController.cs'
+)
+if ($controllerSource -notmatch
+    '"SourceGuideLink",\s*cubeRateColumn\.transform,') {
+    throw "DON'T PANIC is not parented to the fixed Cube-rate rail."
+}
+if (-not $controllerSource.Contains(
+        'CubeRateSquareSize - DontPanicWidth')) {
+    throw "DON'T PANIC is not right-aligned with the Cube-rate rail."
+}
+if (-not $controllerSource.Contains(
+        'cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap)')) {
+    throw "DON'T PANIC is not placed after the last visible Cube rate."
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

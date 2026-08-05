@@ -110,8 +110,8 @@ Press **F8** after loading a save:
 
 - F8 opens or closes the panel.
 - Previous and next move between phases.
-- The bright-red `DON'T PANIC` control opens the source guide at the selected
-  phase.
+- The collapse-proof bright-red `DON'T PANIC` control below the Cube-rate
+  column opens the source guide at the selected phase.
 
 The repository's default diagnostic build also includes `Save snapshot`. It
 writes one JSON file and gives two seconds of green or red footer feedback.

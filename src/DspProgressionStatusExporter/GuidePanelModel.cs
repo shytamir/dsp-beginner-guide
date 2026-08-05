@@ -85,7 +85,7 @@ namespace DspProgressionStatusExporter
                 nextActions.Add(row.Export());
 
             return new Dictionary<string, object> {
-                { "contractVersion", "2.4" },
+                { "contractVersion", "2.5" },
                 { "phaseId", PhaseId },
                 { "phaseSelectionAuthority", "player" },
                 { "title", Title },

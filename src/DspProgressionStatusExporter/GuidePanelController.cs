@@ -16,7 +16,11 @@ namespace DspProgressionStatusExporter
         private const float FallbackWidth = 440f;
         private const float OuterPadding = 12f;
         private const float SectionHeight = 25f;
+#if DSP_GUIDE_SNAPSHOT_CONTROL
         private const float FooterHeight = 42f;
+#else
+        private const float FooterHeight = 0f;
+#endif
         private const float RowGap = 5f;
         private const float PanelTop = 8f;
         private const float PanelRight = 28f;
@@ -34,6 +38,8 @@ namespace DspProgressionStatusExporter
         private const float PhaseTitleIconSize = 22f;
         private const float PhaseTitleIconGap = 5f;
         private const float RiskSignalIconSize = 28f;
+        private const float DontPanicWidth = 98f;
+        private const float DontPanicHeight = 37f;
 #if DSP_GUIDE_SNAPSHOT_CONTROL
         private const float SnapshotFeedbackSeconds = 2f;
 #endif
@@ -440,6 +446,8 @@ namespace DspProgressionStatusExporter
                 "native-one-minute-rates-click-through-fixed-below-collapse";
             result["riskSignalIndicator"] =
                 "native-glyph-click-through-fixed-on-cube-rate-column";
+            result["sourceGuidePlacement"] =
+                "collapse-proof-below-last-cube-right-aligned";
             result["textOutline"] = true;
             result["presentationFontSource"] =
                 presentationFont != null
@@ -773,7 +781,7 @@ namespace DspProgressionStatusExporter
 #endif
             sourceGuideLinkText = CreateFooterLink(
                 "SourceGuideLink",
-                panelObject.transform,
+                cubeRateColumn.transform,
                 DontPanicLabel,
                 OpenSourceGuide,
                 out sourceGuideLinkRect);
@@ -1155,6 +1163,12 @@ namespace DspProgressionStatusExporter
                 3f,
                 RiskSignalIconSize,
                 RiskSignalIconSize);
+            SetTopRect(
+                sourceGuideLinkRect,
+                CubeRateSquareSize - DontPanicWidth,
+                cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap),
+                DontPanicWidth,
+                DontPanicHeight);
             if (collapseImage != null)
                 collapseImage.rectTransform.localEulerAngles =
                     new Vector3(0f, 0f, collapsed ? 180f : 0f);
@@ -1167,7 +1181,6 @@ namespace DspProgressionStatusExporter
 #if DSP_GUIDE_SNAPSHOT_CONTROL
                 snapshotLinkRect.gameObject.SetActive(false);
 #endif
-                sourceGuideLinkRect.gameObject.SetActive(false);
                 scrollUpRect.gameObject.SetActive(false);
                 scrollDownRect.gameObject.SetActive(false);
                 panelRect.sizeDelta = new Vector2(panelWidth, headerHeight);
@@ -1178,7 +1191,6 @@ namespace DspProgressionStatusExporter
 #if DSP_GUIDE_SNAPSHOT_CONTROL
             snapshotLinkRect.gameObject.SetActive(true);
 #endif
-            sourceGuideLinkRect.gameObject.SetActive(true);
 
             float y = 2f;
             LayoutSection(
@@ -1215,12 +1227,6 @@ namespace DspProgressionStatusExporter
                 118f,
                 FooterHeight - 5f);
 #endif
-            SetBottomRect(
-                sourceGuideLinkRect,
-                panelWidth - OuterPadding - 98f,
-                4f,
-                98f,
-                FooterHeight - 5f);
             SetTopRect(
                 scrollUpRect,
                 panelWidth - BodyRightInset + 2f,
