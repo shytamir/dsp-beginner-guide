@@ -477,8 +477,8 @@ $panelSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\GuidePanelModel.cs'
 )
-if (-not $panelSource.Contains('{ "contractVersion", "2.7" }')) {
-    throw 'Panel model contract version is not 2.7.'
+if (-not $panelSource.Contains('{ "contractVersion", "2.8" }')) {
+    throw 'Panel model contract version is not 2.8.'
 }
 $controllerSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
@@ -503,7 +503,9 @@ if (-not $controllerSource.Contains(
     -not $controllerSource.Contains(
         'GetMember(nodePrefab, "infoText") as Text') -or
     -not $controllerSource.Contains(
-        'infoText.GetComponent<Outline>()')) {
+        'infoText.GetComponents<Shadow>()') -or
+    -not $controllerSource.Contains(
+        'Resources.FindObjectsOfTypeAll(nodeType)')) {
     throw 'Panel typography is not sourced from the native vein-label prefab.'
 }
 if (-not $controllerSource.Contains(
@@ -522,8 +524,8 @@ $pluginSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\Plugin.cs'
 )
-if (-not $pluginSource.Contains('SchemaVersion = "2.11"')) {
-    throw 'Snapshot schema version is not 2.11.'
+if (-not $pluginSource.Contains('SchemaVersion = "2.12"')) {
+    throw 'Snapshot schema version is not 2.12.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

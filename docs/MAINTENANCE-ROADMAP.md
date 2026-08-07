@@ -153,9 +153,12 @@ darker outline.
 Implemented on `main`. Runtime assembly inspection confirmed the stable source
 path `UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText`; the panel reuses
 that live Text component's font, material, font style, line spacing, and
-Outline settings once at creation. Embedded Basic Regular remains the soft
-fallback, and diagnostics expose the resolved resource and settings. The
-focused runtime gate is combined with the still-open WHITE-CONCISE-01 gate.
+attached Shadow or Outline effects once at creation. A failed first gate proved
+the original Outline requirement was too strict; the corrected lookup also
+checks loaded vein-detail nodes once when the serialized Text is not ready.
+Embedded Basic Regular remains the soft fallback, and diagnostics expose the
+resolved resource and settings. The focused runtime gate is combined with the
+still-open WHITE-CONCISE-01 gate.
 
 ## Remaining ordered validation work
 

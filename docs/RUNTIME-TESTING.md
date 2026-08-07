@@ -92,10 +92,9 @@ state; reloading purpose-built saves is fine.
    visible Cube counts. Confirm navigation, scrolling, risk glyph, Cube rail,
    `DON'T PANIC`, and diagnostic snapshot control remain correctly placed and
    interactive.
-8. In the diagnostic snapshot, confirm `presentationFontSource` is
-   `UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText` and the resolved
-   font, material, outline color, distance, and graphic-alpha setting are
-   present. Report any fallback warning or new plugin error.
+8. Save one diagnostic snapshot for repository-side verification of the
+   resolved native Text source, font, material, and attached mesh effects.
+   Report any fallback warning or new plugin error.
 
 ## Production-risk spot check
 
@@ -116,7 +115,7 @@ Use a mature GREEN or WHITE line with ready ten-minute history:
 
 - `Save snapshot` writes one JSON only when clicked and reports success or
   failure for two seconds.
-- The JSON is no larger than 256 KiB and names snapshot schema `2.11`.
+- The JSON is no larger than 256 KiB and names snapshot schema `2.12`.
 - It contains focused selected-phase evidence and explicit coverage or
   omission diagnostics, not broad factory dumps.
 - Leave the panel visible for one minute and hidden for one minute. Report any

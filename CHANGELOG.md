@@ -4,6 +4,12 @@
 
 ### Changed
 
+- Corrected the `NATIVE-TYPE-01` runtime gate failure: native capture no longer
+  rejects a valid vein-label Text when its visible edge is material- or
+  Shadow-driven rather than a Unity Outline. It now copies all attached Shadow
+  and Outline mesh effects and performs one bounded lookup for a loaded
+  `UIVeinDetailNode` when the serialized prefab Text is not ready. Advanced
+  panel presentation to 2.8 and compact snapshot schema to 2.12.
 - Implemented `NATIVE-TYPE-01`: panel headings, content, navigation, and Cube
   rates now reuse the installed game's live vein-label font, material, font
   style, line spacing, and outline settings. Lookup is a one-time read of

@@ -143,7 +143,7 @@ ILS; SPHERE to DYSON; WARP to GREEN; LOGISTICS and COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.11 serializes the selected-phase conclusions used by the
+Snapshot schema 2.12 serializes the selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. It
 includes provenance, playtime, research and Cube aggregates, selection
 diagnostics, Mission Completed progress when available, focused evidence,
@@ -163,9 +163,11 @@ at compile time.
 
 Panel text and Cube rates reuse the installed game's live vein-label Text
 style at `UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText`: font,
-material, font style, line spacing, and Outline settings. The lookup occurs
-once when the panel is created; missing or renamed resources fail softly to
-embedded Basic Regular and one concise warning. Published-guide icons,
+material, font style, line spacing, and attached Shadow or Outline mesh
+effects. If that serialized Text is not ready, one bounded lookup uses a
+loaded `UIVeinDetailNode.infoText`. Lookup occurs only when the panel is
+created; missing or renamed resources fail softly to embedded Basic Regular
+and one concise warning. Published-guide icons,
 bracketed phase tags, and colors identify all nine phases. The fixed Cube-rate
 rail uses six cached Matrix icons with outlined threshold-colored rate text
 and a text-only soft fallback.
@@ -194,12 +196,12 @@ shows queued, authoritative active-progress, or complete state when available.
 | Contract | Version |
 |---|---:|
 | Release line | 2.0.x |
-| Snapshot schema | 2.11 |
+| Snapshot schema | 2.12 |
 | Normalized state | 2.1 |
 | Guide selection | 1.6 |
 | Guide analysis | 3.0 |
 | Progression | 2.9 |
-| Panel | 2.7 |
+| Panel | 2.8 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use the
 same three-number version; assembly and file metadata add `.0`, and diagnostic

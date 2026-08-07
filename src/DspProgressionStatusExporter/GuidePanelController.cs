@@ -160,13 +160,41 @@ namespace DspProgressionStatusExporter
         {
             public const string RuntimeSource =
                 "UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText";
+            public const string LoadedNodeSource =
+                "loaded UIVeinDetailNode.infoText";
+            public sealed class EffectStyle
+            {
+                public bool IsOutline;
+                public Color Color;
+                public Vector2 Distance;
+                public bool UsesGraphicAlpha;
+            }
+
+            public string Source;
             public Font Font;
             public FontStyle FontStyle;
             public float LineSpacing;
             public Material Material;
-            public Color OutlineColor;
-            public Vector2 OutlineDistance;
-            public bool OutlineUsesGraphicAlpha;
+            public readonly List<EffectStyle> Effects =
+                new List<EffectStyle>();
+
+            public EffectStyle PrimaryEffect
+            {
+                get { return Effects.Count > 0 ? Effects[0] : null; }
+            }
+
+            public List<object> ExportEffects()
+            {
+                var result = new List<object>();
+                foreach (EffectStyle effect in Effects)
+                    result.Add(new Dictionary<string, object> {
+                        { "type", effect.IsOutline ? "outline" : "shadow" },
+                        { "color", ColorValue(effect.Color) },
+                        { "distance", Vector(effect.Distance) },
+                        { "usesGraphicAlpha", effect.UsesGraphicAlpha }
+                    });
+                return result;
+            }
 
             public void Apply(NativeGoalStyle goalStyle)
             {
@@ -183,6 +211,21 @@ namespace DspProgressionStatusExporter
                 textStyle.Material = Material;
             }
 
+            public void ApplyEffects(GameObject target)
+            {
+                foreach (EffectStyle effectStyle in Effects)
+                {
+                    Shadow effect = target.AddComponent(
+                        effectStyle.IsOutline
+                            ? typeof(Outline)
+                            : typeof(Shadow)) as Shadow;
+                    if (effect == null) continue;
+                    effect.effectColor = effectStyle.Color;
+                    effect.effectDistance = effectStyle.Distance;
+                    effect.useGraphicAlpha = effectStyle.UsesGraphicAlpha;
+                }
+            }
+
             public static NativeTextPresentation Capture()
             {
                 try
@@ -193,25 +236,51 @@ namespace DspProgressionStatusExporter
                     object veinDetail = GetMember(uiGame, "veinDetail");
                     object nodePrefab = GetMember(veinDetail, "nodePrefab");
                     Text infoText = GetMember(nodePrefab, "infoText") as Text;
-                    Outline outline = infoText != null
-                        ? infoText.GetComponent<Outline>()
-                        : null;
-                    if (infoText == null || infoText.font == null || outline == null)
-                        return null;
-                    return new NativeTextPresentation {
+                    string source = RuntimeSource;
+                    if (infoText == null || infoText.font == null)
+                    {
+                        infoText = FindLoadedVeinText();
+                        source = LoadedNodeSource;
+                    }
+                    if (infoText == null || infoText.font == null) return null;
+                    var presentation = new NativeTextPresentation {
+                        Source = source,
                         Font = infoText.font,
                         FontStyle = infoText.fontStyle,
                         LineSpacing = infoText.lineSpacing,
-                        Material = infoText.material,
-                        OutlineColor = outline.effectColor,
-                        OutlineDistance = outline.effectDistance,
-                        OutlineUsesGraphicAlpha = outline.useGraphicAlpha
+                        Material = infoText.material
                     };
+                    Shadow[] effects = infoText.GetComponents<Shadow>();
+                    if (effects != null)
+                        foreach (Shadow effect in effects)
+                            if (effect != null)
+                                presentation.Effects.Add(new EffectStyle {
+                                    IsOutline = effect is Outline,
+                                    Color = effect.effectColor,
+                                    Distance = effect.effectDistance,
+                                    UsesGraphicAlpha = effect.useGraphicAlpha
+                                });
+                    return presentation;
                 }
                 catch
                 {
                     return null;
                 }
+            }
+
+            private static Text FindLoadedVeinText()
+            {
+                Type nodeType = FindType("UIVeinDetailNode");
+                if (nodeType == null) return null;
+                UnityEngine.Object[] nodes =
+                    Resources.FindObjectsOfTypeAll(nodeType);
+                if (nodes == null) return null;
+                foreach (UnityEngine.Object node in nodes)
+                {
+                    Text text = GetMember(node, "infoText") as Text;
+                    if (text != null && text.font != null) return text;
+                }
+                return null;
             }
 
             private static Type FindType(string name)
@@ -535,6 +604,10 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> ExportDiagnostics()
         {
             EnsureCreated();
+            NativeTextPresentation.EffectStyle primaryEffect =
+                nativeTextPresentation != null
+                    ? nativeTextPresentation.PrimaryEffect
+                    : null;
             var result = new Dictionary<string, object>();
             result["styleSource"] =
                 style != null && style.NativeRect != null
@@ -565,7 +638,7 @@ namespace DspProgressionStatusExporter
             result["textOutline"] = true;
             result["presentationFontSource"] =
                 nativeTextPresentation != null
-                    ? NativeTextPresentation.RuntimeSource
+                    ? nativeTextPresentation.Source
                     : (presentationFont != null
                     ? presentationFont.Source
                     : "not-loaded");
@@ -580,17 +653,28 @@ namespace DspProgressionStatusExporter
                     ? style.InfoText.Material.name
                     : null;
             result["presentationOutlineColor"] = ColorValue(
-                nativeTextPresentation != null
-                    ? nativeTextPresentation.OutlineColor
+                primaryEffect != null
+                    ? primaryEffect.Color
                     : TextOutlineColor);
             result["presentationOutlineDistance"] = Vector(
-                nativeTextPresentation != null
-                    ? nativeTextPresentation.OutlineDistance
+                primaryEffect != null
+                    ? primaryEffect.Distance
                     : TextOutlineDistance);
             result["presentationOutlineUsesGraphicAlpha"] =
-                nativeTextPresentation != null
-                    ? nativeTextPresentation.OutlineUsesGraphicAlpha
+                primaryEffect != null
+                    ? primaryEffect.UsesGraphicAlpha
                     : false;
+            result["presentationTextEffects"] =
+                nativeTextPresentation != null
+                    ? nativeTextPresentation.ExportEffects()
+                    : new List<object> {
+                        new Dictionary<string, object> {
+                            { "type", "outline" },
+                            { "color", ColorValue(TextOutlineColor) },
+                            { "distance", Vector(TextOutlineDistance) },
+                            { "usesGraphicAlpha", false }
+                        }
+                    };
             result["phaseControlStyle"] =
                 "transparent-bounded-hover-with-selected-outline";
             result["headerFont"] =
@@ -933,8 +1017,13 @@ namespace DspProgressionStatusExporter
                 DontPanicLabel,
                 OpenSourceGuide,
                 out sourceGuideLinkRect);
+            Outline dontPanicOutline =
+                sourceGuideLinkText.GetComponent<Outline>();
+            if (dontPanicOutline == null)
+                dontPanicOutline =
+                    sourceGuideLinkText.gameObject.AddComponent<Outline>();
             ConfigureOutline(
-                sourceGuideLinkText.GetComponent<Outline>(),
+                dontPanicOutline,
                 TextOutlineColor,
                 TextOutlineDistance,
                 false);
@@ -1866,17 +1955,19 @@ namespace DspProgressionStatusExporter
             GameObject child = CreateObject(name, parent, typeof(Text));
             Text text = child.GetComponent<Text>();
             textStyle.Apply(text);
-            Outline outline = child.AddComponent<Outline>();
-            ConfigureOutline(
-                outline,
-                nativeTextPresentation != null
-                    ? nativeTextPresentation.OutlineColor
-                    : TextOutlineColor,
-                nativeTextPresentation != null
-                    ? nativeTextPresentation.OutlineDistance
-                    : TextOutlineDistance,
-                nativeTextPresentation != null &&
-                    nativeTextPresentation.OutlineUsesGraphicAlpha);
+            if (nativeTextPresentation != null)
+            {
+                nativeTextPresentation.ApplyEffects(child);
+            }
+            else
+            {
+                Outline outline = child.AddComponent<Outline>();
+                ConfigureOutline(
+                    outline,
+                    TextOutlineColor,
+                    TextOutlineDistance,
+                    false);
+            }
             text.alignment = TextAnchor.UpperLeft;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;

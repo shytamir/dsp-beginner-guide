@@ -151,7 +151,7 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.11 exports conclusions, production-risk terms,
+- Compact snapshot schema 2.12 exports conclusions, production-risk terms,
   provenance, collector health, and only the focused evidence needed to audit
   those conclusions.
 - The click-through panel reuses DSP's vein-label font, material, and outline,
