@@ -65,8 +65,25 @@ when validating the Thunderstore surface.
 - DYSON: Solar Sails are produced and launched and the swarm generates power.
 - PHOTON: lensed receiver supply, Critical Photon and Antimatter production,
   the 48/min reference, and the 2,000-Antimatter midpoint remain distinct.
-- WHITE: Universe Matrix research, ten Labs at 40/min, stored White Cubes, and
-  Mission Completed remain the stable contract.
+- WHITE: concise White-Cube research, configured-Lab and stored-Cube evidence,
+  the 40/min gate, and Mission Completed state remain the stable contract.
+
+## WHITE-CONCISE-01 focused gate
+
+Use the diagnostic DLL and one WHITE-ready playthrough. Capture the panel and
+one snapshot in each available state; reloading purpose-built saves is fine.
+
+1. Before queuing Mission Completed, confirm `Mission Completed not queued`.
+2. Queue it and let research consume at least one White Cube. Confirm the row
+   shows `Mission Completed queued` briefly or an integer `% done` once exact
+   progress is available.
+3. Complete the research and confirm `Mission Completed complete`.
+4. In every state, confirm the lab evidence contains only the configured-Lab
+   and stored-White-Cube counts, the objective text contains no Matrix alias,
+   and Pending contains only `Complete Mission Completed research.` while the
+   research is incomplete.
+5. Confirm the Cube-rate rail still presents the live rate and both DLL
+   variants retain their expected snapshot-control behavior.
 
 ## Production-risk spot check
 
@@ -87,7 +104,7 @@ Use a mature GREEN or WHITE line with ready ten-minute history:
 
 - `Save snapshot` writes one JSON only when clicked and reports success or
   failure for two seconds.
-- The JSON is no larger than 256 KiB and names snapshot schema `2.9`.
+- The JSON is no larger than 256 KiB and names snapshot schema `2.10`.
 - It contains focused selected-phase evidence and explicit coverage or
   omission diagnostics, not broad factory dumps.
 - Leave the panel visible for one minute and hidden for one minute. Report any

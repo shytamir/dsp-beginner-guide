@@ -125,7 +125,7 @@ namespace DspProgressionStatusExporter
             int queued = 0;
             foreach (object ignored in Enumerate(Value(research, "techQueue")))
                 queued++;
-            return new Dictionary<string, object> {
+            var result = new Dictionary<string, object> {
                 { "available", Bool(Value(research, "available")) },
                 { "totalTechnologies", total },
                 { "unlockedTechnologies", state.UnlockedTechIds.Count },
@@ -133,6 +133,22 @@ namespace DspProgressionStatusExporter
                 { "currentTechId", Value(research, "currentTech") },
                 { "missionAccomplished", Value(research, "missionAccomplished") }
             };
+            ObservedTechProgress progress;
+            if (state.TechProgress.TryGetValue(1508, out progress))
+            {
+                result["missionCompletedProgress"] = new Dictionary<string, object> {
+                    { "available", true },
+                    { "hashUploaded", progress.HashUploaded },
+                    { "hashNeeded", progress.HashNeeded },
+                    { "percent", progress.Percent }
+                };
+            }
+            else
+            {
+                result["missionCompletedProgress"] =
+                    new Dictionary<string, object> { { "available", false } };
+            }
+            return result;
         }
 
         private static List<object> CubeSummary(ObservedGameState state)

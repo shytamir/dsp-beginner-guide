@@ -12,7 +12,7 @@ are deliberately excluded and remain tracked separately outside this roadmap.
 
 | Priority | Item | State | Next gate |
 |---:|---|---|---|
-| 1 | `WHITE-CONCISE-01` — concise WHITE objectives and status | Story ready | Implement and validate the defined WHITE states. |
+| 1 | `WHITE-CONCISE-01` — concise WHITE objectives and status | Implemented | Validate the unqueued, active, and completed WHITE states. |
 | 2 | `NATIVE-TYPE-01` — match native game-label typography | Story ready | Confirm the runtime font/material source, then implement. |
 | 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW branch states | Validation required | Capture incomplete, one-branch, converged, and running states before fixing the objective contract. |
 | 4 | `RED-DRIVE-II-01` — correct the RED-to-ILS Drive Engine II target | Validation required | Capture a diagnostic snapshot with Drive Engine II researched but still displayed or pending incorrectly. |
@@ -93,6 +93,12 @@ Until Mission Completed is complete, its single Pending instruction is:
   and completion.
 - Runtime validation captures the unqueued, queued or active, and completed
   presentations; a diagnostic snapshot audits the underlying evidence.
+
+### Implementation status
+
+Implemented on `main`; deterministic checks cover the defined presentation
+states and both DLL variants. The focused in-game gate remains open until the
+unqueued, active, and completed presentations and diagnostic evidence pass.
 
 ## NATIVE-TYPE-01 — Match native game-label typography
 

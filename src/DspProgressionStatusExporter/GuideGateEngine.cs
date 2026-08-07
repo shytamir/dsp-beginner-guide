@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace DspProgressionStatusExporter
 {
@@ -52,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "2.8" },
+                { "contractVersion", "2.9" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -394,7 +395,11 @@ namespace DspProgressionStatusExporter
 
         private static void EvaluateWhite(GuideGateResult gate, ObservedGameState state)
         {
-            AddTech(gate, state, 1507, "Universe Matrix is researched", true);
+            bool whiteResearched = state.UnlockedTechIds.Contains(1507);
+            gate.Conditions.Add(Condition(
+                "tech-1507", "White Cubes researched",
+                whiteResearched ? "ready" : "blocked", true,
+                null, "observed", null));
             bool missionComplete = state.UnlockedTechIds.Contains(1508);
             int labs = ConfiguredRecipeMachines(state, 75);
             double whiteRate = ItemRate(state, 6006);
@@ -402,23 +407,33 @@ namespace DspProgressionStatusExporter
             bool whiteReady = missionComplete ||
                 (state.ProductionWindowReady && labs >= 10 && whiteRate >= 40);
             gate.Conditions.Add(Condition(
-                "white-production", "Ten labs sustain 40 White Cubes (Universe Matrices) per minute",
+                "white-production", "Ten labs sustain 40 White Cubes/min",
                 whiteReady ? "ready" : (state.ProductionWindowReady ? "blocked" : "unknown"), true,
-                "Found " + labs + " configured lab(s), " + Math.Round(whiteRate, 1) +
-                    " White Cubes/min, and " + whiteStored + " White Cubes stored.",
+                labs + "/10 labs configured; " +
+                    whiteStored.ToString("N0", CultureInfo.InvariantCulture) +
+                    " White Cubes stored",
                 state.ProductionWindowReady ? "observed" : "unknown",
-                whiteReady ? null : "Build and supply ten White Cube labs at 40/min."));
+                null));
+
+            ObservedTechProgress progress;
+            bool progressAvailable = state.TechProgress.TryGetValue(
+                1508, out progress) && progress.HashUploaded > 0;
+            string missionEvidence = missionComplete
+                ? "Mission Completed complete"
+                : (progressAvailable
+                    ? "Mission Completed " +
+                        Math.Min(99, progress.Percent) + "% done"
+                    : (state.QueuedTechIds.Contains(1508)
+                        ? "Mission Completed queued"
+                        : "Mission Completed not queued"));
             gate.Conditions.Add(Condition(
-                "mission-completed",
-                "Mission Completed consumes the final 4,000 White Cubes",
+                "mission-completed", "Mission Completed",
                 missionComplete ? "ready" :
                     (state.QueuedTechIds.Contains(1508) ? "watch" : "blocked"),
                 true,
-                missionComplete ? "Mission Completed is researched." :
-                    (state.QueuedTechIds.Contains(1508) ? "Mission Completed is in the research queue." :
-                        "Mission Completed has not been queued."),
+                missionEvidence,
                 "observed",
-                missionComplete ? null : "Research Mission Completed with 4,000 White Cubes."));
+                missionComplete ? null : "Complete Mission Completed research."));
         }
 
         private static void AddConfiguredLabFlow(

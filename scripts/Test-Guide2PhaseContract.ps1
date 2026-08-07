@@ -193,8 +193,15 @@ $flowType = $assembly.GetType(
 $recipeType = $assembly.GetType(
     'DspProgressionStatusExporter.ObservedRecipeConfiguration', $true
 )
+$progressType = $assembly.GetType(
+    'DspProgressionStatusExporter.ObservedTechProgress', $true
+)
+$panelBuilder = $assembly.GetType(
+    'DspProgressionStatusExporter.GuidePanelModelBuilder', $true
+)
 $evaluatePhase = $gateEngine.GetMethod('EvaluatePhase', $flags)
 $analyzeSelected = $analyzer.GetMethod('AnalyzeSelected', $flags)
+$buildPanel = $panelBuilder.GetMethod('Build', $flags)
 
 function New-ObservedState {
     [Activator]::CreateInstance($stateType, $true)
@@ -231,6 +238,39 @@ function Add-ObservedRecipe {
     $recipes.Add($recipe)
 }
 
+function Add-UnlockedTech {
+    param($State, [int]$TechId)
+    $values = $stateType.GetField(
+        'UnlockedTechIds', $instanceFlags
+    ).GetValue($State)
+    $values.Add($TechId) | Out-Null
+}
+
+function Add-QueuedTech {
+    param($State, [int]$TechId)
+    $values = $stateType.GetField(
+        'QueuedTechIds', $instanceFlags
+    ).GetValue($State)
+    $values.Add($TechId) | Out-Null
+}
+
+function Add-TechProgress {
+    param(
+        $State,
+        [int]$TechId,
+        [long]$HashUploaded,
+        [long]$HashNeeded
+    )
+    $progress = [Activator]::CreateInstance($progressType, $true)
+    Set-ObservedField $TechId 'TechId' $progress
+    Set-ObservedField $HashUploaded 'HashUploaded' $progress
+    Set-ObservedField $HashNeeded 'HashNeeded' $progress
+    $values = $stateType.GetField(
+        'TechProgress', $instanceFlags
+    ).GetValue($State)
+    $values.Add($TechId, $progress)
+}
+
 function Get-SelectedGate {
     param([string]$PhaseId, $State)
     $evaluation = $evaluatePhase.Invoke($null, @($PhaseId, $State))
@@ -249,6 +289,27 @@ function Get-GateCondition {
                 'Id', $instanceFlags
             ).GetValue($condition) -eq $ConditionId) {
             return $condition
+        }
+    }
+    return $null
+}
+
+function Get-PanelModel {
+    param([string]$PhaseId, $State)
+    $analysis = $analyzeSelected.Invoke($null, @($State, $PhaseId))
+    $buildPanel.Invoke($null, @($analysis, $State, $null, $null, $null))
+}
+
+function Get-PanelRow {
+    param($Panel, [string]$Collection, [string]$RowId)
+    $rows = $Panel.GetType().GetField(
+        $Collection, $instanceFlags
+    ).GetValue($Panel)
+    foreach ($row in $rows) {
+        if ($row.GetType().GetField(
+                'Id', $instanceFlags
+            ).GetValue($row) -eq $RowId) {
+            return $row
         }
     }
     return $null
@@ -304,6 +365,84 @@ if ($receiverCondition.GetType().GetField(
     throw 'PHOTON does not retain four-receiver continuity as a hard objective.'
 }
 
+$whiteUnresearched = New-ObservedState
+$whitePanel = Get-PanelModel 'white' $whiteUnresearched
+$whiteResearch = Get-PanelRow $whitePanel 'Objectives' 'tech-1507'
+$whitePending = $whitePanel.GetType().GetField(
+    'Pending', $instanceFlags
+).GetValue($whitePanel)
+if ($whiteResearch.GetType().GetField(
+        'Label', $instanceFlags
+    ).GetValue($whiteResearch) -ne 'White Cubes researched' -or
+    $whitePending.Count -ne 1 -or
+    $whitePending[0].GetType().GetField(
+        'Label', $instanceFlags
+    ).GetValue($whitePending[0]) -ne 'Complete Mission Completed research.') {
+    throw 'WHITE unresearched presentation is not concise and single-action.'
+}
+
+$whiteState = New-ObservedState
+Set-ObservedField $true 'ProductionWindowReady' $whiteState
+Add-UnlockedTech $whiteState 1507
+Add-QueuedTech $whiteState 1508
+Add-TechProgress $whiteState 1508 370 1000
+Add-ObservedFlow $whiteState 6006 40 0
+Add-ObservedRecipe $whiteState 75 7
+$whiteOwned = $stateType.GetField(
+    'OwnedItemCounts', $instanceFlags
+).GetValue($whiteState)
+$whiteOwned.Add(6006, [long]1240)
+$whitePanel = Get-PanelModel 'white' $whiteState
+$whiteProduction = Get-PanelRow $whitePanel 'Objectives' 'white-production'
+$mission = Get-PanelRow $whitePanel 'Objectives' 'mission-completed'
+$productionLabel = $whiteProduction.GetType().GetField(
+    'Label', $instanceFlags
+).GetValue($whiteProduction)
+$productionDetail = $whiteProduction.GetType().GetField(
+    'Detail', $instanceFlags
+).GetValue($whiteProduction)
+$missionDetail = $mission.GetType().GetField(
+    'Detail', $instanceFlags
+).GetValue($mission)
+if ($productionLabel -ne 'Ten labs sustain 40 White Cubes/min' -or
+    $productionDetail -ne '7/10 labs configured; 1,240 White Cubes stored' -or
+    $missionDetail -ne 'Mission Completed 37% done' -or
+    $productionLabel -match 'Universe Matri' -or
+    $productionDetail -match 'White Cubes/min') {
+    throw 'WHITE lab, storage, or active research presentation is too verbose.'
+}
+$whiteExport = $whiteState.Export()
+if ($whiteExport['modelVersion'] -ne '2.1' -or
+    $whiteExport['techProgress'].Count -ne 1 -or
+    $whiteExport['techProgress'][0]['techId'] -ne 1508 -or
+    $whiteExport['techProgress'][0]['percent'] -ne 37) {
+    throw 'Normalized WHITE research progress is not exported authoritatively.'
+}
+
+$whiteQueued = New-ObservedState
+Add-UnlockedTech $whiteQueued 1507
+Add-QueuedTech $whiteQueued 1508
+$whiteQueuedPanel = Get-PanelModel 'white' $whiteQueued
+$queuedMission = Get-PanelRow $whiteQueuedPanel 'Objectives' 'mission-completed'
+if ($queuedMission.GetType().GetField(
+        'Detail', $instanceFlags
+    ).GetValue($queuedMission) -ne 'Mission Completed queued') {
+    throw 'WHITE queued Mission Completed state is not concise.'
+}
+
+Add-UnlockedTech $whiteState 1508
+$whiteCompletePanel = Get-PanelModel 'white' $whiteState
+$completeMission = Get-PanelRow $whiteCompletePanel 'Objectives' 'mission-completed'
+$completePending = $whiteCompletePanel.GetType().GetField(
+    'Pending', $instanceFlags
+).GetValue($whiteCompletePanel)
+if ($completeMission.GetType().GetField(
+        'Detail', $instanceFlags
+    ).GetValue($completeMission) -ne 'Mission Completed complete' -or
+    $completePending.Count -ne 0) {
+    throw 'WHITE completed Mission Completed state is not concise and final.'
+}
+
 function Assert-SingleDrainFinding {
     param(
         [string]$PhaseId,
@@ -338,8 +477,8 @@ $panelSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\GuidePanelModel.cs'
 )
-if (-not $panelSource.Contains('{ "contractVersion", "2.5" }')) {
-    throw 'Panel model contract version is not 2.5.'
+if (-not $panelSource.Contains('{ "contractVersion", "2.6" }')) {
+    throw 'Panel model contract version is not 2.6.'
 }
 $controllerSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `

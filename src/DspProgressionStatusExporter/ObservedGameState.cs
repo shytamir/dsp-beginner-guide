@@ -238,6 +238,34 @@ namespace DspProgressionStatusExporter
         public double CriticalPhotonOutputPerMinute;
     }
 
+    internal sealed class ObservedTechProgress
+    {
+        public int TechId;
+        public long HashUploaded;
+        public long HashNeeded;
+
+        public int Percent
+        {
+            get
+            {
+                if (HashNeeded <= 0 || HashUploaded <= 0) return 0;
+                double ratio = Math.Min(1.0,
+                    HashUploaded / (double)HashNeeded);
+                return Math.Min(100, (int)Math.Floor(ratio * 100.0));
+            }
+        }
+
+        public Dictionary<string, object> Export()
+        {
+            return new Dictionary<string, object> {
+                { "techId", TechId },
+                { "hashUploaded", HashUploaded },
+                { "hashNeeded", HashNeeded },
+                { "percent", Percent }
+            };
+        }
+    }
+
     /// <summary>
     /// Stable analysis input. Runtime collectors may remain reflection-driven,
     /// but guide rules consume this model rather than the forensic JSON shape.
@@ -247,6 +275,8 @@ namespace DspProgressionStatusExporter
         public readonly HashSet<int> UnlockedTechIds = new HashSet<int>();
         public readonly HashSet<int> QueuedTechIds = new HashSet<int>();
         public readonly Dictionary<int, string> TechNames = new Dictionary<int, string>();
+        public readonly Dictionary<int, ObservedTechProgress> TechProgress =
+            new Dictionary<int, ObservedTechProgress>();
         public readonly Dictionary<int, long> OwnedItemCounts = new Dictionary<int, long>();
         public readonly Dictionary<int, long> PlayerItemCounts = new Dictionary<int, long>();
         public readonly Dictionary<int, Dictionary<int, long>> PlanetItemCounts =
@@ -317,7 +347,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "2.0";
+            result["modelVersion"] = "2.1";
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -326,6 +356,7 @@ namespace DspProgressionStatusExporter
             };
             result["unlockedTechIds"] = SortedIds(UnlockedTechIds);
             result["queuedTechIds"] = SortedIds(QueuedTechIds);
+            result["techProgress"] = ExportTechProgress();
             result["ownedItemCounts"] = ExportCounts();
             result["playerPlanetId"] = PlayerPlanetId;
             result["playerItemCounts"] = ExportCounts(PlayerItemCounts);
@@ -398,12 +429,36 @@ namespace DspProgressionStatusExporter
                 object name = GetValue(row, "name");
                 if (id > 0 && name != null) TechNames[id] = name.ToString();
                 if (id > 0 && ToBool(GetValue(row, "unlocked"))) UnlockedTechIds.Add(id);
+                Dictionary<string, object> techState =
+                    GetDictionary(row, "state");
+                long hashNeeded = Plugin.ToLong(
+                    GetValue(techState, "hashNeeded"));
+                long hashUploaded = Math.Max(
+                    Plugin.ToLong(GetValue(techState, "hashUploaded")),
+                    Plugin.ToLong(GetValue(techState, "uHashUploaded")));
+                if (id > 0 && hashNeeded > 0)
+                {
+                    TechProgress[id] = new ObservedTechProgress {
+                        TechId = id,
+                        HashUploaded = Math.Max(0L, hashUploaded),
+                        HashNeeded = hashNeeded
+                    };
+                }
             }
             foreach (object value in Enumerate(GetValue(research, "techQueue")))
             {
                 int id = Plugin.ToInt(value);
                 if (id > 0) QueuedTechIds.Add(id);
             }
+        }
+
+        private List<object> ExportTechProgress()
+        {
+            var ids = new List<int>(TechProgress.Keys);
+            ids.Sort();
+            var result = new List<object>();
+            foreach (int id in ids) result.Add(TechProgress[id].Export());
+            return result;
         }
 
         private void ReadLocation(Dictionary<string, object> location)

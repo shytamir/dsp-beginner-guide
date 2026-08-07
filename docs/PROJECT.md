@@ -81,7 +81,7 @@ readiness text states it.
 | GREEN | Two configured Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. |
 | DYSON | The Photon swarm produces and launches Solar Sails and generates useful power. |
 | PHOTON | Critical Photon and Antimatter production runs; actual rates appear against the 48/min receiver-array reference; 2,000 stored Antimatter marks the midpoint. |
-| WHITE | Universe Matrix is researched; ten Labs sustain 40 White Cubes/min with stored White Cubes shown; Mission Completed consumes or has consumed 4,000 White Cubes. |
+| WHITE | White Cubes are researched; ten Labs sustain 40/min with the configured-Lab and stored-White-Cube counts shown; Mission Completed state and authoritative active progress are shown. |
 
 Supporting production and soft reference paces appear only when they explain
 a real, actionable shortfall. Healthy supporting chains do not create
@@ -143,11 +143,12 @@ ILS; SPHERE to DYSON; WARP to GREEN; LOGISTICS and COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.9 serializes the selected-phase conclusions used by the
+Snapshot schema 2.10 serializes the selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. It
 includes provenance, playtime, research and Cube aggregates, selection
-diagnostics, focused evidence, ordered production risks, collector coverage,
-performance, and explicit omission or truncation markers.
+diagnostics, Mission Completed progress when available, focused evidence,
+ordered production risks, collector coverage, performance, and explicit
+omission or truncation markers.
 
 Broad factory, technology, station-slot, inventory, topology, and all-item
 dumps are excluded. Receiver detail is capped, and exports above 256 KiB are
@@ -179,17 +180,22 @@ actionable; only a newly starved risk may displace a displayed draining risk.
 A tracked objective may show one short buffer estimate when authoritative
 local stock and net-deficit rates support it.
 
+WHITE uses concise White-Cube language. Its production evidence contains the
+configured-Lab and stored-Cube counts without repeating the rate rail, and its
+single Pending action is to complete Mission Completed research. The objective
+shows queued, authoritative active-progress, or complete state when available.
+
 ## Contracts
 
 | Contract | Version |
 |---|---:|
 | Release line | 2.0.x |
-| Snapshot schema | 2.9 |
-| Normalized state | 2.0 |
+| Snapshot schema | 2.10 |
+| Normalized state | 2.1 |
 | Guide selection | 1.6 |
 | Guide analysis | 3.0 |
-| Progression | 2.8 |
-| Panel | 2.5 |
+| Progression | 2.9 |
+| Panel | 2.6 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use the
 same three-number version; assembly and file metadata add `.0`, and diagnostic

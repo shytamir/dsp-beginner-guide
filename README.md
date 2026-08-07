@@ -139,6 +139,8 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   target or enumerate every healthy mall product.
 - Exact production gates are used only where that checklist names an exact
   pace: Blue 20/min, Red 20/min, and White 40/min.
+- WHITE keeps its configured-Lab and stored-White-Cube evidence concise and
+  reports the strongest authoritative Mission Completed state available.
 - ILS presents only the active preparation, expedition, or research-rush
   checkpoint and uses planet-local cargo evidence rather than global stock.
 - DYSON reports Solar Sail production, launches, and swarm generation;
@@ -149,7 +151,7 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.9 exports conclusions, production-risk terms,
+- Compact snapshot schema 2.10 exports conclusions, production-risk terms,
   provenance, collector health, and only the focused evidence needed to audit
   those conclusions.
 - The click-through panel uses Basic Regular with a dark outline and embeds

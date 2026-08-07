@@ -4,6 +4,12 @@
 
 ### Changed
 
+- Implemented `WHITE-CONCISE-01`: WHITE now uses compact White-Cube wording,
+  keeps configured-Lab and stored-Cube evidence without duplicating the rate
+  rail, presents only one Mission Completed action, and reports authoritative
+  queued, active-progress, or complete research state. Advanced normalized
+  state to 2.1, progression to 2.9, panel presentation to 2.6, and compact
+  snapshot schema to 2.10 for the focused runtime gate.
 - Accepted `PANIC-01` in both runtime variants: the source-guide control is
   collision-free, collapse-proof, responsive to Cube-count changes,
   independent of diagnostic snapshot control, and clean in the plugin log.
