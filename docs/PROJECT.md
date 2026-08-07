@@ -5,7 +5,10 @@
 DSP Guide Check is complete for the adopted DSP Practical Progression Guide
 2.0 contract and is in maintenance mode.
 
-There is no active implementation roadmap. Work resumes only for:
+An accepted, bounded maintenance cycle is active following a full critical-path
+playthrough. Its ordered scope and story gates are recorded in the
+[`Maintenance roadmap`](MAINTENANCE-ROADMAP.md). Work outside that list still
+resumes only for:
 
 - a meaningful change to the published guide;
 - a reproducible defect or compatibility regression;
@@ -15,6 +18,10 @@ There is no active implementation roadmap. Work resumes only for:
 Completed stories, migrations, roadmaps, and validation gates are historical
 records under [`docs/archive/`](archive/README.md). They do not represent open
 work or override this document.
+
+The active maintenance roadmap does not reopen the guide 2.0 product design or
+make temporary playthrough observations authoritative. Guide-authoring work is
+tracked separately and is not part of the mod roadmap.
 
 ## Purpose and scope
 
