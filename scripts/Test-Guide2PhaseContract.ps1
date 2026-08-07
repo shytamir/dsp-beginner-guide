@@ -190,6 +190,9 @@ $stateType = $assembly.GetType(
 $flowType = $assembly.GetType(
     'DspProgressionStatusExporter.ObservedItemFlow', $true
 )
+$factoryFlowType = $assembly.GetType(
+    'DspProgressionStatusExporter.ObservedFactoryItemFlow', $true
+)
 $recipeType = $assembly.GetType(
     'DspProgressionStatusExporter.ObservedRecipeConfiguration', $true
 )
@@ -225,6 +228,19 @@ function Add-ObservedFlow {
     Set-ObservedField $Consumed 'TenMinuteConsumedPerMinute' $flow
     $flows = $stateType.GetField('ItemFlows', $instanceFlags).GetValue($State)
     $flows.Add($ItemId, $flow)
+}
+
+function Add-ObservedFactoryFlow {
+    param($State, [int]$PlanetId, [int]$ItemId, [double]$Produced)
+    $flow = [Activator]::CreateInstance($factoryFlowType, $true)
+    Set-ObservedField $PlanetId 'PlanetId' $flow
+    Set-ObservedField $ItemId 'ItemId' $flow
+    Set-ObservedField $Produced 'ProducedPerMinute' $flow
+    Set-ObservedField $true 'OneMinuteAvailable' $flow
+    $flows = $stateType.GetField(
+        'FactoryItemFlows', $instanceFlags
+    ).GetValue($State)
+    $flows.Add($flow)
 }
 
 function Add-ObservedRecipe {
@@ -374,6 +390,34 @@ Assert-CubeInputGate 'purple' 'purple-inputs' 1303 1402 `
 Assert-CubeInputGate 'green' 'green-inputs' 1305 1209 `
     'Buffer both Green Cube inputs in visible storage.'
 
+foreach ($flightResearched in @($false, $true)) {
+    $homeSiliconState = New-ObservedState
+    Set-ObservedField 101 'StarterPlanetId' $homeSiliconState
+    Set-ObservedField 101 'PlayerPlanetId' $homeSiliconState
+    if ($flightResearched) {
+        Add-UnlockedTech $homeSiliconState 2902
+        Add-UnlockedTech $homeSiliconState 1413
+    }
+    Add-ObservedFactoryFlow $homeSiliconState 101 1105 30
+    $homeSiliconGate = Get-SelectedGate 'ils' $homeSiliconState
+    if ($null -eq (Get-GateCondition $homeSiliconGate 'ils-preparation') -or
+        $null -ne (Get-GateCondition $homeSiliconGate 'ils-expedition-production')) {
+        throw 'Starter-planet Silicon incorrectly selects the ILS expedition stage.'
+    }
+}
+
+$remoteSiliconState = New-ObservedState
+Set-ObservedField 101 'StarterPlanetId' $remoteSiliconState
+Set-ObservedField 102 'PlayerPlanetId' $remoteSiliconState
+Add-UnlockedTech $remoteSiliconState 2902
+Add-UnlockedTech $remoteSiliconState 1413
+Add-ObservedFactoryFlow $remoteSiliconState 101 1105 30
+Add-ObservedFactoryFlow $remoteSiliconState 102 1105 30
+$remoteSiliconGate = Get-SelectedGate 'ils' $remoteSiliconState
+if ($null -eq (Get-GateCondition $remoteSiliconGate 'ils-expedition-production')) {
+    throw 'Non-starter-planet Silicon no longer selects the ILS expedition stage.'
+}
+
 $redState = New-ObservedState
 Set-ObservedField $true 'ProductionWindowReady' $redState
 Add-ObservedFlow $redState 6002 20 0
@@ -471,7 +515,7 @@ if ($productionLabel -ne 'Ten labs sustain 40 White Cubes/min' -or
     throw 'WHITE lab, storage, or active research presentation is too verbose.'
 }
 $whiteExport = $whiteState.Export()
-if ($whiteExport['modelVersion'] -ne '2.1' -or
+if ($whiteExport['modelVersion'] -ne '2.2' -or
     $whiteExport['techProgress'].Count -ne 1 -or
     $whiteExport['techProgress'][0]['techId'] -ne 1508 -or
     $whiteExport['techProgress'][0]['percent'] -ne 37) {
@@ -593,8 +637,8 @@ $pluginSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\Plugin.cs'
 )
-if (-not $pluginSource.Contains('SchemaVersion = "2.13"')) {
-    throw 'Snapshot schema version is not 2.13.'
+if (-not $pluginSource.Contains('SchemaVersion = "2.14"')) {
+    throw 'Snapshot schema version is not 2.14.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.13";
+        private const string SchemaVersion = "2.14";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -250,6 +250,7 @@ namespace DspProgressionStatusExporter
                 Dictionary<string, object> research = ExportResearch();
                 live["research"] = research;
                 live["player"] = ExportPlayer(player);
+                live["location"] = ExportLocation(player);
                 live["factories"] = ExportFactories(data);
                 live["ownedInventorySummary"] =
                     ExportOwnedInventorySummary(data, player);
@@ -333,6 +334,7 @@ namespace DspProgressionStatusExporter
                 var live = new Dictionary<string, object>();
                 live["research"] = ExportResearch();
                 live["player"] = ExportPlayer(player);
+                live["location"] = ExportLocation(player);
                 live["factories"] = ExportFactories(data);
                 live["ownedInventorySummary"] =
                     ExportOwnedInventorySummary(data, player);
@@ -392,6 +394,7 @@ namespace DspProgressionStatusExporter
                 BuildProtoNameCaches();
                 live["research"] = ExportResearch();
                 live["player"] = ExportPlayer(player);
+                live["location"] = ExportLocation(player);
             }
             catch (Exception ex)
             {
@@ -764,11 +767,14 @@ namespace DspProgressionStatusExporter
         private static Dictionary<string, object>
             ExportCompactLocation()
         {
+            object galaxy = GetStatic(gameMainType, "galaxy");
             return new Dictionary<string, object> {
                 { "planet", ExportCelestialIdentity(
                     GetStatic(gameMainType, "localPlanet")) },
                 { "star", ExportCelestialIdentity(
-                    GetStatic(gameMainType, "localStar")) }
+                    GetStatic(gameMainType, "localStar")) },
+                { "starterPlanetId", Scalar(GetMember(
+                    galaxy, "birthPlanetId")) }
             };
         }
 
@@ -795,11 +801,14 @@ namespace DspProgressionStatusExporter
 
             object planet = GetStatic(gameMainType, "localPlanet");
             object star = GetStatic(gameMainType, "localStar");
+            object galaxy = GetStatic(gameMainType, "galaxy");
 
             d["planet"] = ExportCelestialIdentity(planet);
             d["star"] = ExportCelestialIdentity(star);
             d["playerPlanetId"] = Scalar(GetMember(player, "planetId"));
             d["playerStarId"] = Scalar(GetMember(player, "starId"));
+            d["starterPlanetId"] = Scalar(GetMember(
+                galaxy, "birthPlanetId"));
             d["playerPosition"] = ToStr(GetMember(player, "position", "uPosition"));
 
             return d;

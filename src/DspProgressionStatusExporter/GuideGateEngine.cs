@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "3.0" },
+                { "contractVersion", "3.1" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -709,6 +709,9 @@ namespace DspProgressionStatusExporter
             double bestScore = 0.0;
             foreach (int planetId in planetIds)
             {
+                if (state.StarterPlanetId > 0 &&
+                    planetId == state.StarterPlanetId)
+                    continue;
                 double titaniumRate = PlanetProduction(state, planetId, 1004, 1106);
                 double siliconRate = PlanetProduction(state, planetId, 1003, 1105);
                 long titanium = PlanetOwned(state, planetId, 1106);

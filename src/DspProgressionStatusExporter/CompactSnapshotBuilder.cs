@@ -468,6 +468,7 @@ namespace DspProgressionStatusExporter
         {
             return new Dictionary<string, object> {
                 { "playerPlanetId", state.PlayerPlanetId },
+                { "starterPlanetId", state.StarterPlanetId },
                 { "playerInventory", CountEvidence(
                     state.PlayerItemCounts, IlsPlayerItems) },
                 { "planetCargo", IlsPlanetCargoEvidence(state) },

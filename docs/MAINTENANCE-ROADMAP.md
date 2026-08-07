@@ -207,7 +207,10 @@ internal production branch.
 
 Implemented for the runtime gate. Deterministic checks cover empty, one-input,
 and both-input storage states for YELLOW, PURPLE, and unchanged GREEN behavior;
-the diagnostic artifact still requires in-game acceptance.
+the diagnostic artifact still requires in-game acceptance. A pre-gate hotfix
+also excludes the native birth planet from ILS expedition-stage evidence, so
+starter-planet Stone-to-Silicon production cannot skip preparation. Its
+focused regression check runs both before and after Drive Engine II research.
 
 ### RED-DRIVE-II-01
 

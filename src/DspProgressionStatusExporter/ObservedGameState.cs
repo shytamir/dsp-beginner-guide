@@ -320,6 +320,7 @@ namespace DspProgressionStatusExporter
         public double PowerWindowSeconds;
         public bool RecipeTelemetryAvailable;
         public int PlayerPlanetId;
+        public int StarterPlanetId;
 
         public static ObservedGameState Build(
             Dictionary<string, object> legacySnapshot,
@@ -347,7 +348,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "2.1";
+            result["modelVersion"] = "2.2";
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -359,6 +360,7 @@ namespace DspProgressionStatusExporter
             result["techProgress"] = ExportTechProgress();
             result["ownedItemCounts"] = ExportCounts();
             result["playerPlanetId"] = PlayerPlanetId;
+            result["starterPlanetId"] = StarterPlanetId;
             result["playerItemCounts"] = ExportCounts(PlayerItemCounts);
             result["planetItemCounts"] = ExportPlanetItemCounts();
             var production = new Dictionary<string, object> {
@@ -464,6 +466,7 @@ namespace DspProgressionStatusExporter
         private void ReadLocation(Dictionary<string, object> location)
         {
             PlayerPlanetId = Plugin.ToInt(GetValue(location, "playerPlanetId"));
+            StarterPlanetId = Plugin.ToInt(GetValue(location, "starterPlanetId"));
         }
 
         private void ReadOwnedItems(Dictionary<string, object> summary)

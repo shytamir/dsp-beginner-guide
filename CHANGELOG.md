@@ -4,6 +4,11 @@
 
 ### Changed
 
+- Hotfixed ILS stage selection so production or storage on DSP's native birth
+  planet cannot stand in for an interplanetary outpost. The birth-planet ID is
+  collected defensively from `GameMain.galaxy.birthPlanetId`; unavailable
+  evidence fails softly. Advanced normalized state to 2.2, guide analysis to
+  3.2, progression to 3.1, and compact snapshot schema to 2.14.
 - Implemented `CUBE-BRANCH-01` without new branch progression modeling:
   YELLOW now checks visible Diamond and Titanium Crystal storage, PURPLE checks
   Processors and Particle Broadband, and both reuse GREEN's combined objective

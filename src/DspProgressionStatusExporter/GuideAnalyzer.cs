@@ -120,7 +120,7 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "3.1" },
+                { "analysisVersion", "3.2" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },
