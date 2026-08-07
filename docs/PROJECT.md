@@ -24,9 +24,9 @@ make temporary playthrough observations authoritative. Guide-authoring work is
 tracked separately and is not part of the mod roadmap.
 
 The cycle's concise WHITE presentation and native typography stories have
-passed release-owner runtime acceptance and both-variant build validation.
-Active work now resumes at the PURPLE/YELLOW branch-state evidence gate,
-followed by the RED-to-ILS Drive Engine II correction.
+passed release-owner runtime acceptance. CUBE-BRANCH-01 now awaits runtime
+validation of the GREEN-style YELLOW/PURPLE terminal-input contract, followed
+by the RED-to-ILS Drive Engine II correction.
 
 ## Purpose and scope
 
@@ -81,8 +81,8 @@ readiness text states it.
 | BLUE | Starter inputs and routine hardware replenish; Blue Cubes run continuously at 20/min or better; research is not hand-fed. |
 | RED | Two Labs sustain 20 Red Cubes/min while Refined Oil retains a continuing outlet. |
 | ILS | Show one active checkpoint at a time: preparation before launch; same-planet Titanium and Silicon production plus return cargo during the expedition; then research, protected components, and active Titanium and Silicon ILS routes during the rush. |
-| YELLOW | Three configured Yellow-Cube Labs produce continuously. |
-| PURPLE | Three configured Purple-Cube Labs produce continuously. |
+| YELLOW | Three configured Yellow-Cube Labs produce continuously; Diamonds and Titanium Crystals each have visible storage. |
+| PURPLE | Three configured Purple-Cube Labs produce continuously; Processors and Particle Broadband each have visible storage. |
 | GREEN | Two configured Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. |
 | DYSON | The Photon swarm produces and launches Solar Sails and generates useful power. |
 | PHOTON | Critical Photon and Antimatter production runs; actual rates appear against the 48/min receiver-array reference; 2,000 stored Antimatter marks the midpoint. |
@@ -148,7 +148,7 @@ ILS; SPHERE to DYSON; WARP to GREEN; LOGISTICS and COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.12 serializes the selected-phase conclusions used by the
+Snapshot schema 2.13 serializes the selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. It
 includes provenance, playtime, research and Cube aggregates, selection
 diagnostics, Mission Completed progress when available, focused evidence,
@@ -196,16 +196,21 @@ configured-Lab and stored-Cube counts without repeating the rate rail, and its
 single Pending action is to complete Mission Completed research. The objective
 shows queued, authoritative active-progress, or complete state when available.
 
+YELLOW and PURPLE use GREEN's combined terminal-input pattern: both direct
+Cube ingredients must have positive visible storage, while each input and the
+Cube remains independently eligible for concise production-risk findings.
+Intermediate branch components and branch progression are not modeled.
+
 ## Contracts
 
 | Contract | Version |
 |---|---:|
 | Release line | 2.0.x |
-| Snapshot schema | 2.12 |
+| Snapshot schema | 2.13 |
 | Normalized state | 2.1 |
 | Guide selection | 1.6 |
-| Guide analysis | 3.0 |
-| Progression | 2.9 |
+| Guide analysis | 3.1 |
+| Progression | 3.0 |
 | Panel | 2.8 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use the

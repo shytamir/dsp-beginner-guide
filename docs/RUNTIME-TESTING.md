@@ -59,7 +59,10 @@ when validating the Thunderstore surface.
   not another objective.
 - ILS: exactly one preparation, expedition, or research-rush checkpoint is
   active.
-- YELLOW and PURPLE: three configured Cube Labs run continuously.
+- YELLOW: three configured Cube Labs run continuously; Diamond and Titanium
+  Crystal storage is visible.
+- PURPLE: three configured Cube Labs run continuously; Processor and Particle
+  Broadband storage is visible.
 - GREEN: two configured Cube Labs run continuously and Quantum Chip and
   Graviton Lens storage is visible.
 - DYSON: Solar Sails are produced and launched and the swarm generates power.
@@ -96,6 +99,34 @@ state; reloading purpose-built saves is fine.
    resolved native Text source, font, material, and attached mesh effects.
    Report any fallback warning or new plugin error.
 
+## CUBE-BRANCH-01 focused gate
+
+Use the diagnostic DLL and saves where YELLOW and PURPLE production already
+exist. For each phase, keep the three Cube Labs configured throughout and use
+ordinary storage boxes to control only the terminal-input evidence.
+
+1. Stop the two terminal-input belts before their storage boxes, empty those
+   boxes and remove those items from Icarus and logistics-station storage.
+   Select the phase and confirm its combined input objective is blocked.
+2. Put at least one unit of only the first named input into a storage box:
+   Diamond for YELLOW, Processor for PURPLE. Leave the other input absent and
+   confirm the combined objective remains blocked with one instruction to
+   buffer both inputs.
+3. Put at least one Titanium Crystal (YELLOW) or Particle Broadband (PURPLE)
+   into another storage box. Within the normal panel refresh window, confirm
+   the combined objective completes and reports both owned counts.
+4. Restore both feeds and allow all three Cube Labs to produce. Confirm the
+   separate Lab objective completes; no new substage or intermediate branch
+   objective appears.
+5. In one phase, let one terminal input continue feeding the Labs while its
+   production falls below consumption. Confirm the concise draining risk and
+   matching Next Action can appear independently, then restore production and
+   confirm it clears.
+6. Save one diagnostic snapshot for each phase in the both-input, producing
+   state. Report any new plugin warning, exception, objective churn, selection
+   change, or regression in navigation, collapse, Cube rates, typography, risk
+   glyph, `DON'T PANIC`, or `Save snapshot`.
+
 ## Production-risk spot check
 
 Use a mature GREEN or WHITE line with ready ten-minute history:
@@ -115,7 +146,7 @@ Use a mature GREEN or WHITE line with ready ten-minute history:
 
 - `Save snapshot` writes one JSON only when clicked and reports success or
   failure for two seconds.
-- The JSON is no larger than 256 KiB and names snapshot schema `2.12`.
+- The JSON is no larger than 256 KiB and names snapshot schema `2.13`.
 - It contains focused selected-phase evidence and explicit coverage or
   omission diagnostics, not broad factory dumps.
 - Leave the panel visible for one minute and hidden for one minute. Report any

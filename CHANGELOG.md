@@ -4,6 +4,12 @@
 
 ### Changed
 
+- Implemented `CUBE-BRANCH-01` without new branch progression modeling:
+  YELLOW now checks visible Diamond and Titanium Crystal storage, PURPLE checks
+  Processors and Particle Broadband, and both reuse GREEN's combined objective
+  plus independent terminal-item and Cube risks. Removed Carbon Nanotubes from
+  PURPLE's selected-phase evidence set. Advanced guide analysis to 3.1,
+  progression to 3.0, and compact snapshot schema to 2.13.
 - Corrected the `NATIVE-TYPE-01` runtime gate failure: native capture no longer
   rejects a valid vein-label Text when its visible edge is material- or
   Shadow-driven rather than a Unity Outline. It now copies all attached Shadow

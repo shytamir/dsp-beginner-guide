@@ -14,7 +14,7 @@ are deliberately excluded and remain tracked separately outside this roadmap.
 |---:|---|---|---|
 | 1 | `WHITE-CONCISE-01` — concise WHITE objectives and status | Accepted | Complete. |
 | 2 | `NATIVE-TYPE-01` — match native game-label typography | Accepted | Complete. |
-| 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW branch states | Validation required | Capture incomplete, one-branch, converged, and running states before fixing the objective contract. |
+| 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW terminal-input states | Runtime validation required | Validate the GREEN-style combined storage objective, terminal-item risks, and unchanged Lab objective. |
 | 4 | `RED-DRIVE-II-01` — correct the RED-to-ILS Drive Engine II target | Validation required | Capture a diagnostic snapshot with Drive Engine II researched but still displayed or pending incorrectly. |
 | 5 | `EARLY-RISK-01` — BLUE/RED Cube risk and RED refinery backpressure | Validation required | Reproduce above-threshold research drain and each blocked refinery coproduct independently. |
 | 6 | `PHOTON-CONTINUITY-01` — tolerate isolated receiver blips | Policy required | Fix the allowed interruption and sustained-failure timings before implementation. |
@@ -165,13 +165,49 @@ the release owner confirmed the native presentation visibly matches the game.
 
 ### CUBE-BRANCH-01
 
-Validate PURPLE and YELLOW from genuinely incomplete phase starts. Capture
-neither branch ready, one branch ready, both branches buffered before Labs,
-and continuously producing Labs. Then decide whether branch states are stable
-supporting objectives, early Pending guidance, or hard readiness conditions.
-GREEN is the useful comparison; the current authoritative PURPLE and YELLOW
-readiness condition remains three continuously producing Labs until changed
-deliberately.
+#### User story
+
+As a player entering YELLOW or PURPLE, I want the panel to confirm that both
+terminal Cube ingredients are visibly buffered, just as GREEN does, so the
+phase shows the useful convergence state without exposing or modeling each
+internal production branch.
+
+#### Product decisions
+
+- Reuse GREEN's established framework: one stable combined storage objective,
+  one Pending action while either terminal input is absent, and independent
+  production-risk monitoring for the two terminal inputs and the Cube.
+- YELLOW tracks Diamonds and Titanium Crystals. PURPLE tracks Processors and
+  Particle Broadband.
+- Visible storage means the existing normalized owned-item evidence and the
+  same positive-count rule used by GREEN.
+- Do not introduce substages, partial branch objectives, branch-completion
+  state, topology inference, or intermediate-component tracking. In
+  particular, Carbon Nanotubes are not a PURPLE terminal input.
+- Preserve each phase's existing three-configured-Lab continuous-production
+  objective as a separate hard condition.
+
+#### Acceptance criteria
+
+- Each phase exposes exactly one combined terminal-input objective with both
+  owned counts in its evidence.
+- The objective remains blocked when neither or only one terminal input is
+  owned, becomes ready when both counts are positive, and supplies one concise
+  instruction to buffer both inputs while blocked.
+- Draining or starved terminal inputs and Cubes remain independently eligible
+  for the bounded Current Status and Next Actions risk presentation.
+- Compact snapshots contain the two terminal inputs and Cube for the selected
+  phase; PURPLE no longer routes Carbon Nanotube evidence.
+- GREEN behavior is unchanged, objectives remain stable, and no evidence can
+  change player-owned phase selection.
+- Public and diagnostic DLLs build and pass the focused deterministic contract
+  checks before runtime validation.
+
+#### Implementation status
+
+Implemented for the runtime gate. Deterministic checks cover empty, one-input,
+and both-input storage states for YELLOW, PURPLE, and unchanged GREEN behavior;
+the diagnostic artifact still requires in-game acceptance.
 
 ### RED-DRIVE-II-01
 

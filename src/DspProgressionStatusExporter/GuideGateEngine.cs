@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "2.9" },
+                { "contractVersion", "3.0" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -192,6 +192,10 @@ namespace DspProgressionStatusExporter
                 "Three Yellow Cube (Structure Matrix) labs run continuously",
                 27, 6003, 3,
                 "Configure and supply three Yellow Cube labs.");
+            AddVisibleCubeInputs(gate, state, "yellow-inputs",
+                "Diamonds and Titanium Crystals are visible in storage",
+                1112, "Diamonds", 1118, "Titanium Crystals",
+                "Buffer both Yellow Cube inputs in visible storage.");
         }
 
         private static void EvaluateIls(GuideGateResult gate, ObservedGameState state)
@@ -321,6 +325,10 @@ namespace DspProgressionStatusExporter
                 "Three Purple Cube (Information Matrix) labs run continuously",
                 55, 6004, 3,
                 "Configure and supply three Purple Cube labs.");
+            AddVisibleCubeInputs(gate, state, "purple-inputs",
+                "Processors and Particle Broadband are visible in storage",
+                1303, "Processors", 1402, "Particle Broadband",
+                "Buffer both Purple Cube inputs in visible storage.");
         }
 
         private static void EvaluateGreen(GuideGateResult gate, ObservedGameState state)
@@ -329,13 +337,10 @@ namespace DspProgressionStatusExporter
                 "Two Green Cube (Gravity Matrix) labs run continuously",
                 102, 6005, 2,
                 "Configure and supply two Green Cube labs.");
-            bool visibleInputs = Owned(state, 1305) > 0 && Owned(state, 1209) > 0;
-            gate.Conditions.Add(Condition(
-                "green-inputs", "Quantum Chips and Graviton Lenses are visible in storage",
-                visibleInputs ? "ready" : "blocked", true,
-                "Owned: " + Owned(state, 1305) + " Quantum Chips and " +
-                    Owned(state, 1209) + " Graviton Lenses.",
-                "observed", visibleInputs ? null : "Buffer both Green Cube inputs in visible storage."));
+            AddVisibleCubeInputs(gate, state, "green-inputs",
+                "Quantum Chips and Graviton Lenses are visible in storage",
+                1305, "Quantum Chips", 1209, "Graviton Lenses",
+                "Buffer both Green Cube inputs in visible storage.");
         }
 
         private static void EvaluateDyson(GuideGateResult gate, ObservedGameState state)
@@ -461,6 +466,27 @@ namespace DspProgressionStatusExporter
                 id, label, ready ? "ready" : "blocked", true,
                 "Found " + labs + " configured lab(s) producing " +
                     Math.Round(rate, 1) + "/min.",
+                "observed", ready ? null : action));
+        }
+
+        private static void AddVisibleCubeInputs(
+            GuideGateResult gate,
+            ObservedGameState state,
+            string id,
+            string label,
+            int firstItemId,
+            string firstItemName,
+            int secondItemId,
+            string secondItemName,
+            string action)
+        {
+            long firstOwned = Owned(state, firstItemId);
+            long secondOwned = Owned(state, secondItemId);
+            bool ready = firstOwned > 0 && secondOwned > 0;
+            gate.Conditions.Add(Condition(
+                id, label, ready ? "ready" : "blocked", true,
+                "Owned: " + firstOwned + " " + firstItemName + " and " +
+                    secondOwned + " " + secondItemName + ".",
                 "observed", ready ? null : action));
         }
 

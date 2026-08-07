@@ -56,11 +56,12 @@ namespace DspProgressionStatusExporter
                     RiskItem(1105, "High-Purity Silicon", 0.0)
                 } },
                 { "yellow", new RiskItemSpec[] {
+                    RiskItem(1112, "Diamonds", 0.0),
+                    RiskItem(1118, "Titanium Crystals", 0.0),
                     RiskItem(6003, "Yellow Cubes", 0.0)
                 } },
                 { "purple", new RiskItemSpec[] {
                     RiskItem(1303, "Processors", 0.0),
-                    RiskItem(1124, "Carbon Nanotubes", 0.0),
                     RiskItem(1402, "Particle Broadband", 0.0),
                     RiskItem(6004, "Purple Cubes", 0.0)
                 } },
@@ -119,7 +120,7 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "3.0" },
+                { "analysisVersion", "3.1" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },

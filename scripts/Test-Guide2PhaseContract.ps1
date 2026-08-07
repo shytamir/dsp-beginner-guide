@@ -238,6 +238,14 @@ function Add-ObservedRecipe {
     $recipes.Add($recipe)
 }
 
+function Add-OwnedItem {
+    param($State, [int]$ItemId, [long]$Count)
+    $ownedItems = $stateType.GetField(
+        'OwnedItemCounts', $instanceFlags
+    ).GetValue($State)
+    $ownedItems.Add($ItemId, $Count)
+}
+
 function Add-UnlockedTech {
     param($State, [int]$TechId)
     $values = $stateType.GetField(
@@ -314,6 +322,57 @@ function Get-PanelRow {
     }
     return $null
 }
+
+function Assert-CubeInputGate {
+    param(
+        [string]$PhaseId,
+        [string]$ConditionId,
+        [int]$FirstItemId,
+        [int]$SecondItemId,
+        [string]$ExpectedAction
+    )
+    $emptyState = New-ObservedState
+    $emptyCondition = Get-GateCondition (
+        Get-SelectedGate $PhaseId $emptyState
+    ) $ConditionId
+    if ($null -eq $emptyCondition -or
+        $emptyCondition.GetType().GetField(
+            'Status', $instanceFlags
+        ).GetValue($emptyCondition) -ne 'blocked' -or
+        $emptyCondition.GetType().GetField(
+            'Action', $instanceFlags
+        ).GetValue($emptyCondition) -ne $ExpectedAction) {
+        throw "$PhaseId does not block with one combined input-buffer action."
+    }
+
+    $partialState = New-ObservedState
+    Add-OwnedItem $partialState $FirstItemId 20
+    $partialCondition = Get-GateCondition (
+        Get-SelectedGate $PhaseId $partialState
+    ) $ConditionId
+    if ($partialCondition.GetType().GetField(
+            'Status', $instanceFlags
+        ).GetValue($partialCondition) -ne 'blocked') {
+        throw "$PhaseId accepts only one buffered terminal input."
+    }
+
+    Add-OwnedItem $partialState $SecondItemId 30
+    $readyCondition = Get-GateCondition (
+        Get-SelectedGate $PhaseId $partialState
+    ) $ConditionId
+    if ($readyCondition.GetType().GetField(
+            'Status', $instanceFlags
+        ).GetValue($readyCondition) -ne 'ready') {
+        throw "$PhaseId does not accept both buffered terminal inputs."
+    }
+}
+
+Assert-CubeInputGate 'yellow' 'yellow-inputs' 1112 1118 `
+    'Buffer both Yellow Cube inputs in visible storage.'
+Assert-CubeInputGate 'purple' 'purple-inputs' 1303 1402 `
+    'Buffer both Purple Cube inputs in visible storage.'
+Assert-CubeInputGate 'green' 'green-inputs' 1305 1209 `
+    'Buffer both Green Cube inputs in visible storage.'
 
 $redState = New-ObservedState
 Set-ObservedField $true 'ProductionWindowReady' $redState
@@ -463,14 +522,24 @@ function Assert-SingleDrainFinding {
 }
 
 Assert-SingleDrainFinding 'purple' 1402 'production-risk-1402' 'Particle Broadband'
+Assert-SingleDrainFinding 'yellow' 1118 'production-risk-1118' 'Titanium Crystals'
 Assert-SingleDrainFinding 'green' 1305 'production-risk-1305' 'Quantum Chips'
 Assert-SingleDrainFinding 'white' 6002 'production-risk-6002' 'Red Cubes'
 
+$yellowItems = $phaseItems['yellow']
+foreach ($itemId in @(6003, 1112, 1118)) {
+    if ($yellowItems -notcontains $itemId) {
+        throw "YELLOW snapshot evidence is missing item $itemId."
+    }
+}
 $purpleItems = $phaseItems['purple']
-foreach ($itemId in @(6004, 1303, 1124, 1402)) {
+foreach ($itemId in @(6004, 1303, 1402)) {
     if ($purpleItems -notcontains $itemId) {
         throw "PURPLE snapshot evidence is missing item $itemId."
     }
+}
+if ($purpleItems -contains 1124) {
+    throw 'PURPLE snapshot evidence still treats Carbon Nanotubes as a terminal input.'
 }
 
 $panelSource = Get-Content -Raw -LiteralPath (
@@ -524,8 +593,8 @@ $pluginSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\Plugin.cs'
 )
-if (-not $pluginSource.Contains('SchemaVersion = "2.12"')) {
-    throw 'Snapshot schema version is not 2.12.'
+if (-not $pluginSource.Contains('SchemaVersion = "2.13"')) {
+    throw 'Snapshot schema version is not 2.13.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

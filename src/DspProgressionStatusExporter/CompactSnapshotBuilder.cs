@@ -37,8 +37,8 @@ namespace DspProgressionStatusExporter
                     1303, 2001, 2011, 2101, 2104, 2201, 2203, 2204,
                     2301, 2302, 5002, 6003
                 } },
-                { "yellow", new int[] { 6003 } },
-                { "purple", new int[] { 6004, 1303, 1124, 1402 } },
+                { "yellow", new int[] { 6003, 1112, 1118 } },
+                { "purple", new int[] { 6004, 1303, 1402 } },
                 { "green", new int[] { 6005, 1305, 1209 } },
                 { "dyson", new int[] { 1501 } },
                 { "photon", new int[] { 1208, 1122 } },
