@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.10";
+        private const string SchemaVersion = "2.11";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -102,6 +102,9 @@ namespace DspProgressionStatusExporter
             guidePanel.SetSnapshotAction(SaveSnapshotFromPanel);
 #endif
             guidePanel.SetNavigationAction(HandleGuideNavigation);
+            guidePanel.SetWarningAction(delegate(string message) {
+                if (Log != null) Log.LogWarning(message);
+            });
 
             Log.LogInfo("DSP Guide Check loaded. Press " + snapshotKey.Value + " while playing.");
         }
@@ -284,6 +287,7 @@ namespace DspProgressionStatusExporter
                         observedState,
                         selection.Export(activePhaseSaveKey),
                         guideAnalysis,
+                        guidePanel.ExportDiagnostics(),
                         ExportSamplingPerformance(),
                         includeDiagnostics.Value);
                 string json = Json.Stringify(snapshot);

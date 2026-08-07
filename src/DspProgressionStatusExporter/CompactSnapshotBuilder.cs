@@ -61,6 +61,7 @@ namespace DspProgressionStatusExporter
             ObservedGameState state,
             Dictionary<string, object> selection,
             Dictionary<string, object> analysis,
+            Dictionary<string, object> presentation,
             Dictionary<string, object> samplingPerformance,
             bool includeCollectorDiagnostics)
         {
@@ -75,6 +76,7 @@ namespace DspProgressionStatusExporter
                 { "location", location },
                 { "guideSelection", selection },
                 { "guide", GuideSummary(analysis) },
+                { "presentation", presentation },
                 { "summary", new Dictionary<string, object> {
                     { "research", ResearchSummary(research, state) },
                     { "cubes", CubeSummary(state) }

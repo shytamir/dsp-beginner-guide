@@ -12,8 +12,8 @@ are deliberately excluded and remain tracked separately outside this roadmap.
 
 | Priority | Item | State | Next gate |
 |---:|---|---|---|
-| 1 | `WHITE-CONCISE-01` — concise WHITE objectives and status | Implemented | Validate the unqueued, active, and completed WHITE states. |
-| 2 | `NATIVE-TYPE-01` — match native game-label typography | Story ready | Confirm the runtime font/material source, then implement. |
+| 1 | `WHITE-CONCISE-01` — concise WHITE objectives and status | Implemented | Validate with the combined WHITE/typography gate. |
+| 2 | `NATIVE-TYPE-01` — match native game-label typography | Implemented | Validate at 1080p and 4K with the combined WHITE/typography gate. |
 | 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW branch states | Validation required | Capture incomplete, one-branch, converged, and running states before fixing the objective contract. |
 | 4 | `RED-DRIVE-II-01` — correct the RED-to-ILS Drive Engine II target | Validation required | Capture a diagnostic snapshot with Drive Engine II researched but still displayed or pending incorrectly. |
 | 5 | `EARLY-RISK-01` — BLUE/RED Cube risk and RED refinery backpressure | Validation required | Reproduce above-threshold research drain and each blocked refinery coproduct independently. |
@@ -147,6 +147,15 @@ darker outline.
   or copied game assets to the repository or package.
 - Both public and diagnostic builds compile cleanly and pass focused runtime
   screenshots at 1080p and 4K.
+
+### Implementation status
+
+Implemented on `main`. Runtime assembly inspection confirmed the stable source
+path `UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText`; the panel reuses
+that live Text component's font, material, font style, line spacing, and
+Outline settings once at creation. Embedded Basic Regular remains the soft
+fallback, and diagnostics expose the resolved resource and settings. The
+focused runtime gate is combined with the still-open WHITE-CONCISE-01 gate.
 
 ## Remaining ordered validation work
 

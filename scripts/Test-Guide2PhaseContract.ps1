@@ -477,8 +477,8 @@ $panelSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\GuidePanelModel.cs'
 )
-if (-not $panelSource.Contains('{ "contractVersion", "2.6" }')) {
-    throw 'Panel model contract version is not 2.6.'
+if (-not $panelSource.Contains('{ "contractVersion", "2.7" }')) {
+    throw 'Panel model contract version is not 2.7.'
 }
 $controllerSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
@@ -495,6 +495,35 @@ if (-not $controllerSource.Contains(
 if (-not $controllerSource.Contains(
         'cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap)')) {
     throw "DON'T PANIC is not placed after the last visible Cube rate."
+}
+if (-not $controllerSource.Contains(
+        'UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText') -or
+    -not $controllerSource.Contains(
+        'GetMember(veinDetail, "nodePrefab")') -or
+    -not $controllerSource.Contains(
+        'GetMember(nodePrefab, "infoText") as Text') -or
+    -not $controllerSource.Contains(
+        'infoText.GetComponent<Outline>()')) {
+    throw 'Panel typography is not sourced from the native vein-label prefab.'
+}
+if (-not $controllerSource.Contains(
+        'Native vein-label typography unavailable; using embedded fallback.') -or
+    -not $controllerSource.Contains('nativeTextWarningLogged')) {
+    throw 'Native typography does not have a bounded fallback warning.'
+}
+$snapshotSource = Get-Content -Raw -LiteralPath (
+    Join-Path (Split-Path -Parent $PSScriptRoot) `
+        'src\DspProgressionStatusExporter\CompactSnapshotBuilder.cs'
+)
+if (-not $snapshotSource.Contains('{ "presentation", presentation }')) {
+    throw 'Compact snapshots do not expose focused typography diagnostics.'
+}
+$pluginSource = Get-Content -Raw -LiteralPath (
+    Join-Path (Split-Path -Parent $PSScriptRoot) `
+        'src\DspProgressionStatusExporter\Plugin.cs'
+)
+if (-not $pluginSource.Contains('SchemaVersion = "2.11"')) {
+    throw 'Snapshot schema version is not 2.11.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

@@ -26,7 +26,8 @@ reports, game assemblies, and wrapper directories are excluded.
 - `packaging/README.md`: player-facing store README.
 - `packaging/icon.png`: 256 by 256 package icon.
 - Public `DspGuideCheck.dll`: compiled with snapshot control disabled.
-- Embedded `Basic-OFL.txt`: Basic Regular license notice.
+- Embedded `Basic-OFL.txt`: license notice for the packaged Basic Regular
+  fallback font.
 
 Manifest identity:
 

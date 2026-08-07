@@ -4,6 +4,14 @@
 
 ### Changed
 
+- Implemented `NATIVE-TYPE-01`: panel headings, content, navigation, and Cube
+  rates now reuse the installed game's live vein-label font, material, font
+  style, line spacing, and outline settings. Lookup is a one-time read of
+  `UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText`; missing resources
+  fail softly to embedded Basic Regular with one warning. `DON'T PANIC`
+  retains its separate Comic Sans treatment. Advanced panel presentation to
+  2.7 and compact snapshot schema to 2.11 for the combined WHITE/typography
+  runtime gate.
 - Implemented `WHITE-CONCISE-01`: WHITE now uses compact White-Cube wording,
   keeps configured-Lab and stored-Cube evidence without duplicating the rate
   rail, presents only one Mission Completed action, and reports authoritative

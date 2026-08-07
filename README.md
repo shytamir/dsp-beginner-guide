@@ -28,8 +28,8 @@ the implemented nine-phase contract.
   quiet production states add no indicator.
 - Up to three stable, compact production-risk conclusions with immediate
   recommendations in a separate Next Actions section.
-- Embedded Basic Regular presentation font with the existing high-contrast
-  outline; `DON'T PANIC` retains its separate Comic Sans treatment.
+- DSP's live vein-label typography with an embedded Basic Regular fallback;
+  `DON'T PANIC` retains its separate Comic Sans treatment.
 - No unsolicited notifications, automatic phase changes or factory actions.
 
 ## Requirements
@@ -151,12 +151,12 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.10 exports conclusions, production-risk terms,
+- Compact snapshot schema 2.11 exports conclusions, production-risk terms,
   provenance, collector health, and only the focused evidence needed to audit
   those conclusions.
-- The click-through panel uses Basic Regular with a dark outline and embeds
-  the six Matrix icons beside Cube rates. Only its explicit controls capture
-  pointer input.
+- The click-through panel reuses DSP's vein-label font, material, and outline,
+  with embedded Basic Regular as a soft fallback, and embeds the six Matrix
+  icons beside Cube rates. Only its explicit controls capture pointer input.
 
 The critical-path migration, telemetry alignment, persistence, snapshot, and
 panel contracts have completed in-game acceptance. Packaging has passed its

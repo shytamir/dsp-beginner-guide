@@ -56,6 +56,8 @@ namespace DspProgressionStatusExporter
 #endif
         private static readonly Color TextOutlineColor =
             new Color(0f, 0f, 0f, 0.9f);
+        private static readonly Vector2 TextOutlineDistance =
+            new Vector2(2f, -2f);
         private static readonly Color SelectedControlOutlineColor =
             new Color(0.08f, 0.72f, 0.94f, 1f);
 
@@ -151,6 +153,110 @@ namespace DspProgressionStatusExporter
                     LineSpacing = text.lineSpacing,
                     Material = text.material
                 };
+            }
+        }
+
+        private sealed class NativeTextPresentation
+        {
+            public const string RuntimeSource =
+                "UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText";
+            public Font Font;
+            public FontStyle FontStyle;
+            public float LineSpacing;
+            public Material Material;
+            public Color OutlineColor;
+            public Vector2 OutlineDistance;
+            public bool OutlineUsesGraphicAlpha;
+
+            public void Apply(NativeGoalStyle goalStyle)
+            {
+                Apply(goalStyle.HeaderText);
+                Apply(goalStyle.GroupText);
+                Apply(goalStyle.InfoText);
+            }
+
+            private void Apply(TextStyle textStyle)
+            {
+                textStyle.Font = Font;
+                textStyle.FontStyle = FontStyle;
+                textStyle.LineSpacing = LineSpacing;
+                textStyle.Material = Material;
+            }
+
+            public static NativeTextPresentation Capture()
+            {
+                try
+                {
+                    Type rootType = FindType("UIRoot");
+                    object root = GetStatic(rootType, "instance", "_instance");
+                    object uiGame = GetMember(root, "uiGame");
+                    object veinDetail = GetMember(uiGame, "veinDetail");
+                    object nodePrefab = GetMember(veinDetail, "nodePrefab");
+                    Text infoText = GetMember(nodePrefab, "infoText") as Text;
+                    Outline outline = infoText != null
+                        ? infoText.GetComponent<Outline>()
+                        : null;
+                    if (infoText == null || infoText.font == null || outline == null)
+                        return null;
+                    return new NativeTextPresentation {
+                        Font = infoText.font,
+                        FontStyle = infoText.fontStyle,
+                        LineSpacing = infoText.lineSpacing,
+                        Material = infoText.material,
+                        OutlineColor = outline.effectColor,
+                        OutlineDistance = outline.effectDistance,
+                        OutlineUsesGraphicAlpha = outline.useGraphicAlpha
+                    };
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+
+            private static Type FindType(string name)
+            {
+                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    Type type = assembly.GetType(name, false);
+                    if (type != null) return type;
+                }
+                return null;
+            }
+
+            private static object GetStatic(Type type, params string[] names)
+            {
+                if (type == null) return null;
+                const BindingFlags flags =
+                    BindingFlags.Static | BindingFlags.Public |
+                    BindingFlags.NonPublic;
+                foreach (string name in names)
+                {
+                    FieldInfo field = type.GetField(name, flags);
+                    if (field != null) return field.GetValue(null);
+                    PropertyInfo property = type.GetProperty(name, flags);
+                    if (property != null && property.GetIndexParameters().Length == 0)
+                        return property.GetValue(null, null);
+                }
+                return null;
+            }
+
+            private static object GetMember(object target, params string[] names)
+            {
+                if (target == null) return null;
+                Type type = target.GetType();
+                const BindingFlags flags =
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic;
+                foreach (string name in names)
+                {
+                    FieldInfo field = type.GetField(name, flags);
+                    if (field != null) return field.GetValue(target);
+                    PropertyInfo property = type.GetProperty(name, flags);
+                    if (property != null && property.GetIndexParameters().Length == 0)
+                        return property.GetValue(target, null);
+                }
+                return null;
             }
         }
 
@@ -362,6 +468,7 @@ namespace DspProgressionStatusExporter
         private Font dontPanicFont;
         private bool ownsDontPanicFont;
         private EmbeddedBasicFont presentationFont;
+        private NativeTextPresentation nativeTextPresentation;
         private EmbeddedMatrixIcons matrixIcons;
 #if DSP_GUIDE_SNAPSHOT_CONTROL
         private RectTransform snapshotLinkRect;
@@ -383,6 +490,8 @@ namespace DspProgressionStatusExporter
         private Func<bool> snapshotAction;
 #endif
         private Action<string> navigationAction;
+        private Action<string> warningAction;
+        private bool nativeTextWarningLogged;
         private bool bodyCanScroll;
         private float panelWidth;
 #if DSP_GUIDE_SNAPSHOT_CONTROL
@@ -418,6 +527,11 @@ namespace DspProgressionStatusExporter
             navigationAction = action;
         }
 
+        public void SetWarningAction(Action<string> action)
+        {
+            warningAction = action;
+        }
+
         public Dictionary<string, object> ExportDiagnostics()
         {
             EnsureCreated();
@@ -450,9 +564,33 @@ namespace DspProgressionStatusExporter
                 "collapse-proof-below-last-cube-right-aligned";
             result["textOutline"] = true;
             result["presentationFontSource"] =
-                presentationFont != null
+                nativeTextPresentation != null
+                    ? NativeTextPresentation.RuntimeSource
+                    : (presentationFont != null
                     ? presentationFont.Source
-                    : "not-loaded";
+                    : "not-loaded");
+            result["presentationFont"] =
+                style != null && style.InfoText != null &&
+                style.InfoText.Font != null
+                    ? style.InfoText.Font.name
+                    : null;
+            result["presentationMaterial"] =
+                style != null && style.InfoText != null &&
+                style.InfoText.Material != null
+                    ? style.InfoText.Material.name
+                    : null;
+            result["presentationOutlineColor"] = ColorValue(
+                nativeTextPresentation != null
+                    ? nativeTextPresentation.OutlineColor
+                    : TextOutlineColor);
+            result["presentationOutlineDistance"] = Vector(
+                nativeTextPresentation != null
+                    ? nativeTextPresentation.OutlineDistance
+                    : TextOutlineDistance);
+            result["presentationOutlineUsesGraphicAlpha"] =
+                nativeTextPresentation != null
+                    ? nativeTextPresentation.OutlineUsesGraphicAlpha
+                    : false;
             result["phaseControlStyle"] =
                 "transparent-bounded-hover-with-selected-outline";
             result["headerFont"] =
@@ -571,6 +709,7 @@ namespace DspProgressionStatusExporter
             if (presentationFont != null)
                 presentationFont.Dispose();
             presentationFont = null;
+            nativeTextPresentation = null;
             if (matrixIcons != null)
                 matrixIcons.Dispose();
             matrixIcons = null;
@@ -592,13 +731,22 @@ namespace DspProgressionStatusExporter
             phaseId = null;
             Font fallbackFont = FindFont();
             style = NativeGoalStyle.Capture(fallbackFont);
-            presentationFont = EmbeddedBasicFont.Load(
-                style.InfoText.Font,
-                style.InfoText.FontSize);
+            nativeTextPresentation = NativeTextPresentation.Capture();
+            if (nativeTextPresentation != null)
+            {
+                nativeTextPresentation.Apply(style);
+            }
+            else
+            {
+                presentationFont = EmbeddedBasicFont.Load(
+                    style.InfoText.Font,
+                    style.InfoText.FontSize);
+                style.HeaderText.Font = presentationFont.Font;
+                style.GroupText.Font = presentationFont.Font;
+                style.InfoText.Font = presentationFont.Font;
+                WarnNativeTextFallback();
+            }
             matrixIcons = EmbeddedMatrixIcons.Load();
-            style.HeaderText.Font = presentationFont.Font;
-            style.GroupText.Font = presentationFont.Font;
-            style.InfoText.Font = presentationFont.Font;
             Transform parent = style.Parent;
             if (parent == null)
             {
@@ -785,6 +933,11 @@ namespace DspProgressionStatusExporter
                 DontPanicLabel,
                 OpenSourceGuide,
                 out sourceGuideLinkRect);
+            ConfigureOutline(
+                sourceGuideLinkText.GetComponent<Outline>(),
+                TextOutlineColor,
+                TextOutlineDistance,
+                false);
             dontPanicFont = FindDontPanicFont(
                 style.InfoText.Font,
                 style.InfoText.FontSize + 3,
@@ -1714,14 +1867,42 @@ namespace DspProgressionStatusExporter
             Text text = child.GetComponent<Text>();
             textStyle.Apply(text);
             Outline outline = child.AddComponent<Outline>();
-            outline.effectColor = TextOutlineColor;
-            outline.effectDistance = new Vector2(2f, -2f);
-            outline.useGraphicAlpha = false;
+            ConfigureOutline(
+                outline,
+                nativeTextPresentation != null
+                    ? nativeTextPresentation.OutlineColor
+                    : TextOutlineColor,
+                nativeTextPresentation != null
+                    ? nativeTextPresentation.OutlineDistance
+                    : TextOutlineDistance,
+                nativeTextPresentation != null &&
+                    nativeTextPresentation.OutlineUsesGraphicAlpha);
             text.alignment = TextAnchor.UpperLeft;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.raycastTarget = false;
             return text;
+        }
+
+        private static void ConfigureOutline(
+            Outline outline,
+            Color color,
+            Vector2 distance,
+            bool useGraphicAlpha)
+        {
+            if (outline == null) return;
+            outline.effectColor = color;
+            outline.effectDistance = distance;
+            outline.useGraphicAlpha = useGraphicAlpha;
+        }
+
+        private void WarnNativeTextFallback()
+        {
+            if (nativeTextWarningLogged) return;
+            nativeTextWarningLogged = true;
+            if (warningAction != null)
+                warningAction(
+                    "Native vein-label typography unavailable; using embedded fallback.");
         }
 
         private static GameObject CreateObject(
@@ -1867,6 +2048,16 @@ namespace DspProgressionStatusExporter
             return new Dictionary<string, object> {
                 { "x", vector.x },
                 { "y", vector.y }
+            };
+        }
+
+        private static Dictionary<string, object> ColorValue(Color color)
+        {
+            return new Dictionary<string, object> {
+                { "r", color.r },
+                { "g", color.g },
+                { "b", color.b },
+                { "a", color.a }
             };
         }
 

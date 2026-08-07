@@ -70,8 +70,9 @@ when validating the Thunderstore surface.
 
 ## WHITE-CONCISE-01 focused gate
 
-Use the diagnostic DLL and one WHITE-ready playthrough. Capture the panel and
-one snapshot in each available state; reloading purpose-built saves is fine.
+This gate also validates `NATIVE-TYPE-01`. Use the diagnostic DLL and one
+WHITE-ready playthrough. Capture the panel and one snapshot in each available
+state; reloading purpose-built saves is fine.
 
 1. Before queuing Mission Completed, confirm `Mission Completed not queued`.
 2. Queue it and let research consume at least one White Cube. Confirm the row
@@ -84,6 +85,17 @@ one snapshot in each available state; reloading purpose-built saves is fine.
    research is incomplete.
 5. Confirm the Cube-rate rail still presents the live rate and both DLL
    variants retain their expected snapshot-control behavior.
+6. At 1080p and 4K, compare panel text and Cube rates with a visible planet
+   vein label. Confirm the same compact weight and dark outline, with no new
+   clipping, overlap, unstable wrapping, or excessive panel height.
+7. At both resolutions, exercise expanded and collapsed layouts with different
+   visible Cube counts. Confirm navigation, scrolling, risk glyph, Cube rail,
+   `DON'T PANIC`, and diagnostic snapshot control remain correctly placed and
+   interactive.
+8. In the diagnostic snapshot, confirm `presentationFontSource` is
+   `UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText` and the resolved
+   font, material, outline color, distance, and graphic-alpha setting are
+   present. Report any fallback warning or new plugin error.
 
 ## Production-risk spot check
 
@@ -104,7 +116,7 @@ Use a mature GREEN or WHITE line with ready ten-minute history:
 
 - `Save snapshot` writes one JSON only when clicked and reports success or
   failure for two seconds.
-- The JSON is no larger than 256 KiB and names snapshot schema `2.10`.
+- The JSON is no larger than 256 KiB and names snapshot schema `2.11`.
 - It contains focused selected-phase evidence and explicit coverage or
   omission diagnostics, not broad factory dumps.
 - Leave the panel visible for one minute and hidden for one minute. Report any
