@@ -23,6 +23,11 @@ The active maintenance roadmap does not reopen the guide 2.0 product design or
 make temporary playthrough observations authoritative. Guide-authoring work is
 tracked separately and is not part of the mod roadmap.
 
+The cycle's concise WHITE presentation and native typography stories have
+passed release-owner runtime acceptance and both-variant build validation.
+Active work now resumes at the PURPLE/YELLOW branch-state evidence gate,
+followed by the RED-to-ILS Drive Engine II correction.
+
 ## Purpose and scope
 
 DSP Guide Check is the passive, on-demand runtime companion to the

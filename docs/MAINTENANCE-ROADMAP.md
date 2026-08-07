@@ -12,8 +12,8 @@ are deliberately excluded and remain tracked separately outside this roadmap.
 
 | Priority | Item | State | Next gate |
 |---:|---|---|---|
-| 1 | `WHITE-CONCISE-01` — concise WHITE objectives and status | Implemented | Validate with the combined WHITE/typography gate. |
-| 2 | `NATIVE-TYPE-01` — match native game-label typography | Implemented | Validate at 1080p and 4K with the combined WHITE/typography gate. |
+| 1 | `WHITE-CONCISE-01` — concise WHITE objectives and status | Accepted | Complete. |
+| 2 | `NATIVE-TYPE-01` — match native game-label typography | Accepted | Complete. |
 | 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW branch states | Validation required | Capture incomplete, one-branch, converged, and running states before fixing the objective contract. |
 | 4 | `RED-DRIVE-II-01` — correct the RED-to-ILS Drive Engine II target | Validation required | Capture a diagnostic snapshot with Drive Engine II researched but still displayed or pending incorrectly. |
 | 5 | `EARLY-RISK-01` — BLUE/RED Cube risk and RED refinery backpressure | Validation required | Reproduce above-threshold research drain and each blocked refinery coproduct independently. |
@@ -96,9 +96,9 @@ Until Mission Completed is complete, its single Pending instruction is:
 
 ### Implementation status
 
-Implemented on `main`; deterministic checks cover the defined presentation
-states and both DLL variants. The focused in-game gate remains open until the
-unqueued, active, and completed presentations and diagnostic evidence pass.
+Accepted after diagnostic evidence confirmed authoritative unqueued and active
+Mission Completed progress. The release owner accepted the concise WHITE
+presentation without a discovered regression; both DLL build contracts pass.
 
 ## NATIVE-TYPE-01 — Match native game-label typography
 
@@ -150,15 +150,16 @@ darker outline.
 
 ### Implementation status
 
-Implemented on `main`. Runtime assembly inspection confirmed the stable source
-path `UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText`; the panel reuses
+Accepted after release-owner visual validation; both DLL build contracts pass.
+Runtime assembly inspection confirmed the source path
+`UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText`; the panel reuses
 that live Text component's font, material, font style, line spacing, and
 attached Shadow or Outline effects once at creation. A failed first gate proved
 the original Outline requirement was too strict; the corrected lookup also
 checks loaded vein-detail nodes once when the serialized Text is not ready.
 Embedded Basic Regular remains the soft fallback, and diagnostics expose the
-resolved resource and settings. The focused runtime gate is combined with the
-still-open WHITE-CONCISE-01 gate.
+resolved resource and settings. After correcting the first gate's fallback,
+the release owner confirmed the native presentation visibly matches the game.
 
 ## Remaining ordered validation work
 
