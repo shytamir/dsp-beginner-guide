@@ -1,5 +1,7 @@
 # DSP Guide Check
 
+<p align="center"><img alt="See the problem and know what to do—without leaving the game" src="https://shytamir.github.io/DSP_Guide/assets/images/mod/see-the-problem-and-know-what-to-do-without-leaving-the-game.png"><br><small><em><span style="color:#b8b8b8">See the problem and know what to do—without leaving the game</span></em></small></p>
+
 DSP Guide Check is an on-demand companion for the
 [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
 It gives you stable objectives for the guide phase you choose and a short
@@ -35,3 +37,5 @@ into the Dyson Sphere Program game folder.
 
 DSP Guide Check is an unofficial community project. Dyson Sphere Program and
 its assets belong to their respective owners.
+
+<p align="center"><img alt="Know when your Photon array is truly sustained" src="https://shytamir.github.io/DSP_Guide/assets/images/mod/know-when-your-photon-array-is-truly-sustained.png"><br><small><em><span style="color:#b8b8b8">Know when your Photon array is truly sustained</span></em></small></p>

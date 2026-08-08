@@ -139,7 +139,12 @@ try {
     foreach ($requiredReadmeText in @(
             'press **F8**',
             'https://dsp-beginner-guide.pages.dev/',
-            'https://github.com/shytamir/dsp-beginner-guide'
+            'https://github.com/shytamir/dsp-beginner-guide',
+            'https://shytamir.github.io/DSP_Guide/assets/images/mod/see-the-problem-and-know-what-to-do-without-leaving-the-game.png',
+            'See the problem and know what to do',
+            'without leaving the game',
+            'https://shytamir.github.io/DSP_Guide/assets/images/mod/know-when-your-photon-array-is-truly-sustained.png',
+            'Know when your Photon array is truly sustained'
         )) {
         if ($readme.IndexOf(
                 $requiredReadmeText,
