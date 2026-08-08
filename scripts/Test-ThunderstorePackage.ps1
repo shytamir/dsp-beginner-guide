@@ -136,6 +136,7 @@ try {
     if ($readme -cne $expectedReadme) {
         throw 'Package README does not match packaging/README.md.'
     }
+    $photonImageUrl = 'https://shytamir.github.io/DSP_Guide/assets/images/mod/know-when-your-photon-array-is-truly-sustained.png'
     foreach ($requiredReadmeText in @(
             'press **F8**',
             'https://dsp-beginner-guide.pages.dev/',
@@ -143,7 +144,7 @@ try {
             'https://shytamir.github.io/DSP_Guide/assets/images/mod/see-the-problem-and-know-what-to-do-without-leaving-the-game.png',
             'See the problem and know what to do',
             'without leaving the game',
-            'https://shytamir.github.io/DSP_Guide/assets/images/mod/know-when-your-photon-array-is-truly-sustained.png',
+            $photonImageUrl,
             'Know when your Photon array is truly sustained'
         )) {
         if ($readme.IndexOf(
@@ -152,6 +153,18 @@ try {
             ) -lt 0) {
             throw "Package README is missing required player-facing text: $requiredReadmeText"
         }
+    }
+    $photonImageIndex = $readme.IndexOf(
+        $photonImageUrl,
+        [System.StringComparison]::Ordinal
+    )
+    $installationIndex = $readme.IndexOf(
+        '## Installation',
+        [System.StringComparison]::Ordinal
+    )
+    if ($photonImageIndex -lt 0 -or $installationIndex -lt 0 -or
+        $photonImageIndex -gt $installationIndex) {
+        throw 'Package README must present the Photon image before Installation.'
     }
     if ($readme -match '(?i)snapshot') {
         throw 'Package README must not mention snapshot export.'

@@ -21,6 +21,8 @@ The phase choice is always yours. DSP Guide Check evaluates the selected
 phase, but it never changes your selection, factory, or save and never shows
 unsolicited alerts.
 
+<p align="center"><img alt="Know when your Photon array is truly sustained" src="https://shytamir.github.io/DSP_Guide/assets/images/mod/know-when-your-photon-array-is-truly-sustained.png"><br><small><em><span style="color:#b8b8b8">Know when your Photon array is truly sustained</span></em></small></p>
+
 ## Installation
 
 The simplest option is a Thunderstore-compatible mod manager. Install
@@ -37,5 +39,3 @@ into the Dyson Sphere Program game folder.
 
 DSP Guide Check is an unofficial community project. Dyson Sphere Program and
 its assets belong to their respective owners.
-
-<p align="center"><img alt="Know when your Photon array is truly sustained" src="https://shytamir.github.io/DSP_Guide/assets/images/mod/know-when-your-photon-array-is-truly-sustained.png"><br><small><em><span style="color:#b8b8b8">Know when your Photon array is truly sustained</span></em></small></p>
