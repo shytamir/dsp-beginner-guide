@@ -213,7 +213,7 @@ Intermediate branch components and branch progression are not modeled.
 
 | Contract | Version |
 |---|---:|
-| Release line | 2.0.x |
+| Release line | 2.1.x |
 | Snapshot schema | 2.16 |
 | Normalized state | 2.3 |
 | Guide selection | 1.6 |

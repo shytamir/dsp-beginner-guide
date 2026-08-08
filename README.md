@@ -79,9 +79,9 @@ Assembly/file version:  M.m.N.0
 Diagnostic label:       M.m.N.X
 ```
 
-For example, workflow run 42 publishes package and BepInEx version `2.0.42`,
-assembly/file version `2.0.42.0`, and diagnostic label
-`2.0.42.abcdef1`. The workflow sequence advances without committing a
+For example, workflow run 42 publishes package and BepInEx version `2.1.42`,
+assembly/file version `2.1.42.0`, and diagnostic label
+`2.1.42.abcdef1`. The workflow sequence advances without committing a
 generated version change back to `main`.
 
 The hosted build downloads the official BepInEx 5 release as a compile

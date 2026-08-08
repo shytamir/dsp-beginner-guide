@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### 2.1 maintenance summary
+
+- Changed: concise WHITE status, native panel typography, useful YELLOW and
+  PURPLE terminal-input tracking, safer ILS stage evidence, exact-target Cube
+  risk suppression, and two-sample PHOTON continuity tolerance.
+- Not changed: the adopted guide authority, player-owned nine-phase path,
+  public/diagnostic packaging split, intermediate branch modeling, RED
+  coproduct diagnosis, or the rejected Drive Engine claim.
+
 ### Changed
 
 - Accepted the `PHOTON-CONTINUITY-01` gate after deterministic checks proved
