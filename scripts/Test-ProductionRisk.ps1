@@ -44,6 +44,7 @@ function Invoke-Risk {
         AccessibleCount = 0.0
         BackpressureStatus = 'unknown'
         ExactTargetPerMinute = 0.0
+        DemandCeilingPerMinute = 0.0
     }
     foreach ($entry in $Values.GetEnumerator()) {
         $defaults[$entry.Key] = $entry.Value
@@ -121,6 +122,28 @@ $targetAbove = Assert-State 'Above exact target dominates higher demand' `
     'balanced' $false
 if (-not $targetAbove.TargetSatisfied) {
     throw 'An above-target Cube rate was not recognized as target-satisfied.'
+}
+$cappedDemand = Assert-State 'Cube demand reference ceiling' `
+    @{ ItemId = 6003; Name = 'Yellow Cubes';
+       ProducedPerMinute = 40.0; ConsumedPerMinute = 80.0;
+       TenMinuteProducedPerMinute = 40.0;
+       DemandCeilingPerMinute = 40.0 } `
+    'balanced' $false
+if ($cappedDemand.DemandDeficit -or
+    [double]$cappedDemand.ConsumedPerMinute -ne 80.0) {
+    throw 'The Cube ceiling did not quiet capped demand while preserving raw evidence.'
+}
+$belowCeiling = Assert-State 'Cube production below capped demand' `
+    @{ ItemId = 6003; Name = 'Yellow Cubes';
+       ProducedPerMinute = 35.0; ConsumedPerMinute = 80.0;
+       TenMinuteProducedPerMinute = 40.0;
+       RunwayAvailable = $true; RunwayMinutes = 2.0;
+       AccessibleCount = 90.0; DemandCeilingPerMinute = 40.0 } `
+    'draining' $true
+if (-not $belowCeiling.DemandDeficit -or
+    -not $belowCeiling.DepletionMinutesAvailable -or
+    [Math]::Abs([double]$belowCeiling.DepletionMinutes - 2.0) -gt 0.0001) {
+    throw 'Below-ceiling Cube risk did not retain actual net buffer depletion.'
 }
 $draining = Assert-State 'Draining buffer' `
     @{ ProducedPerMinute = 40.0; ConsumedPerMinute = 80.0;

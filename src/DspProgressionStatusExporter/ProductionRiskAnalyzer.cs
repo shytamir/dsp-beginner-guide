@@ -22,6 +22,7 @@ namespace DspProgressionStatusExporter
         public double AccessibleCount;
         public string BackpressureStatus;
         public double ExactTargetPerMinute;
+        public double DemandCeilingPerMinute;
     }
 
     internal sealed class ProductionRiskResult
@@ -151,9 +152,10 @@ namespace DspProgressionStatusExporter
                 result.Thinness = 1.0;
             result.Score = Clamp01(result.Drop * result.Thinness);
 
-            result.DemandDeficit = ExceedsTolerance(
+            result.DemandDeficit = !DemandSatisfied(
+                result.ProducedPerMinute,
                 result.ConsumedPerMinute,
-                result.ProducedPerMinute);
+                input.DemandCeilingPerMinute);
             result.TargetDeficit = result.ExactTargetPerMinute > 0.0 &&
                 ExceedsTolerance(
                     result.ExactTargetPerMinute,
@@ -208,6 +210,23 @@ namespace DspProgressionStatusExporter
         private static bool ExceedsTolerance(double expected, double actual)
         {
             return expected - actual > Tolerance(expected);
+        }
+
+        internal static bool DemandSatisfied(
+            double producedPerMinute,
+            double consumedPerMinute,
+            double demandCeilingPerMinute)
+        {
+            double referenceDemand = Math.Max(0.0, consumedPerMinute);
+            if (demandCeilingPerMinute > 0.0)
+            {
+                referenceDemand = Math.Min(
+                    referenceDemand,
+                    demandCeilingPerMinute);
+            }
+            return !ExceedsTolerance(
+                referenceDemand,
+                Math.Max(0.0, producedPerMinute));
         }
 
         private static double Tolerance(double reference)

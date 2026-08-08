@@ -23,6 +23,7 @@ namespace DspProgressionStatusExporter
             public int ItemId;
             public string Name;
             public double ExactTargetPerMinute;
+            public double DemandCeilingPerMinute;
         }
 
         private sealed class OrderedRisk
@@ -149,8 +150,14 @@ namespace DspProgressionStatusExporter
             return new RiskItemSpec {
                 ItemId = itemId,
                 Name = name,
-                ExactTargetPerMinute = exactTargetPerMinute
+                ExactTargetPerMinute = exactTargetPerMinute,
+                DemandCeilingPerMinute = IsCubeItem(itemId) ? 40.0 : 0.0
             };
+        }
+
+        private static bool IsCubeItem(int itemId)
+        {
+            return itemId >= 6001 && itemId <= 6006;
         }
 
         private static Dictionary<string, object> AnalyzeProductionRisk(
@@ -172,9 +179,11 @@ namespace DspProgressionStatusExporter
                 ProductionRiskResult itemRisk = null;
                 ObservedItemBufferEvidence buffer;
                 bool targetSatisfied = ExactTargetSatisfied(state, spec);
+                bool demandReferenceSatisfied =
+                    DemandReferenceSatisfied(state, spec);
                 bool hasLocalScopes = state.ItemBuffers.TryGetValue(
                     spec.ItemId, out buffer) && buffer.Scopes.Count > 0;
-                if (targetSatisfied)
+                if (targetSatisfied || demandReferenceSatisfied)
                 {
                     itemRisk = ProductionRiskAnalyzer.Evaluate(
                         ClusterRiskInput(state, spec));
@@ -267,6 +276,20 @@ namespace DspProgressionStatusExporter
                 flow.ProducedPerMinute >= spec.ExactTargetPerMinute;
         }
 
+        private static bool DemandReferenceSatisfied(
+            ObservedGameState state,
+            RiskItemSpec spec)
+        {
+            if (spec.DemandCeilingPerMinute <= 0.0) return false;
+            ObservedItemFlow flow;
+            return state.ItemFlows.TryGetValue(spec.ItemId, out flow) &&
+                flow != null && flow.OneMinuteAvailable &&
+                ProductionRiskAnalyzer.DemandSatisfied(
+                    flow.ProducedPerMinute,
+                    flow.ConsumedPerMinute,
+                    spec.DemandCeilingPerMinute);
+        }
+
         private static ProductionRiskInput ClusterRiskInput(
             ObservedGameState state,
             RiskItemSpec spec)
@@ -289,7 +312,8 @@ namespace DspProgressionStatusExporter
                 TenMinuteConsumedPerMinute = flow != null
                     ? flow.TenMinuteConsumedPerMinute : 0.0,
                 BackpressureStatus = "unknown",
-                ExactTargetPerMinute = spec.ExactTargetPerMinute
+                ExactTargetPerMinute = spec.ExactTargetPerMinute,
+                DemandCeilingPerMinute = spec.DemandCeilingPerMinute
             };
         }
 
@@ -339,7 +363,8 @@ namespace DspProgressionStatusExporter
                 BackpressureStatus = scope.BackpressureStatus,
                 // Exact guide targets are cluster contracts. They are not
                 // applied to a single local buffer scope.
-                ExactTargetPerMinute = 0.0
+                ExactTargetPerMinute = 0.0,
+                DemandCeilingPerMinute = spec.DemandCeilingPerMinute
             };
         }
 

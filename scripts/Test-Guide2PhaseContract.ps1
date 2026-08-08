@@ -601,7 +601,7 @@ function Assert-TargetMetSuppressesDemandRisk {
         $analysis['findings'].Count -ne 0 -or
         $satisfied.Count -ne 1 -or
         -not $satisfied[0]['targetSatisfied'] -or
-        -not $satisfied[0]['demandDeficit']) {
+        [double]$satisfied[0]['consumedPerMinute'] -ne ($Target + 10.0)) {
         throw "$PhaseId presents demand risk despite meeting its exact Cube target."
     }
 }
@@ -609,6 +609,35 @@ function Assert-TargetMetSuppressesDemandRisk {
 Assert-TargetMetSuppressesDemandRisk 'blue' 6001 20.0
 Assert-TargetMetSuppressesDemandRisk 'red' 6002 20.0
 Assert-TargetMetSuppressesDemandRisk 'white' 6006 40.0
+
+function Assert-CubeDemandCeiling {
+    param([string]$PhaseId, [int]$ItemId)
+
+    $quietState = New-ObservedState
+    Set-ObservedField $true 'ProductionWindowReady' $quietState
+    Add-ObservedFlow $quietState $ItemId 40.0 80.0
+    $quietAnalysis = $analyzeSelected.Invoke(
+        $null, @($quietState, $PhaseId))
+    if ($quietAnalysis['productionRisk']['actionable'].Count -ne 0 -or
+        $quietAnalysis['findings'].Count -ne 0) {
+        throw "$PhaseId presents Cube demand risk at the 40/min ceiling."
+    }
+
+    $riskState = New-ObservedState
+    Set-ObservedField $true 'ProductionWindowReady' $riskState
+    Add-ObservedFlow $riskState $ItemId 35.0 80.0
+    $riskAnalysis = $analyzeSelected.Invoke(
+        $null, @($riskState, $PhaseId))
+    if ($riskAnalysis['productionRisk']['actionable'].Count -ne 1 -or
+        $riskAnalysis['findings'].Count -ne 1) {
+        throw "$PhaseId did not retain Cube risk below the 40/min ceiling."
+    }
+}
+
+Assert-CubeDemandCeiling 'yellow' 6003
+Assert-CubeDemandCeiling 'purple' 6004
+Assert-CubeDemandCeiling 'green' 6005
+Assert-CubeDemandCeiling 'white' 6001
 
 Assert-SingleDrainFinding 'purple' 1402 'production-risk-1402' 'Particle Broadband'
 Assert-SingleDrainFinding 'blue' 6001 'production-risk-6001' 'Blue Cubes'
