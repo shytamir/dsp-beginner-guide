@@ -16,12 +16,13 @@ are deliberately excluded and remain tracked separately outside this roadmap.
 | 2 | `NATIVE-TYPE-01` — match native game-label typography | Accepted | Complete. |
 | 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW terminal-input states | Accepted | Complete, including the ILS starter-planet hotfix. |
 | 4 | `RED-DRIVE-II-01` — reported RED-to-ILS Drive Engine target | Rejected | Closed as an unsupported Lv2/Lv3 conflation; any recurrence requires a same-state screenshot and diagnostic snapshot. |
-| 5 | `EARLY-RISK-01` — BLUE/RED Cube risk and RED refinery backpressure | Validation required | Reproduce above-threshold research drain and each blocked refinery coproduct independently. |
+| 5 | `CUBE-TARGET-RISK-01` — exact Cube goals dominate research demand | Runtime validation required | Confirm BLUE, RED, and WHITE stay quiet at their exact goals and retain warnings below them. |
 | 6 | `PHOTON-CONTINUITY-01` — tolerate isolated receiver blips | Policy required | Fix the allowed interruption and sustained-failure timings before implementation. |
 
-Enhancing the production-risk analyzer beyond `EARLY-RISK-01` is not active
-work. It requires a specific future feature request with a concrete player
-problem and evidence source.
+RED coproduct diagnosis is rejected for this cycle because it contradicts the
+adopted concise RED contract and would require disproportionate engineering to
+attribute belt, sorter, tank, depot, and logistics backpressure truthfully.
+Other production-risk enhancements require a specific future feature request.
 
 ## WHITE-CONCISE-01 — Concise WHITE objectives and status
 
@@ -229,15 +230,55 @@ that same game state. The evidence must distinguish technology `2902` from
 `2903` before a new candidate can be authored. Until then the current IDs,
 completion semantics, names, and ILS stage logic remain unchanged.
 
-### EARLY-RISK-01
+### CUBE-TARGET-RISK-01
 
-For BLUE and RED, capture deliberate research consumption above the guide's
-accepted Cube pace while production also remains above that pace. Establish
-whether a draining warning is useful, should be delayed, or should be
-suppressed until the buffer becomes materially threatened. Separately block
-RED's Refined Oil and Hydrogen outputs one at a time and prove that each real
-deadlock receives concise actionable guidance while healthy coproduct flow
-remains quiet.
+#### User story
+
+As a player researching faster than the guide's accepted Cube pace, I want the
+panel to stay quiet while Cube production still meets that phase goal so a
+deliberately shrinking surplus buffer is not presented as a factory failure.
+
+#### Product decisions
+
+- An exact phase goal dominates demand-driven Cube risk. When the current
+  cluster Cube production rate is equal to or greater than the goal, suppress
+  draining and starved presentation caused solely by higher consumption.
+- Apply the rule consistently to BLUE at 20/min, RED at 20/min, and WHITE at
+  40/min. These are the only phases with exact Cube production goals.
+- Preserve the raw production and consumption rates and the observed demand
+  deficit in diagnostics. Record separately that the exact target is
+  satisfied; do not rewrite the measured demand to manufacture balance.
+- When production falls below the exact goal, retain the existing target,
+  demand, runway, draining, and starvation analysis without delay or a new
+  tolerance policy.
+- Do not change risk behavior for phases or items without an exact target.
+- Do not change phase objectives, Cube-rate presentation, selection, list
+  stability, or the three-row Current Status limit.
+- RED coproduct diagnosis is explicitly outside this story and rejected for
+  the current roadmap.
+
+#### Acceptance criteria
+
+- Production exactly at and above an exact Cube goal produces no actionable
+  demand-risk row, Next Action, depletion note, or risk glyph even when
+  consumption is higher.
+- The diagnostic result remains auditable as target-satisfied and retains the
+  raw demand-deficit fact and unmodified rates.
+- Production below the exact goal can still become draining or starved under
+  the existing evidence rules.
+- Local buffer evidence cannot override a satisfied cluster-level exact goal.
+- BLUE, RED, and WHITE share the rule; YELLOW, PURPLE, GREEN, and non-Cube
+  risks remain unchanged.
+- Deterministic risk and phase-contract checks cover equality, above-target,
+  below-target, and scope-local evidence while the cluster goal is met.
+- Both public and diagnostic DLLs build and retain their expected control
+  surfaces before runtime validation.
+
+#### Implementation status
+
+Implemented for the runtime gate. Exact-target satisfaction is exported as a
+separate diagnostic term while presentation remains quiet; below-target and
+zero-target behavior retain the established analyzer path.
 
 ### PHOTON-CONTINUITY-01
 

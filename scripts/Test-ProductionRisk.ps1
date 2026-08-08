@@ -104,6 +104,24 @@ $target = Assert-State 'Exact target deficit' `
 if (-not $target.TargetDeficit) {
     throw 'An exact guide target deficit was not retained separately.'
 }
+$targetMet = Assert-State 'Exact target dominates higher demand' `
+    @{ ProducedPerMinute = 20.0; ConsumedPerMinute = 30.0;
+       TenMinuteProducedPerMinute = 20.0;
+       ExactTargetPerMinute = 20.0 } `
+    'balanced' $false
+if (-not $targetMet.TargetSatisfied -or
+    -not $targetMet.DemandDeficit -or
+    $targetMet.TargetDeficit) {
+    throw 'A met exact target did not preserve and suppress the raw demand deficit.'
+}
+$targetAbove = Assert-State 'Above exact target dominates higher demand' `
+    @{ ProducedPerMinute = 25.0; ConsumedPerMinute = 35.0;
+       TenMinuteProducedPerMinute = 25.0;
+       ExactTargetPerMinute = 20.0 } `
+    'balanced' $false
+if (-not $targetAbove.TargetSatisfied) {
+    throw 'An above-target Cube rate was not recognized as target-satisfied.'
+}
 $draining = Assert-State 'Draining buffer' `
     @{ ProducedPerMinute = 40.0; ConsumedPerMinute = 80.0;
        TenMinuteProducedPerMinute = 100.0; RunwayAvailable = $true;
@@ -237,6 +255,80 @@ if ($riskSummary['selected']['state'] -cne 'starved' -or
     $riskSummary['selected']['scope'] -cne 'planet-local' -or
     $analysis['findings'].Count -ne 1) {
     throw 'Selected-phase integration did not prefer the scope-matched local risk.'
+}
+
+$blueFlow = [Activator]::CreateInstance($flowType, $true)
+foreach ($entry in @{
+        ItemId = 6001
+        Name = 'Blue Cubes'
+        OneMinuteAvailable = $true
+        ProducedPerMinute = 20.0
+        ConsumedPerMinute = 30.0
+        TenMinuteAvailable = $true
+        TenMinuteReady = $true
+        TenMinuteProducedPerMinute = 20.0
+        TenMinuteConsumedPerMinute = 30.0
+    }.GetEnumerator()) {
+    $flowType.GetField($entry.Key, $flags).SetValue($blueFlow, $entry.Value)
+}
+$itemFlows.Add(6001, $blueFlow)
+$blueFactoryFlow = [Activator]::CreateInstance($factoryFlowType, $true)
+foreach ($entry in @{
+        FactoryIndex = 0
+        PlanetId = 103
+        PlanetName = 'Scope fixture'
+        ItemId = 6001
+        Name = 'Blue Cubes'
+        OneMinuteAvailable = $true
+        ProducedPerMinute = 0.0
+        ConsumedPerMinute = 30.0
+        TenMinuteAvailable = $true
+        TenMinuteReady = $true
+        TenMinuteProducedPerMinute = 20.0
+        TenMinuteConsumedPerMinute = 30.0
+    }.GetEnumerator()) {
+    $factoryFlowType.GetField($entry.Key, $flags).SetValue(
+        $blueFactoryFlow, $entry.Value
+    )
+}
+$factoryFlows.Add($blueFactoryFlow)
+$blueScope = [Activator]::CreateInstance($bufferScopeType, $true)
+foreach ($entry in @{
+        PlanetId = 103
+        PlanetName = 'Scope fixture'
+        ItemId = 6001
+        Name = 'Blue Cubes'
+        AccessibleCount = [long]0
+        AccessibleCapacity = [long]400
+        DemandEvidenceAvailable = $true
+        DemandPerMinute = 30.0
+        RunwayAvailable = $true
+        RunwayMinutes = 0.0
+        BackpressureStatus = 'not-proven'
+    }.GetEnumerator()) {
+    $bufferScopeType.GetField($entry.Key, $flags).SetValue(
+        $blueScope, $entry.Value
+    )
+}
+$blueBuffer = [Activator]::CreateInstance($itemBufferType, $true)
+$itemBufferType.GetField('ItemId', $flags).SetValue($blueBuffer, 6001)
+$itemBufferType.GetField('Name', $flags).SetValue($blueBuffer, 'Blue Cubes')
+$itemBufferType.GetField(
+    'BackpressureStatus', $flags
+).SetValue($blueBuffer, 'not-proven')
+$itemBufferType.GetField('Scopes', $flags).GetValue($blueBuffer).Add($blueScope)
+$stateType.GetField('ItemBuffers', $flags).GetValue($state).Add(6001, $blueBuffer)
+$blueAnalysis = $analyzeSelected.Invoke($null, @($state, 'blue'))
+$blueRisk = $blueAnalysis['productionRisk']
+$blueSatisfied = @($blueRisk['satisfiedExactTargets'] | Where-Object {
+    $_['itemId'] -eq 6001
+})
+if ($blueRisk['actionable'].Count -ne 0 -or
+    $blueSatisfied.Count -ne 1 -or
+    $blueSatisfied[0]['scope'] -cne 'entire-star-cluster' -or
+    -not $blueSatisfied[0]['targetSatisfied'] -or
+    -not $blueSatisfied[0]['demandDeficit']) {
+    throw 'A satisfied cluster Cube target did not suppress scope-local demand risk.'
 }
 
 $extraFinding = [Collections.Generic.Dictionary[string,object]]::new()

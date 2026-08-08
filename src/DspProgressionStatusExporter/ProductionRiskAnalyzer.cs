@@ -40,6 +40,7 @@ namespace DspProgressionStatusExporter
         public double Thinness;
         public bool DemandDeficit;
         public bool TargetDeficit;
+        public bool TargetSatisfied;
         public bool RunwayAvailable;
         public double RunwayMinutes;
         public bool DepletionMinutesAvailable;
@@ -66,6 +67,7 @@ namespace DspProgressionStatusExporter
                 { "thinness", Math.Round(Thinness, 4) },
                 { "demandDeficit", DemandDeficit },
                 { "targetDeficit", TargetDeficit },
+                { "targetSatisfied", TargetSatisfied },
                 { "producedPerMinute", Math.Round(ProducedPerMinute, 3) },
                 { "consumedPerMinute", Math.Round(ConsumedPerMinute, 3) },
                 { "exactTargetPerMinute", ExactTargetPerMinute > 0.0
@@ -156,6 +158,14 @@ namespace DspProgressionStatusExporter
                 ExceedsTolerance(
                     result.ExactTargetPerMinute,
                     result.ProducedPerMinute);
+            result.TargetSatisfied = result.ExactTargetPerMinute > 0.0 &&
+                result.ProducedPerMinute >= result.ExactTargetPerMinute;
+
+            if (result.TargetSatisfied)
+            {
+                result.State = "balanced";
+                return result;
+            }
 
             double netDepletionPerMinute =
                 result.ConsumedPerMinute - result.ProducedPerMinute;

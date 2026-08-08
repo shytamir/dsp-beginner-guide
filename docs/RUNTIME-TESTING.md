@@ -147,11 +147,35 @@ Use a mature GREEN or WHITE line with ready ten-minute history:
    observe several refreshes. Existing same-severity members must not churn;
    a newly starved risk may displace one draining member.
 
+## CUBE-TARGET-RISK-01 focused gate
+
+Use the diagnostic DLL with ready ten-minute history. Test BLUE or RED first,
+then repeat the target-met check once in WHITE.
+
+1. Run Cube production at or above the selected phase goal: 20/min for BLUE or
+   RED, 40/min for WHITE. Start research that consumes Cubes faster than they
+   are produced, using an existing stored surplus so consumption remains above
+   production.
+2. Keep the production rate at or above the goal through at least one panel
+   refresh. Confirm there is no Cube draining/starved row, Cube Next Action,
+   depletion note, or risk glyph. Save one diagnostic snapshot in this state.
+3. Without stopping research, reduce Cube production below the phase goal but
+   leave accessible stock. Confirm the established draining presentation can
+   appear after refresh.
+4. Stop Cube production and allow its accessible buffer to empty while demand
+   remains established. Confirm the established starved presentation can
+   appear.
+5. Restore production to the exact goal. Confirm the Cube risk clears while
+   the fixed objective and Cube-rate rail remain correct.
+6. Repeat steps 1-2 in WHITE at 40/min. Confirm other genuinely actionable
+   WHITE input risks remain eligible and both DLL variants retain their
+   expected snapshot-control behavior. Report new warnings or exceptions.
+
 ## Snapshot and performance
 
 - `Save snapshot` writes one JSON only when clicked and reports success or
   failure for two seconds.
-- The JSON is no larger than 256 KiB and names snapshot schema `2.14`.
+- The JSON is no larger than 256 KiB and names snapshot schema `2.15`.
 - It contains focused selected-phase evidence and explicit coverage or
   omission diagnostics, not broad factory dumps.
 - Leave the panel visible for one minute and hidden for one minute. Report any

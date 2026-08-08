@@ -139,6 +139,9 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   target or enumerate every healthy mall product.
 - Exact production gates are used only where that checklist names an exact
   pace: Blue 20/min, Red 20/min, and White 40/min.
+- For those exact-rate Cube phases, demand-driven risk stays quiet while the
+  current Cube rate meets or exceeds the goal, even if faster research draws
+  down stored surplus.
 - WHITE keeps its configured-Lab and stored-White-Cube evidence concise and
   reports the strongest authoritative Mission Completed state available.
 - ILS presents only the active preparation, expedition, or research-rush
@@ -155,7 +158,7 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.14 exports conclusions, production-risk terms,
+- Compact snapshot schema 2.15 exports conclusions, production-risk terms,
   provenance, collector health, and only the focused evidence needed to audit
   those conclusions.
 - The click-through panel reuses DSP's vein-label font, material, and outline,

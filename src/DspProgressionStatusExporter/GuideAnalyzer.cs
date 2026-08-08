@@ -120,7 +120,7 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "3.2" },
+                { "analysisVersion", "3.3" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },
@@ -161,6 +161,7 @@ namespace DspProgressionStatusExporter
             selected = null;
             int evaluated = 0;
             var orderedRisks = new List<OrderedRisk>();
+            var satisfiedExactTargets = new List<object>();
             RiskItemSpec[] specs;
             if (!RiskItems.TryGetValue(phaseId ?? "", out specs))
                 specs = new RiskItemSpec[0];
@@ -170,9 +171,16 @@ namespace DspProgressionStatusExporter
                 RiskItemSpec spec = specs[specIndex];
                 ProductionRiskResult itemRisk = null;
                 ObservedItemBufferEvidence buffer;
+                bool targetSatisfied = ExactTargetSatisfied(state, spec);
                 bool hasLocalScopes = state.ItemBuffers.TryGetValue(
                     spec.ItemId, out buffer) && buffer.Scopes.Count > 0;
-                if (hasLocalScopes)
+                if (targetSatisfied)
+                {
+                    itemRisk = ProductionRiskAnalyzer.Evaluate(
+                        ClusterRiskInput(state, spec));
+                    evaluated++;
+                }
+                else if (hasLocalScopes)
                 {
                     foreach (ObservedBufferScopeEvidence scope in buffer.Scopes)
                     {
@@ -203,6 +211,8 @@ namespace DspProgressionStatusExporter
                     itemRisk = WorseRisk(itemRisk, result);
                 }
                 selected = WorseRisk(selected, itemRisk);
+                if (itemRisk != null && itemRisk.TargetSatisfied)
+                    satisfiedExactTargets.Add(itemRisk.Export());
                 if (itemRisk != null && itemRisk.Actionable)
                     orderedRisks.Add(new OrderedRisk {
                         Result = itemRisk,
@@ -218,10 +228,11 @@ namespace DspProgressionStatusExporter
                 actionable.Add(risk.Result.Export());
 
             return new Dictionary<string, object> {
-                { "contractVersion", "1.1" },
+                { "contractVersion", "1.2" },
                 { "basis", "Deterministic selected-phase evaluation from scope-matched native rates and conservative accessible-buffer evidence." },
                 { "evaluatedItemScopes", evaluated },
                 { "actionable", actionable },
+                { "satisfiedExactTargets", satisfiedExactTargets },
                 { "selected", selected != null ? (object)selected.Export() : null }
             };
         }
@@ -243,6 +254,17 @@ namespace DspProgressionStatusExporter
                 if (depletion != 0) return depletion;
             }
             return left.PhaseOrder.CompareTo(right.PhaseOrder);
+        }
+
+        private static bool ExactTargetSatisfied(
+            ObservedGameState state,
+            RiskItemSpec spec)
+        {
+            if (spec.ExactTargetPerMinute <= 0.0) return false;
+            ObservedItemFlow flow;
+            return state.ItemFlows.TryGetValue(spec.ItemId, out flow) &&
+                flow != null && flow.OneMinuteAvailable &&
+                flow.ProducedPerMinute >= spec.ExactTargetPerMinute;
         }
 
         private static ProductionRiskInput ClusterRiskInput(

@@ -565,7 +565,36 @@ function Assert-SingleDrainFinding {
     }
 }
 
+function Assert-TargetMetSuppressesDemandRisk {
+    param(
+        [string]$PhaseId,
+        [int]$ItemId,
+        [double]$Target
+    )
+    $state = New-ObservedState
+    Set-ObservedField $true 'ProductionWindowReady' $state
+    Add-ObservedFlow $state $ItemId $Target ($Target + 10.0)
+    $analysis = $analyzeSelected.Invoke($null, @($state, $PhaseId))
+    $risk = $analysis['productionRisk']
+    $satisfied = @($risk['satisfiedExactTargets'] | Where-Object {
+        $_['itemId'] -eq $ItemId
+    })
+    if ($risk['actionable'].Count -ne 0 -or
+        $analysis['findings'].Count -ne 0 -or
+        $satisfied.Count -ne 1 -or
+        -not $satisfied[0]['targetSatisfied'] -or
+        -not $satisfied[0]['demandDeficit']) {
+        throw "$PhaseId presents demand risk despite meeting its exact Cube target."
+    }
+}
+
+Assert-TargetMetSuppressesDemandRisk 'blue' 6001 20.0
+Assert-TargetMetSuppressesDemandRisk 'red' 6002 20.0
+Assert-TargetMetSuppressesDemandRisk 'white' 6006 40.0
+
 Assert-SingleDrainFinding 'purple' 1402 'production-risk-1402' 'Particle Broadband'
+Assert-SingleDrainFinding 'blue' 6001 'production-risk-6001' 'Blue Cubes'
+Assert-SingleDrainFinding 'red' 6002 'production-risk-6002' 'Red Cubes'
 Assert-SingleDrainFinding 'yellow' 1118 'production-risk-1118' 'Titanium Crystals'
 Assert-SingleDrainFinding 'green' 1305 'production-risk-1305' 'Quantum Chips'
 Assert-SingleDrainFinding 'white' 6002 'production-risk-6002' 'Red Cubes'
@@ -637,8 +666,8 @@ $pluginSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\Plugin.cs'
 )
-if (-not $pluginSource.Contains('SchemaVersion = "2.14"')) {
-    throw 'Snapshot schema version is not 2.14.'
+if (-not $pluginSource.Contains('SchemaVersion = "2.15"')) {
+    throw 'Snapshot schema version is not 2.15.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

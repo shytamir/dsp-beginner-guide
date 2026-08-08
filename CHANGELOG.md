@@ -4,6 +4,13 @@
 
 ### Changed
 
+- Implemented `CUBE-TARGET-RISK-01`: BLUE, RED, and WHITE no longer present a
+  demand-driven Cube risk while current production equals or exceeds their
+  exact 20/min, 20/min, or 40/min phase goal. Diagnostics preserve the raw
+  demand deficit and now identify target satisfaction separately. Rejected RED
+  coproduct diagnosis as contrary to the adopted contract and disproportionate
+  to attribute reliably. Advanced guide analysis to 3.3, production-risk
+  output to 1.2, and compact snapshot schema to 2.15.
 - Accepted the `CUBE-BRANCH-01` runtime gate, including the GREEN-style YELLOW
   and PURPLE terminal-input presentation and the ILS starter-planet exclusion,
   without a reported regression. Rejected the supposed RED-to-ILS Drive Engine

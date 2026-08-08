@@ -26,8 +26,8 @@ tracked separately and is not part of the mod roadmap.
 The cycle's concise WHITE presentation, native typography, and GREEN-style
 YELLOW/PURPLE terminal-input stories have passed release-owner runtime
 acceptance. The accepted CUBE gate also covers the ILS hotfix proving homeworld
-Silicon cannot select the expedition stage. The next roadmap candidate is
-EARLY-RISK-01. The reported Drive Engine Lv2 failure was rejected because it
+Silicon cannot select the expedition stage. CUBE-TARGET-RISK-01 now awaits
+runtime validation. The reported Drive Engine Lv2 failure was rejected because it
 conflated the preparation requirement at technology `2902` with the later,
 intentional Drive Engine Lv3 requirement at technology `2903`. Any recurrence
 requires a screenshot and diagnostic snapshot from the same state before it
@@ -98,6 +98,12 @@ a real, actionable shortfall. Healthy supporting chains do not create
 completed clutter. Mission Completed changes WHITE to `Mission Accomplished!`
 without navigating elsewhere.
 
+For BLUE, RED, and WHITE, a current Cube rate equal to or greater than the
+phase's exact goal suppresses demand-driven production-risk presentation even
+when faster research is drawing down stored surplus. Raw production,
+consumption, and demand-deficit evidence remain diagnostic. Below-target and
+non-exact risks retain the normal analyzer rules.
+
 ## Architecture
 
 ```text
@@ -153,7 +159,7 @@ ILS; SPHERE to DYSON; WARP to GREEN; LOGISTICS and COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.14 serializes the selected-phase conclusions used by the
+Snapshot schema 2.15 serializes the selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. It
 includes provenance, playtime, research and Cube aggregates, selection
 diagnostics, Mission Completed progress when available, focused evidence,
@@ -211,10 +217,10 @@ Intermediate branch components and branch progression are not modeled.
 | Contract | Version |
 |---|---:|
 | Release line | 2.0.x |
-| Snapshot schema | 2.14 |
+| Snapshot schema | 2.15 |
 | Normalized state | 2.2 |
 | Guide selection | 1.6 |
-| Guide analysis | 3.2 |
+| Guide analysis | 3.3 |
 | Progression | 3.1 |
 | Panel | 2.8 |
 
