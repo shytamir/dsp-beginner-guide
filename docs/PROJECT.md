@@ -26,12 +26,16 @@ tracked separately and is not part of the mod roadmap.
 The cycle's concise WHITE presentation, native typography, and GREEN-style
 YELLOW/PURPLE terminal-input stories have passed release-owner runtime
 acceptance. The accepted CUBE gate also covers the ILS hotfix proving homeworld
-Silicon cannot select the expedition stage. CUBE-TARGET-RISK-01 now awaits
-runtime validation. The reported Drive Engine Lv2 failure was rejected because it
-conflated the preparation requirement at technology `2902` with the later,
-intentional Drive Engine Lv3 requirement at technology `2903`. Any recurrence
-requires a screenshot and diagnostic snapshot from the same state before it
-can re-enter the roadmap.
+Silicon cannot select the expedition stage. CUBE-TARGET-RISK-01 has also passed
+release-owner acceptance: ready diagnostic evidence proved exact-target
+suppression and below-target draining in RED, and the public variant reproduced
+the pertinent presentation states without a regression. The shared BLUE, RED,
+and WHITE rule remains covered deterministically; a separate WHITE runtime
+capture was not required for acceptance. The reported Drive Engine Lv2 failure
+was rejected because it conflated the preparation requirement at technology
+`2902` with the later, intentional Drive Engine Lv3 requirement at technology
+`2903`. Any recurrence requires a screenshot and diagnostic snapshot from the
+same state before it can re-enter the roadmap.
 
 ## Purpose and scope
 

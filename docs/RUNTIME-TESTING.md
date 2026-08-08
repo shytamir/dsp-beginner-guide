@@ -147,7 +147,7 @@ Use a mature GREEN or WHITE line with ready ten-minute history:
    observe several refreshes. Existing same-severity members must not churn;
    a newly starved risk may displace one draining member.
 
-## CUBE-TARGET-RISK-01 focused gate
+## CUBE-TARGET-RISK-01 focused regression
 
 Use the diagnostic DLL with ready ten-minute history. Test BLUE or RED first,
 then repeat the target-met check once in WHITE.

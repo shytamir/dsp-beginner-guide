@@ -4,6 +4,11 @@
 
 ### Changed
 
+- Accepted the `CUBE-TARGET-RISK-01` runtime gate after ready RED diagnostics
+  proved target-met demand suppression and below-target draining, and the
+  public DLL reproduced the pertinent presentation states without regression.
+  The shared exact-target mechanism and deterministic phase coverage made a
+  separate WHITE runtime capture unnecessary for acceptance.
 - Implemented `CUBE-TARGET-RISK-01`: BLUE, RED, and WHITE no longer present a
   demand-driven Cube risk while current production equals or exceeds their
   exact 20/min, 20/min, or 40/min phase goal. Diagnostics preserve the raw

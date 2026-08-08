@@ -16,7 +16,7 @@ are deliberately excluded and remain tracked separately outside this roadmap.
 | 2 | `NATIVE-TYPE-01` — match native game-label typography | Accepted | Complete. |
 | 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW terminal-input states | Accepted | Complete, including the ILS starter-planet hotfix. |
 | 4 | `RED-DRIVE-II-01` — reported RED-to-ILS Drive Engine target | Rejected | Closed as an unsupported Lv2/Lv3 conflation; any recurrence requires a same-state screenshot and diagnostic snapshot. |
-| 5 | `CUBE-TARGET-RISK-01` — exact Cube goals dominate research demand | Runtime validation required | Confirm BLUE, RED, and WHITE stay quiet at their exact goals and retain warnings below them. |
+| 5 | `CUBE-TARGET-RISK-01` — exact Cube goals dominate research demand | Accepted | Complete; diagnostic evidence and public presentation validation passed. |
 | 6 | `PHOTON-CONTINUITY-01` — tolerate isolated receiver blips | Policy required | Fix the allowed interruption and sustained-failure timings before implementation. |
 
 RED coproduct diagnosis is rejected for this cycle because it contradicts the
@@ -162,7 +162,7 @@ Embedded Basic Regular remains the soft fallback, and diagnostics expose the
 resolved resource and settings. After correcting the first gate's fallback,
 the release owner confirmed the native presentation visibly matches the game.
 
-## Current and remaining roadmap work
+## Roadmap story records
 
 ### CUBE-BRANCH-01
 
@@ -276,9 +276,15 @@ deliberately shrinking surplus buffer is not presented as a factory failure.
 
 #### Implementation status
 
-Implemented for the runtime gate. Exact-target satisfaction is exported as a
-separate diagnostic term while presentation remains quiet; below-target and
-zero-target behavior retain the established analyzer path.
+Accepted after release-owner validation. Post-warmup RED snapshots proved that
+30/min production against 60/min consumption and 21/min against 50/min remain
+quiet and diagnostically target-satisfied, while 15/min against 45/min becomes
+actionable and draining. The public variant reproduced the pertinent states
+without a presentation regression. Because BLUE, RED, and WHITE use the same
+exact-target mechanism and deterministic coverage, a separate WHITE runtime
+capture was not required. Exact-target satisfaction remains a separate
+diagnostic term; below-target and zero-target behavior retain the established
+analyzer path.
 
 ### PHOTON-CONTINUITY-01
 
