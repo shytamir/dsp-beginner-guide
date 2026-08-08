@@ -72,7 +72,7 @@ when validating the Thunderstore surface.
 - WHITE: concise White-Cube research, configured-Lab and stored-Cube evidence,
   the 40/min gate, and Mission Completed state remain the stable contract.
 
-## WHITE-CONCISE-01 focused gate
+## WHITE-CONCISE-01 focused regression
 
 This gate also validates `NATIVE-TYPE-01`. Use the diagnostic DLL and one
 WHITE-ready playthrough. Capture the panel and one snapshot in each available
@@ -100,7 +100,7 @@ state; reloading purpose-built saves is fine.
    resolved native Text source, font, material, and attached mesh effects.
    Report any fallback warning or new plugin error.
 
-## CUBE-BRANCH-01 focused gate
+## CUBE-BRANCH-01 focused regression
 
 Use the diagnostic DLL and saves where YELLOW and PURPLE production already
 exist. For each phase, keep the three Cube Labs configured throughout and use
@@ -171,27 +171,29 @@ then repeat the target-met check once in WHITE.
    WHITE input risks remain eligible and both DLL variants retain their
    expected snapshot-control behavior. Report new warnings or exceptions.
 
-## PHOTON-CONTINUITY-01 focused gate
+## PHOTON-CONTINUITY-01 focused regression
 
-Use four Ray Receivers configured for Critical Photon production with a stable
-Graviton Lens supply. Begin only after the objective has remained complete for
-more than 60 seconds.
+The exact tolerance boundary is deterministic rather than a manual timing
+exercise. Run `build.cmd` and confirm the receiver-continuity suite accepts
+zero, one, and two unhealthy samples, rejects the third, rejects an unready
+window, and accepts recovery after an old failure leaves the window.
 
-1. Briefly interrupt one receiver's Photon Generation mode or lens state long
-   enough to cross no more than two five-second collection ticks, then restore
-   it. Keep all four receivers currently configured and lensed afterward.
-2. Wait for a panel refresh. Confirm the four-receiver continuity objective
-   remains complete without flicker. Save a diagnostic snapshot.
-3. Interrupt the same receiver long enough to cross at least three collection
-   ticks, then restore its current configuration and lens before checking the
-   panel. Confirm the continuity objective becomes incomplete. Save a second
-   diagnostic snapshot.
-4. Leave the array healthy for about 65 seconds so the interruption ages out
-   of the retained window. Confirm the objective becomes complete again without
-   a separate recovery state.
-5. Repeat the visible two-sample and three-sample boundary with the public DLL.
+For runtime integration, use four fully warmed Ray Receivers configured for
+Critical Photon production with a stable Graviton Lens supply:
+
+1. Confirm the healthy four-receiver objective becomes complete after its
+   continuity window is ready.
+2. Create a sustained real failure by removing one receiver's lens or changing
+   its operating mode. Confirm the objective becomes incomplete.
+3. Restore the receiver and leave the array healthy. Confirm completion returns
+   after retained failures age out, without a separate recovery state.
+4. Repeat the visible healthy, failed, and restored states with the public DLL.
    Confirm the snapshot control remains absent and report any new warnings,
    exceptions, or receiver-status regressions.
+
+Do not attempt to manufacture a one- or two-sample runtime interruption by
+switching receiver modes. The mode change also resets strength and warmup, so
+it cannot isolate the intended boundary reliably.
 
 ## Snapshot and performance
 

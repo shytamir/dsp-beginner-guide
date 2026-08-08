@@ -4,6 +4,13 @@
 
 ### Changed
 
+- Accepted the `PHOTON-CONTINUITY-01` gate after deterministic checks proved
+  the two-sample boundary in both builds and release-owner runtime validation
+  proved sustained failure and natural recovery. A schema-2.16 snapshot also
+  confirmed that recovered current receiver state remained blocked while six
+  to eight unhealthy samples were retained. Reconciled the completed
+  maintenance roadmap as a historical record and returned the project to
+  maintenance mode with no active tasks.
 - Implemented `PHOTON-CONTINUITY-01`: a ready 60-second receiver history now
   tolerates up to two unhealthy samples as telemetry noise, while the third
   revokes sustained continuity. Current Photon Generation configuration and

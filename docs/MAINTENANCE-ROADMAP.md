@@ -1,337 +1,133 @@
-# DSP Guide Check Maintenance Roadmap
+# DSP Guide Check Completed Maintenance Roadmap
 
 ## Status and authority
 
-This is the active, bounded maintenance roadmap subordinate to
-[`PROJECT.md`](PROJECT.md). The released guide 2.0 product remains complete;
-this cycle addresses findings accepted from a full critical-path playthrough.
+This bounded maintenance cycle concluded after the release owner's full
+critical-path playthrough and focused runtime gates. It remained subordinate
+to [`PROJECT.md`](PROJECT.md), which continued to define the product contract.
+No active implementation story or validation gate remained in this roadmap.
 
-Work proceeds in the order below. An item becomes implementation work only
-when its story or required diagnostic gate is ready. Guide-authoring changes
-are deliberately excluded and remain tracked separately outside this roadmap.
+Guide-authoring observations were kept outside the mod roadmap. RED coproduct
+diagnosis was also excluded because it contradicted the adopted concise RED
+contract and would have required disproportionate engineering to attribute
+belt, sorter, tank, depot, and logistics backpressure reliably.
 
-| Priority | Item | State | Next gate |
+| Priority | Item | Resolution | Outcome |
 |---:|---|---|---|
-| 1 | `WHITE-CONCISE-01` — concise WHITE objectives and status | Accepted | Complete. |
-| 2 | `NATIVE-TYPE-01` — match native game-label typography | Accepted | Complete. |
-| 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW terminal-input states | Accepted | Complete, including the ILS starter-planet hotfix. |
-| 4 | `RED-DRIVE-II-01` — reported RED-to-ILS Drive Engine target | Rejected | Closed as an unsupported Lv2/Lv3 conflation; any recurrence requires a same-state screenshot and diagnostic snapshot. |
-| 5 | `CUBE-TARGET-RISK-01` — exact Cube goals dominate research demand | Accepted | Complete; diagnostic evidence and public presentation validation passed. |
-| 6 | `PHOTON-CONTINUITY-01` — tolerate isolated receiver blips | Runtime validation required | Confirm two unhealthy samples remain noise and the third revokes continuity. |
+| 1 | `WHITE-CONCISE-01` | Accepted | WHITE objectives and Mission Completed status became concise without removing stored-Cube evidence. |
+| 2 | `NATIVE-TYPE-01` | Accepted | Panel text and Cube rates adopted the game's vein-label typography and retained a soft fallback. |
+| 3 | `CUBE-BRANCH-01` | Accepted | YELLOW and PURPLE adopted GREEN-style terminal-input tracking; the gate also accepted the ILS starter-planet exclusion. |
+| 4 | `RED-DRIVE-II-01` | Rejected | Evidence showed an unsupported Drive Engine Lv2/Lv3 conflation rather than a product defect. |
+| 5 | `CUBE-TARGET-RISK-01` | Accepted | Exact BLUE, RED, and WHITE Cube goals suppressed demand-only risk while the target remained satisfied. |
+| 6 | `PHOTON-CONTINUITY-01` | Accepted | Receiver continuity tolerated two unhealthy samples and failed on the third retained sample. |
 
-RED coproduct diagnosis is rejected for this cycle because it contradicts the
-adopted concise RED contract and would require disproportionate engineering to
-attribute belt, sorter, tank, depot, and logistics backpressure truthfully.
-Other production-risk enhancements require a specific future feature request.
+## Historical story record
 
-## WHITE-CONCISE-01 — Concise WHITE objectives and status
+### WHITE-CONCISE-01
 
-### User story
+The story preserved stored White Cubes as authoritative readiness evidence but
+removed repeated Matrix aliases, duplicated Cube rates, research-cost flavor
+text, and unnecessary Pending instructions. WHITE retained the configured-Lab
+count, stored-Cube count, and the strongest authoritative Mission Completed
+state: not queued, queued, progressing, or complete.
 
-As a player completing WHITE, I want the panel to state the lab, stored-Cube,
-and Mission Completed facts in compact language so I can understand the phase
-at a glance without rereading rates, costs, aliases, or flavor text already
-communicated elsewhere.
+Diagnostic evidence confirmed unqueued and active Mission Completed progress.
+The release owner accepted the concise presentation without a discovered
+regression, and both DLL build contracts passed.
 
-### Product decisions
+### NATIVE-TYPE-01
 
-- Stored White Cubes remain visible. This overrides the playthrough suggestion
-  to omit storage and preserves the authoritative WHITE readiness contract.
-- Use `White Cubes` in player-facing text. Do not repeat `Universe Matrix` or
-  `Universe Matrices` after the phase has established the item.
-- The fixed Cube-rate rail remains the rate presentation. Do not repeat the
-  measured White-Cube rate in objective evidence.
-- Keep the configured-lab count because it directly measures the ten-lab
-  objective.
-- Do not repeatedly explain the 4,000-Cube research cost.
+The panel adopted the installed game's live vein-label Text style from
+`UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText`. It reused that Text
+component's font, material, font style, line spacing, and attached Shadow or
+Outline effects once during panel creation. A bounded loaded-node lookup
+covered cases where the serialized Text was not ready, while embedded Basic
+Regular remained the soft fallback.
 
-### Required presentation
-
-The WHITE objective set continues to represent the same three facts:
-
-1. White Cubes are researched.
-2. Ten configured Labs sustain the required production, with concise evidence
-   containing the configured-Lab count and stored White-Cube count.
-3. Mission Completed is pending, queued, progressing, or complete.
-
-Use compact state language equivalent to:
-
-- `White Cubes researched`
-- `7/10 labs configured; 1,240 White Cubes stored`
-- `Mission Completed not queued`
-- `Mission Completed queued`
-- `Mission Completed 37% done`
-- `Mission Completed complete`
-
-Until Mission Completed is complete, its single Pending instruction is:
-`Complete Mission Completed research.` Do not mention 4,000 White Cubes there.
-
-### Evidence and failure behavior
-
-- Preserve the existing authoritative research, configured-recipe, production,
-  and owned-storage evidence.
-- Obtain active Mission Completed progress from an authoritative game research
-  field. Do not infer progress from Cube consumption or inventory deltas.
-- If exact progress is unavailable, fail softly to the strongest known state
-  (`not queued` or `queued`) without displaying a fabricated percentage.
-- This story changes presentation, not the 40/min readiness threshold, the
-  ten-Lab requirement, storage collection, phase selection, or completion
-  semantics.
-
-### Acceptance criteria
-
-- WHITE uses `White Cubes` consistently and contains no repeated parenthetical
-  Matrix alias.
-- The lab evidence shows configured Labs and stored White Cubes but does not
-  duplicate the Cube rate.
-- Mission Completed shows the most precise authoritative compact state
-  available.
-- Pending contains only the concise Mission Completed action while incomplete.
-- Completed objectives, risk rows, Next Actions, navigation, collapse, the
-  Cube-rate rail, and both public and diagnostic builds remain functional.
-- Deterministic model checks cover unresearched White Cubes, incomplete Labs,
-  unqueued Mission Completed, queued research, active progress when available,
-  and completion.
-- Runtime validation captures the unqueued, queued or active, and completed
-  presentations; a diagnostic snapshot audits the underlying evidence.
-
-### Implementation status
-
-Accepted after diagnostic evidence confirmed authoritative unqueued and active
-Mission Completed progress. The release owner accepted the concise WHITE
-presentation without a discovered regression; both DLL build contracts pass.
-
-## NATIVE-TYPE-01 — Match native game-label typography
-
-### User story
-
-As a player using the guide panel, especially at 4K, I want its text and Cube
-rates to use the same compact, heavy, strongly outlined presentation as DSP's
-world-space labels so the companion reads as part of the game UI instead of a
-visually separate overlay.
-
-### Native reference
-
-The visual references are DSP's Dark Fog element names and the vein labels
-shown when vein-distribution detail is enabled. The desired presentation is
-shorter and heavier than the current Basic Regular text, with a thicker,
-darker outline.
-
-### Scope
-
-- Apply the native presentation to the collapsible panel's headings, objective
-  and status text, navigation labels, and the collapse-proof Cube-rate text.
-- Preserve the published-guide phase icons, Matrix icons, phase colors, risk
-  glyphs, hierarchy, wrapping, alignment, and interaction behavior.
-- `DON'T PANIC` retains its intentionally separate bright-red Comic Sans
-  treatment.
-- Reuse the installed game's runtime font, material, or equivalent native UI
-  styling. Do not copy or redistribute game assets.
-- If the expected runtime resource is unavailable or renamed, fail softly to
-  the current embedded Basic Regular presentation and log at most one concise
-  diagnostic warning.
-
-### Acceptance criteria
-
-- Runtime inspection identifies and documents the exact game font/material
-  source and outline settings used for the chosen native reference.
-- Panel text and Cube rates visibly match the weight, proportions, and dark
-  outline of that reference at 4K.
-- Text remains legible at 1080p and 4K without clipping, new overlap, unstable
-  wrapping, or an excessive increase in panel height.
-- Collapsed and expanded layouts remain correct as the visible Cube count
-  changes.
-- The risk glyph, Cube column, `DON'T PANIC`, navigation, scrolling, and the
-  diagnostic-only snapshot control retain their positions and interaction
-  behavior.
-- Font/material lookup and reuse do not add per-frame searches, allocations,
-  or copied game assets to the repository or package.
-- Both public and diagnostic builds compile cleanly and pass focused runtime
-  screenshots at 1080p and 4K.
-
-### Implementation status
-
-Accepted after release-owner visual validation; both DLL build contracts pass.
-Runtime assembly inspection confirmed the source path
-`UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText`; the panel reuses
-that live Text component's font, material, font style, line spacing, and
-attached Shadow or Outline effects once at creation. A failed first gate proved
-the original Outline requirement was too strict; the corrected lookup also
-checks loaded vein-detail nodes once when the serialized Text is not ready.
-Embedded Basic Regular remains the soft fallback, and diagnostics expose the
-resolved resource and settings. After correcting the first gate's fallback,
-the release owner confirmed the native presentation visibly matches the game.
-
-## Roadmap story records
+The first visual gate exposed an overly strict lookup assumption. After that
+assumption was corrected, the release owner confirmed that panel text and Cube
+rates visibly matched the native presentation without layout or interaction
+regressions.
 
 ### CUBE-BRANCH-01
 
-#### User story
+YELLOW and PURPLE reused GREEN's established terminal-input framework instead
+of introducing branch progression modeling. YELLOW tracked Diamonds and
+Titanium Crystals; PURPLE tracked Processors and Particle Broadband. Each phase
+retained its independent configured-Lab objective, combined positive-storage
+objective, and risk eligibility for both terminal inputs and its Cube.
 
-As a player entering YELLOW or PURPLE, I want the panel to confirm that both
-terminal Cube ingredients are visibly buffered, just as GREEN does, so the
-phase shows the useful convergence state without exposing or modeling each
-internal production branch.
-
-#### Product decisions
-
-- Reuse GREEN's established framework: one stable combined storage objective,
-  one Pending action while either terminal input is absent, and independent
-  production-risk monitoring for the two terminal inputs and the Cube.
-- YELLOW tracks Diamonds and Titanium Crystals. PURPLE tracks Processors and
-  Particle Broadband.
-- Visible storage means the existing normalized owned-item evidence and the
-  same positive-count rule used by GREEN.
-- Do not introduce substages, partial branch objectives, branch-completion
-  state, topology inference, or intermediate-component tracking. In
-  particular, Carbon Nanotubes are not a PURPLE terminal input.
-- Preserve each phase's existing three-configured-Lab continuous-production
-  objective as a separate hard condition.
-
-#### Acceptance criteria
-
-- Each phase exposes exactly one combined terminal-input objective with both
-  owned counts in its evidence.
-- The objective remains blocked when neither or only one terminal input is
-  owned, becomes ready when both counts are positive, and supplies one concise
-  instruction to buffer both inputs while blocked.
-- Draining or starved terminal inputs and Cubes remain independently eligible
-  for the bounded Current Status and Next Actions risk presentation.
-- Compact snapshots contain the two terminal inputs and Cube for the selected
-  phase; PURPLE no longer routes Carbon Nanotube evidence.
-- GREEN behavior is unchanged, objectives remain stable, and no evidence can
-  change player-owned phase selection.
-- Public and diagnostic DLLs build and pass the focused deterministic contract
-  checks before runtime validation.
-
-#### Implementation status
-
-Accepted after release-owner runtime validation. YELLOW and PURPLE follow the
-GREEN-style combined terminal-input contract without branch progression
-modeling, and no requested regression was reported. The accepted gate also
-covers the hotfix excluding the native birth planet from ILS expedition-stage
-evidence, so starter-planet Stone-to-Silicon production cannot skip
-preparation. Both DLL build contracts and the focused deterministic checks
-pass.
+The accepted gate also covered the ILS hotfix that excluded the native birth
+planet from expedition evidence. Starter-planet Stone-to-Silicon production
+therefore no longer selected the outpost stage. Public and diagnostic builds,
+focused deterministic checks, and release-owner runtime validation passed.
 
 ### RED-DRIVE-II-01
 
-This candidate is rejected because its original diagnosis conflates two
-different ILS requirements. Preparation correctly checks technology `2902`,
-Drive Engine Lv2. The later research-rush chain intentionally checks technology
-`2903`, Drive Engine Lv3, before Interstellar Logistics System. DSP's runtime
-prototype name may render that later target as only `Drive Engine`, making a
-correct Lv3 requirement look like an uncleared Lv2 requirement.
+The candidate was rejected because it conflated two separate ILS requirements.
+Preparation correctly checked technology `2902`, Drive Engine Lv2. The later
+research-rush chain intentionally checked technology `2903`, Drive Engine Lv3,
+before Interstellar Logistics System. DSP's runtime prototype name sometimes
+rendered the later target as only `Drive Engine`, which made the correct Lv3
+requirement look like an uncleared Lv2 requirement.
 
-No implementation or replacement naming story is authorized from this claim.
-If the behavior is reported again, require both a screenshot showing the panel
-label, objective state, and Pending row and a diagnostic snapshot captured from
-that same game state. The evidence must distinguish technology `2902` from
-`2903` before a new candidate can be authored. Until then the current IDs,
-completion semantics, names, and ILS stage logic remain unchanged.
+No naming or completion change was authorized. The cycle established a
+same-state screenshot and diagnostic snapshot, with evidence distinguishing
+technologies `2902` and `2903`, as prerequisites for accepting any future
+recurrence as a new maintenance candidate.
 
 ### CUBE-TARGET-RISK-01
 
-#### User story
+The story established that an exact phase goal dominated demand-driven Cube
+risk. BLUE at 20/min, RED at 20/min, and WHITE at 40/min remained quiet when
+current cluster production met or exceeded the goal, even when faster research
+consumed stored surplus. Diagnostics preserved the unmodified rates and raw
+demand deficit while identifying target satisfaction separately. Below-target
+and non-exact risks retained the established analyzer behavior.
 
-As a player researching faster than the guide's accepted Cube pace, I want the
-panel to stay quiet while Cube production still meets that phase goal so a
-deliberately shrinking surplus buffer is not presented as a factory failure.
-
-#### Product decisions
-
-- An exact phase goal dominates demand-driven Cube risk. When the current
-  cluster Cube production rate is equal to or greater than the goal, suppress
-  draining and starved presentation caused solely by higher consumption.
-- Apply the rule consistently to BLUE at 20/min, RED at 20/min, and WHITE at
-  40/min. These are the only phases with exact Cube production goals.
-- Preserve the raw production and consumption rates and the observed demand
-  deficit in diagnostics. Record separately that the exact target is
-  satisfied; do not rewrite the measured demand to manufacture balance.
-- When production falls below the exact goal, retain the existing target,
-  demand, runway, draining, and starvation analysis without delay or a new
-  tolerance policy.
-- Do not change risk behavior for phases or items without an exact target.
-- Do not change phase objectives, Cube-rate presentation, selection, list
-  stability, or the three-row Current Status limit.
-- RED coproduct diagnosis is explicitly outside this story and rejected for
-  the current roadmap.
-
-#### Acceptance criteria
-
-- Production exactly at and above an exact Cube goal produces no actionable
-  demand-risk row, Next Action, depletion note, or risk glyph even when
-  consumption is higher.
-- The diagnostic result remains auditable as target-satisfied and retains the
-  raw demand-deficit fact and unmodified rates.
-- Production below the exact goal can still become draining or starved under
-  the existing evidence rules.
-- Local buffer evidence cannot override a satisfied cluster-level exact goal.
-- BLUE, RED, and WHITE share the rule; YELLOW, PURPLE, GREEN, and non-Cube
-  risks remain unchanged.
-- Deterministic risk and phase-contract checks cover equality, above-target,
-  below-target, and scope-local evidence while the cluster goal is met.
-- Both public and diagnostic DLLs build and retain their expected control
-  surfaces before runtime validation.
-
-#### Implementation status
-
-Accepted after release-owner validation. Post-warmup RED snapshots proved that
-30/min production against 60/min consumption and 21/min against 50/min remain
-quiet and diagnostically target-satisfied, while 15/min against 45/min becomes
-actionable and draining. The public variant reproduced the pertinent states
-without a presentation regression. Because BLUE, RED, and WHITE use the same
-exact-target mechanism and deterministic coverage, a separate WHITE runtime
-capture was not required. Exact-target satisfaction remains a separate
-diagnostic term; below-target and zero-target behavior retain the established
-analyzer path.
+Post-warmup RED snapshots proved that 30/min production against 60/min
+consumption and 21/min against 50/min remained quiet and target-satisfied,
+while 15/min against 45/min became actionable and draining. The public DLL
+reproduced the pertinent presentation states without regression. The shared
+mechanism and deterministic phase coverage made a separate WHITE runtime
+capture unnecessary for acceptance.
 
 ### PHOTON-CONTINUITY-01
 
-#### User story
+The story retained the existing rolling 60-second receiver history,
+approximately five-second sampling cadence, and ten-sample readiness minimum.
+A ready receiver history remained sustained with zero, one, or two unhealthy
+samples; the third unhealthy sample revoked sustained status. An unhealthy
+sample meant the receiver was not configured for Critical Photon production,
+lacked a Graviton Lens, fell below full strength, or fell below full warmup
+under the existing thresholds.
 
-As a player running a healthy Critical Photon receiver array, I want isolated
-telemetry dips treated as sampling noise so the completed continuity objective
-does not flicker because of momentary receiver variation.
+Current Photon Generation configuration and lens presence remained immediate
+requirements for the four-receiver objective. No recovery state, recovery
+timer, or consecutive-sample model was introduced; status recovered naturally
+as unhealthy samples left the retained window.
 
-#### Product decisions
+Deterministic checks passed the unready, zero-, one-, two-, three-, and
+rolling-recovery boundaries in both builds. Release-owner runtime checks
+confirmed that a sustained receiver interruption revoked the objective and
+that restoring the receiver restored completion without a regression. A
+schema-2.16 diagnostic snapshot then confirmed the retained-history integration:
+all four receivers were currently configured, lensed, full-strength, and
+continuous, while their ready 14-sample histories contained six to eight
+unhealthy samples against the allowance of two; all four correctly remained
+not sustained and the objective remained blocked.
 
-- Retain the existing rolling 60-second receiver window, approximately
-  five-second sampling cadence, and ten-sample readiness minimum.
-- A ready receiver history remains sustained with zero, one, or two unhealthy
-  samples. The third unhealthy sample in the retained window revokes sustained
-  status.
-- A sample is unhealthy when the receiver is not configured for Critical
-  Photon production, is not currently supplied with a Graviton Lens, is below
-  full strength, or is below full warmup under the existing thresholds.
-- Current configuration and lens presence remain immediate requirements for
-  the four-receiver objective. Historical tolerance cannot make a receiver
-  that is presently misconfigured or unlensed qualify.
-- Do not add a recovery state, recovery timer, or consecutive-sample model.
-  Status recovers naturally when enough unhealthy samples leave the rolling
-  window.
-- Do not change the four-receiver requirement, window readiness, phase
-  selection, objective wording, receiver power reporting, or production-rate
-  presentation.
+The exact short-blip boundary was not assigned to manual runtime testing
+because DSP receiver mode changes also reset strength and warmup, making a
+controlled one- or two-sample interruption impractical. The deterministic
+collector-policy checks covered that boundary, while runtime validation covered
+the real interruption, retained-history, recovery, presentation, and logging
+paths.
 
-#### Acceptance criteria
+## Closeout
 
-- A ready history with zero, one, or two unhealthy samples is sustained.
-- A ready history with three unhealthy samples is not sustained.
-- An unready history cannot qualify regardless of sample health.
-- The PHOTON objective still requires four receivers that are currently
-  configured and lensed as well as sustained under the new tolerance.
-- Diagnostic evidence exposes each receiver's retained sample count,
-  unhealthy-sample count, allowed count, and resulting sustained state.
-- Deterministic checks cover the zero-, one-, two-, and three-sample boundary,
-  unready history, natural recovery after an old failure leaves the window,
-  and the immediate current configuration and lens checks.
-- Both public and diagnostic DLLs build cleanly before focused runtime
-  validation.
-
-#### Implementation status
-
-Implemented for the runtime gate. Receiver continuity now tolerates at most
-two unhealthy samples per ready retained history, exposes the policy evidence
-diagnostically, and retains the existing immediate configuration and lens
-requirements.
+The cycle ended with five accepted stories, one evidence-based rejection, and
+no active work. DSP Guide Check returned to maintenance mode pending a
+meaningful guide change, reproducible defect or compatibility regression, or
+an accepted in-scope feature request. This record was reconciled in historical
+tense and was ready for archival without carrying an open status forward.

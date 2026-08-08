@@ -5,10 +5,10 @@
 DSP Guide Check is complete for the adopted DSP Practical Progression Guide
 2.0 contract and is in maintenance mode.
 
-An accepted, bounded maintenance cycle is active following a full critical-path
-playthrough. Its ordered scope and story gates are recorded in the
-[`Maintenance roadmap`](MAINTENANCE-ROADMAP.md). Work outside that list still
-resumes only for:
+The bounded maintenance cycle prompted by the full critical-path playthrough
+concluded. Its reconciled [`completed maintenance roadmap`](MAINTENANCE-ROADMAP.md)
+contains no active implementation story or validation gate and is ready for
+the next archive pass. New work resumes only for:
 
 - a meaningful change to the published guide;
 - a reproducible defect or compatibility regression;
@@ -17,30 +17,15 @@ resumes only for:
 
 Completed stories, migrations, roadmaps, and validation gates are historical
 records under [`docs/archive/`](archive/README.md). They do not represent open
-work or override this document.
+work or override this document. The newly reconciled roadmap remains at its
+stable link until that archive operation occurs.
 
-The active maintenance roadmap does not reopen the guide 2.0 product design or
-make temporary playthrough observations authoritative. Guide-authoring work is
-tracked separately and is not part of the mod roadmap.
-
-The cycle's concise WHITE presentation, native typography, and GREEN-style
-YELLOW/PURPLE terminal-input stories have passed release-owner runtime
-acceptance. The accepted CUBE gate also covers the ILS hotfix proving homeworld
-Silicon cannot select the expedition stage. CUBE-TARGET-RISK-01 has also passed
-release-owner acceptance: ready diagnostic evidence proved exact-target
-suppression and below-target draining in RED, and the public variant reproduced
-the pertinent presentation states without a regression. The shared BLUE, RED,
-and WHITE rule remains covered deterministically; a separate WHITE runtime
-capture was not required for acceptance. The reported Drive Engine Lv2 failure
-was rejected because it conflated the preparation requirement at technology
-`2902` with the later, intentional Drive Engine Lv3 requirement at technology
-`2903`. Any recurrence requires a screenshot and diagnostic snapshot from the
-same state before it can re-enter the roadmap.
-
-PHOTON-CONTINUITY-01 now awaits focused runtime validation. Its existing
-60-second receiver history treats up to two unhealthy samples as noise; the
-third revokes sustained status, while current Photon Generation configuration
-and lens presence remain immediate requirements.
+The completed cycle accepted concise WHITE presentation, native typography,
+GREEN-style YELLOW/PURPLE terminal-input tracking, the ILS starter-planet
+exclusion, exact-target Cube risk suppression, and tolerant PHOTON receiver
+continuity. It rejected the unsupported Drive Engine Lv2 claim and excluded
+RED coproduct diagnosis. Temporary playthrough observations and separate
+guide-authoring work did not become authoritative mod tasks.
 
 ## Purpose and scope
 
