@@ -4,6 +4,12 @@
 
 ### Changed
 
+- Accepted the `CUBE-BRANCH-01` runtime gate, including the GREEN-style YELLOW
+  and PURPLE terminal-input presentation and the ILS starter-planet exclusion,
+  without a reported regression. Rejected the supposed RED-to-ILS Drive Engine
+  II story because current code distinguishes the preparation Lv2 requirement
+  from the later intentional Lv3 research-rush prerequisite; any recurrence
+  now requires a same-state screenshot and diagnostic snapshot.
 - Hotfixed ILS stage selection so production or storage on DSP's native birth
   planet cannot stand in for an interplanetary outpost. The birth-planet ID is
   collected defensively from `GameMain.galaxy.birthPlanetId`; unavailable

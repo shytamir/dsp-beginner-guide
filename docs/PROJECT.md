@@ -23,12 +23,15 @@ The active maintenance roadmap does not reopen the guide 2.0 product design or
 make temporary playthrough observations authoritative. Guide-authoring work is
 tracked separately and is not part of the mod roadmap.
 
-The cycle's concise WHITE presentation and native typography stories have
-passed release-owner runtime acceptance. CUBE-BRANCH-01 now awaits runtime
-validation of the GREEN-style YELLOW/PURPLE terminal-input contract, followed
-by the RED-to-ILS Drive Engine II correction. The pending CUBE gate includes
-an ILS hotfix check proving homeworld Silicon cannot select the expedition
-stage.
+The cycle's concise WHITE presentation, native typography, and GREEN-style
+YELLOW/PURPLE terminal-input stories have passed release-owner runtime
+acceptance. The accepted CUBE gate also covers the ILS hotfix proving homeworld
+Silicon cannot select the expedition stage. The next roadmap candidate is
+EARLY-RISK-01. The reported Drive Engine Lv2 failure was rejected because it
+conflated the preparation requirement at technology `2902` with the later,
+intentional Drive Engine Lv3 requirement at technology `2903`. Any recurrence
+requires a screenshot and diagnostic snapshot from the same state before it
+can re-enter the roadmap.
 
 ## Purpose and scope
 

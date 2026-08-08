@@ -14,8 +14,8 @@ are deliberately excluded and remain tracked separately outside this roadmap.
 |---:|---|---|---|
 | 1 | `WHITE-CONCISE-01` — concise WHITE objectives and status | Accepted | Complete. |
 | 2 | `NATIVE-TYPE-01` — match native game-label typography | Accepted | Complete. |
-| 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW terminal-input states | Runtime validation required | Validate the GREEN-style combined storage objective, terminal-item risks, and unchanged Lab objective. |
-| 4 | `RED-DRIVE-II-01` — correct the RED-to-ILS Drive Engine II target | Validation required | Capture a diagnostic snapshot with Drive Engine II researched but still displayed or pending incorrectly. |
+| 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW terminal-input states | Accepted | Complete, including the ILS starter-planet hotfix. |
+| 4 | `RED-DRIVE-II-01` — reported RED-to-ILS Drive Engine target | Rejected | Closed as an unsupported Lv2/Lv3 conflation; any recurrence requires a same-state screenshot and diagnostic snapshot. |
 | 5 | `EARLY-RISK-01` — BLUE/RED Cube risk and RED refinery backpressure | Validation required | Reproduce above-threshold research drain and each blocked refinery coproduct independently. |
 | 6 | `PHOTON-CONTINUITY-01` — tolerate isolated receiver blips | Policy required | Fix the allowed interruption and sustained-failure timings before implementation. |
 
@@ -161,7 +161,7 @@ Embedded Basic Regular remains the soft fallback, and diagnostics expose the
 resolved resource and settings. After correcting the first gate's fallback,
 the release owner confirmed the native presentation visibly matches the game.
 
-## Remaining ordered validation work
+## Current and remaining roadmap work
 
 ### CUBE-BRANCH-01
 
@@ -205,20 +205,29 @@ internal production branch.
 
 #### Implementation status
 
-Implemented for the runtime gate. Deterministic checks cover empty, one-input,
-and both-input storage states for YELLOW, PURPLE, and unchanged GREEN behavior;
-the diagnostic artifact still requires in-game acceptance. A pre-gate hotfix
-also excludes the native birth planet from ILS expedition-stage evidence, so
-starter-planet Stone-to-Silicon production cannot skip preparation. Its
-focused regression check runs both before and after Drive Engine II research.
+Accepted after release-owner runtime validation. YELLOW and PURPLE follow the
+GREEN-style combined terminal-input contract without branch progression
+modeling, and no requested regression was reported. The accepted gate also
+covers the hotfix excluding the native birth planet from ILS expedition-stage
+evidence, so starter-planet Stone-to-Silicon production cannot skip
+preparation. Both DLL build contracts and the focused deterministic checks
+pass.
 
 ### RED-DRIVE-II-01
 
-Validate the Drive Engine II target that carries the player from RED into ILS.
-With ILS selected and Drive Engine II visibly researched, capture the incorrect
-label, completion state, and Pending row plus one diagnostic snapshot. Use that
-evidence to locate whether the defect is the technology ID, unlocked-tech
-collection, level-aware naming, or stale presentation.
+This candidate is rejected because its original diagnosis conflates two
+different ILS requirements. Preparation correctly checks technology `2902`,
+Drive Engine Lv2. The later research-rush chain intentionally checks technology
+`2903`, Drive Engine Lv3, before Interstellar Logistics System. DSP's runtime
+prototype name may render that later target as only `Drive Engine`, making a
+correct Lv3 requirement look like an uncleared Lv2 requirement.
+
+No implementation or replacement naming story is authorized from this claim.
+If the behavior is reported again, require both a screenshot showing the panel
+label, objective state, and Pending row and a diagnostic snapshot captured from
+that same game state. The evidence must distinguish technology `2902` from
+`2903` before a new candidate can be authored. Until then the current IDs,
+completion semantics, names, and ILS stage logic remain unchanged.
 
 ### EARLY-RISK-01
 
