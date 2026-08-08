@@ -20,7 +20,8 @@ the implemented nine-phase contract.
   [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
 - Native Statistics Panel production evidence plus focused logistics, power,
   Dyson and Ray Receiver evidence.
-- Sixty-second receiver continuity tracking for the PHOTON phase.
+- Sixty-second receiver continuity tracking for the PHOTON phase, with up to
+  two unhealthy samples treated as noise.
 - Player-requested JSON snapshots for diagnostics and guide development.
 - Native-styled, collapsible and scrollable panel.
 - Embedded Matrix icons in the click-through Cube-rate column.
@@ -158,7 +159,7 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.15 exports conclusions, production-risk terms,
+- Compact snapshot schema 2.16 exports conclusions, production-risk terms,
   provenance, collector health, and only the focused evidence needed to audit
   those conclusions.
 - The click-through panel reuses DSP's vein-label font, material, and outline,

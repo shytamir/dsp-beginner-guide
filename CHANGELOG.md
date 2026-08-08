@@ -4,6 +4,12 @@
 
 ### Changed
 
+- Implemented `PHOTON-CONTINUITY-01`: a ready 60-second receiver history now
+  tolerates up to two unhealthy samples as telemetry noise, while the third
+  revokes sustained continuity. Current Photon Generation configuration and
+  lens presence remain immediate objective requirements. Diagnostics expose
+  unhealthy and allowed sample counts. Advanced normalized state to 2.3 and
+  compact snapshot schema to 2.16.
 - Accepted the `CUBE-TARGET-RISK-01` runtime gate after ready RED diagnostics
   proved target-met demand suppression and below-target draining, and the
   public DLL reproduced the pertinent presentation states without regression.

@@ -185,6 +185,7 @@ namespace DspProgressionStatusExporter
         public double MinimumReceiverWarmup;
         public bool ReceiverTelemetryAvailable;
         public double ReceiverContinuityWindowSeconds;
+        public int ReceiverMaximumUnhealthySamples;
         public int ConfiguredPhotonReceiverCount;
         public int LensedPhotonReceiverCount;
         public int FullStrengthPhotonReceiverCount;
@@ -223,6 +224,8 @@ namespace DspProgressionStatusExporter
         public int SampleCount;
         public double WindowSeconds;
         public bool WindowReady;
+        public int UnhealthySampleCount;
+        public int MaximumUnhealthySamples;
         public bool ConfiguredForPhotonGeneration;
         public bool LensedNow;
         public bool LensSustained;
@@ -348,7 +351,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "2.2";
+            result["modelVersion"] = "2.3";
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -1089,6 +1092,9 @@ namespace DspProgressionStatusExporter
                 Dyson.ReceiverContinuityWindowSeconds =
                     Plugin.ToDouble(
                         GetValue(continuity, "maximumWindowSeconds"));
+                Dyson.ReceiverMaximumUnhealthySamples =
+                    Plugin.ToInt(
+                        GetValue(continuity, "maximumUnhealthySamples"));
                 Dyson.ConfiguredPhotonReceiverCount =
                     Plugin.ToInt(
                         GetValue(continuity, "configuredPhotonCount"));
@@ -1144,6 +1150,10 @@ namespace DspProgressionStatusExporter
                             GetValue(receiver, "windowSeconds")),
                         WindowReady = ToBool(
                             GetValue(receiver, "windowReady")),
+                        UnhealthySampleCount = Plugin.ToInt(
+                            GetValue(receiver, "unhealthySampleCount")),
+                        MaximumUnhealthySamples = Plugin.ToInt(
+                            GetValue(receiver, "maximumUnhealthySamples")),
                         ConfiguredForPhotonGeneration = ToBool(
                             GetValue(
                                 receiver,
@@ -1372,6 +1382,7 @@ namespace DspProgressionStatusExporter
                 { "minimumReceiverWarmup", Dyson.MinimumReceiverWarmup },
                 { "receiverTelemetryAvailable", Dyson.ReceiverTelemetryAvailable },
                 { "receiverContinuityWindowSeconds", Dyson.ReceiverContinuityWindowSeconds },
+                { "receiverMaximumUnhealthySamples", Dyson.ReceiverMaximumUnhealthySamples },
                 { "configuredPhotonReceiverCount", Dyson.ConfiguredPhotonReceiverCount },
                 { "lensedPhotonReceiverCount", Dyson.LensedPhotonReceiverCount },
                 { "fullStrengthPhotonReceiverCount", Dyson.FullStrengthPhotonReceiverCount },
@@ -1413,6 +1424,8 @@ namespace DspProgressionStatusExporter
                     { "sampleCount", receiver.SampleCount },
                     { "windowSeconds", receiver.WindowSeconds },
                     { "windowReady", receiver.WindowReady },
+                    { "unhealthySampleCount", receiver.UnhealthySampleCount },
+                    { "maximumUnhealthySamples", receiver.MaximumUnhealthySamples },
                     { "configuredForPhotonGeneration", receiver.ConfiguredForPhotonGeneration },
                     { "lensedNow", receiver.LensedNow },
                     { "lensSustained", receiver.LensSustained },

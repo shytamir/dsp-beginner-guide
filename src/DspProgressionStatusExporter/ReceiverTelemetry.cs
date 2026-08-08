@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace DspProgressionStatusExporter
 {
     /// <summary>
-    /// Rolling per-device evidence for Ray Receivers. A healthy frame is not
-    /// continuity: every currently configured Photon Generation receiver must
-    /// retain its mode, lens, exposure, strength, and warmup across the window.
+    /// Rolling per-device evidence for Ray Receivers. Sustained continuity
+    /// tolerates at most two unhealthy samples in a ready window so isolated
+    /// telemetry noise does not revoke an otherwise healthy receiver.
     /// </summary>
     internal sealed class ReceiverTelemetry
     {
@@ -16,6 +16,7 @@ namespace DspProgressionStatusExporter
         private const double MinimumWindowSeconds = 60.0;
         private const double RetainedWindowSeconds = 65.0;
         private const int MinimumSamples = 10;
+        private const int MaximumUnhealthySamples = 2;
 
         private sealed class ReceiverSample
         {
@@ -242,8 +243,8 @@ namespace DspProgressionStatusExporter
                     configuredNow && latest.Strength >= 0.999;
                 bool continuous =
                     configuredNow && latest.Warmup >= 0.999;
-                bool sustainedHealthy = windowReady;
                 bool lensSustained = windowReady;
+                int unhealthySampleCount = 0;
                 double minimumWarmup = 1.0;
                 double minimumStrength = 1.0;
                 foreach (ReceiverSample sample in history)
@@ -255,17 +256,19 @@ namespace DspProgressionStatusExporter
                         sample.CatalystId == GravitonLensItemId &&
                         sample.CatalystPoints > 0;
                     lensSustained = lensSustained && sampleLensed;
-                    sustainedHealthy =
-                        sustainedHealthy &&
-                        sampleConfigured &&
-                        sampleLensed &&
-                        sample.Strength >= 0.999 &&
-                        sample.Warmup >= 0.999;
+                    if (!sampleConfigured ||
+                        !sampleLensed ||
+                        sample.Strength < 0.999 ||
+                        sample.Warmup < 0.999)
+                        unhealthySampleCount++;
                     minimumWarmup =
                         Math.Min(minimumWarmup, sample.Warmup);
                     minimumStrength =
                         Math.Min(minimumStrength, sample.Strength);
                 }
+                bool sustainedHealthy = IsSustainedHealthy(
+                    windowReady,
+                    unhealthySampleCount);
 
                 if (configuredNow) configured++;
                 if (lensedNow) lensed++;
@@ -288,6 +291,8 @@ namespace DspProgressionStatusExporter
                     { "sampleCount", history.Count },
                     { "windowSeconds", Math.Round(seconds, 3) },
                     { "windowReady", windowReady },
+                    { "unhealthySampleCount", unhealthySampleCount },
+                    { "maximumUnhealthySamples", MaximumUnhealthySamples },
                     { "configuredForPhotonGeneration", configuredNow },
                     { "productId", latest.ProductId },
                     { "lensedNow", lensedNow },
@@ -319,10 +324,19 @@ namespace DspProgressionStatusExporter
                 criticalPhotonOutput;
             result["maximumWindowSeconds"] =
                 Math.Round(maximumWindow, 3);
+            result["maximumUnhealthySamples"] = MaximumUnhealthySamples;
             result["devices"] = devices;
             result["semantics"] =
-                "Sustained health requires every retained sample across at least 60 game-seconds to remain in Photon Generation mode, lensed, fully exposed, full-strength, and fully warmed.";
+                "Sustained health requires a ready 60-second window with no more than two unhealthy samples; current Photon Generation mode and lens presence remain separate immediate requirements.";
             return result;
+        }
+
+        internal static bool IsSustainedHealthy(
+            bool windowReady,
+            int unhealthySampleCount)
+        {
+            return windowReady &&
+                unhealthySampleCount <= MaximumUnhealthySamples;
         }
 
         private static string Key(int planetId, int entityId)

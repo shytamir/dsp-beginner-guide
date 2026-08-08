@@ -171,11 +171,33 @@ then repeat the target-met check once in WHITE.
    WHITE input risks remain eligible and both DLL variants retain their
    expected snapshot-control behavior. Report new warnings or exceptions.
 
+## PHOTON-CONTINUITY-01 focused gate
+
+Use four Ray Receivers configured for Critical Photon production with a stable
+Graviton Lens supply. Begin only after the objective has remained complete for
+more than 60 seconds.
+
+1. Briefly interrupt one receiver's Photon Generation mode or lens state long
+   enough to cross no more than two five-second collection ticks, then restore
+   it. Keep all four receivers currently configured and lensed afterward.
+2. Wait for a panel refresh. Confirm the four-receiver continuity objective
+   remains complete without flicker. Save a diagnostic snapshot.
+3. Interrupt the same receiver long enough to cross at least three collection
+   ticks, then restore its current configuration and lens before checking the
+   panel. Confirm the continuity objective becomes incomplete. Save a second
+   diagnostic snapshot.
+4. Leave the array healthy for about 65 seconds so the interruption ages out
+   of the retained window. Confirm the objective becomes complete again without
+   a separate recovery state.
+5. Repeat the visible two-sample and three-sample boundary with the public DLL.
+   Confirm the snapshot control remains absent and report any new warnings,
+   exceptions, or receiver-status regressions.
+
 ## Snapshot and performance
 
 - `Save snapshot` writes one JSON only when clicked and reports success or
   failure for two seconds.
-- The JSON is no larger than 256 KiB and names snapshot schema `2.15`.
+- The JSON is no larger than 256 KiB and names snapshot schema `2.16`.
 - It contains focused selected-phase evidence and explicit coverage or
   omission diagnostics, not broad factory dumps.
 - Leave the panel visible for one minute and hidden for one minute. Report any

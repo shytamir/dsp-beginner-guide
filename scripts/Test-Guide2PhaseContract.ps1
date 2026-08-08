@@ -467,6 +467,24 @@ if ($receiverCondition.GetType().GetField(
     ).GetValue($receiverCondition) -ne 'blocked') {
     throw 'PHOTON does not retain four-receiver continuity as a hard objective.'
 }
+Set-ObservedField 4 'SustainedPhotonReceiverCount' $dyson
+Set-ObservedField 3 'ConfiguredPhotonReceiverCount' $dyson
+$photonGate = Get-SelectedGate 'photon' $photonState
+$receiverCondition = Get-GateCondition $photonGate 'photon-receivers'
+if ($receiverCondition.GetType().GetField(
+        'Status', $instanceFlags
+    ).GetValue($receiverCondition) -ne 'blocked') {
+    throw 'PHOTON accepts a receiver that is not currently configured.'
+}
+Set-ObservedField 4 'ConfiguredPhotonReceiverCount' $dyson
+Set-ObservedField 3 'LensedPhotonReceiverCount' $dyson
+$photonGate = Get-SelectedGate 'photon' $photonState
+$receiverCondition = Get-GateCondition $photonGate 'photon-receivers'
+if ($receiverCondition.GetType().GetField(
+        'Status', $instanceFlags
+    ).GetValue($receiverCondition) -ne 'blocked') {
+    throw 'PHOTON accepts a receiver that is not currently lensed.'
+}
 
 $whiteUnresearched = New-ObservedState
 $whitePanel = Get-PanelModel 'white' $whiteUnresearched
@@ -515,7 +533,7 @@ if ($productionLabel -ne 'Ten labs sustain 40 White Cubes/min' -or
     throw 'WHITE lab, storage, or active research presentation is too verbose.'
 }
 $whiteExport = $whiteState.Export()
-if ($whiteExport['modelVersion'] -ne '2.2' -or
+if ($whiteExport['modelVersion'] -ne '2.3' -or
     $whiteExport['techProgress'].Count -ne 1 -or
     $whiteExport['techProgress'][0]['techId'] -ne 1508 -or
     $whiteExport['techProgress'][0]['percent'] -ne 37) {
@@ -666,8 +684,8 @@ $pluginSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\Plugin.cs'
 )
-if (-not $pluginSource.Contains('SchemaVersion = "2.15"')) {
-    throw 'Snapshot schema version is not 2.15.'
+if (-not $pluginSource.Contains('SchemaVersion = "2.16"')) {
+    throw 'Snapshot schema version is not 2.16.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

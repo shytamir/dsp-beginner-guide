@@ -48,6 +48,15 @@ if errorlevel 1 (
   exit /b 1
 )
 
+powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\Test-ReceiverContinuity.ps1"
+
+if errorlevel 1 (
+  echo.
+  echo TEST FAILED
+  popd
+  exit /b 1
+)
+
 echo.
 echo BUILD SUCCEEDED
 echo DLL: src\DspProgressionStatusExporter\bin\Release\net472\DspGuideCheck.dll

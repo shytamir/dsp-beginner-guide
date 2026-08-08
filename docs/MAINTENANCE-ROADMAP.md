@@ -17,7 +17,7 @@ are deliberately excluded and remain tracked separately outside this roadmap.
 | 3 | `CUBE-BRANCH-01` — useful PURPLE and YELLOW terminal-input states | Accepted | Complete, including the ILS starter-planet hotfix. |
 | 4 | `RED-DRIVE-II-01` — reported RED-to-ILS Drive Engine target | Rejected | Closed as an unsupported Lv2/Lv3 conflation; any recurrence requires a same-state screenshot and diagnostic snapshot. |
 | 5 | `CUBE-TARGET-RISK-01` — exact Cube goals dominate research demand | Accepted | Complete; diagnostic evidence and public presentation validation passed. |
-| 6 | `PHOTON-CONTINUITY-01` — tolerate isolated receiver blips | Policy required | Fix the allowed interruption and sustained-failure timings before implementation. |
+| 6 | `PHOTON-CONTINUITY-01` — tolerate isolated receiver blips | Runtime validation required | Confirm two unhealthy samples remain noise and the third revokes continuity. |
 
 RED coproduct diagnosis is rejected for this cycle because it contradicts the
 adopted concise RED contract and would require disproportionate engineering to
@@ -288,8 +288,50 @@ analyzer path.
 
 ### PHOTON-CONTINUITY-01
 
-Define a bounded grace rule for an isolated unhealthy receiver sample and a
-separate duration that represents a sustained failure. Validate healthy,
-single-blip recovery, repeated interruption, and sustained loss so completed
-continuity does not flicker while real receiver failure still revokes it in a
-reasonable time.
+#### User story
+
+As a player running a healthy Critical Photon receiver array, I want isolated
+telemetry dips treated as sampling noise so the completed continuity objective
+does not flicker because of momentary receiver variation.
+
+#### Product decisions
+
+- Retain the existing rolling 60-second receiver window, approximately
+  five-second sampling cadence, and ten-sample readiness minimum.
+- A ready receiver history remains sustained with zero, one, or two unhealthy
+  samples. The third unhealthy sample in the retained window revokes sustained
+  status.
+- A sample is unhealthy when the receiver is not configured for Critical
+  Photon production, is not currently supplied with a Graviton Lens, is below
+  full strength, or is below full warmup under the existing thresholds.
+- Current configuration and lens presence remain immediate requirements for
+  the four-receiver objective. Historical tolerance cannot make a receiver
+  that is presently misconfigured or unlensed qualify.
+- Do not add a recovery state, recovery timer, or consecutive-sample model.
+  Status recovers naturally when enough unhealthy samples leave the rolling
+  window.
+- Do not change the four-receiver requirement, window readiness, phase
+  selection, objective wording, receiver power reporting, or production-rate
+  presentation.
+
+#### Acceptance criteria
+
+- A ready history with zero, one, or two unhealthy samples is sustained.
+- A ready history with three unhealthy samples is not sustained.
+- An unready history cannot qualify regardless of sample health.
+- The PHOTON objective still requires four receivers that are currently
+  configured and lensed as well as sustained under the new tolerance.
+- Diagnostic evidence exposes each receiver's retained sample count,
+  unhealthy-sample count, allowed count, and resulting sustained state.
+- Deterministic checks cover the zero-, one-, two-, and three-sample boundary,
+  unready history, natural recovery after an old failure leaves the window,
+  and the immediate current configuration and lens checks.
+- Both public and diagnostic DLLs build cleanly before focused runtime
+  validation.
+
+#### Implementation status
+
+Implemented for the runtime gate. Receiver continuity now tolerates at most
+two unhealthy samples per ready retained history, exposes the policy evidence
+diagnostically, and retains the existing immediate configuration and lens
+requirements.

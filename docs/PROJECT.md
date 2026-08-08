@@ -37,6 +37,11 @@ was rejected because it conflated the preparation requirement at technology
 `2903`. Any recurrence requires a screenshot and diagnostic snapshot from the
 same state before it can re-enter the roadmap.
 
+PHOTON-CONTINUITY-01 now awaits focused runtime validation. Its existing
+60-second receiver history treats up to two unhealthy samples as noise; the
+third revokes sustained status, while current Photon Generation configuration
+and lens presence remain immediate requirements.
+
 ## Purpose and scope
 
 DSP Guide Check is the passive, on-demand runtime companion to the
@@ -143,6 +148,9 @@ phase. `ManualPhaseNavigation.cs` owns per-playthrough selection.
   come from native Dyson system and editor aggregates.
 - Ejectors, silos, and Ray Receivers retain dedicated component-pool
   collectors for facts absent from those aggregates.
+- Receiver continuity uses a ready 60-second per-device history. Up to two
+  unhealthy samples are tolerated; diagnostics retain the observed and allowed
+  counts, and current configuration and lens checks remain immediate.
 - ILS station configuration, vessel deployment, traffic, research, inventory,
   and power evidence are collected only for retained consumers.
 - Unavailable expected evidence remains unknown; another proxy is not silently
@@ -163,7 +171,7 @@ ILS; SPHERE to DYSON; WARP to GREEN; LOGISTICS and COMPLETE to WHITE.
 
 ## Snapshot contract
 
-Snapshot schema 2.15 serializes the selected-phase conclusions used by the
+Snapshot schema 2.16 serializes the selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. It
 includes provenance, playtime, research and Cube aggregates, selection
 diagnostics, Mission Completed progress when available, focused evidence,
@@ -221,8 +229,8 @@ Intermediate branch components and branch progression are not modeled.
 | Contract | Version |
 |---|---:|
 | Release line | 2.0.x |
-| Snapshot schema | 2.15 |
-| Normalized state | 2.2 |
+| Snapshot schema | 2.16 |
+| Normalized state | 2.3 |
 | Guide selection | 1.6 |
 | Guide analysis | 3.3 |
 | Progression | 3.1 |
