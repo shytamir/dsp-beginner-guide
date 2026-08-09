@@ -12,6 +12,7 @@ current shape, but they are not active work and do not override
 - Production-risk roadmap and feature-request audit package.
 - Thunderstore packaging implementation stories and release gates.
 - Completed panel-presentation stories.
+- [Completed 2.1 maintenance roadmap and accepted runtime gates](project-management/COMPLETED-MAINTENANCE-ROADMAP.md).
 
 ## Validation
 

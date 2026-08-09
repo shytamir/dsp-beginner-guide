@@ -6,13 +6,21 @@
 
 - Changed: concise WHITE status, native panel typography, useful YELLOW and
   PURPLE terminal-input tracking, safer ILS stage evidence, exact-target Cube
-  risk suppression, and two-sample PHOTON continuity tolerance.
+  risk suppression, a 40/min Cube demand-reference ceiling, and two-sample
+  PHOTON continuity tolerance.
 - Not changed: the adopted guide authority, player-owned nine-phase path,
   public/diagnostic packaging split, intermediate branch modeling, RED
   coproduct diagnosis, or the rejected Drive Engine claim.
 
 ### Changed
 
+- Accepted the `CUBE-DEMAND-CEILING-01` gate after release-owner in-game
+  validation. Every Cube line now compares production with the lesser of
+  actual consumption and the 40/min guide reference for demand-risk
+  presentation. Actual rates and net buffer depletion remain uncapped, exact
+  BLUE, RED, and WHITE goals retain authority, and non-Cube demand is
+  unchanged. Archived the completed maintenance roadmap and returned the
+  documented project state to maintenance mode with no active work.
 - Accepted the `PHOTON-CONTINUITY-01` gate after deterministic checks proved
   the two-sample boundary in both builds and release-owner runtime validation
   proved sustained failure and natural recovery. A schema-2.16 snapshot also

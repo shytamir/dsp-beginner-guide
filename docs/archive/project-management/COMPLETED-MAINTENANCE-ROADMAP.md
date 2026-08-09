@@ -4,7 +4,7 @@
 
 This bounded maintenance cycle concluded after the release owner's full
 critical-path playthrough and focused runtime gates. It remained subordinate
-to [`PROJECT.md`](PROJECT.md), which continued to define the product contract.
+to [`PROJECT.md`](../../PROJECT.md), which continued to define the product contract.
 No active implementation story or validation gate remained in this roadmap.
 
 Guide-authoring observations were kept outside the mod roadmap. RED coproduct
@@ -20,6 +20,7 @@ belt, sorter, tank, depot, and logistics backpressure reliably.
 | 4 | `RED-DRIVE-II-01` | Rejected | Evidence showed an unsupported Drive Engine Lv2/Lv3 conflation rather than a product defect. |
 | 5 | `CUBE-TARGET-RISK-01` | Accepted | Exact BLUE, RED, and WHITE Cube goals suppressed demand-only risk while the target remained satisfied. |
 | 6 | `PHOTON-CONTINUITY-01` | Accepted | Receiver continuity tolerated two unhealthy samples and failed on the third retained sample. |
+| 7 | `CUBE-DEMAND-CEILING-01` | Accepted | Every Cube line capped demand-risk comparison at the 40/min guide reference without altering actual rates or physical buffer depletion. |
 
 ## Historical story record
 
@@ -124,10 +125,25 @@ collector-policy checks covered that boundary, while runtime validation covered
 the real interruption, retained-history, recovery, presentation, and logging
 paths.
 
+### CUBE-DEMAND-CEILING-01
+
+The refinement capped the demand reference for every Cube line at 40/min.
+Demand-driven risk therefore compared production with the lesser of actual
+consumption and 40/min, using the existing tolerance. Actual production and
+consumption remained diagnostic, and physical buffer depletion continued to
+use the uncapped net difference. Exact BLUE, RED, and WHITE goals retained
+their independent authority, and non-Cube demand remained uncapped.
+
+Deterministic checks covered quiet 40/min production against 80/min
+consumption, actionable 35/min production against the same demand, actual
+45/min net depletion, exact-goal precedence, and unchanged non-Cube behavior.
+Both DLL variants built without warnings or errors. The release owner then
+passed the focused in-game validation gate.
+
 ## Closeout
 
-The cycle ended with five accepted stories, one evidence-based rejection, and
+The cycle ended with six accepted stories, one evidence-based rejection, and
 no active work. DSP Guide Check returned to maintenance mode pending a
 meaningful guide change, reproducible defect or compatibility regression, or
 an accepted in-scope feature request. This record was reconciled in historical
-tense and was ready for archival without carrying an open status forward.
+tense and archived without carrying an open status forward.

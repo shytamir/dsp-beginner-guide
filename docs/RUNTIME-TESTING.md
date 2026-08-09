@@ -147,29 +147,27 @@ Use a mature GREEN or WHITE line with ready ten-minute history:
    observe several refreshes. Existing same-severity members must not churn;
    a newly starved risk may displace one draining member.
 
-## CUBE-TARGET-RISK-01 focused regression
+## Cube demand-reference regression
 
-Use the diagnostic DLL with ready ten-minute history. Test BLUE or RED first,
-then repeat the target-met check once in WHITE.
+Use the diagnostic DLL with ready ten-minute history. A mature YELLOW, PURPLE,
+or GREEN line is the clearest check because its Cube has no separate exact
+phase target.
 
-1. Run Cube production at or above the selected phase goal: 20/min for BLUE or
-   RED, 40/min for WHITE. Start research that consumes Cubes faster than they
-   are produced, using an existing stored surplus so consumption remains above
-   production.
-2. Keep the production rate at or above the goal through at least one panel
-   refresh. Confirm there is no Cube draining/starved row, Cube Next Action,
-   depletion note, or risk glyph. Save one diagnostic snapshot in this state.
-3. Without stopping research, reduce Cube production below the phase goal but
-   leave accessible stock. Confirm the established draining presentation can
-   appear after refresh.
-4. Stop Cube production and allow its accessible buffer to empty while demand
-   remains established. Confirm the established starved presentation can
-   appear.
-5. Restore production to the exact goal. Confirm the Cube risk clears while
-   the fixed objective and Cube-rate rail remain correct.
-6. Repeat steps 1-2 in WHITE at 40/min. Confirm other genuinely actionable
-   WHITE input risks remain eligible and both DLL variants retain their
-   expected snapshot-control behavior. Report new warnings or exceptions.
+1. Sustain Cube production at 40/min or better while research consumes well
+   above 40/min from an existing surplus. Confirm there is no Cube risk row,
+   Next Action, depletion note, or risk glyph.
+2. Keep consumption above 40/min and reduce production clearly below 40/min
+   while accessible stock remains. Confirm the established draining
+   presentation appears after refresh and reflects actual buffer depletion.
+3. Restore production to 40/min. Confirm the Cube risk clears while the fixed
+   objective and Cube-rate rail remain correct.
+4. Repeat one target-met check in BLUE or RED at 20/min and one in WHITE at
+   40/min. Confirm their exact phase goals retain authority.
+5. Confirm a genuinely deficient non-Cube supporting item remains eligible for
+   risk presentation; its demand must not receive the Cube ceiling.
+6. Repeat the pertinent quiet and deficient states with the public DLL.
+   Confirm both variants retain their expected snapshot-control behavior and
+   report new warnings or exceptions.
 
 ## PHOTON-CONTINUITY-01 focused regression
 

@@ -6,9 +6,10 @@ DSP Guide Check is complete for the adopted DSP Practical Progression Guide
 2.0 contract and is in maintenance mode.
 
 The bounded maintenance cycle prompted by the full critical-path playthrough
-concluded. Its reconciled [`completed maintenance roadmap`](MAINTENANCE-ROADMAP.md)
-contains no active implementation story or validation gate and is ready for
-the next archive pass. New work resumes only for:
+and its subsequent Cube demand-reference refinement concluded. Its
+[`completed maintenance roadmap`](archive/project-management/COMPLETED-MAINTENANCE-ROADMAP.md)
+is archived and carries no active implementation story or validation gate.
+New work resumes only for:
 
 - a meaningful change to the published guide;
 - a reproducible defect or compatibility regression;
@@ -17,15 +18,15 @@ the next archive pass. New work resumes only for:
 
 Completed stories, migrations, roadmaps, and validation gates are historical
 records under [`docs/archive/`](archive/README.md). They do not represent open
-work or override this document. The newly reconciled roadmap remains at its
-stable link until that archive operation occurs.
+work or override this document.
 
 The completed cycle accepted concise WHITE presentation, native typography,
 GREEN-style YELLOW/PURPLE terminal-input tracking, the ILS starter-planet
-exclusion, exact-target Cube risk suppression, and tolerant PHOTON receiver
-continuity. It rejected the unsupported Drive Engine Lv2 claim and excluded
-RED coproduct diagnosis. Temporary playthrough observations and separate
-guide-authoring work did not become authoritative mod tasks.
+exclusion, exact-target Cube risk suppression, a 40/min Cube demand-reference
+ceiling, and tolerant PHOTON receiver continuity. It rejected the unsupported
+Drive Engine Lv2 claim and excluded RED coproduct diagnosis. Temporary
+playthrough observations and separate guide-authoring work did not become
+authoritative mod tasks.
 
 ## Purpose and scope
 
@@ -92,11 +93,13 @@ a real, actionable shortfall. Healthy supporting chains do not create
 completed clutter. Mission Completed changes WHITE to `Mission Accomplished!`
 without navigating elsewhere.
 
-For BLUE, RED, and WHITE, a current Cube rate equal to or greater than the
-phase's exact goal suppresses demand-driven production-risk presentation even
-when faster research is drawing down stored surplus. Raw production,
-consumption, and demand-deficit evidence remain diagnostic. Below-target and
-non-exact risks retain the normal analyzer rules.
+For every Cube line, demand-driven production risk compares current production
+with the lesser of actual consumption and the 40/min guide reference, using
+the analyzer's established tolerance. Actual production and consumption remain
+diagnostic, and actual net depletion still determines buffer runway when the
+capped comparison identifies a deficit. BLUE, RED, and WHITE retain their
+exact 20/min, 20/min, and 40/min phase goals; meeting an exact goal suppresses
+demand-driven risk independently. Non-Cube demand remains uncapped.
 
 ## Architecture
 
