@@ -8,8 +8,8 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-The current release implements guide **2.0**. The public guide 2.0 edition
-(published `guide-version` metadata `1.23.0`) is the development authority for
+The current release implements guide **2.3**. The public guide 2.3 edition
+(published `guide-version` metadata `2.3`) is the development authority for
 the implemented nine-phase contract.
 
 ## Features
@@ -112,7 +112,8 @@ Press **F8** after loading a save:
 - F8 opens or closes the panel.
 - Previous and next move between phases.
 - The collapse-proof bright-red `DON'T PANIC` control below the Cube-rate
-  column opens the source guide at the selected phase.
+  column opens the source guide at the selected phase. During ILS it opens the
+  preparation, expedition, or automation stage currently shown by the panel.
 
 The repository's default diagnostic build also includes `Save snapshot`. It
 writes one JSON file and gives two seconds of green or red footer feedback.
@@ -173,7 +174,7 @@ history.
 
 ## Project status
 
-The product is complete for the adopted guide 2.0 contract and is in
+The product is complete for the adopted guide 2.3 contract and is in
 maintenance mode. [docs/PROJECT.md](docs/PROJECT.md) is the sole authority for
 current project state and maintenance scope.
 

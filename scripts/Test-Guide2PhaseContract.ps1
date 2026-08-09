@@ -141,7 +141,7 @@ $dysonPhase = $phases | Where-Object {
 if ($dysonPhase.GetType().GetField(
         'Title'
     ).GetValue($dysonPhase) -ne 'Build the Photon swarm') {
-    throw 'Guide analysis does not expose the guide 2.0 DYSON title.'
+    throw 'Guide analysis does not expose the guide 2.3 DYSON title.'
 }
 
 $gateEngine = $assembly.GetType(
@@ -324,6 +324,13 @@ function Get-PanelModel {
     $buildPanel.Invoke($null, @($analysis, $State, $null, $null, $null))
 }
 
+function Get-SourceGuideAnchor {
+    param($Panel)
+    $Panel.GetType().GetField(
+        'SourceGuideAnchor', $instanceFlags
+    ).GetValue($Panel)
+}
+
 function Get-PanelRow {
     param($Panel, [string]$Collection, [string]$RowId)
     $rows = $Panel.GetType().GetField(
@@ -418,6 +425,21 @@ if ($null -eq (Get-GateCondition $remoteSiliconGate 'ils-expedition-production')
     throw 'Non-starter-planet Silicon no longer selects the ILS expedition stage.'
 }
 
+if ((Get-SourceGuideAnchor (Get-PanelModel 'blue' (New-ObservedState))) -ne 'blue') {
+    throw 'A non-ILS phase no longer links to its own guide anchor.'
+}
+if ((Get-SourceGuideAnchor (Get-PanelModel 'ils' (New-ObservedState))) -ne 'flight') {
+    throw 'ILS preparation does not link to the flight guide stage.'
+}
+if ((Get-SourceGuideAnchor (Get-PanelModel 'ils' $remoteSiliconState)) -ne 'titanium') {
+    throw 'ILS expedition evidence does not link to the titanium guide stage.'
+}
+$ilsRushState = New-ObservedState
+Add-UnlockedTech $ilsRushState 1414
+if ((Get-SourceGuideAnchor (Get-PanelModel 'ils' $ilsRushState)) -ne 'ils-automate') {
+    throw 'ILS rush evidence does not link to the automation guide stage.'
+}
+
 $redState = New-ObservedState
 Set-ObservedField $true 'ProductionWindowReady' $redState
 Add-ObservedFlow $redState 6002 20 0
@@ -435,7 +457,7 @@ $dysonGate = Get-SelectedGate 'dyson' (New-ObservedState)
 if ($dysonGate.GetType().GetField(
         'Title', $instanceFlags
     ).GetValue($dysonGate) -ne 'Build the Photon swarm') {
-    throw 'DYSON does not expose the guide 2.0 Photon-swarm title.'
+    throw 'DYSON does not expose the guide 2.3 Photon-swarm title.'
 }
 
 $photonState = New-ObservedState
@@ -730,4 +752,4 @@ foreach ($obsoleteFindingId in @(
     }
 }
 
-Write-Output 'Guide 2.0 phase contract test passed.'
+Write-Output 'Guide 2.3 phase contract test passed.'

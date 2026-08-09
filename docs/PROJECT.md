@@ -3,7 +3,7 @@
 ## Product state
 
 DSP Guide Check is complete for the adopted DSP Practical Progression Guide
-2.0 contract and is in maintenance mode.
+2.3 contract and is in maintenance mode.
 
 The bounded maintenance cycle prompted by the full critical-path playthrough
 and its subsequent Cube demand-reference refinement concluded. Its
@@ -58,8 +58,8 @@ warning system.
 
 ## Guide authority
 
-- Adopted authority: public guide 2.0 edition.
-- Published `guide-version` metadata: `1.23.0`.
+- Adopted authority: public guide 2.3 edition.
+- Published `guide-version` metadata: `2.3`.
 - Current implementation: the nine-phase default critical path.
 
 ```text
@@ -176,6 +176,12 @@ The panel is click-through except for phase navigation, collapse, explicit
 scrolling, `DON'T PANIC`, and the diagnostic build's `Save snapshot` control.
 The public Thunderstore build omits snapshot control and its interaction path
 at compile time.
+
+`DON'T PANIC` opens the selected phase in the published guide. For ILS, the
+presentation model maps the currently evaluated preparation, expedition, or
+research-rush checkpoint to the guide's stable `#flight`, `#titanium`, or
+`#ils-automate` anchor. This link targeting neither changes nor persists phase
+or checkpoint selection, and unrecognized evidence falls back to `#ils`.
 
 Panel text and Cube rates reuse the installed game's live vein-label Text
 style at `UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText`: font,

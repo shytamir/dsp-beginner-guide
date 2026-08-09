@@ -14,6 +14,12 @@
 
 ### Changed
 
+- Adopted the published guide 2.3 edition as the current development authority
+  without changing the retained nine-phase runtime contract. During ILS,
+  `DON'T PANIC` now opens the published preparation, expedition, or automation
+  stage that matches the checkpoint currently presented by the panel; other
+  phases retain their phase anchor and unknown ILS evidence falls back to
+  `#ils`.
 - Accepted the `CUBE-DEMAND-CEILING-01` gate after release-owner in-game
   validation. Every Cube line now compares production with the lesser of
   actual consumption and the 40/min guide reference for demand-risk

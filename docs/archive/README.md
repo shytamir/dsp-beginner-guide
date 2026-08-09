@@ -8,6 +8,7 @@ current shape, but they are not active work and do not override
 ## Project management
 
 - Guide authority ingestion and the guide 1.22.2 and 2.0 gap analyses.
+- [Guide 2.3 authority adoption and checkpoint-aware ILS source linking](project-management/GUIDE-2.3-ILS-LINK-STORY.md).
 - Snapshot redesign worklist.
 - Production-risk roadmap and feature-request audit package.
 - Thunderstore packaging implementation stories and release gates.

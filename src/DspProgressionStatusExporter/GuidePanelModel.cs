@@ -53,6 +53,7 @@ namespace DspProgressionStatusExporter
     internal sealed class GuidePanelModel
     {
         public string PhaseId;
+        public string SourceGuideAnchor;
         public string Title;
         public string Subtitle;
         public string SnapshotFileName;
@@ -154,6 +155,7 @@ namespace DspProgressionStatusExporter
         {
             var model = new GuidePanelModel {
                 PhaseId = "unknown",
+                SourceGuideAnchor = "top",
                 Title = "Guide Check",
                 Subtitle = "Live guide objectives",
                 SnapshotFileName = snapshotFileName,
@@ -171,6 +173,9 @@ namespace DspProgressionStatusExporter
 
             Dictionary<string, object> currentGate =
                 FindCurrentGate(progression, model.PhaseId);
+            model.SourceGuideAnchor = ResolveSourceGuideAnchor(
+                model.PhaseId,
+                currentGate);
             if (currentGate != null)
             {
                 string gateTitle = Text(Get(currentGate, "title"), null);
@@ -201,6 +206,44 @@ namespace DspProgressionStatusExporter
                 AsList(Get(analysis, "findings")),
                 GuidePanelRiskStabilizer.Limit - model.Context.Count);
             return model;
+        }
+
+        private static string ResolveSourceGuideAnchor(
+            string phaseId,
+            Dictionary<string, object> currentGate)
+        {
+            string fallback = String.IsNullOrEmpty(phaseId)
+                ? "top"
+                : phaseId.ToLowerInvariant();
+            if (!String.Equals(
+                phaseId,
+                "ils",
+                StringComparison.OrdinalIgnoreCase) ||
+                currentGate == null)
+                return fallback;
+
+            List<object> conditions = AsList(Get(currentGate, "conditions"));
+            if (conditions == null) return fallback;
+            foreach (object item in conditions)
+            {
+                Dictionary<string, object> condition = AsDictionary(item);
+                string id = Text(Get(condition, "id"), null);
+                if (String.IsNullOrEmpty(id)) continue;
+                if (String.Equals(
+                    id,
+                    "ils-preparation",
+                    StringComparison.OrdinalIgnoreCase))
+                    return "flight";
+                if (id.StartsWith(
+                    "ils-expedition-",
+                    StringComparison.OrdinalIgnoreCase))
+                    return "titanium";
+                if (id.StartsWith(
+                    "ils-rush-",
+                    StringComparison.OrdinalIgnoreCase))
+                    return "ils-automate";
+            }
+            return fallback;
         }
 
         private static List<GuidePanelRiskModel> ReadRiskCandidates(

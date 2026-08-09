@@ -555,6 +555,7 @@ namespace DspProgressionStatusExporter
         private NativeGoalStyle style;
         private bool collapsed;
         private string phaseId;
+        private string sourceGuideAnchor;
 #if DSP_GUIDE_SNAPSHOT_CONTROL
         private Func<bool> snapshotAction;
 #endif
@@ -1083,6 +1084,7 @@ namespace DspProgressionStatusExporter
         private void Apply(GuidePanelModel model)
         {
             if (model == null) return;
+            sourceGuideAnchor = model.SourceGuideAnchor;
             titleText.text = GuideRichText.Title(model.PhaseId, model.Title);
             Sprite phaseIcon = matrixIcons != null
                 ? matrixIcons.Get(model.PhaseId)
@@ -1824,9 +1826,11 @@ namespace DspProgressionStatusExporter
 
         private void OpenSourceGuide()
         {
-            string anchor = String.IsNullOrEmpty(phaseId)
-                ? "top"
-                : phaseId.ToLowerInvariant();
+            string anchor = !String.IsNullOrEmpty(sourceGuideAnchor)
+                ? sourceGuideAnchor
+                : (String.IsNullOrEmpty(phaseId)
+                    ? "top"
+                    : phaseId.ToLowerInvariant());
             Application.OpenURL(SourceGuideUrl + anchor);
             ClearButtonFocus();
         }
