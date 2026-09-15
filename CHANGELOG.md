@@ -4,6 +4,12 @@
 
 ### Guide 3.0 candidate
 
+- GC3-05: Home delivery now requires finished source material, matching home/outpost
+  policies, five home Vessels and subsequent home inputs for both materials.
+  Session receipt flags survive quiet periods; diagnostics expose reset reasons
+  and planet-level attribution limits. Snapshot 2.21, normalized 2.7, analysis 3.8,
+  progression 3.6.
+
 - GC3-04: Automation counts finished towers and Vessels at home or assigned to
   selected endpoints. Deployment/configuration is separate; consumed components
   no longer need replacing. Normalized state 2.6, analysis 3.7, progression 3.5

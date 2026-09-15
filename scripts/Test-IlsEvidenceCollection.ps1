@@ -93,3 +93,38 @@ $logistics['stations'] = @($stationRow)
 ReadEvidence $normalized 'ReadStations' @($factoryRow)
 Assert (-not (Field (Field $normalized 'Stations')[0] 'EvidenceAvailable')) 'Missing station fields became available'
 Write-Host 'ILS collection and normalization availability tests passed.'
+Add-Type @"
+public class GcTrafficItem { public int itemId; public long[] total = new long[21]; }
+public class GcTrafficFactory { public GcTrafficItem[] trafficPool; }
+public class GcTrafficPool { public GcTrafficFactory[] factoryTrafficPool; }
+public class GcTrafficStatistics { public GcTrafficPool traffic; }
+public class GcTrafficPlanet { public int id = 101; }
+public class GcTrafficWorld { public GcTrafficPlanet planet = new GcTrafficPlanet(); }
+public class GcTrafficData { public GcTrafficStatistics statistics; public GcTrafficWorld[] factories = new[] { new GcTrafficWorld() }; }
+"@
+$trafficCollector = New 'TrafficTelemetry'
+$trafficData = [GcTrafficData]::new()
+$trafficData.statistics = [GcTrafficStatistics]::new()
+$trafficData.statistics.traffic = [GcTrafficPool]::new()
+$trafficFactory = [GcTrafficFactory]::new()
+$trafficFactory.trafficPool = @()
+$trafficData.statistics.traffic.factoryTrafficPool = @($trafficFactory)
+$trafficCollector.GetType().GetMethod('SampleNow').Invoke($trafficCollector,@($trafficData,0L)) | Out-Null
+$export = $trafficCollector.Export()
+Assert ($export['factories'][0]['inputCountersAvailable']) 'Known zero traffic counters were unavailable'
+$trafficItem = [GcTrafficItem]::new(); $trafficItem.itemId = 1106; $trafficItem.total[6] = 40L; $trafficItem.total[20] = 100L
+$trafficFactory.trafficPool = @($trafficItem)
+$trafficCollector.GetType().GetMethod('SampleNow').Invoke($trafficCollector,@($trafficData,300L)) | Out-Null
+$export = $trafficCollector.Export()
+Assert ($export['factories'][0]['finishedInputTotals']['1106'] -eq 40L) 'Input counter included internal traffic'
+$trafficState = New 'ObservedGameState'
+ReadEvidence $trafficState 'ReadTraffic' $export
+Assert ((Field $trafficState 'FinishedInputTotals')[101][1106] -eq 40L) 'Input counter lost in normalization'
+$oldEpoch = $export['evidenceEpoch']
+$trafficItem.total[6] = 0L
+$trafficCollector.GetType().GetMethod('SampleNow').Invoke($trafficCollector,@($trafficData,600L)) | Out-Null
+Assert ($trafficCollector.Export()['evidenceEpoch'] -gt $oldEpoch) 'Counter reset not exposed'
+$trafficData.statistics.traffic.factoryTrafficPool = $null
+$trafficCollector.GetType().GetMethod('SampleNow').Invoke($trafficCollector,@($trafficData,900L)) | Out-Null
+Assert (-not $trafficCollector.Export()['available']) 'Stale traffic reported available after collection failure'
+Write-Host 'ILS native-counter collection, normalization, zero, reset and failure fixtures passed.'

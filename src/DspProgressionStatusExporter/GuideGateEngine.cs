@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "3.5" },
+                { "contractVersion", "3.6" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -298,20 +298,16 @@ namespace DspProgressionStatusExporter
                 "observed", researchReady && transport.HardwareReady && transport.Available && !transport.DeploymentReady
                     ? "Set home to Remote Demand, outpost to Remote Supply, and assign five Vessels at home." : null));
 
-            bool titaniumRoute = HasSustainableRoute(state, 1106);
-            bool siliconRoute = HasSustainableRoute(state, 1105) ||
-                HasSustainableRoute(state, 1003);
-            bool routesReady = titaniumRoute && siliconRoute;
-            var missingRoutes = new List<string>();
-            if (!titaniumRoute) missingRoutes.Add("Titanium");
-            if (!siliconRoute) missingRoutes.Add("Silicon");
+            IlsReceiptEvidence receipt = state.IlsReceipt;
             gate.Conditions.Add(Condition(
-                "ils-rush-routes", "Titanium and Silicon arrive home automatically",
-                routesReady ? "ready" : "blocked", true,
-                routesReady ? "Both activated ILS routes were found." :
-                    "Missing activated route: " + String.Join(" and ", missingRoutes.ToArray()) + ".",
-                routesReady ? "derived" : "observed",
-                routesReady || !researchReady || !transport.DeploymentReady ? null : "Activate the missing ILS route."));
+                "ils-home-delivery", "Finished materials reach home",
+                receipt.Status == "confirmed" ? "ready" : receipt.Status == "unavailable" ? "unknown" : "watch", true,
+                receipt.Status == "confirmed" ? "Home imports observed for both finished materials."
+                    : receipt.Status == "source-empty" ? "The outpost needs finished material stock or production."
+                    : receipt.Status == "unavailable" ? "Delivery evidence is unavailable."
+                    : "Awaiting delivery evidence at home.",
+                "planet-level corroboration", researchReady && transport.DeploymentReady && receipt.Status == "source-empty"
+                    ? "Supply Titanium Ingots and High-Purity Silicon at the outpost." : null));
         }
 
         private static void EvaluatePurple(GuideGateResult gate, ObservedGameState state)

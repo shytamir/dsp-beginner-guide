@@ -325,6 +325,11 @@ namespace DspProgressionStatusExporter
         public string ProductionTenMinuteReadinessSource;
         public int ProductionTenMinuteAvailableItemCount;
         public int ProductionTenMinuteReadyItemCount;
+        public IlsTransportEvidence IlsTransport;
+        public IlsReceiptEvidence IlsReceipt = new IlsReceiptEvidence();
+        public long TrafficEvidenceEpoch;
+        public long TrafficSampleTick;
+        public readonly Dictionary<int, Dictionary<int, long>> FinishedInputTotals = new Dictionary<int, Dictionary<int, long>>();
         public bool TrafficWindowReady;
         public double TrafficWindowSeconds;
         public double PowerWindowSeconds;
@@ -358,7 +363,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "2.6";
+            result["modelVersion"] = "2.7";
             result["playerInventoryAvailable"] = PlayerInventoryAvailable;
             result["playerLocationAvailable"] = PlayerLocationAvailable;
             result["availablePlanetInventories"] = new List<int>(AvailablePlanetInventories);
@@ -889,6 +894,8 @@ namespace DspProgressionStatusExporter
 
         private void ReadTraffic(Dictionary<string, object> traffic)
         {
+            TrafficEvidenceEpoch = Plugin.ToLong(GetValue(traffic, "evidenceEpoch"));
+            TrafficSampleTick = Plugin.ToLong(GetValue(traffic, "sampleGameTick"));
             TrafficWindowReady = ToBool(GetValue(traffic, "windowReady"));
             TrafficWindowSeconds = Plugin.ToDouble(GetValue(traffic, "windowGameSeconds"));
             foreach (object factoryObject in Enumerate(GetValue(traffic, "factories")))
@@ -898,6 +905,12 @@ namespace DspProgressionStatusExporter
                 int factoryIndex = Plugin.ToInt(GetValue(factory, "factoryIndex"));
                 int planetId = Plugin.ToInt(GetValue(factory, "planetId"));
                 string planetName = ToText(GetValue(factory, "planetName"));
+                if (ToBool(GetValue(traffic, "available")) && ToBool(GetValue(factory, "inputCountersAvailable")))
+                {
+                    var totals = GetDictionary(factory, "finishedInputTotals");
+                    if (totals != null && GetValue(totals, "1106") != null && GetValue(totals, "1105") != null)
+                        FinishedInputTotals[planetId] = new Dictionary<int, long> { { 1106, Plugin.ToLong(GetValue(totals, "1106")) }, { 1105, Plugin.ToLong(GetValue(totals, "1105")) } };
+                }
                 foreach (object rowObject in Enumerate(GetValue(factory, "items")))
                 {
                     var row = rowObject as Dictionary<string, object>;

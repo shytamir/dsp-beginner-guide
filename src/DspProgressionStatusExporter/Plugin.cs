@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.20";
+        private const string SchemaVersion = "2.21";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -57,6 +57,7 @@ namespace DspProgressionStatusExporter
             new Dictionary<int, Queue<DysonConstructionSample>>();
         private object dysonSampleData;
         private readonly ProductionTelemetry productionTelemetry = new ProductionTelemetry();
+        private readonly IlsReceiptTracker ilsReceiptTracker = new IlsReceiptTracker();
         private readonly TrafficTelemetry trafficTelemetry = new TrafficTelemetry();
         private readonly PowerTelemetry powerTelemetry = new PowerTelemetry();
         private readonly ReceiverTelemetry receiverTelemetry =
@@ -265,6 +266,7 @@ namespace DspProgressionStatusExporter
                     ObservedGameState.Build(
                         live, production, traffic,
                         powerTelemetryExport, recipes);
+                ilsReceiptTracker.Observe(data, observedState);
                 ManualPhaseSelection selection =
                     EnsurePhaseSelection(data, observedState);
                 Dictionary<string, object> guideAnalysis =
@@ -350,6 +352,7 @@ namespace DspProgressionStatusExporter
                 Dictionary<string, object> recipes = RecipeTelemetry.Export(data);
                 ObservedGameState observed =
                     ObservedGameState.Build(live, production, traffic, power, recipes);
+                ilsReceiptTracker.Observe(data, observed);
                 ManualPhaseSelection selection =
                     EnsurePhaseSelection(data, observed);
                 Dictionary<string, object> analysis =
@@ -462,6 +465,7 @@ namespace DspProgressionStatusExporter
             {
                 observed = ObservedGameState.Build(
                     live, production, traffic, power, recipes);
+                ilsReceiptTracker.Observe(data, observed);
             }
             catch (Exception ex)
             {

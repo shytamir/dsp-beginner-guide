@@ -22,6 +22,7 @@ namespace DspProgressionStatusExporter
             public long GameTick;
             public Dictionary<int, Dictionary<int, Counters>> Factories =
                 new Dictionary<int, Dictionary<int, Counters>>();
+            public HashSet<int> AvailableFactories = new HashSet<int>();
             public Dictionary<int, int> PlanetIds = new Dictionary<int, int>();
             public Dictionary<int, string> PlanetNames = new Dictionary<int, string>();
         }
@@ -29,10 +30,12 @@ namespace DspProgressionStatusExporter
         private readonly Queue<Sample> samples = new Queue<Sample>();
         private object sampledGameData;
         private string lastFailure;
+        private long evidenceEpoch;
 
         public void Clear()
         {
             samples.Clear();
+            evidenceEpoch++;
             sampledGameData = null;
             lastFailure = null;
         }
@@ -44,6 +47,7 @@ namespace DspProgressionStatusExporter
                 if (!Object.ReferenceEquals(sampledGameData, gameData))
                 {
                     samples.Clear();
+                    evidenceEpoch++;
                     sampledGameData = gameData;
                 }
 
@@ -52,6 +56,7 @@ namespace DspProgressionStatusExporter
                 object pool = Plugin.GetMember(traffic, "factoryTrafficPool");
                 if (pool == null)
                 {
+                    evidenceEpoch++;
                     lastFailure = "GameData.statistics.traffic.factoryTrafficPool was unavailable.";
                     return;
                 }
@@ -66,8 +71,11 @@ namespace DspProgressionStatusExporter
                 {
                     if (stat != null)
                     {
-                        Dictionary<int, Counters> counters = ReadCounters(stat);
-                        if (counters.Count > 0) point.Factories[index] = counters;
+                        bool available;
+                        Dictionary<int, Counters> counters = ReadCounters(stat, out available);
+                        point.Factories[index] = counters;
+                        if (available) point.AvailableFactories.Add(index);
+                        else evidenceEpoch++;
                     }
                     if (index < factories.Count && factories[index] != null)
                     {
@@ -83,7 +91,7 @@ namespace DspProgressionStatusExporter
                 {
                     Sample previous = null;
                     foreach (Sample existing in samples) previous = existing;
-                    if (gameTick < previous.GameTick) samples.Clear();
+                    if (gameTick < previous.GameTick || CountersReset(previous, point)) { samples.Clear(); evidenceEpoch++; }
                 }
                 samples.Enqueue(point);
                 while (samples.Count > MaximumSamples) samples.Dequeue();
@@ -91,6 +99,7 @@ namespace DspProgressionStatusExporter
             }
             catch (Exception ex)
             {
+                evidenceEpoch++;
                 lastFailure = ex.GetType().Name + ": " + ex.Message;
             }
         }
@@ -98,7 +107,8 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["available"] = samples.Count > 0;
+            result["available"] = samples.Count > 0 && lastFailure == null;
+            result["evidenceEpoch"] = evidenceEpoch;
             result["source"] = "GameData.statistics.traffic.factoryTrafficPool[*].trafficPool[*].total[6 input, 13 output, 20 internal]";
             result["semantics"] = "Planetary logistics traffic recorded by DSP; rates are cumulative-counter deltas over simulation time.";
             result["sampleCount"] = samples.Count;
@@ -114,6 +124,7 @@ namespace DspProgressionStatusExporter
             }
             long ticks = last.GameTick - first.GameTick;
             double seconds = ticks / 60.0;
+            result["sampleGameTick"] = last.GameTick;
             result["sampledAtUtc"] = last.AtUtc.ToString("o", CultureInfo.InvariantCulture);
             result["windowGameTicks"] = ticks;
             result["windowGameSeconds"] = Math.Round(seconds, 3);
@@ -136,15 +147,22 @@ namespace DspProgressionStatusExporter
                 if (last.PlanetIds.TryGetValue(factoryId, out planetId)) row["planetId"] = planetId;
                 if (last.PlanetNames.TryGetValue(factoryId, out planetName)) row["planetName"] = planetName;
                 row["items"] = ExportRates(a, b, seconds);
+                row["inputCountersAvailable"] = lastFailure == null && last.AvailableFactories.Contains(factoryId);
+                var inputs = new Dictionary<string, object>();
+                foreach (int itemId in new[] { 1106, 1105 })
+                { Counters value; inputs[itemId.ToString(CultureInfo.InvariantCulture)] = b.TryGetValue(itemId, out value) ? value.Input : 0L; }
+                row["finishedInputTotals"] = inputs;
                 rows.Add(row);
             }
             result["factories"] = rows;
             return result;
         }
 
-        private static Dictionary<int, Counters> ReadCounters(object astroStat)
+        private static Dictionary<int, Counters> ReadCounters(object astroStat, out bool available)
         {
             var result = new Dictionary<int, Counters>();
+            object pool = Plugin.GetMember(astroStat, "trafficPool");
+            available = pool is System.Collections.IEnumerable;
             foreach (object stat in Plugin.Enumerate(Plugin.GetMember(astroStat, "trafficPool")))
             {
                 if (stat == null) continue;
@@ -154,10 +172,26 @@ namespace DspProgressionStatusExporter
                 long output;
                 long internalTraffic;
                 if (!ReadTotals(Plugin.GetMember(stat, "total"), out input, out output, out internalTraffic))
-                    continue;
+                { available = false; continue; }
                 result[itemId] = new Counters { Input = input, Output = output, Internal = internalTraffic };
             }
             return result;
+        }
+
+        private static bool CountersReset(Sample previous, Sample current)
+        {
+            foreach (var factory in previous.Factories)
+            {
+                Dictionary<int, Counters> values;
+                if (!current.AvailableFactories.Contains(factory.Key) || !current.Factories.TryGetValue(factory.Key, out values)) return true;
+                foreach (int id in new[] { 1106, 1105 })
+                {
+                    Counters a, b;
+                    if (factory.Value.TryGetValue(id, out a) &&
+                        (!values.TryGetValue(id, out b) || b.Input < a.Input)) return true;
+                }
+            }
+            return false;
         }
 
         private static bool ReadTotals(object value, out long input, out long output, out long internalTraffic)

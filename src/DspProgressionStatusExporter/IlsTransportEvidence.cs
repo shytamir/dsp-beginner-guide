@@ -19,6 +19,11 @@ namespace DspProgressionStatusExporter
 
         public static IlsTransportEvidence Build(ObservedGameState state)
         {
+            return state.IlsTransport ?? Resolve(state, null);
+        }
+
+        internal static IlsTransportEvidence Resolve(ObservedGameState state, IlsTransportEvidence preferred)
+        {
             var result = new IlsTransportEvidence();
             int outpost = GuideGateEngine.FindExpeditionPlanet(state);
             foreach (ObservedStationState station in state.Stations)
@@ -29,8 +34,10 @@ namespace DspProgressionStatusExporter
                 if (!home && policies == 0 && station.PlanetId != outpost) continue;
                 ObservedStationState selected = home ? result.Home : result.Source;
                 int score = home ? result.HomePolicies : result.SourcePolicies;
+                ObservedStationState prior = preferred == null ? null : home ? preferred.Home : preferred.Source;
+                bool prefer = Same(station, prior);
                 if (selected == null || policies > score || policies == score &&
-                    (station.PlanetId < selected.PlanetId || station.PlanetId == selected.PlanetId && station.StationId < selected.StationId))
+                    (prefer || !Same(selected, prior) && (station.PlanetId < selected.PlanetId || station.PlanetId == selected.PlanetId && station.StationId < selected.StationId)))
                 {
                     if (home) { result.Home = station; result.HomePolicies = policies; }
                     else { result.Source = station; result.SourcePolicies = policies; }
@@ -65,6 +72,9 @@ namespace DspProgressionStatusExporter
                 (result.Source == null || result.Source.EvidenceAvailable);
             return result;
         }
+
+        private static bool Same(ObservedStationState a, ObservedStationState b)
+        { return a != null && b != null && a.PlanetId == b.PlanetId && a.StationId == b.StationId; }
 
         private static long Count(Dictionary<int, long> stock, int id)
         {

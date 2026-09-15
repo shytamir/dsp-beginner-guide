@@ -464,7 +464,8 @@ namespace DspProgressionStatusExporter
                 { "playerInventory", CountEvidence(
                     state.PlayerItemCounts, IlsPlayerItems) },
                 { "planetCargo", IlsPlanetCargoEvidence(state) },
-                { "transportPackage", IlsTransportEvidence.Build(state).Export() }
+                { "transportPackage", IlsTransportEvidence.Build(state).Export() },
+                { "homeDelivery", state.IlsReceipt.Export() }
             };
         }
 

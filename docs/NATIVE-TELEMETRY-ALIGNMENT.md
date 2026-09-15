@@ -72,3 +72,12 @@ inventory/deployment sources and selected endpoint identities.
   reconstruction when a native aggregate exists.
 - If an expected member is unavailable, mark the evidence unknown and fail
   softly; do not substitute a semantically different proxy.
+
+### ILS home receipt (GC3-05)
+
+The existing traffic sample exports the latest native finished-item input totals,
+availability, game tick and reset epoch. A two-item session tracker establishes
+its baseline after observing configured endpoints. It uses no ship polling or
+new collection cadence. Native internal traffic and other destinations are
+excluded. Missing data clears receipt flags; quiet valid samples retain them.
+Source stock or production corroborates supply; source power is not required.

@@ -12,9 +12,10 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | GC3-01 | Technically complete; pushed as `522a5fc` |
 | GC3-02 | Technically complete; pushed as `9195e21` |
 | GC3-03 | Technically complete; pushed as `4896d81` |
-| GC3-04 | Technically complete |
-| GC3-05 | Next |
-| GC3-06 through GC3-12 | Pending in dependency order |
+| GC3-04 | Technically complete; pushed as `696d79e` |
+| GC3-05 | Technically complete |
+| GC3-06 | Next |
+| GC3-07 through GC3-12 | Pending in dependency order |
 | G1 / M1 | Passed: stage, cargo and research technically coherent |
 | G2 through G4 | Pending |
 | GC3-13 / G5 | Reserved for owner workshop; not started |
@@ -145,3 +146,31 @@ Collection fixtures distinguish valid zero stations from missing station fields.
 
 **Reservation:** No game runtime claims. G2 still awaits receipt verification
 and the full ILS Pending journey; owner acceptance remains GC3-13.
+
+## GC3-05 — Verify finished materials reaching home
+
+**Outcome:** Automation requires a configured birth-planet Demand receiver with
+five Vessels, a non-birth Supply source with finished stock/production, and new
+home inputs for both finished materials. Configuring a route produces waiting
+status, not a repeated activation task.
+
+**Decisions:** Reuse native cumulative counters, not rolling input rates that
+could predate configuration. Preserve equally suitable endpoint identities.
+Keep only two session receipt flags and their baseline; reset on game identity,
+configuration, counter epoch/regression or unavailable evidence. Current source
+stock/production corroborates readiness without requiring source power. The
+tracker observes existing model refreshes; it cannot attribute individual ships
+or see station changes between observations. No game writes or extra scans.
+
+**Contracts:** snapshot 2.21, normalized 2.7, analysis 3.8, progression 3.6.
+Compact stage evidence includes receipt status, reset reason, sample tick/epoch
+and the explicit planet-level attribution limit.
+
+**Validation:** Both variants built with zero warnings/errors. Four retained
+suites, Test-IlsReceipt (including prior ILS suites), Test-IlsEvidenceCollection
+and variant checks passed against both. Fixtures cover old/one/both/quiet
+receipts, source zero, preferred endpoints, reload, missing evidence, policy and
+counter changes, other destinations, fleets, ore and internal traffic. Collector
+fixtures exercise real sampling and normalization with native-shaped synthetic
+objects. A misplaced normalization insertion was repaired before the final
+successful matrix. No live save or runtime acceptance was claimed.
