@@ -28,6 +28,8 @@ Keep the product invariants in `docs/PROJECT.md` intact:
 
 Build against a local DSP installation and verify that the panel, navigation,
 scrolling, fixed Cube rail, `DON'T PANIC`, and the diagnostic snapshot action
-still work. The product is in maintenance mode; proposed features should
-identify the published-guide change, reproducible defect, or in-scope unmet
-player need they address.
+still work. The current [Guide 3.0 roadmap](docs/ROADMAP.md) is a final planning
+draft awaiting owner acceptance; its execution policy consolidates human
+validation into the final workshop. Proposed features should identify the
+published-guide change, reproducible defect, or in-scope unmet player need
+they address. Consult [PROJECT.md](docs/PROJECT.md) for current authority.

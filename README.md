@@ -8,9 +8,9 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-The current release implements guide **2.3**. The public guide 2.3 edition
-(published `guide-version` metadata `2.3`) is the development authority for
-the implemented nine-phase contract.
+The current release implements guide **2.3**, which remains the baseline for
+the implemented nine-phase contract. The published guide is now 3.0; proposed
+companion changes are described under [Project status](#project-status).
 
 ## Features
 
@@ -174,9 +174,12 @@ history.
 
 ## Project status
 
-The product is complete for the adopted guide 2.3 contract and is in
-maintenance mode. [docs/PROJECT.md](docs/PROJECT.md) is the sole authority for
-current project state and maintenance scope.
+The released product is complete for the adopted guide 2.3 contract. The project
+is in final planning for bounded Guide 3.0 companion improvements, pending owner
+acceptance of [the roadmap](docs/ROADMAP.md). Implementation has not started.
+[docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
+scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the
+proposed fixes and deliberate exclusions.
 
 ## Repository layout
 

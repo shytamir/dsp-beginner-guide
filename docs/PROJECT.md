@@ -2,14 +2,32 @@
 
 ## Product state
 
-DSP Guide Check is complete for the adopted DSP Practical Progression Guide
-2.3 contract and is in maintenance mode.
+The released DSP Guide Check implementation remains complete for the adopted
+DSP Practical Progression Guide 2.3 contract. The project is now in **final
+planning, pending owner acceptance of the Guide 3.0 companion roadmap**.
+
+[`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its bounded draft
+addresses ILS stage ownership, cargo and transport evidence, actionable Pending
+tasks, and consequential Guide 3.0 readiness differences. The supporting
+[gap analysis](management/GUIDE3-GAP-ANALYSIS.md) records verified evidence,
+implementation decisions and excluded work.
+
+No implementation is authorized by drafting or pushing these documents. After
+roadmap acceptance and implementation authorization, intermediate story gates
+will use agent-run automated checks. At the owner's request, the final story
+is the only execution-stage human validation workshop; normal per-change
+runtime and presentation checkpoints are consolidated there. Technical
+completion, owner acceptance and publication remain separate states.
+
+The product and version contracts below describe the existing implementation,
+not unimplemented roadmap outcomes.
 
 The bounded maintenance cycle prompted by the full critical-path playthrough
 and its subsequent Cube demand-reference refinement concluded. Its
 [`completed maintenance roadmap`](archive/project-management/COMPLETED-MAINTENANCE-ROADMAP.md)
 is archived and carries no active implementation story or validation gate.
-New work resumes only for:
+The newly requested planning cycle addresses a meaningful guide change and
+reproducible companion gaps. Maintenance intake otherwise remains limited to:
 
 - a meaningful change to the published guide;
 - a reproducible defect or compatibility regression;
@@ -59,7 +77,9 @@ warning system.
 ## Guide authority
 
 - Adopted authority: public guide 2.3 edition.
-- Published `guide-version` metadata: `2.3`.
+- Implemented guide baseline: `2.3`.
+- Planning reference: the published guide declares `guide-version=3.0`, verified
+  on 2026-09-15. The proposed alignment does not yet replace the runtime baseline.
 - Current implementation: the nine-phase default critical path.
 
 ```text
