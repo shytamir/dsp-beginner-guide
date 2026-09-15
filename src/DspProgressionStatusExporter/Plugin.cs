@@ -30,6 +30,7 @@ namespace DspProgressionStatusExporter
         private static Type ldbType;
         private static readonly Dictionary<int, string> ItemNames = new Dictionary<int, string>();
         private static readonly Dictionary<int, string> TechNames = new Dictionary<int, string>();
+        private static readonly Dictionary<int, ObservedTechDefinition> ResearchDefinitions = new Dictionary<int, ObservedTechDefinition>();
         private static readonly Dictionary<int, string> RecipeNames = new Dictionary<int, string>();
 
         // Runtime-derived Phase 1 bundle authoritative prototype IDs.
@@ -267,9 +268,9 @@ namespace DspProgressionStatusExporter
                     ObservedGameState.Build(
                         live, production, traffic,
                         powerTelemetryExport, recipes);
-                ilsReceiptTracker.Observe(data, observedState);
                 ManualPhaseSelection selection =
                     EnsurePhaseSelection(data, observedState);
+                ilsReceiptTracker.ObserveSelected(data, observedState, selection.PhaseId, selection.IlsStage);
                 Dictionary<string, object> guideAnalysis =
                     GuideAnalyzer.AnalyzeSelected(
                         observedState, selection.PhaseId, selection.IlsStage);
@@ -353,9 +354,9 @@ namespace DspProgressionStatusExporter
                 Dictionary<string, object> recipes = RecipeTelemetry.Export(data);
                 ObservedGameState observed =
                     ObservedGameState.Build(live, production, traffic, power, recipes);
-                ilsReceiptTracker.Observe(data, observed);
                 ManualPhaseSelection selection =
                     EnsurePhaseSelection(data, observed);
+                ilsReceiptTracker.ObserveSelected(data, observed, selection.PhaseId, selection.IlsStage);
                 Dictionary<string, object> analysis =
                     GuideAnalyzer.AnalyzeSelected(
                         observed, selection.PhaseId, selection.IlsStage);
@@ -466,7 +467,6 @@ namespace DspProgressionStatusExporter
             {
                 observed = ObservedGameState.Build(
                     live, production, traffic, power, recipes);
-                ilsReceiptTracker.Observe(data, observed);
             }
             catch (Exception ex)
             {
@@ -479,6 +479,7 @@ namespace DspProgressionStatusExporter
             try
             {
                 ManualPhaseSelection selection = EnsurePhaseSelection(data, observed);
+                ilsReceiptTracker.ObserveSelected(data, observed, selection.PhaseId, selection.IlsStage);
                 Dictionary<string, object> analysis =
                     GuideAnalyzer.AnalyzeSelected(
                         observed,
@@ -818,6 +819,10 @@ namespace DspProgressionStatusExporter
 
             object techSet = GetStatic(ldbType, "techs");
             object dataArray = GetMember(techSet, "dataArray");
+            if (ResearchDefinitions.Count == 0)
+                foreach (int id in IlsResearchPolicy.ResearchTargets)
+                    ReadResearchDefinition(techSet, id, ResearchDefinitions);
+            result["definitions"] = ResearchDefinitions;
 
             var techRows = new List<object>();
             foreach (object proto in Enumerate(dataArray))
@@ -853,8 +858,9 @@ namespace DspProgressionStatusExporter
 
             result["technologies"] = techRows;
             result["currentTech"] = Scalar(GetMember(history, "currentTech", "currentTechId"));
-            result["queueAvailable"] = GetMember(history, "techQueue", "techQueueArray") is IEnumerable;
-            result["techQueue"] = ExportSimpleSequence(GetMember(history, "techQueue", "techQueueArray"));
+            object queue = GetMember(history, "techQueue", "techQueueArray");
+            result["queueAvailable"] = queue is IEnumerable;
+            result["techQueue"] = ExportSimpleSequence(queue);
             result["universeObserveLevel"] = Scalar(GetMember(history, "universeObserveLevel"));
             result["missionAccomplished"] = Scalar(GetMember(history, "missionAccomplished"));
 
@@ -871,6 +877,24 @@ namespace DspProgressionStatusExporter
             );
 
             return result;
+        }
+
+        private static void ReadResearchDefinition(object techSet, int id, Dictionary<int, ObservedTechDefinition> definitions)
+        {
+            if (definitions.ContainsKey(id)) return;
+            object proto = TryInvoke(techSet, "Select", id);
+            int[] required = GetMember(proto, "PreTechs") as int[];
+            int[] implicitRequired = GetMember(proto, "PreTechsImplicit") as int[];
+            string name = ProtoName(proto);
+            if (required == null || implicitRequired == null || String.IsNullOrEmpty(name)) return;
+            int level = ToInt(GetMember(proto, "Level"));
+            definitions[id] = new ObservedTechDefinition {
+                Name = level > 0 ? name + " Lv" + level : name,
+                Required = required,
+                Implicit = implicitRequired
+            };
+            foreach (int prerequisite in required) ReadResearchDefinition(techSet, prerequisite, definitions);
+            foreach (int prerequisite in implicitRequired) ReadResearchDefinition(techSet, prerequisite, definitions);
         }
 
         private static Dictionary<string, object> ExportPlayer(object player)
@@ -1930,11 +1954,9 @@ namespace DspProgressionStatusExporter
                     row["gid"] = Scalar(GetMember(station, "gid"));
                     row["isStellar"] = Scalar(GetMember(station, "isStellar"));
                     row["isCollector"] = Scalar(GetMember(station, "isCollector"));
-                    row["available"] = GetMember(station, "isStellar") is bool &&
-                        GetMember(station, "idleShipCount") != null && GetMember(station, "workShipCount") != null &&
-                        GetMember(station, "storage") is IEnumerable;
-                    row["storage"] = ExportStationStorage(GetMember(station, "storage"));
-                    row["fleet"] = ExportNamedMembers(
+                    object storage = GetMember(station, "storage");
+                    row["storage"] = ExportStationStorage(storage);
+                    Dictionary<string, object> fleet = ExportNamedMembers(
                         station,
                         new string[] {
                             "idleDroneCount", "workDroneCount",
@@ -1942,8 +1964,10 @@ namespace DspProgressionStatusExporter
                             "warperCount", "warperMaxCount"
                         }
                     );
-
-                    MergeStationStorage(aggregateStorage, GetMember(station, "storage"));
+                    row["fleet"] = fleet;
+                    row["available"] = row["isStellar"] is bool && fleet.ContainsKey("idleShipCount") &&
+                        fleet.ContainsKey("workShipCount") && storage is IEnumerable;
+                    MergeStationStorage(aggregateStorage, storage);
                     stations.Add(row);
                 }
             }

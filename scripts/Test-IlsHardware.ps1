@@ -28,6 +28,8 @@ function Slot($State,[int]$Planet,[int]$Id,[int]$Item,[string]$Policy,[long]$Cou
     SetField $slot 'IsStellar' $true
     SetField $slot 'Count' $Count
     (Field $State 'StationSlots').Add($slot)
+    $owner = (Field $State 'Stations') | Where-Object { $_.PlanetId -eq $Planet -and $_.StationId -eq $Id }
+    (Field $owner 'Slots').Add($slot)
 }
 function Transport($State) { Call 'IlsTransportEvidence' 'Build' @($State) }
 $s = HardwareState

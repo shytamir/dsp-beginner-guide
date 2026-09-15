@@ -4,6 +4,13 @@
 
 ### Guide 3.0 candidate
 
+- GC3-13 B1: Corrected the periodic refresh's ILS station lookup to reuse each
+  station's own slots and observe receipts only in selected ILS Automation.
+  Replaced the copied research-prerequisite table with native technology data;
+  removed unused full-state diagnostic materialization from panel analysis and
+  redundant availability reads. No new timing or diagnostic collection. The
+  replacement candidate needs owner retest before the workshop resumes.
+
 - GC3-12: Prepared the 2.2.x candidate line with one PowerShell 7 command for
   both local variants, retained/story fixtures, bounded snapshot parity, identity
   and package checks. Hosted CI runs the portable suites for both DLLs. Clean

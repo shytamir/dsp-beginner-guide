@@ -163,7 +163,7 @@ namespace DspProgressionStatusExporter
             var result = new Dictionary<int, Counters>();
             object pool = Plugin.GetMember(astroStat, "trafficPool");
             available = pool is System.Collections.IEnumerable;
-            foreach (object stat in Plugin.Enumerate(Plugin.GetMember(astroStat, "trafficPool")))
+            foreach (object stat in Plugin.Enumerate(pool))
             {
                 if (stat == null) continue;
                 int itemId = Plugin.ToInt(Plugin.GetMember(stat, "itemId"));

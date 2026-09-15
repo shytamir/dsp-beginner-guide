@@ -30,7 +30,7 @@ namespace DspProgressionStatusExporter
             {
                 if (!station.IsStellar || station.StationId <= 0 || station.PlanetId <= 0 || state.StarterPlanetId <= 0) continue;
                 bool home = station.PlanetId == state.StarterPlanetId;
-                int policies = CountPolicies(state, station, home ? "Demand" : "Supply");
+                int policies = CountPolicies(station, home ? "Demand" : "Supply");
                 if (!home && policies == 0 && station.PlanetId != outpost) continue;
                 ObservedStationState selected = home ? result.Home : result.Source;
                 int score = home ? result.HomePolicies : result.SourcePolicies;
@@ -82,12 +82,11 @@ namespace DspProgressionStatusExporter
             return stock.TryGetValue(id, out count) ? Math.Max(0, count) : 0;
         }
 
-        internal static int CountPolicies(ObservedGameState state, ObservedStationState station, string policy)
+        internal static int CountPolicies(ObservedStationState station, string policy)
         {
             bool titanium = false, silicon = false;
-            foreach (ObservedStationSlot slot in state.StationSlots)
-                if (slot.PlanetId == station.PlanetId && slot.StationId == station.StationId && slot.IsStellar &&
-                    String.Equals(slot.RemoteLogic, policy, StringComparison.OrdinalIgnoreCase))
+            foreach (ObservedStationSlot slot in station.Slots)
+                if (String.Equals(slot.RemoteLogic, policy, StringComparison.OrdinalIgnoreCase))
                 {
                     if (slot.ItemId == 1106) titanium = true;
                     if (slot.ItemId == 1105) silicon = true;

@@ -5,7 +5,8 @@
 The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
 roadmap for implementation on 2026-09-15. **GC3-01 through GC3-12 are technically complete;
-G1-G4 passed. GC3-13 owner acceptance workshop is the only remaining story.** See the [execution record](management/GUIDE3-EXECUTION.md).
+G1-G4 passed their original technical checks. GC3-13 is open with its first blocker,
+B1 (periodic panel slowdown), awaiting owner retest of the native-data correction.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
@@ -185,8 +186,9 @@ phase changes and reloads. First ILS entry suggests III only for researched
 otherwise I. Runtime evidence never changes an initialized stage. Invalid
 stage data preserves the phase and is initialized once on ILS entry.
 
-ILS research uses a bounded local table from the pinned Guide 3.0 reference,
-including implicit prerequisites and explicit upgrade ranks. Departure requires
+ILS research reads the target technologies and their explicit/implicit prerequisites
+from native `LDB.techs` once, retaining native prerequisite arrays and upgrade ranks.
+Only the stage targets and advice policy belong to the mod. Departure requires
 2902/1413; survey research remains optional. Haulback offers its support branches
 without turning them into cargo gates. Automation follows 1414/1605 and catches
 up their prerequisites; 2903 is excluded. Queued research produces waiting
@@ -200,6 +202,12 @@ Remote Demand for both finished materials, source Remote Supply and five Vessels
 assigned at home. Candidate selection prefers matching slots, then planet/station
 ID; an unconfigured source is eligible only on the identified outpost. The old
 protected-reserve claim is removed. Receipt flags use birth-planet cumulative input counters after observing matching endpoint policies and the home fleet. They survive quiet intervals and reset on reload, changed/lost configuration, counters or missing evidence. Planet totals corroborate delivery without attributing an exact sending station.
+
+Station observations retain the native station-to-slot relationship; endpoint
+checks inspect that station's own slots rather than searching every station's slots.
+Receipt observation runs only while ILS Automation is selected. Leaving it clears
+the receipt baseline; returning requires newly observed inputs. Panel analysis
+does not materialize the unused full normalized-state diagnostic export.
 
 ## Snapshot contract
 

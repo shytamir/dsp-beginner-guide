@@ -5,6 +5,15 @@ are tracked in the [execution record](GUIDE3-EXECUTION.md).
 **Decision authority:** [PROJECT.md](../PROJECT.md).
 **Execution draft:** [ROADMAP.md](../ROADMAP.md).
 
+**GC3-13 B1 correction (2026-09-16):** The workshop found an unacceptable
+periodic slowdown. The original D3 copied prerequisite-table decision is
+superseded by native `LDB.techs` data. Station observations now preserve native
+slot ownership, receipt tracking is limited to selected Automation, and panel
+analysis no longer exports the full normalized diagnostic state. See the
+[B1 execution record](GUIDE3-EXECUTION.md#gc3-13-b1--periodic-panel-slowdown)
+for the changes, reasons, checks and remaining owner retest. The original
+investigation below is retained as planning history.
+
 ## Purpose and evidence
 
 Identify changes that improve a player's next decision, especially during ILS.

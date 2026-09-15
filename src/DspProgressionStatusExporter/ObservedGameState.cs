@@ -90,8 +90,16 @@ namespace DspProgressionStatusExporter
         public string RemoteLogic;
     }
 
+    internal sealed class ObservedTechDefinition
+    {
+        public string Name;
+        public int[] Required;
+        public int[] Implicit;
+    }
+
     internal sealed class ObservedStationState
     {
+        public readonly List<ObservedStationSlot> Slots = new List<ObservedStationSlot>();
         public bool EvidenceAvailable;
         public int PlanetId;
         public string PlanetName;
@@ -301,6 +309,7 @@ namespace DspProgressionStatusExporter
         public readonly List<ObservedPowerState> PowerPlanets = new List<ObservedPowerState>();
         public readonly List<ObservedStationSlot> StationSlots = new List<ObservedStationSlot>();
         public readonly List<ObservedStationState> Stations = new List<ObservedStationState>();
+        public Dictionary<int, ObservedTechDefinition> ResearchDefinitions = new Dictionary<int, ObservedTechDefinition>();
         public readonly Dictionary<int, ObservedCapacity> TankStorage = new Dictionary<int, ObservedCapacity>();
         public readonly Dictionary<int, ObservedItemBufferEvidence> ItemBuffers =
             new Dictionary<int, ObservedItemBufferEvidence>();
@@ -447,6 +456,8 @@ namespace DspProgressionStatusExporter
         private void ReadResearch(Dictionary<string, object> research)
         {
             ResearchQueueAvailable = ToBool(GetValue(research, "queueAvailable"));
+            ResearchDefinitions = GetValue(research, "definitions") as Dictionary<int, ObservedTechDefinition>
+                ?? new Dictionary<int, ObservedTechDefinition>();
             foreach (object rowObject in Enumerate(GetValue(research, "technologies")))
             {
                 var row = rowObject as Dictionary<string, object>;
@@ -607,7 +618,7 @@ namespace DspProgressionStatusExporter
                         if (slot == null) continue;
                         if (GetValue(slot, "count") == null || String.IsNullOrEmpty(ToText(GetValue(slot, "remoteLogic"))))
                             observedStation.EvidenceAvailable = false;
-                        StationSlots.Add(new ObservedStationSlot {
+                        var observedSlot = new ObservedStationSlot {
                             PlanetId = planetId,
                             PlanetName = planetName,
                             StationId = stationId,
@@ -618,7 +629,9 @@ namespace DspProgressionStatusExporter
                             Maximum = Plugin.ToLong(GetValue(slot, "max")),
                             LocalLogic = ToText(GetValue(slot, "localLogic")),
                             RemoteLogic = ToText(GetValue(slot, "remoteLogic"))
-                        });
+                        };
+                        observedStation.Slots.Add(observedSlot);
+                        StationSlots.Add(observedSlot);
                     }
                 }
             }

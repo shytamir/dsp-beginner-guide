@@ -43,8 +43,11 @@ Raw location-field presence distinguishes a known space location (zero) from
 missing evidence. Research rows retain per-ID availability of their unlocked
 result, so missing reflection results cannot become locked technology claims.
 Queue availability comes from the existing history queue collection. The
-ILS-specific policy consumes these normalized observations and a pinned local
-prerequisite table; it does not discover a runtime graph or mutate the queue.
+ILS-specific policy consumes these normalized observations and the native
+`LDB.techs.Select(id)` definitions for its targets and their prerequisite closure.
+The collector retains `PreTechs` and `PreTechsImplicit` arrays once and reads
+the native name/Level for ranked advice; absent definitions stay unknown.
+There is no production copy of the guide's prerequisite table or queue mutation.
 Snapshots include only the selected stage's prerequisite closure and survey
 advice where relevant, with availability, queued, unlocked and started flags.
 
@@ -85,6 +88,11 @@ its baseline after observing configured endpoints. It uses no ship polling or
 new collection cadence. Native internal traffic and other destinations are
 excluded. Missing data clears receipt flags; quiet valid samples retain them.
 Source stock or production corroborates supply; source power is not required.
+GC3-13 B1 restricts this observation to selected ILS Automation and clears its
+baseline when leaving that stage. Native station-slot ownership is preserved
+through normalization, so endpoint policy and source-stock checks inspect only
+the owning station's slots. Route caches are not substituted for the existing
+configuration objective, and no native route rebuild is invoked.
 
 ### DYSON receiver bridge (GC3-08)
 

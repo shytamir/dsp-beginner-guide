@@ -1,6 +1,6 @@
 # Guide 3.0 companion improvements roadmap
 
-**Status:** GC3-01 through GC3-12 technically complete; G1-G4 passed. GC3-13 owner acceptance workshop pending.
+**Status:** GC3-01 through GC3-12 completed their technical gates. GC3-13 is open and blocked by B1: the candidate's periodic slowdown. The native-data correction awaits owner retest; G5 remains open.
 **Prepared:** 2026-09-15.
 **Implementation:** Owner authorized GC3-01 through GC3-12 on 2026-09-15, with a push after each story. GC3-13 remains the human validation stop.
 **Execution record:** [Story decisions and validation](management/GUIDE3-EXECUTION.md).
@@ -168,9 +168,9 @@ mission planning, belt/power topology, an expanded packing calculator.
 queue instruction or unnecessary Drive Engine Lv3 detour.
 
 **Scope:** Add the bounded stage-owned technology policy in D3 to ILS analysis.
-Commit its explicit and implicit prerequisite data as a small local table
-with source attribution and exact rank labels. Include the prerequisite
-closure of the listed targets from the pinned reference; no live web fetch is
+Read explicit and implicit prerequisite data from native `LDB.techs`, retaining
+only the listed targets and their prerequisite closure with exact rank labels.
+GC3-13 B1 supersedes the original copied-table design; no live web fetch is
 needed when the mod runs. Export only relevant research evidence.
 
 **Definition of done:**
@@ -470,12 +470,21 @@ new CI infrastructure, UI screenshot claims from compilation, owner acceptance.
 helps during play and whether its remaining evidence limits are acceptable.
 
 **Scope:** This is the final execution story and the only human validation
-workshop. Use the exact GC3-12 candidate in DSP through BepInEx. Gather focused
+workshop. Use the corrected candidate identified in the workshop record in DSP through BepInEx. Gather focused
 screenshots/snapshots only here, and repair defects within the already agreed
 criteria before presenting affected results for acceptance again.
 
 **Definition of done:**
 
+- Resolve **B1 — periodic panel slowdown** before resuming the acceptance cases.
+  The owner reported roughly 55 to 22 FPS every 15 seconds for nearly two seconds
+  on a mature save, with Expert off and WHITE visible; the prior installed version
+  had no noticeable periodic dip. The correction preserves native station-slot
+  ownership, reads native research prerequisites, scopes receipt observation to
+  ILS Automation, and removes the unused full-state export from panel analysis.
+  No new measurement or diagnostic system is authorized. Technical checks and a
+  packaged candidate precede owner retest on that same save. Only owner confirmation
+  can close B1; then test Expert mode before continuing the playthrough.
 - Workshop covers ILS stage selection/persistence and correction of an initial
   suggestion; preparation, loading, return and consumed cargo; useful research
   and hardware actions; configured versus observed home delivery; and no

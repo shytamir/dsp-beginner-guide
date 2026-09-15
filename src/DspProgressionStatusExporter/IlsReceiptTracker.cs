@@ -30,6 +30,18 @@ namespace DspProgressionStatusExporter
         private long epoch, tick, titanium, silicon;
         private bool receivedTitanium, receivedSilicon;
 
+        public void ObserveSelected(object data, ObservedGameState state, string phaseId, int stage)
+        {
+            if (phaseId == "ils" && stage == 3)
+                Observe(data, state);
+            else
+            {
+                previous = null;
+                identity = null;
+                receivedTitanium = receivedSilicon = false;
+            }
+        }
+
         public void Observe(object data, ObservedGameState state)
         {
             bool newGame = !Object.ReferenceEquals(gameData, data);
@@ -82,8 +94,8 @@ namespace DspProgressionStatusExporter
             foreach (int id in new[] { 1106, 1105 })
             {
                 bool stock = false, production = false, productionKnown = false;
-                foreach (ObservedStationSlot slot in state.StationSlots)
-                    if (slot.PlanetId == source.PlanetId && slot.StationId == source.StationId && slot.ItemId == id && slot.Count > 0) stock = true;
+                foreach (ObservedStationSlot slot in source.Slots)
+                    if (slot.ItemId == id && slot.Count > 0) stock = true;
                 foreach (ObservedFactoryItemFlow flow in state.FactoryItemFlows)
                     if (flow.PlanetId == source.PlanetId && flow.ItemId == id && flow.OneMinuteAvailable)
                     { productionKnown = true; production |= flow.ProducedPerMinute > 0; }

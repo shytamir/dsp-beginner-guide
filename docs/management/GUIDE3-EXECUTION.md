@@ -25,7 +25,73 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
 | G3 / M3 | Passed: Guide 3.0 handoffs and PHOTON readiness |
 | G4 | Passed: both variants, local/hosted checks and retained candidate ready |
-| GC3-13 / G5 | Reserved for owner workshop; not started |
+| GC3-13 / G5 | Open; B1 periodic slowdown correction awaits owner retest |
+
+## GC3-13 B1 — periodic panel slowdown
+
+**Report and authorization (2026-09-16):** The owner reported roughly 55 to
+22 FPS every 15 seconds for nearly two seconds on a mature factory, with
+ExpertMode false and WHITE visible. The prior installed version had no
+noticeable periodic dip. The owner authorized bounded native-data corrections,
+tests, an installable candidate and a push to main; explicitly no new measurements.
+This is the workshop's first blocking issue, not a new roadmap epic or story.
+
+**Changes and reasons:**
+
+- Preserve `StationComponent.storage` ownership through the existing collector
+  and normalized station. Endpoint policy/source-stock checks use the station's
+  own slots; they no longer search the entire cluster's slot list for each station.
+  The normalized flat list shares those same slot objects for existing consumers.
+- Observe ILS receipt baselines only in selected Automation. Leaving the stage
+  clears the baseline so returning cannot certify deliveries during an unobserved
+  interval. Native planet input counters and existing completion thresholds remain.
+- Replace the production prerequisite table with the relevant native
+  `LDB.techs.Select(id)` closure, read once. Retain the native prerequisite arrays;
+  use native names and levels with the existing `LvN` presentation. The stage
+  targets and advice order remain guide policy. Missing definitions stay unknown.
+  The old table is now synthetic test input only, not compiled mod data.
+- Remove the full `ObservedGameState.Export()` from panel analysis. Pass the
+  queue-availability flag directly to the compact snapshot builder, preserving
+  its external schema and deliberate export behavior. No broad snapshot is added.
+- Reuse station fleet/storage fields, recipe pools, traffic pools and the research
+  queue already read for collection rather than reading them again for availability.
+
+**Scope decisions:** Native route pairs are not a substitute for the existing
+endpoint-configuration objective; do not change completion semantics or call
+native route rebuilds. Native inventory extra-info caches have different scope
+and refresh behavior, so existing precise storage reads remain. Keep the small
+PHOTON history over native rates and the existing Expert presentation contract.
+No telemetry redesign, broad collector rewrite, measurement system, game/save
+mutation, player-facing prose rewrite or new acceptance gate.
+
+**Validation (2026-09-16):**
+
+- `dotnet build src/DspProgressionStatusExporter/DspProgressionStatusExporter.csproj -c Release`
+  passed with zero warnings/errors against the installed DSP/BepInEx references.
+- `pwsh -NoProfile -File scripts/Test-IlsJourney.ps1` passed, including changed
+  native prerequisite inputs, scoped receipt resets and no full-state analysis export.
+- `pwsh -NoProfile -File scripts/Test-IlsEvidenceCollection.ps1` passed after
+  correcting a PowerShell dictionary construction in the added fixture. It checks
+  native explicit/implicit arrays, rank labels, missing metadata, normalization
+  reference reuse and station-slot isolation.
+- `pwsh -NoProfile -File scripts/Test-Guide3Candidate.ps1 -Sequence 99 -OutputDirectory artifacts/guide3/blocker01-preflight -AllowWorkingTree`
+  passed for public and diagnostic variants: retained/Guide 3.0 suites, native
+  collector fixtures, BepInEx configuration, hidden lifecycle, compiled identity,
+  snapshot parity and public package validation. Both builds had zero warnings/errors.
+  This preflight is not the delivered binary; the clean-source handoff below
+  rebuilds and verifies its exact DLLs and writes the final reports/identity manifest.
+- No game session, live performance claim, new measurement or diagnostic export
+  from a player save was used. B1 remains subject to owner retest.
+
+**Handoff:** Run `scripts/Test-Guide3Candidate.ps1 -Sequence 99 -OutputDirectory
+artifacts/guide3/workshop-blocker-01` from the clean correction commit. Its
+`candidate.json` binds the tested public/diagnostic DLLs and public ZIP to that
+source. This folder replaces the GC3-12 candidate for retest; original records
+below remain historical. The final source archive and reports stay local/ignored.
+
+**Acceptance:** Technical correction only. The owner must retest the same save
+before B1 closes and Expert/playthrough testing resumes. GC3-13/G5 remain open;
+no release, tag or publication is authorized by this repair.
 
 ## GC3-01 — Select and retain the ILS stage
 

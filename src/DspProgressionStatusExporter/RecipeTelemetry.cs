@@ -32,10 +32,11 @@ namespace DspProgressionStatusExporter
                     {
                         Dictionary<int, int> configured = new Dictionary<int, int>();
                         object factorySystem = Plugin.GetMember(factory, "factorySystem");
-                        available &= Plugin.GetMember(factorySystem, "assemblerPool") is System.Collections.IEnumerable &&
-                            Plugin.GetMember(factorySystem, "labPool") is System.Collections.IEnumerable;
-                        CountRecipes(Plugin.GetMember(factorySystem, "assemblerPool"), configured);
-                        CountRecipes(Plugin.GetMember(factorySystem, "labPool"), configured);
+                        object assemblers = Plugin.GetMember(factorySystem, "assemblerPool");
+                        object labs = Plugin.GetMember(factorySystem, "labPool");
+                        available &= assemblers is System.Collections.IEnumerable && labs is System.Collections.IEnumerable;
+                        CountRecipes(assemblers, configured);
+                        CountRecipes(labs, configured);
 
                         var row = new Dictionary<string, object>();
                         row["factoryIndex"] = factoryIndex;

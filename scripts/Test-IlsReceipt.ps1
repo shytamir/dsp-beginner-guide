@@ -66,3 +66,22 @@ foreach ($slot in (Field $x 'StationSlots')) { SetField $slot 'Count' 0L }
 foreach ($flow in (Field $x 'FactoryItemFlows')) { SetField $flow 'ProducedPerMinute' 0.0 }
 Assert ((ObserveReceipt (New 'IlsReceiptTracker') ([object]::new()) $x).Status -eq 'source-empty') 'Known empty source lost its task'
 Write-Host 'ILS home receipt, endpoint preference, source, reset and false-positive fixtures passed.'
+$scoped = New 'IlsReceiptTracker'; $scopeState = ReceiptState; $scopeData = [object]::new()
+function ObserveSelectedReceipt([string]$Phase,[int]$Stage) {
+    $scoped.ObserveSelected($scopeData,$scopeState,$Phase,$Stage)
+}
+ObserveSelectedReceipt 'white' 0
+Assert ($null -eq (Field $scopeState 'IlsTransport')) 'WHITE resolved ILS endpoints'
+ObserveSelectedReceipt 'ils' 1
+ObserveSelectedReceipt 'ils' 2
+Assert ($null -eq (Field $scopeState 'IlsTransport')) 'Earlier ILS stages resolved Automation endpoints'
+ObserveSelectedReceipt 'ils' 3
+SetField $scopeState 'TrafficSampleTick' 300L
+foreach ($id in @(1106,1105)) { (Field $scopeState 'FinishedInputTotals')[101][$id] = 200L }
+ObserveSelectedReceipt 'ils' 3
+Assert ((Field $scopeState 'IlsReceipt').Status -eq 'confirmed') 'Selected Automation lost receipt tracking'
+ObserveSelectedReceipt 'white' 0
+SetField $scopeState 'TrafficSampleTick' 600L
+ObserveSelectedReceipt 'ils' 3
+Assert ((Field $scopeState 'IlsReceipt').Status -eq 'awaiting-receipt') 'Returning to Automation retained an unobserved receipt baseline'
+Write-Host 'Receipt tracking is scoped to selected ILS Automation and resets on leaving it.'

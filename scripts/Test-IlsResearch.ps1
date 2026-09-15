@@ -2,14 +2,18 @@
 param([string]$DllPath)
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/Test-IlsCargo.ps1" -DllPath $DllPath
+$researchFixture = Get-Content -LiteralPath "$PSScriptRoot/IlsResearchFixture.json" -Raw | ConvertFrom-Json
 function ResearchState {
     $s = CargoState
     SetField $s 'ResearchQueueAvailable' $true
-    foreach ($stage in @(1,2,3)) {
-        foreach ($row in (Call 'IlsResearchPolicy' 'Export' @($s,$stage))) {
-            (Field $s 'AvailableTechIds').Add($row['id']) | Out-Null
-            (Field $s 'UnlockedTechIds').Add($row['id']) | Out-Null
-        }
+    foreach ($row in $researchFixture.technologies) {
+        $definition = New 'ObservedTechDefinition'
+        SetField $definition 'Name' $row.name
+        SetField $definition 'Required' ([int[]]$row.required)
+        SetField $definition 'Implicit' ([int[]]$row.implicitRequired)
+        (Field $s 'ResearchDefinitions').Add([int]$row.id,$definition)
+        (Field $s 'AvailableTechIds').Add([int]$row.id) | Out-Null
+        (Field $s 'UnlockedTechIds').Add([int]$row.id) | Out-Null
     }
     return $s
 }
@@ -71,4 +75,12 @@ $survey = ResearchState
 (Field $survey 'UnlockedTechIds').Remove(4102) | Out-Null
 $optional = Call 'IlsResearchPolicy' 'Survey' @($survey)
 Assert (-not (Field $optional 'Required') -and (Field $optional 'Action') -eq 'Consider Cosmic Exploration Lv2.') 'Optional survey became a gate or lost rank'
+$changed = ResearchState
+(Field $changed 'UnlockedTechIds').Remove(1605) | Out-Null
+(Field $changed 'UnlockedTechIds').Remove(1413) | Out-Null
+SetField (Field $changed 'ResearchDefinitions')[1605] 'Required' ([int[]]@(1413))
+Assert ((Field (Research $changed 3) 'Action') -eq 'Research Titanium Smelting.') 'Runtime prerequisite change was ignored'
+(Field $changed 'ResearchDefinitions').Remove(1413) | Out-Null
+Assert ((Field (Research $changed 3) 'Status') -eq 'unknown') 'Missing native prerequisite definition generated advice'
+Assert (-not $analysis.ContainsKey('normalizedState')) 'Panel analysis materialized the full diagnostic state'
 Write-Host 'ILS research branches, prerequisites, queue states, batch reference and early-stage eligibility passed.'

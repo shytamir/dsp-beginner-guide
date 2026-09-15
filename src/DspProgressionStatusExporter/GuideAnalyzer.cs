@@ -155,7 +155,7 @@ namespace DspProgressionStatusExporter
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },
-                { "normalizedState", state.Export() },
+                { "researchQueueAvailable", state.ResearchQueueAvailable },
                 { "ilsActions", phase.Id == "ils" ? IlsActions(progression.Gates[0], state, ilsStage) : null },
                 { "ilsResearch", phase.Id == "ils" ? IlsResearchPolicy.Export(state, ilsStage) : null },
                 { "productionRisk", productionRisk },

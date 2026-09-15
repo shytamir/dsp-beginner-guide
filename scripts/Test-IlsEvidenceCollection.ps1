@@ -139,3 +139,50 @@ $recipeData.factories[0].factorySystem.assemblerPool = @()
 $recipeData.factories[0].factorySystem.labPool = @()
 Assert ((Call 'RecipeTelemetry' 'Export' @($recipeData))['available']) 'Valid empty recipe pools became unavailable'
 Write-Host 'Recipe collection distinguishes unavailable pools from known zero machines.'
+
+Add-Type @"
+public class GcTechProto {
+    public int ID; public string name; public int Level;
+    public int[] PreTechs = new int[0]; public int[] PreTechsImplicit = new int[0];
+}
+public class GcTechSet {
+    public System.Collections.Generic.Dictionary<int,GcTechProto> Values = new System.Collections.Generic.Dictionary<int,GcTechProto>();
+    public GcTechProto Select(int id) { GcTechProto value; return Values.TryGetValue(id, out value) ? value : null; }
+}
+"@
+$nativeTechs = [GcTechSet]::new()
+$rootTech = [GcTechProto]::new(); $rootTech.ID = 2902; $rootTech.name = 'Drive Engine'; $rootTech.Level = 2
+$rootTech.PreTechs = @(2901); $rootTech.PreTechsImplicit = @(2102)
+$previousTech = [GcTechProto]::new(); $previousTech.ID = 2901; $previousTech.name = 'Drive Engine'; $previousTech.Level = 1
+$coreTech = [GcTechProto]::new(); $coreTech.ID = 2102; $coreTech.name = 'Mecha Core'; $coreTech.Level = 2
+foreach ($proto in @($rootTech,$previousTech,$coreTech)) { $nativeTechs.Values.Add($proto.ID,$proto) }
+$definitions = Field (New 'ObservedGameState') 'ResearchDefinitions'
+Call 'Plugin' 'ReadResearchDefinition' @($nativeTechs,2902,$definitions)
+Assert ($definitions.Count -eq 3) 'Native prerequisite closure missing explicit or implicit dependencies'
+Assert ($definitions[2902].Name -eq 'Drive Engine Lv2') 'Native upgrade rank lost its established wording'
+Assert ([object]::ReferenceEquals($definitions[2902].Required,$rootTech.PreTechs)) 'Native prerequisite array was copied or reconstructed'
+Assert ([object]::ReferenceEquals($definitions[2902].Implicit,$rootTech.PreTechsImplicit)) 'Implicit native prerequisite array was copied'
+$coreTech.PreTechs = $null
+$missingDefinitions = Field (New 'ObservedGameState') 'ResearchDefinitions'
+Call 'Plugin' 'ReadResearchDefinition' @($nativeTechs,2902,$missingDefinitions)
+Assert (-not $missingDefinitions.ContainsKey(2102)) 'Missing native prerequisite metadata became an empty known prerequisite list'
+$research['definitions'] = $definitions
+ReadEvidence $normalized 'ReadResearch' $research
+Assert ([object]::ReferenceEquals((Field $normalized 'ResearchDefinitions'),$definitions)) 'Normalization rebuilt native research definitions'
+
+$stationRow['available'] = $true
+$fleetRow = [Collections.Generic.Dictionary[string,object]]::new()
+$fleetRow['idleShipCount'] = 5; $fleetRow['workShipCount'] = 0
+$stationRow['fleet'] = $fleetRow
+$nativeSlotRow = [Collections.Generic.Dictionary[string,object]]::new()
+$nativeSlotRow['itemId'] = 1106; $nativeSlotRow['count'] = 30L; $nativeSlotRow['remoteLogic'] = 'Demand'
+$stationRow['storage'] = @($nativeSlotRow)
+$stationState = New 'ObservedGameState'
+ReadEvidence $stationState 'ReadStations' @($factoryRow)
+$ownedSlot = (Field (Field $stationState 'Stations')[0] 'Slots')[0]
+Assert ([object]::ReferenceEquals($ownedSlot,(Field $stationState 'StationSlots')[0])) 'Station ownership was discarded or its slot copied'
+Assert ($ownedSlot.ItemId -eq 1106 -and $ownedSlot.Count -eq 30) 'Native station slot contents were lost'
+$unrelatedSlot = New 'ObservedStationSlot'; SetField $unrelatedSlot 'ItemId' 1105; SetField $unrelatedSlot 'RemoteLogic' 'Demand'
+(Field $stationState 'StationSlots').Add($unrelatedSlot)
+Assert ((Call 'IlsTransportEvidence' 'CountPolicies' @((Field $stationState 'Stations')[0],'Demand')) -eq 1) 'Endpoint policy lookup searched unrelated global slots'
+Write-Host 'Native research definitions, missing metadata, station ownership and slot isolation passed.'
