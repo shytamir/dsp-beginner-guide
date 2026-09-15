@@ -174,6 +174,7 @@ namespace DspProgressionStatusExporter
                 { "logistics", LogisticsEvidence(phaseId, state) },
                 { "power", PowerEvidence(state) }
             };
+            if (phaseId == "photon") result["photonReadiness"] = state.ExportPhotonInputs();
             if (IsDysonPhase(phaseId))
                 result["dyson"] = DysonEvidence(phaseId, state);
             return result;

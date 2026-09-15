@@ -4,8 +4,8 @@
 
 The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
-roadmap for implementation on 2026-09-15. **GC3-01 through GC3-08 are technically complete;
-G1/G2 passed and GC3-09 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
+roadmap for implementation on 2026-09-15. **GC3-01 through GC3-09 are technically complete;
+G1/G2 passed and GC3-10 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
@@ -203,7 +203,7 @@ protected-reserve claim is removed. Receipt flags use birth-planet cumulative in
 
 ## Snapshot contract
 
-Snapshot schema 2.23 serializes the selected-phase conclusions used by the
+Snapshot schema 2.24 serializes the selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. It
 includes provenance, playtime, research and Cube aggregates, selection
 diagnostics including selected ILS stage/origin, Mission Completed progress when available, focused evidence,
@@ -262,13 +262,19 @@ Direct inputs and Cubes remain eligible for actual draining/starved findings.
 Missing recipe/item observations remain unknown. GREEN retains its two input
 stores; internal branch progression is not modeled.
 
+PHOTON input sampling now retains at most 26 points per item for five colored
+Cubes and Antimatter. Readiness requires 120 game seconds, 20 distinct samples
+and every sampled native one-minute aggregate at least 40/min. Missing samples
+break the item history; paused time does not fill it. GC3-10 connects this policy
+to PHOTON objectives. This does not prove per-second throughput.
+
 ## Contracts
 
 | Contract | Version |
 |---|---:|
 | Release line | 2.1.x |
-| Snapshot schema | 2.23 |
-| Normalized state | 2.7 |
+| Snapshot schema | 2.24 |
+| Normalized state | 2.8 |
 | Guide selection | 1.7 |
 | Guide analysis | 3.11 |
 | Progression | 3.8 |

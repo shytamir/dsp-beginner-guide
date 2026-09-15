@@ -90,3 +90,11 @@ Stationary Antimatter sums observed cluster storage and station inventories,
 excluding Icarus. These aggregates do not establish conveyor connectivity,
 Hydrogen disposal or science-district delivery. Those remain player checks.
 Missing assembler/lab pools make recipe collection unavailable.
+
+### PHOTON sustained inputs (GC3-09)
+
+Six existing native aggregate samples (6001-6005, 1122) feed a pure bounded
+policy at the existing cadence. Keep the sample on/before 120 game seconds and
+at most 26 points. At least 20 distinct ticks and no rate below 40/min are
+required. Missing samples clear that item; game replacement clears all six.
+This consumer does not alter ten-minute risk warmup or infer per-second flow.

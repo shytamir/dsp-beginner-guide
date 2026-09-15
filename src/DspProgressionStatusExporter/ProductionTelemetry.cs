@@ -79,11 +79,13 @@ namespace DspProgressionStatusExporter
             new Dictionary<int, long>();
         private object sampledGameData;
         private string lastFailure;
+        private readonly PhotonReadiness photonReadiness = new PhotonReadiness();
         private int lastFactoryCount;
 
         public void Clear()
         {
             samples.Clear();
+            photonReadiness.Clear();
             tenMinuteFirstObservedTicks.Clear();
             sampledGameData = null;
             lastFailure = null;
@@ -97,6 +99,7 @@ namespace DspProgressionStatusExporter
                 if (!Object.ReferenceEquals(sampledGameData, gameData))
                 {
                     samples.Clear();
+                    photonReadiness.Clear();
                     tenMinuteFirstObservedTicks.Clear();
                     sampledGameData = gameData;
                 }
@@ -107,6 +110,7 @@ namespace DspProgressionStatusExporter
                     Plugin.GetMember(production, "factoryStatPool");
                 if (factoryStatPool == null)
                 {
+                    photonReadiness.Sample(gameTick, null);
                     lastFailure =
                         "GameData.statistics.production.factoryStatPool was unavailable.";
                     return;
@@ -120,6 +124,7 @@ namespace DspProgressionStatusExporter
                 if (previous != null && point.GameTick < previous.GameTick)
                 {
                     samples.Clear();
+                    photonReadiness.Clear();
                     tenMinuteFirstObservedTicks.Clear();
                 }
 
@@ -165,6 +170,14 @@ namespace DspProgressionStatusExporter
                 lastFactoryCount = activeFactoryCount;
 
                 UpdateTenMinuteReadiness(point);
+                var photonRates = new Dictionary<int, double>();
+                foreach (int id in PhotonReadiness.ItemIds)
+                {
+                    AggregatePair aggregate;
+                    if (point.Galaxy.TryGetValue(id, out aggregate) && aggregate.OneMinuteAvailable)
+                        photonRates[id] = aggregate.Produced;
+                }
+                photonReadiness.Sample(gameTick, photonRates);
 
                 samples.Enqueue(point);
                 while (samples.Count > MaximumSamples) samples.Dequeue();
@@ -174,6 +187,7 @@ namespace DspProgressionStatusExporter
             }
             catch (Exception ex)
             {
+                photonReadiness.Sample(gameTick, null);
                 lastFailure = ex.GetType().Name + ": " + ex.Message;
             }
         }
@@ -189,6 +203,7 @@ namespace DspProgressionStatusExporter
             bool tenMinuteReady = tenMinuteAvailable &&
                 tenMinuteReadyItems == tenMinuteAvailableItems;
             var result = new Dictionary<string, object> {
+                { "photonReadiness", photonReadiness.Export() },
                 { "available", aggregateAvailable },
                 { "source", "GameData.statistics.production.factoryStatPool[*].productIndices[itemId] -> productPool[index].total" },
                 { "scope", "entire-star-cluster" },

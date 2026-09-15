@@ -4,6 +4,11 @@
 
 ### Guide 3.0 candidate
 
+- GC3-09: Added bounded 120-game-second/20-sample readiness at 40/min for five
+  colored Cubes and Antimatter, using existing native samples. Missing evidence
+  breaks history; pause cannot fill it. Normalized 2.8 and snapshot 2.24 expose
+  elapsed time, sample count, minimum rate and reason.
+
 - GC3-08: DYSON includes the required receiver-to-Antimatter bridge, ordered
   research and an explicit Hydrogen/science-delivery player check. The bridge
   link follows swarm readiness. Snapshot 2.23 adds scoped conversion evidence;

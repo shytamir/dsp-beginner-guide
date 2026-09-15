@@ -16,9 +16,10 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | GC3-05 | Technically complete; pushed as `2b9db24` |
 | GC3-06 | Technically complete; pushed as `c75b2c6` |
 | GC3-07 | Technically complete; pushed as `2fb9770` |
-| GC3-08 | Technically complete |
-| GC3-09 | Next |
-| GC3-10 through GC3-12 | Pending in dependency order |
+| GC3-08 | Technically complete; pushed as `d69843e` |
+| GC3-09 | Technically complete |
+| GC3-10 | Next |
+| GC3-11 through GC3-12 | Pending in dependency order |
 | G1 / M1 | Passed: stage, cargo and research technically coherent |
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
 | G3 through G4 | Pending |
@@ -247,3 +248,26 @@ variants rebuilt and passed handoff, collector and receiver-tolerance suites.
 Fixtures cover absent/partial/full arrays, wrong recipe, no conversion, Icarus
 stock, missing inputs, ordered research, stable IDs, anchors and the unresolved
 player check. GC3-13 retains actual connectivity and presentation acceptance.
+
+## GC3-09 — Sustained PHOTON input sampling
+
+**Outcome:** The existing production sample feeds a pure six-input evaluator.
+It retains a boundary sample, at most 26 points per item, and requires 120 game
+seconds plus 20 distinct observations at or above 40/min. Each item reports
+time, count, minimum and ready/warming/below-target/unavailable.
+
+**Decisions:** Use game ticks and the already computed native galaxy aggregates.
+Repeated ticks replace the current sample without increasing count or age.
+Unavailable samples clear only the affected history; game replacement, explicit
+clear and backwards ticks reset the window. Keep existing risk sampling intact.
+The two-minute rule is the accepted mod policy, not a per-second belt guarantee.
+
+**Contracts:** normalized 2.8 and snapshot 2.24. Only PHOTON compact evidence
+includes the six summaries; raw histories and White-Cube readiness are excluded.
+
+**Validation:** Diagnostic/public builds have zero warnings/errors. Four
+retained suites and the new pure/collector suites pass for both variants.
+Cases include 119/120 seconds, 19/20 samples, 0/39.99/40/48 rates, isolated low
+sample expiry, missing data/recovery, repeated paused ticks, fixed memory bound
+and game-data replacement. Synthetic native-shaped objects verify the actual
+collector and normalization connection. PHOTON objectives consume this in GC3-10.

@@ -325,6 +325,7 @@ namespace DspProgressionStatusExporter
         public string ProductionTenMinuteReadinessSource;
         public int ProductionTenMinuteAvailableItemCount;
         public int ProductionTenMinuteReadyItemCount;
+        public readonly Dictionary<int, SustainedInputReadiness> PhotonInputs = new Dictionary<int, SustainedInputReadiness>();
         public IlsTransportEvidence IlsTransport;
         public IlsReceiptEvidence IlsReceipt = new IlsReceiptEvidence();
         public long TrafficEvidenceEpoch;
@@ -363,7 +364,8 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "2.7";
+            result["modelVersion"] = "2.8";
+            result["photonReadiness"] = ExportPhotonInputs();
             result["playerInventoryAvailable"] = PlayerInventoryAvailable;
             result["playerLocationAvailable"] = PlayerLocationAvailable;
             result["availablePlanetInventories"] = new List<int>(AvailablePlanetInventories);
@@ -622,8 +624,30 @@ namespace DspProgressionStatusExporter
             }
         }
 
+        internal List<object> ExportPhotonInputs()
+        {
+            var rows = new List<object>();
+            foreach (int id in PhotonReadiness.ItemIds)
+            {
+                SustainedInputReadiness input;
+                rows.Add(PhotonInputs.TryGetValue(id, out input) ? input.Export() : new SustainedInputReadiness { ItemId = id }.Export());
+            }
+            return rows;
+        }
+
         private void ReadProduction(Dictionary<string, object> production)
         {
+            foreach (object value in Enumerate(GetValue(production, "photonReadiness")))
+            {
+                var row = value as Dictionary<string, object>;
+                int id = Plugin.ToInt(GetValue(row, "itemId"));
+                if (Array.IndexOf(PhotonReadiness.ItemIds, id) < 0) continue;
+                PhotonInputs[id] = new SustainedInputReadiness {
+                    ItemId = id, ElapsedGameSeconds = Plugin.ToDouble(GetValue(row, "elapsedGameSeconds")),
+                    SampleCount = Plugin.ToInt(GetValue(row, "sampleCount")), MinimumRate = Plugin.ToDouble(GetValue(row, "minimumRate")),
+                    Reason = ToText(GetValue(row, "reason"))
+                };
+            }
             ProductionWindowReady = ToBool(GetValue(production, "windowReady"));
             ProductionWindowSeconds = Plugin.ToDouble(GetValue(production, "windowGameSeconds"));
             ProductionSource = ToText(GetValue(production, "source"));
