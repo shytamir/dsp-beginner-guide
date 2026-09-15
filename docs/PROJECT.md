@@ -4,9 +4,8 @@
 
 The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
-roadmap for implementation on 2026-09-15. **GC3-01 through GC3-11 are technically complete;
-G1/G2/G3 passed. GC3-12 passed local preflight; final committed-candidate and
-hosted CI confirmation are pending.** See the [execution record](management/GUIDE3-EXECUTION.md).
+roadmap for implementation on 2026-09-15. **GC3-01 through GC3-12 are technically complete;
+G1-G4 passed. GC3-13 owner acceptance workshop is the only remaining story.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending

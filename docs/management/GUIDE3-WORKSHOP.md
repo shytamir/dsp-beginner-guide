@@ -1,8 +1,10 @@
 # Guide 3.0 owner acceptance workshop — GC3-13
 
 **State:** Not started. This is the only human validation story.
-**Candidate:** Use the clean-source candidate identified by `candidate.json` in
-`artifacts/guide3/candidate-<source>-<sequence>/`. Do not use a preflight folder.
+**Candidate:** `2.2.98.e89f73e`, source
+`e89f73e65570caf9599f5837377ed8056951fc52`. The verified local binaries, source,
+hashes and reports are in `artifacts/guide3/candidate-e89f73e-98/`;
+`candidate.json` is the binary identity record. Do not use a preflight folder.
 **Authority:** [Accepted roadmap](../ROADMAP.md) and [execution record](GUIDE3-EXECUTION.md).
 
 ## Before the workshop

@@ -20,11 +20,11 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | GC3-09 | Technically complete; pushed as `05bd817` |
 | GC3-10 | Technically complete; pushed as `b8dea50` |
 | GC3-11 | Technically complete; pushed as `07007a6` |
-| GC3-12 | Local preflight passed; final committed candidate and hosted CI pending |
+| GC3-12 | Technically complete; candidate source pushed as `e89f73e` |
 | G1 / M1 | Passed: stage, cargo and research technically coherent |
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
 | G3 / M3 | Passed: Guide 3.0 handoffs and PHOTON readiness |
-| G4 | Pending |
+| G4 | Passed: both variants, local/hosted checks and retained candidate ready |
 | GC3-13 / G5 | Reserved for owner workshop; not started |
 
 ## GC3-01 — Select and retain the ILS stage
@@ -361,6 +361,29 @@ Preflight output from dirty source is explicitly unsuitable for acceptance.
   authenticated desktop context. No interactive game, player save or new
   screenshot was used.
 
-**Final verification:** The committed-source candidate and its matching hosted
-CI run will be recorded here after the story push. G4 remains pending that
-confirmation; GC3-13 is not started.
+**Final verification / G4 (2026-09-16):**
+
+- Candidate source: `e89f73e65570caf9599f5837377ed8056951fc52`;
+  package/plugin `2.2.98`, assembly/file `2.2.98.0`, label `2.2.98.e89f73e`.
+- `pwsh -NoProfile -File scripts/Test-Guide3Candidate.ps1 -Sequence 98` passed
+  on that clean source with the same complete matrix and snapshot bounds above.
+- [Hosted run 98](https://github.com/shytamir/dsp-beginner-guide/actions/runs/35029750217)
+  succeeded: both builds had zero warnings/errors; portable suites, identity,
+  variants, ZIP validation and artifact upload passed.
+- Locally retained under `artifacts/guide3/candidate-e89f73e-98/`: both DLLs,
+  public ZIP, exact source archive, generated version file, candidate.json, all
+  local reports/fixtures, hosted report extracted from job 104585211792, and
+  workshop procedure. Hosted compile-reference DLLs have their own hashes; the
+  local candidate below is the one reserved for the workshop.
+
+| Workshop artifact | SHA-256 |
+|---|---|
+| Diagnostic DLL | `70d81576533c0ad75e40951f7afb963e8f76a8fdaeece972d85fa959a7b0b26f` |
+| Public DLL | `f2d46655643f426d8d48719314d960863e2ac6997d1bde1ea802f3efb35f0fdf` |
+| Public ZIP | `5c232dc0554587f9a906dd0265c777140fa97e0a4db57aed8da04eb8f33cba5a` |
+
+**Management closeout:** A documentation-only follow-up records these observed
+post-push results and closes G4 without changing the pinned candidate source or
+binaries. All twelve technical stories are complete. GC3-13/G5 remain pending
+explicit owner validation; no game deployment, runtime acceptance, release,
+tag or Thunderstore publication was performed.

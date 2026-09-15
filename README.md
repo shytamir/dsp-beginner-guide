@@ -217,9 +217,8 @@ history.
 ## Project status
 
 The released product is complete for the adopted guide 2.3 contract. The owner
-authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-11 are technically
-complete; G1/G2/G3 passed. GC3-12 passed local preflight and awaits the final
-committed candidate and hosted CI confirmation. [Execution records](docs/management/GUIDE3-EXECUTION.md)
+authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-12 are technically
+complete and G1-G4 passed. The pinned workshop candidate is `2.2.98.e89f73e`. [Execution records](docs/management/GUIDE3-EXECUTION.md)
 separate automated completion from the pending final in-game owner workshop.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
 scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the
