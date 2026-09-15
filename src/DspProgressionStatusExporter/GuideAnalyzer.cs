@@ -44,6 +44,35 @@ namespace DspProgressionStatusExporter
             new Phase { Id = "white", Title = "Complete the main progression route", GateTechId = 1507, NextTechId = 1508, NextResearch = "Mission Completed" }
         };
 
+        private static List<object> IlsActions(GuideGateResult gate, ObservedGameState state, int stage)
+        {
+            var result = new List<object>();
+            bool smelting = false;
+            foreach (GuideGateCondition condition in gate.Conditions)
+                if (condition.Id == "ils-expedition-production") smelting = condition.Status == "ready";
+            int priority = 0;
+            foreach (GuideGateCondition condition in gate.Conditions)
+            {
+                bool eligible = condition.Status != "ready" && condition.Status != "unknown" && !String.IsNullOrEmpty(condition.Action);
+                if (stage == 2 && condition.Id == "ils-expedition-cargo")
+                {
+                    int outpost = GuideGateEngine.FindExpeditionPlanet(state);
+                    Dictionary<int, long> stock;
+                    bool loadable = state.AvailablePlanetInventories.Contains(outpost) && state.PlanetItemCounts.TryGetValue(outpost, out stock) &&
+                        ((stock.ContainsKey(1106) && stock[1106] > 0) || (stock.ContainsKey(1105) && stock[1105] > 0));
+                    eligible &= smelting || loadable || state.PlayerPlanetId == state.StarterPlanetId;
+                }
+                string kind = condition.Id.Contains("research") || condition.Id == "ils-rush-tech" ? "research"
+                    : condition.Id == "ils-rush-deployment" ? "deployment" : condition.Id == "ils-home-delivery" ? "supply" : "physical";
+                result.Add(new Dictionary<string, object> {
+                    { "id", condition.Id }, { "kind", kind }, { "priority", priority++ },
+                    { "eligible", eligible }, { "label", condition.Action },
+                    { "status", condition.Status }, { "required", condition.Required }
+                });
+            }
+            return result;
+        }
+
         private static readonly Dictionary<string, RiskItemSpec[]> RiskItems =
             new Dictionary<string, RiskItemSpec[]>(StringComparer.OrdinalIgnoreCase) {
                 { "blue", new RiskItemSpec[] {
@@ -122,11 +151,12 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "3.8" },
+                { "analysisVersion", "3.9" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },
                 { "normalizedState", state.Export() },
+                { "ilsActions", phase.Id == "ils" ? IlsActions(progression.Gates[0], state, ilsStage) : null },
                 { "ilsResearch", phase.Id == "ils" ? IlsResearchPolicy.Export(state, ilsStage) : null },
                 { "productionRisk", productionRisk },
                 { "findings", findings },

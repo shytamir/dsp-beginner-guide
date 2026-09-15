@@ -4,6 +4,10 @@
 
 ### Guide 3.0 candidate
 
+- GC3-06: ILS Pending projects at most three eligible stage-owned tasks. Research,
+  assembly, deployment and receipt respect prerequisites; waiting evidence adds
+  no repeat work. Analysis 3.9, panel 2.10 and snapshot 2.22 export candidates.
+
 - GC3-05: Home delivery now requires finished source material, matching home/outpost
   policies, five home Vessels and subsequent home inputs for both materials.
   Session receipt flags survive quiet periods; diagnostics expose reset reasons

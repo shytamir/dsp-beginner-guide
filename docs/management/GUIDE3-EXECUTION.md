@@ -13,11 +13,13 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | GC3-02 | Technically complete; pushed as `9195e21` |
 | GC3-03 | Technically complete; pushed as `4896d81` |
 | GC3-04 | Technically complete; pushed as `696d79e` |
-| GC3-05 | Technically complete |
-| GC3-06 | Next |
-| GC3-07 through GC3-12 | Pending in dependency order |
+| GC3-05 | Technically complete; pushed as `2b9db24` |
+| GC3-06 | Technically complete |
+| GC3-07 | Next |
+| GC3-08 through GC3-12 | Pending in dependency order |
 | G1 / M1 | Passed: stage, cargo and research technically coherent |
-| G2 through G4 | Pending |
+| G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
+| G3 through G4 | Pending |
 | GC3-13 / G5 | Reserved for owner workshop; not started |
 
 ## GC3-01 — Select and retain the ILS stage
@@ -174,3 +176,27 @@ counter changes, other destinations, fleets, ore and internal traffic. Collector
 fixtures exercise real sampling and normalization with native-shaped synthetic
 objects. A misplaced normalization insertion was repaired before the final
 successful matrix. No live save or runtime acceptance was claimed.
+
+## GC3-06 — Actionable ILS Pending tasks
+
+**Outcome:** Analysis emits a bounded candidate list with stable IDs, kind,
+priority and eligibility. The panel projects at most three distinct eligible
+tasks while retaining all objective evidence. Queued research and awaiting
+receipt are status only. A later selected stage still obeys prerequisites.
+
+**Decisions:** Reuse objective actions and their existing prerequisite guards;
+add only ILS-specific projection. Loading becomes eligible when source material
+or smelting is observed, or cargo is being assembled at home. Other phases'
+Pending behavior and production-risk ordering are unchanged.
+
+**Contracts:** analysis 3.9, panel 2.10, snapshot 2.22; no new runtime inputs.
+
+**Validation / G2:** Both variants compile with zero warnings/errors. Four
+retained suites, native collection fixtures, variant checks and Test-IlsJourney
+(including all prior ILS fixtures) pass. The journey exercises departure,
+construction, loading, return, early/queued/completed research, partial/full
+hardware, configured waiting and confirmed receipt. Stable IDs/order, three-task
+limit, unique labels and stage anchors pass.
+
+**Milestone M2:** The complete synthetic ILS journey is technically coherent.
+G2 passed; player-facing utility and actual Unity behavior remain GC3-13.

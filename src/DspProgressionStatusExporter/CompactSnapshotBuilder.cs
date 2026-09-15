@@ -107,6 +107,7 @@ namespace DspProgressionStatusExporter
                 { "phase", Value(analysis, "phase") },
                 { "objectives", Value(analysis, "progression") },
                 { "ilsResearch", Value(analysis, "ilsResearch") },
+                { "ilsActions", Value(analysis, "ilsActions") },
                 { "researchQueueAvailable", Value(Dictionary(analysis, "normalizedState"), "researchQueueAvailable") },
                 { "productionRisk", Value(analysis, "productionRisk") },
                 { "currentStatus", Value(analysis, "findings") },

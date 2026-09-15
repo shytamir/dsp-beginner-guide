@@ -88,7 +88,7 @@ namespace DspProgressionStatusExporter
                 nextActions.Add(row.Export());
 
             return new Dictionary<string, object> {
-                { "contractVersion", "2.9" },
+                { "contractVersion", "2.10" },
                 { "phaseId", PhaseId },
                 { "ilsStage", IlsStage },
                 { "phaseSelectionAuthority", "player" },
@@ -188,6 +188,7 @@ namespace DspProgressionStatusExporter
                 if (!String.IsNullOrEmpty(gateTitle))
                     model.Title = PlayerFacingText.Normalize(gateTitle);
                 AddObjectives(model, currentGate);
+                if (model.PhaseId == "ils") AddIlsPending(model, AsList(Get(analysis, "ilsActions")));
             }
 
             bool completedWhite =
@@ -485,8 +486,23 @@ namespace DspProgressionStatusExporter
                     Required = required,
                     Completed = IsCompleted(status)
                 });
-                if (!IsCompleted(status) && !String.IsNullOrEmpty(action))
+                if (model.PhaseId != "ils" && !IsCompleted(status) && !String.IsNullOrEmpty(action))
                     AddPending(model, id, status, required, action);
+            }
+        }
+
+        private static void AddIlsPending(GuidePanelModel model, List<object> candidates)
+        {
+            if (candidates == null) return;
+            foreach (object item in candidates)
+            {
+                var candidate = AsDictionary(item);
+                if (!Boolean(Get(candidate, "eligible"), false)) continue;
+                string label = Text(Get(candidate, "label"), null);
+                if (String.IsNullOrEmpty(label)) continue;
+                AddPending(model, Text(Get(candidate, "id"), "ils-task"), Text(Get(candidate, "status"), "blocked"),
+                    Boolean(Get(candidate, "required"), true), label);
+                if (model.Pending.Count == 3) break;
             }
         }
 

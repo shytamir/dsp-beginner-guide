@@ -688,8 +688,8 @@ $panelSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\GuidePanelModel.cs'
 )
-if (-not $panelSource.Contains('{ "contractVersion", "2.9" }')) {
-    throw 'Panel model contract version is not 2.9.'
+if (-not $panelSource.Contains('{ "contractVersion", "2.10" }')) {
+    throw 'Panel model contract version is not 2.10.'
 }
 $controllerSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
@@ -735,8 +735,8 @@ $pluginSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\Plugin.cs'
 )
-if (-not $pluginSource.Contains('SchemaVersion = "2.21"')) {
-    throw 'Snapshot schema version is not 2.21.'
+if (-not $pluginSource.Contains('SchemaVersion = "2.22"')) {
+    throw 'Snapshot schema version is not 2.22.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',
@@ -753,3 +753,4 @@ foreach ($obsoleteFindingId in @(
 }
 
 Write-Output 'Guide 2.3 phase contract test passed.'
+
