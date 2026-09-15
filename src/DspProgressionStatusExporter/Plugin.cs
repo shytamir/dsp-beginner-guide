@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.16";
+        private const string SchemaVersion = "2.17";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -269,7 +269,7 @@ namespace DspProgressionStatusExporter
                     EnsurePhaseSelection(data, observedState);
                 Dictionary<string, object> guideAnalysis =
                     GuideAnalyzer.AnalyzeSelected(
-                        observedState, selection.PhaseId);
+                        observedState, selection.PhaseId, selection.IlsStage);
                 GuidePanelModel panelModel =
                     GuidePanelModelBuilder.Build(
                         guideAnalysis,
@@ -354,7 +354,7 @@ namespace DspProgressionStatusExporter
                     EnsurePhaseSelection(data, observed);
                 Dictionary<string, object> analysis =
                     GuideAnalyzer.AnalyzeSelected(
-                        observed, selection.PhaseId);
+                        observed, selection.PhaseId, selection.IlsStage);
                 GuidePanelModel model = GuidePanelModelBuilder.Build(
                     analysis,
                     observed,
@@ -473,10 +473,11 @@ namespace DspProgressionStatusExporter
 
             try
             {
+                ManualPhaseSelection selection = EnsurePhaseSelection(data, observed);
                 Dictionary<string, object> analysis =
                     GuideAnalyzer.AnalyzeSelected(
                         observed,
-                        EnsurePhaseSelection(data, observed).PhaseId);
+                        selection.PhaseId, selection.IlsStage);
                 GuidePanelModel model =
                     GuidePanelModelBuilder.Build(
                         analysis,
@@ -559,6 +560,8 @@ namespace DspProgressionStatusExporter
                         : "seeded-fallback-key";
                 PersistPhaseSelection();
             }
+            if (ManualPhaseNavigator.EnsureIlsStage(activePhaseSelection, observed))
+                PersistPhaseSelection();
             return activePhaseSelection;
         }
 
@@ -586,26 +589,8 @@ namespace DspProgressionStatusExporter
 
             ManualPhaseSelection selection =
                 EnsurePhaseSelection(data, null);
-            string current =
-                ManualPhaseNavigator.NormalizePhase(selection.PhaseId);
-            string target = current;
-            if (String.Equals(
-                command, "previous", StringComparison.OrdinalIgnoreCase))
+            if (ManualPhaseNavigator.ApplyCommand(selection, command))
             {
-                target = ManualPhaseNavigator.Previous(current);
-            }
-            else if (String.Equals(
-                command, "next", StringComparison.OrdinalIgnoreCase))
-            {
-                target = ManualPhaseNavigator.Next(current);
-            }
-
-            if (!String.Equals(
-                current, target, StringComparison.OrdinalIgnoreCase))
-            {
-                selection.PhaseId = target;
-                selection.SeedSource = "manual-control";
-                selection.PersistenceState = "updated-by-player";
                 PersistPhaseSelection();
                 GuidePanelModel model =
                     BuildLiveGuidePanelModel(data, player);

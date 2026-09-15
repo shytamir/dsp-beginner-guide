@@ -9,25 +9,33 @@ namespace DspProgressionStatusExporter
         public string SeedSource;
         public string PersistenceState;
         public string IdentityVersion;
+        public int IlsStage;
+        public string IlsStageOrigin;
 
         public string Serialize()
         {
-            return "nav2;phase=" + ManualPhaseNavigator.NormalizePhase(PhaseId) +
+            return "nav3;phase=" + ManualPhaseNavigator.NormalizePhase(PhaseId) +
                 ";seed=" + (String.IsNullOrEmpty(SeedSource)
                     ? "stored"
-                    : SeedSource.Replace(";", "").Replace("=", ""));
+                    : SeedSource.Replace(";", "").Replace("=", "")) +
+                (IlsStage >= 1 && IlsStage <= 3
+                    ? ";ils=" + IlsStage + ";ilsOrigin=" +
+                        (IlsStageOrigin ?? "stored").Replace(";", "").Replace("=", "")
+                    : "");
         }
 
         public Dictionary<string, object> Export(string saveKey)
         {
             return new Dictionary<string, object> {
-                { "contractVersion", "1.6" },
+                { "contractVersion", "1.7" },
                 { "authority", "player" },
                 { "saveKey", saveKey },
                 { "identityVersion", IdentityVersion },
                 { "persistenceState", PersistenceState },
                 { "selectedPhase", ManualPhaseNavigator.NormalizePhase(PhaseId) },
                 { "selectionOrigin", SeedSource },
+                { "ilsStage", IlsStage },
+                { "ilsStageOrigin", IlsStageOrigin },
                 { "automaticTransitionsEnabled", false }
             };
         }
@@ -37,10 +45,13 @@ namespace DspProgressionStatusExporter
             if (String.IsNullOrEmpty(serialized)) return null;
             string phase = null;
             string seed = null;
+            int stage = 0;
+            string stageOrigin = null;
             string[] parts = serialized.Split(';');
             if (parts.Length == 0 ||
                 (!String.Equals(parts[0], "nav1", StringComparison.Ordinal) &&
-                 !String.Equals(parts[0], "nav2", StringComparison.Ordinal)))
+                 !String.Equals(parts[0], "nav2", StringComparison.Ordinal) &&
+                 !String.Equals(parts[0], "nav3", StringComparison.Ordinal)))
                 return null;
             for (int i = 1; i < parts.Length; i++)
             {
@@ -50,12 +61,16 @@ namespace DspProgressionStatusExporter
                 string value = parts[i].Substring(equals + 1);
                 if (key == "phase") phase = value;
                 else if (key == "seed") seed = value;
+                else if (key == "ils" && parts[0] == "nav3") Int32.TryParse(value, out stage);
+                else if (key == "ilsOrigin" && parts[0] == "nav3") stageOrigin = value;
             }
             phase = ManualPhaseNavigator.MigrateLegacyPhase(phase);
             if (!ManualPhaseNavigator.IsValidPhase(phase)) return null;
             return new ManualPhaseSelection {
                 PhaseId = ManualPhaseNavigator.NormalizePhase(phase),
-                SeedSource = String.IsNullOrEmpty(seed) ? "stored" : seed
+                SeedSource = String.IsNullOrEmpty(seed) ? "stored" : seed,
+                IlsStage = stage >= 1 && stage <= 3 ? stage : 0,
+                IlsStageOrigin = stage >= 1 && stage <= 3 ? stageOrigin ?? "stored" : null
             };
         }
     }
@@ -128,6 +143,56 @@ namespace DspProgressionStatusExporter
 
     internal static class ManualPhaseNavigator
     {
+        public static bool EnsureIlsStage(ManualPhaseSelection selection, ObservedGameState state)
+        {
+            if (selection.PhaseId != "ils" || selection.IlsStage >= 1 && selection.IlsStage <= 3 || state == null)
+                return false;
+            selection.IlsStage = 1;
+            selection.IlsStageOrigin = "departure-default";
+            if (state.UnlockedTechIds.Contains(1605))
+            {
+                selection.IlsStage = 3;
+                selection.IlsStageOrigin = "ils-researched";
+            }
+            else if (state.StarterPlanetId > 0)
+            {
+                bool away = state.PlayerPlanetId > 0 && state.PlayerPlanetId != state.StarterPlanetId;
+                bool production = false;
+                foreach (ObservedFactoryItemFlow flow in state.FactoryItemFlows)
+                    if (flow.PlanetId > 0 && flow.PlanetId != state.StarterPlanetId &&
+                        (flow.ItemId == 1105 || flow.ItemId == 1106) &&
+                        flow.OneMinuteAvailable && flow.ProducedPerMinute > 0)
+                        production = true;
+                if (away || production)
+                {
+                    selection.IlsStage = 2;
+                    selection.IlsStageOrigin = away ? "non-birth-location" : "remote-finished-production";
+                }
+            }
+            return true;
+        }
+
+        public static bool ApplyCommand(ManualPhaseSelection selection, string command)
+        {
+            string current = NormalizePhase(selection.PhaseId);
+            string target = command == "previous" ? Previous(current) :
+                command == "next" ? Next(current) : current;
+            int stage = command == "ils-1" ? 1 : command == "ils-2" ? 2 : command == "ils-3" ? 3 : 0;
+            if (current == "ils" && stage > 0 && stage != selection.IlsStage)
+            {
+                selection.IlsStage = stage;
+                selection.IlsStageOrigin = "manual-control";
+            }
+            else if (target != current)
+            {
+                selection.PhaseId = target;
+                selection.SeedSource = "manual-control";
+            }
+            else return false;
+            selection.PersistenceState = "updated-by-player";
+            return true;
+        }
+
         private static readonly string[] Phases = new string[] {
             "blue", "red", "ils", "yellow",
             "purple", "green", "dyson", "photon", "white"

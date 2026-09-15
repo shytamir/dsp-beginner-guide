@@ -91,11 +91,11 @@ namespace DspProgressionStatusExporter
 
         public static Dictionary<string, object> AnalyzeSelected(
             ObservedGameState state,
-            string selectedPhaseId)
+            string selectedPhaseId, int ilsStage = 1)
         {
             selectedPhaseId = ManualPhaseNavigator.NormalizePhase(selectedPhaseId);
             GuideProgressionEvaluation progression =
-                GuideGateEngine.EvaluatePhase(selectedPhaseId, state);
+                GuideGateEngine.EvaluatePhase(selectedPhaseId, state, ilsStage);
             Phase phase = FindPhase(selectedPhaseId) ?? FindPhase("blue");
             var findings = new List<object>();
 
@@ -113,6 +113,7 @@ namespace DspProgressionStatusExporter
 
             var phaseResult = new Dictionary<string, object> {
                 { "id", phase.Id },
+                { "ilsStage", phase.Id == "ils" ? ilsStage : 0 },
                 { "title", phase.Title },
                 { "gateTechId", phase.GateTechId },
                 { "nextTechId", phase.NextTechId },
@@ -121,7 +122,7 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "3.3" },
+                { "analysisVersion", "3.4" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Guide 3.0 candidate
+
+- GC3-01: ILS stages are selected explicitly and retained per playthrough.
+  A one-time first-entry suggestion replaces repeated automatic stage changes;
+  `DON'T PANIC` follows the selected stage. Selection 1.7, analysis 3.4,
+  progression 3.2, panel 2.9 and snapshot 2.17 carry stage provenance.
+  Automated checks pass in both variants; owner runtime acceptance is pending.
+
 ### 2.1 maintenance summary
 
 - Changed: concise WHITE status, native panel typography, useful YELLOW and

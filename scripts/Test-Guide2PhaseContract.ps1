@@ -296,8 +296,8 @@ function Add-TechProgress {
 }
 
 function Get-SelectedGate {
-    param([string]$PhaseId, $State)
-    $evaluation = $evaluatePhase.Invoke($null, @($PhaseId, $State))
+    param([string]$PhaseId, $State, [int]$Stage = 1)
+    $evaluation = $evaluatePhase.Invoke($null, @($PhaseId, $State, $Stage))
     $evaluation.GetType().GetField(
         'Gates', $instanceFlags
     ).GetValue($evaluation)[0]
@@ -319,8 +319,8 @@ function Get-GateCondition {
 }
 
 function Get-PanelModel {
-    param([string]$PhaseId, $State)
-    $analysis = $analyzeSelected.Invoke($null, @($State, $PhaseId))
+    param([string]$PhaseId, $State, [int]$Stage = 1)
+    $analysis = $analyzeSelected.Invoke($null, @($State, $PhaseId, $Stage))
     $buildPanel.Invoke($null, @($analysis, $State, $null, $null, $null))
 }
 
@@ -420,7 +420,7 @@ Add-UnlockedTech $remoteSiliconState 2902
 Add-UnlockedTech $remoteSiliconState 1413
 Add-ObservedFactoryFlow $remoteSiliconState 101 1105 30
 Add-ObservedFactoryFlow $remoteSiliconState 102 1105 30
-$remoteSiliconGate = Get-SelectedGate 'ils' $remoteSiliconState
+$remoteSiliconGate = Get-SelectedGate 'ils' $remoteSiliconState 2
 if ($null -eq (Get-GateCondition $remoteSiliconGate 'ils-expedition-production')) {
     throw 'Non-starter-planet Silicon no longer selects the ILS expedition stage.'
 }
@@ -431,12 +431,12 @@ if ((Get-SourceGuideAnchor (Get-PanelModel 'blue' (New-ObservedState))) -ne 'blu
 if ((Get-SourceGuideAnchor (Get-PanelModel 'ils' (New-ObservedState))) -ne 'flight') {
     throw 'ILS preparation does not link to the flight guide stage.'
 }
-if ((Get-SourceGuideAnchor (Get-PanelModel 'ils' $remoteSiliconState)) -ne 'titanium') {
+if ((Get-SourceGuideAnchor (Get-PanelModel 'ils' $remoteSiliconState 2)) -ne 'titanium') {
     throw 'ILS expedition evidence does not link to the titanium guide stage.'
 }
 $ilsRushState = New-ObservedState
 Add-UnlockedTech $ilsRushState 1414
-if ((Get-SourceGuideAnchor (Get-PanelModel 'ils' $ilsRushState)) -ne 'ils-automate') {
+if ((Get-SourceGuideAnchor (Get-PanelModel 'ils' $ilsRushState 3)) -ne 'ils-automate') {
     throw 'ILS rush evidence does not link to the automation guide stage.'
 }
 
@@ -596,7 +596,7 @@ function Assert-SingleDrainFinding {
     $state = New-ObservedState
     Set-ObservedField $true 'ProductionWindowReady' $state
     Add-ObservedFlow $state $WeakItemId 5 10
-    $analysis = $analyzeSelected.Invoke($null, @($state, $PhaseId))
+    $analysis = $analyzeSelected.Invoke($null, @($state, $PhaseId, 1))
     $findings = $analysis['findings']
     if ($findings.Count -ne 1 -or
         $findings[0]['id'] -ne $ExpectedFindingId -or
@@ -614,7 +614,7 @@ function Assert-TargetMetSuppressesDemandRisk {
     $state = New-ObservedState
     Set-ObservedField $true 'ProductionWindowReady' $state
     Add-ObservedFlow $state $ItemId $Target ($Target + 10.0)
-    $analysis = $analyzeSelected.Invoke($null, @($state, $PhaseId))
+    $analysis = $analyzeSelected.Invoke($null, @($state, $PhaseId, 1))
     $risk = $analysis['productionRisk']
     $satisfied = @($risk['satisfiedExactTargets'] | Where-Object {
         $_['itemId'] -eq $ItemId
@@ -639,7 +639,7 @@ function Assert-CubeDemandCeiling {
     Set-ObservedField $true 'ProductionWindowReady' $quietState
     Add-ObservedFlow $quietState $ItemId 40.0 80.0
     $quietAnalysis = $analyzeSelected.Invoke(
-        $null, @($quietState, $PhaseId))
+        $null, @($quietState, $PhaseId, 1))
     if ($quietAnalysis['productionRisk']['actionable'].Count -ne 0 -or
         $quietAnalysis['findings'].Count -ne 0) {
         throw "$PhaseId presents Cube demand risk at the 40/min ceiling."
@@ -649,7 +649,7 @@ function Assert-CubeDemandCeiling {
     Set-ObservedField $true 'ProductionWindowReady' $riskState
     Add-ObservedFlow $riskState $ItemId 35.0 80.0
     $riskAnalysis = $analyzeSelected.Invoke(
-        $null, @($riskState, $PhaseId))
+        $null, @($riskState, $PhaseId, 1))
     if ($riskAnalysis['productionRisk']['actionable'].Count -ne 1 -or
         $riskAnalysis['findings'].Count -ne 1) {
         throw "$PhaseId did not retain Cube risk below the 40/min ceiling."
@@ -688,8 +688,8 @@ $panelSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\GuidePanelModel.cs'
 )
-if (-not $panelSource.Contains('{ "contractVersion", "2.8" }')) {
-    throw 'Panel model contract version is not 2.8.'
+if (-not $panelSource.Contains('{ "contractVersion", "2.9" }')) {
+    throw 'Panel model contract version is not 2.9.'
 }
 $controllerSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
@@ -735,8 +735,8 @@ $pluginSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\Plugin.cs'
 )
-if (-not $pluginSource.Contains('SchemaVersion = "2.16"')) {
-    throw 'Snapshot schema version is not 2.16.'
+if (-not $pluginSource.Contains('SchemaVersion = "2.17"')) {
+    throw 'Snapshot schema version is not 2.17.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

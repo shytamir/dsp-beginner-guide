@@ -548,6 +548,8 @@ namespace DspProgressionStatusExporter
         private RectTransform collapseButtonRect;
         private RectTransform previousPhaseRect;
         private RectTransform nextPhaseRect;
+        private readonly RectTransform[] ilsStageRects = new RectTransform[3];
+        private int ilsStage;
         private RectTransform cubeRateColumnRect;
         private Image riskSignalIcon;
         private Image collapseImage;
@@ -957,6 +959,13 @@ namespace DspProgressionStatusExporter
                 delegate { Navigate("next"); },
                 out nextPhaseRect,
                 out _);
+            string[] stageLabels = { "I Departure", "II Haulback", "III Automation" };
+            for (int i = 0; i < ilsStageRects.Length; i++)
+            {
+                string command = "ils-" + (i + 1);
+                CreateHeaderControl("IlsStage" + (i + 1), stageLabels[i],
+                    delegate { Navigate(command); }, out ilsStageRects[i], out _);
+            }
             GameObject scrollObject = CreateObject(
                 "ScrollArea",
                 panelObject.transform,
@@ -1085,6 +1094,7 @@ namespace DspProgressionStatusExporter
         {
             if (model == null) return;
             sourceGuideAnchor = model.SourceGuideAnchor;
+            ilsStage = model.IlsStage;
             titleText.text = GuideRichText.Title(model.PhaseId, model.Title);
             Sprite phaseIcon = matrixIcons != null
                 ? matrixIcons.Get(model.PhaseId)
@@ -1382,6 +1392,19 @@ namespace DspProgressionStatusExporter
             titleText.rectTransform.SetSizeWithCurrentAnchors(
                 RectTransform.Axis.Vertical, titleHeight);
             float headerHeight = Mathf.Max(48f, titleHeight + 15f);
+            bool showStages = phaseId == "ils" && !collapsed;
+            float stageWidth = (panelWidth - BodyRightInset - OuterPadding * 2f) / 3f;
+            for (int i = 0; i < ilsStageRects.Length; i++)
+            {
+                ilsStageRects[i].gameObject.SetActive(showStages);
+                if (!showStages) continue;
+                SetTopRect(ilsStageRects[i], OuterPadding + i * stageWidth,
+                    headerHeight, stageWidth, 36f);
+                ilsStageRects[i].GetComponent<Button>().interactable = ilsStage != i + 1;
+                ilsStageRects[i].GetComponentInChildren<Text>().color = ilsStage == i + 1
+                    ? style.CompletedTextColor : style.GroupText.Color;
+            }
+            if (showStages) headerHeight += 40f;
             SetTopRect(
                 collapseButtonRect,
                 panelWidth - 48f,
@@ -1938,6 +1961,7 @@ namespace DspProgressionStatusExporter
             ResetScale(collapseButtonRect);
             ResetScale(previousPhaseRect);
             ResetScale(nextPhaseRect);
+            foreach (RectTransform stage in ilsStageRects) ResetScale(stage);
             ResetScale(scrollUpRect);
             ResetScale(scrollDownRect);
 #if DSP_GUIDE_SNAPSHOT_CONTROL

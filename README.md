@@ -16,6 +16,8 @@ companion changes are described under [Project status](#project-status).
 
 - Manual phase navigation through the implemented nine critical-path
   phases.
+- In the current candidate, explicit ILS Departure / Haulback / Automation
+  selection persists per playthrough and controls the guide link.
 - Stable phase objectives based on the
   [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
 - Native Statistics Panel production evidence plus focused logistics, power,
@@ -160,7 +162,7 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.16 exports conclusions, production-risk terms,
+- Compact snapshot schema 2.17 exports conclusions, production-risk terms,
   provenance, collector health, and only the focused evidence needed to audit
   those conclusions.
 - The click-through panel reuses DSP's vein-label font, material, and outline,
@@ -174,9 +176,10 @@ history.
 
 ## Project status
 
-The released product is complete for the adopted guide 2.3 contract. The project
-is in final planning for bounded Guide 3.0 companion improvements, pending owner
-acceptance of [the roadmap](docs/ROADMAP.md). Implementation has not started.
+The released product is complete for the adopted guide 2.3 contract. The owner
+authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 is technically
+complete and GC3-02 is next. [Execution records](docs/management/GUIDE3-EXECUTION.md)
+separate automated completion from the pending final in-game owner workshop.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
 scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the
 proposed fixes and deliberate exclusions.

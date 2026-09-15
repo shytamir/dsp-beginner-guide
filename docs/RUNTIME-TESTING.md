@@ -4,6 +4,12 @@ This is the reusable runtime protocol for the maintained product. Historical
 feature gates and their accepted evidence are archived under
 [`docs/archive/validation/`](archive/validation/).
 
+For the accepted Guide 3.0 roadmap, perform these in-game checks only in
+GC3-13. Earlier stories use synthetic automated fixtures; their results and
+the next story are in the [execution record](management/GUIDE3-EXECUTION.md).
+Include ILS I/II/III selection, collapse visibility, per-playthrough persistence
+and each stage's guide anchor in that workshop.
+
 Use only Dyson Sphere Program with the current mod installed through BepInEx.
 Use the diagnostic DLL when a JSON snapshot is requested; use the public DLL
 when validating the Thunderstore surface.
@@ -197,7 +203,7 @@ it cannot isolate the intended boundary reliably.
 
 - `Save snapshot` writes one JSON only when clicked and reports success or
   failure for two seconds.
-- The JSON is no larger than 256 KiB and names snapshot schema `2.16`.
+- The JSON is no larger than 256 KiB and names snapshot schema `2.17`.
 - It contains focused selected-phase evidence and explicit coverage or
   omission diagnostics, not broad factory dumps.
 - Leave the panel visible for one minute and hidden for one minute. Report any

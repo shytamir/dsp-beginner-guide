@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "3.1" },
+                { "contractVersion", "3.2" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -83,13 +83,13 @@ namespace DspProgressionStatusExporter
 
         public static GuideProgressionEvaluation EvaluatePhase(
             string selectedPhaseId,
-            ObservedGameState state)
+            ObservedGameState state, int ilsStage = 1)
         {
             string selected = ManualPhaseNavigator.NormalizePhase(
                 selectedPhaseId);
             GateDefinition definition = FindGate(selected);
             GuideGateResult gate = EvaluateCurrentGate(
-                definition ?? Gates[0], state);
+                definition ?? Gates[0], state, ilsStage);
 
             var result = new GuideProgressionEvaluation {
                 SelectedPhase = selected
@@ -107,7 +107,7 @@ namespace DspProgressionStatusExporter
             return null;
         }
 
-        private static GuideGateResult EvaluateCurrentGate(GateDefinition definition, ObservedGameState state)
+        private static GuideGateResult EvaluateCurrentGate(GateDefinition definition, ObservedGameState state, int ilsStage)
         {
             var result = new GuideGateResult {
                 Id = definition.Id,
@@ -117,7 +117,7 @@ namespace DspProgressionStatusExporter
 
             if (definition.Id == "blue") EvaluateBlue(result, state);
             else if (definition.Id == "red") EvaluateRed(result, state);
-            else if (definition.Id == "ils") EvaluateIls(result, state);
+            else if (definition.Id == "ils") EvaluateIls(result, state, ilsStage);
             else if (definition.Id == "yellow") EvaluateYellow(result, state);
             else if (definition.Id == "purple") EvaluatePurple(result, state);
             else if (definition.Id == "green") EvaluateGreen(result, state);
@@ -198,26 +198,19 @@ namespace DspProgressionStatusExporter
                 "Buffer both Yellow Cube inputs in visible storage.");
         }
 
-        private static void EvaluateIls(GuideGateResult gate, ObservedGameState state)
+        private static void EvaluateIls(GuideGateResult gate, ObservedGameState state, int stage)
         {
             int expeditionPlanetId = FindExpeditionPlanet(state);
             double titaniumRate = PlanetProduction(state, expeditionPlanetId, 1004, 1106);
             double siliconRate = PlanetProduction(state, expeditionPlanetId, 1003, 1105);
             long titaniumCargo = PlanetOwned(state, expeditionPlanetId, 1106);
             long siliconCargo = PlanetOwned(state, expeditionPlanetId, 1105);
-            bool expeditionActive = expeditionPlanetId > 0 &&
-                (titaniumRate > 0 || siliconRate > 0 || titaniumCargo > 0 || siliconCargo > 0);
-            bool cargoReady = titaniumCargo >= 860 && siliconCargo >= 520;
-            bool rushStarted = cargoReady || TechStarted(state, 1414) ||
-                TechStarted(state, 1604) || TechStarted(state, 2903) ||
-                TechStarted(state, 1605) || CountStellarStations(state) > 0;
-
-            if (!expeditionActive && !rushStarted)
+            if (stage != 2 && stage != 3)
             {
                 EvaluateIlsPreparation(gate, state);
                 return;
             }
-            if (!rushStarted)
+            if (stage == 2)
             {
                 EvaluateIlsExpedition(gate, state, expeditionPlanetId,
                     titaniumRate, siliconRate, titaniumCargo, siliconCargo);

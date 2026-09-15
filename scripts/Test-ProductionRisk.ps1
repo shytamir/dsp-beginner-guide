@@ -272,7 +272,7 @@ $guideAnalyzer = $assembly.GetType(
     'DspProgressionStatusExporter.GuideAnalyzer', $true
 )
 $analyzeSelected = $guideAnalyzer.GetMethod('AnalyzeSelected', $flags)
-$analysis = $analyzeSelected.Invoke($null, @($state, 'green'))
+$analysis = $analyzeSelected.Invoke($null, @($state, 'green', 1))
 $riskSummary = $analysis['productionRisk']
 if ($riskSummary['selected']['state'] -cne 'starved' -or
     $riskSummary['selected']['scope'] -cne 'planet-local' -or
@@ -341,7 +341,7 @@ $itemBufferType.GetField(
 ).SetValue($blueBuffer, 'not-proven')
 $itemBufferType.GetField('Scopes', $flags).GetValue($blueBuffer).Add($blueScope)
 $stateType.GetField('ItemBuffers', $flags).GetValue($state).Add(6001, $blueBuffer)
-$blueAnalysis = $analyzeSelected.Invoke($null, @($state, 'blue'))
+$blueAnalysis = $analyzeSelected.Invoke($null, @($state, 'blue', 1))
 $blueRisk = $blueAnalysis['productionRisk']
 $blueSatisfied = @($blueRisk['satisfiedExactTargets'] | Where-Object {
     $_['itemId'] -eq 6001

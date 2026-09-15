@@ -53,6 +53,8 @@ namespace DspProgressionStatusExporter
     internal sealed class GuidePanelModel
     {
         public string PhaseId;
+        public int IlsStage;
+        public bool ShowIlsStages { get { return PhaseId == "ils"; } }
         public string SourceGuideAnchor;
         public string Title;
         public string Subtitle;
@@ -86,8 +88,9 @@ namespace DspProgressionStatusExporter
                 nextActions.Add(row.Export());
 
             return new Dictionary<string, object> {
-                { "contractVersion", "2.8" },
+                { "contractVersion", "2.9" },
                 { "phaseId", PhaseId },
+                { "ilsStage", IlsStage },
                 { "phaseSelectionAuthority", "player" },
                 { "title", Title },
                 { "subtitle", Subtitle },
@@ -167,15 +170,18 @@ namespace DspProgressionStatusExporter
             Dictionary<string, object> progression =
                 AsDictionary(Get(analysis, "progression"));
             model.PhaseId = Text(Get(phase, "id"), "unknown");
+            object selectedStage = Get(phase, "ilsStage");
+            model.IlsStage = model.ShowIlsStages && selectedStage is int
+                ? (int)selectedStage : 0;
             model.Title = PlayerFacingText.Normalize(
                 Text(Get(phase, "title"), "Guide Check"));
             AddCubeRates(model, observedState);
 
             Dictionary<string, object> currentGate =
                 FindCurrentGate(progression, model.PhaseId);
-            model.SourceGuideAnchor = ResolveSourceGuideAnchor(
-                model.PhaseId,
-                currentGate);
+            model.SourceGuideAnchor = model.ShowIlsStages
+                ? (model.IlsStage == 2 ? "titanium" : model.IlsStage == 3 ? "ils-automate" : "flight")
+                : model.PhaseId;
             if (currentGate != null)
             {
                 string gateTitle = Text(Get(currentGate, "title"), null);
@@ -206,44 +212,6 @@ namespace DspProgressionStatusExporter
                 AsList(Get(analysis, "findings")),
                 GuidePanelRiskStabilizer.Limit - model.Context.Count);
             return model;
-        }
-
-        private static string ResolveSourceGuideAnchor(
-            string phaseId,
-            Dictionary<string, object> currentGate)
-        {
-            string fallback = String.IsNullOrEmpty(phaseId)
-                ? "top"
-                : phaseId.ToLowerInvariant();
-            if (!String.Equals(
-                phaseId,
-                "ils",
-                StringComparison.OrdinalIgnoreCase) ||
-                currentGate == null)
-                return fallback;
-
-            List<object> conditions = AsList(Get(currentGate, "conditions"));
-            if (conditions == null) return fallback;
-            foreach (object item in conditions)
-            {
-                Dictionary<string, object> condition = AsDictionary(item);
-                string id = Text(Get(condition, "id"), null);
-                if (String.IsNullOrEmpty(id)) continue;
-                if (String.Equals(
-                    id,
-                    "ils-preparation",
-                    StringComparison.OrdinalIgnoreCase))
-                    return "flight";
-                if (id.StartsWith(
-                    "ils-expedition-",
-                    StringComparison.OrdinalIgnoreCase))
-                    return "titanium";
-                if (id.StartsWith(
-                    "ils-rush-",
-                    StringComparison.OrdinalIgnoreCase))
-                    return "ils-automate";
-            }
-            return fallback;
         }
 
         private static List<GuidePanelRiskModel> ReadRiskCandidates(

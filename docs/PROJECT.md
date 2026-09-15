@@ -3,25 +3,25 @@
 ## Product state
 
 The released DSP Guide Check implementation remains complete for the adopted
-DSP Practical Progression Guide 2.3 contract. The project is now in **final
-planning, pending owner acceptance of the Guide 3.0 companion roadmap**.
+DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
+roadmap for implementation on 2026-09-15. **GC3-01 is technically complete;
+GC3-02 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
-[`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its bounded draft
+[`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
 tasks, consequential Guide 3.0 readiness differences, and the owner-requested
 opt-in Expert mode showing only the Cube-rate bar and `DON'T PANIC`. The
 supporting [gap analysis](management/GUIDE3-GAP-ANALYSIS.md) records verified evidence,
 implementation decisions and excluded work.
 
-No implementation is authorized by drafting or pushing these documents. After
-roadmap acceptance and implementation authorization, intermediate story gates
-will use agent-run automated checks. At the owner's request, the final story
+The owner authorized implementation and a push after each technical story.
+Intermediate story gates use agent-run automated checks. At the owner's request, the final story
 is the only execution-stage human validation workshop; normal per-change
 runtime and presentation checkpoints are consolidated there. Technical
 completion, owner acceptance and publication remain separate states.
 
-The product and version contracts below describe the existing implementation,
-not unimplemented roadmap outcomes.
+The contracts below describe the current implementation. Remaining roadmap
+outcomes are not claimed as implemented; in-game acceptance remains pending.
 
 The bounded maintenance cycle prompted by the full critical-path playthrough
 and its subsequent Cube demand-reference refinement concluded. Its
@@ -101,7 +101,7 @@ readiness text states it.
 |---|---|
 | BLUE | Starter inputs and routine hardware replenish; Blue Cubes run continuously at 20/min or better; research is not hand-fed. |
 | RED | Two Labs sustain 20 Red Cubes/min while Refined Oil retains a continuing outlet. |
-| ILS | Show one active checkpoint at a time: preparation before launch; non-starter-planet Titanium and Silicon production plus return cargo during the expedition; then research, protected components, and active Titanium and Silicon ILS routes during the rush. |
+| ILS | The player selects Departure, Haulback or Automation. Stable objectives evaluate only that stage. Cargo, research and transport evaluation corrections remain scheduled in GC3-02 through GC3-06. |
 | YELLOW | Three configured Yellow-Cube Labs produce continuously; Diamonds and Titanium Crystals each have visible storage. |
 | PURPLE | Three configured Purple-Cube Labs produce continuously; Processors and Particle Broadband each have visible storage. |
 | GREEN | Two configured Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. |
@@ -178,12 +178,19 @@ descriptor so autosaves, renamed slots, pauses, and restarts retain it.
 Legacy selections normalize once: BOOTSTRAP to BLUE; FLIGHT and TITANIUM to
 ILS; SPHERE to DYSON; WARP to GREEN; LOGISTICS and COMPLETE to WHITE.
 
+ILS has a separate I Departure / II Haulback / III Automation control inside
+the collapsible body. `nav3` retains the selected stage and its origin across
+phase changes and reloads. First ILS entry suggests III only for researched
+1605, otherwise II for known remote location or finished remote production,
+otherwise I. Runtime evidence never changes an initialized stage. Invalid
+stage data preserves the phase and is initialized once on ILS entry.
+
 ## Snapshot contract
 
-Snapshot schema 2.16 serializes the selected-phase conclusions used by the
+Snapshot schema 2.17 serializes the selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. It
 includes provenance, playtime, research and Cube aggregates, selection
-diagnostics, Mission Completed progress when available, focused evidence,
+diagnostics including selected ILS stage/origin, Mission Completed progress when available, focused evidence,
 resolved presentation-source settings, ordered production risks, collector
 coverage, performance, and explicit omission or truncation markers.
 
@@ -193,16 +200,15 @@ rejected rather than written.
 
 ## Panel contract
 
-The panel is click-through except for phase navigation, collapse, explicit
+The panel is click-through except for phase/ILS-stage navigation, collapse, explicit
 scrolling, `DON'T PANIC`, and the diagnostic build's `Save snapshot` control.
 The public Thunderstore build omits snapshot control and its interaction path
 at compile time.
 
 `DON'T PANIC` opens the selected phase in the published guide. For ILS, the
-presentation model maps the currently evaluated preparation, expedition, or
-research-rush checkpoint to the guide's stable `#flight`, `#titanium`, or
-`#ils-automate` anchor. This link targeting neither changes nor persists phase
-or checkpoint selection, and unrecognized evidence falls back to `#ils`.
+presentation model maps the selected Departure, Haulback or Automation stage
+directly to `#flight`, `#titanium` or `#ils-automate`. The link keeps that target
+when collapsed; clicking it never changes selection.
 
 Panel text and Cube rates reuse the installed game's live vein-label Text
 style at `UIRoot.instance.uiGame.veinDetail.nodePrefab.infoText`: font,
@@ -244,12 +250,12 @@ Intermediate branch components and branch progression are not modeled.
 | Contract | Version |
 |---|---:|
 | Release line | 2.1.x |
-| Snapshot schema | 2.16 |
+| Snapshot schema | 2.17 |
 | Normalized state | 2.3 |
-| Guide selection | 1.6 |
-| Guide analysis | 3.3 |
-| Progression | 3.1 |
-| Panel | 2.8 |
+| Guide selection | 1.7 |
+| Guide analysis | 3.4 |
+| Progression | 3.2 |
+| Panel | 2.9 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use the
 same three-number version; assembly and file metadata add `.0`, and diagnostic

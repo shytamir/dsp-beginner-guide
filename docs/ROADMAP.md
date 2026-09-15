@@ -1,8 +1,9 @@
 # Guide 3.0 companion improvements roadmap
 
-**Status:** Final planning draft — awaiting owner roadmap acceptance.
+**Status:** Accepted for implementation — GC3-01 technically complete; GC3-02 next.
 **Prepared:** 2026-09-15.
-**Implementation:** Not authorized or started by this draft.
+**Implementation:** Owner authorized GC3-01 through GC3-12 on 2026-09-15, with a push after each story. GC3-13 remains the human validation stop.
+**Execution record:** [Story decisions and validation](management/GUIDE3-EXECUTION.md).
 **Authority:** [PROJECT.md](PROJECT.md).
 **Evidence and resolved designs:** [Guide 3.0 gap analysis](management/GUIDE3-GAP-ANALYSIS.md).
 
@@ -39,9 +40,9 @@ source, not a target of this work.
 
 ## Acceptance and execution rules
 
-Roadmap acceptance is the pending planning decision. It does not claim that
-the implementation or runtime behavior has been accepted. Execution begins
-only after owner roadmap acceptance and implementation authorization.
+The owner accepted the roadmap for implementation on 2026-09-15. This authorizes
+the technical stories through GC3-12, not runtime acceptance or publication.
+Each completed story is recorded and pushed to main before the next begins.
 
 Within execution, **GC3-13 is the only human validation story**. The owner's
 2026-09-15 direction defers the repository's normal per-change DSP screenshots
