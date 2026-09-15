@@ -10,10 +10,12 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | Stories / gate | State |
 |---|---|
 | GC3-01 | Technically complete; pushed as `522a5fc` |
-| GC3-02 | Technically complete |
-| GC3-03 | Next |
-| GC3-04 through GC3-12 | Pending in dependency order |
-| G1 through G4 | Pending |
+| GC3-02 | Technically complete; pushed as `9195e21` |
+| GC3-03 | Technically complete |
+| GC3-04 | Next |
+| GC3-05 through GC3-12 | Pending in dependency order |
+| G1 / M1 | Passed: stage, cargo and research technically coherent |
+| G2 through G4 | Pending |
 | GC3-13 / G5 | Reserved for owner workshop; not started |
 
 ## GC3-01 — Select and retain the ILS stage
@@ -77,3 +79,37 @@ command remains the GC3-01 command with the new collection suite included.
 
 **Reservation:** No new game session or save was used. Runtime presentation and
 utility remain reserved for GC3-13; G1 awaits the research story.
+
+## GC3-03 — Suggest research at the stage where it is useful
+
+**Outcome:** Departure, Haulback and Automation consume their own prerequisite
+branches. The first unmet prerequisite supplies one concise research action;
+queued work waits, completed targets disappear from suggestions, and missing
+research/queue observations remain unknown. Survey research is explicitly
+optional. Early Automation suppresses unusable hardware/route tasks.
+
+**Decisions:** Pinned the declared targets' full explicit/implicit closure from
+guide commit `c6d846b09f80564106ba221133a1c1d021267f2f` in
+`IlsResearchPolicy`. All included `pretechsMax` values are false. An observed
+unlocked node is authoritative and needs no retrospective prerequisite proof;
+unfinished nodes traverse their prerequisites in reference order. Stage II's
+support research is advice, separate from required cargo objectives. No live
+LDB graph, research-cost estimator or queue mutation was added. The 200-Cube
+reference ends when either batch-consuming target is queued, partly progressed
+or unlocked; it never reads current Cube inventory as a replenishment target.
+
+**Contracts:** normalized state 2.5, analysis 3.6, progression 3.4, snapshot
+2.19. Research provenance is limited to the selected stage's closure. Other
+phase research behavior and player-owned navigation remain unchanged.
+
+**Validation / G1:** Both variants built with zero warnings/errors. The four
+retained suites, `Test-IlsEvidenceCollection.ps1`, `Test-IlsResearch.ps1` and
+variant checks passed against both final DLLs. The new research suite exercises
+each stage endpoint, inherited implicit prerequisites, exact 1603/1604/1605
+edges, queue/complete/unknown states, partial batch consumption, optional rank
+labels and early-Automation eligibility. The prerequisite table initializer and
+a test array-count assertion were corrected before these successful runs.
+
+**Milestone M1:** Stage selection, cargo and research are technically coherent.
+G1 passed without a game session or human validation. Actual usability remains
+reserved for GC3-13; finished hardware and home-route proof are next.

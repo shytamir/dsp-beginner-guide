@@ -38,6 +38,11 @@ current availability, not past hauling, fuel sufficiency or a protected reserve.
 Raw location-field presence distinguishes a known space location (zero) from
 missing evidence. Research rows retain per-ID availability of their unlocked
 result, so missing reflection results cannot become locked technology claims.
+Queue availability comes from the existing history queue collection. The
+ILS-specific policy consumes these normalized observations and a pinned local
+prerequisite table; it does not discover a runtime graph or mutate the queue.
+Snapshots include only the selected stage's prerequisite closure and survey
+advice where relevant, with availability, queued, unlocked and started flags.
 
 ## Dyson and component evidence
 

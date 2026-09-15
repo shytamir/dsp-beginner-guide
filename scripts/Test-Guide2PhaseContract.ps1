@@ -555,7 +555,7 @@ if ($productionLabel -ne 'Ten labs sustain 40 White Cubes/min' -or
     throw 'WHITE lab, storage, or active research presentation is too verbose.'
 }
 $whiteExport = $whiteState.Export()
-if ($whiteExport['modelVersion'] -ne '2.4' -or
+if ($whiteExport['modelVersion'] -ne '2.5' -or
     $whiteExport['techProgress'].Count -ne 1 -or
     $whiteExport['techProgress'][0]['techId'] -ne 1508 -or
     $whiteExport['techProgress'][0]['percent'] -ne 37) {
@@ -735,8 +735,8 @@ $pluginSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\Plugin.cs'
 )
-if (-not $pluginSource.Contains('SchemaVersion = "2.18"')) {
-    throw 'Snapshot schema version is not 2.18.'
+if (-not $pluginSource.Contains('SchemaVersion = "2.19"')) {
+    throw 'Snapshot schema version is not 2.19.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',

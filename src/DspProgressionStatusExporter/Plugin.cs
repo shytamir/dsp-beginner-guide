@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.18";
+        private const string SchemaVersion = "2.19";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -848,6 +848,7 @@ namespace DspProgressionStatusExporter
 
             result["technologies"] = techRows;
             result["currentTech"] = Scalar(GetMember(history, "currentTech", "currentTechId"));
+            result["queueAvailable"] = GetMember(history, "techQueue", "techQueueArray") is IEnumerable;
             result["techQueue"] = ExportSimpleSequence(GetMember(history, "techQueue", "techQueueArray"));
             result["universeObserveLevel"] = Scalar(GetMember(history, "universeObserveLevel"));
             result["missionAccomplished"] = Scalar(GetMember(history, "missionAccomplished"));

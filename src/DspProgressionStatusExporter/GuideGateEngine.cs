@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "3.3" },
+                { "contractVersion", "3.4" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -203,14 +203,13 @@ namespace DspProgressionStatusExporter
             if (stage == 3) EvaluateIlsRush(gate, state);
             else if (stage == 2) EvaluateIlsExpedition(gate, state);
             else EvaluateIlsPreparation(gate, state);
+            if (stage != 3) gate.Conditions.Insert(0, IlsResearchPolicy.Evaluate(state, stage));
+            if (stage != 2 && stage != 3) gate.Conditions.Add(IlsResearchPolicy.Survey(state));
         }
 
         private static void EvaluateIlsPreparation(GuideGateResult gate, ObservedGameState state)
         {
             var missing = new List<string>();
-            bool researchKnown = state.AvailableTechIds.Contains(2902) && state.AvailableTechIds.Contains(1413);
-            if (state.AvailableTechIds.Contains(2902) && !state.UnlockedTechIds.Contains(2902)) missing.Add("Drive Engine Lv2");
-            if (state.AvailableTechIds.Contains(1413) && !state.UnlockedTechIds.Contains(1413)) missing.Add("Titanium Smelting");
             if (state.PlayerInventoryAvailable)
             {
                 AddMissingPlayerItem(state, missing, 2301, "Mining Machine");
@@ -222,15 +221,15 @@ namespace DspProgressionStatusExporter
                 if (PlayerOwned(state, 2203) <= 0 && PlayerOwned(state, 2204) <= 0)
                     missing.Add("independent power");
             }
-            bool available = researchKnown && state.PlayerInventoryAvailable;
+            bool available = state.PlayerInventoryAvailable;
             bool ready = available && missing.Count == 0;
             gate.Conditions.Add(Condition(
-                "ils-preparation", "Departure essentials",
+                "ils-preparation", "Departure equipment",
                 ready ? "ready" : (available ? "blocked" : "unknown"), true,
-                !available ? "Research or Icarus inventory is unavailable." : ready
-                    ? "Required research and equipment observed. Check fuel and building space before departure."
+                !available ? "Icarus inventory is unavailable." : ready
+                    ? "Outpost equipment observed. Check fuel and building space before departure."
                     : "Still needed: " + String.Join(", ", missing.ToArray()) + ".",
-                "observed", available && !ready ? "Research or load the listed essentials." : null));
+                "observed", available && !ready ? "Load the listed outpost equipment." : null));
         }
 
         private static void EvaluateIlsExpedition(GuideGateResult gate, ObservedGameState state)
@@ -279,19 +278,9 @@ namespace DspProgressionStatusExporter
 
         private static void EvaluateIlsRush(GuideGateResult gate, ObservedGameState state)
         {
-            int[] chain = { 1414, 1604, 2903, 1605 };
-            int currentTech = 0;
-            foreach (int techId in chain)
-                if (!state.UnlockedTechIds.Contains(techId)) { currentTech = techId; break; }
-            bool chainReady = currentTech == 0;
-            gate.Conditions.Add(Condition(
-                "ils-rush-tech", chainReady ? "The ILS research chain is complete" :
-                    "Current research target: " + TechName(state, currentTech),
-                chainReady ? "ready" : (state.QueuedTechIds.Contains(currentTech) ? "watch" : "blocked"),
-                true,
-                chainReady ? "Interstellar Logistics System is researched." :
-                    (state.QueuedTechIds.Contains(currentTech) ? "This technology is queued." : "This technology is not queued."),
-                "observed", chainReady ? null : "Research " + TechName(state, currentTech) + "."));
+            GuideGateCondition research = IlsResearchPolicy.Evaluate(state, 3);
+            gate.Conditions.Add(research);
+            bool researchReady = research.Status == "ready";
 
             int stations = CountStellarStations(state) + (int)Owned(state, 2104);
             int vessels = CountLogisticsVessels(state) + (int)Owned(state, 5002);
@@ -304,7 +293,7 @@ namespace DspProgressionStatusExporter
                 fleetReady ? "Found two ILS stations and five Logistics Vessels." :
                     (reserveReady ? "All protected components are stored together." :
                         "Still needed: " + String.Join(", ", missing.ToArray()) + "."),
-                "observed", reserveReady ? null : "Store the missing components without spending the protected reserve."));
+                "observed", reserveReady || !researchReady ? null : "Store the missing components without spending the protected reserve."));
 
             bool titaniumRoute = HasSustainableRoute(state, 1106);
             bool siliconRoute = HasSustainableRoute(state, 1105) ||
@@ -319,7 +308,7 @@ namespace DspProgressionStatusExporter
                 routesReady ? "Both activated ILS routes were found." :
                     "Missing activated route: " + String.Join(" and ", missingRoutes.ToArray()) + ".",
                 routesReady ? "derived" : "observed",
-                routesReady ? null : "Activate the missing ILS route."));
+                routesReady || !researchReady || !fleetReady ? null : "Activate the missing ILS route."));
         }
 
         private static void EvaluatePurple(GuideGateResult gate, ObservedGameState state)

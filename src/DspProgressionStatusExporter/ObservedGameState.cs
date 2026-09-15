@@ -281,6 +281,7 @@ namespace DspProgressionStatusExporter
         public readonly HashSet<int> AvailablePlanetInventories = new HashSet<int>();
         public bool PlayerInventoryAvailable;
         public bool PlayerLocationAvailable;
+        public bool ResearchQueueAvailable;
         public readonly Dictionary<int, string> TechNames = new Dictionary<int, string>();
         public readonly Dictionary<int, ObservedTechProgress> TechProgress =
             new Dictionary<int, ObservedTechProgress>();
@@ -355,11 +356,12 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "2.4";
+            result["modelVersion"] = "2.5";
             result["playerInventoryAvailable"] = PlayerInventoryAvailable;
             result["playerLocationAvailable"] = PlayerLocationAvailable;
             result["availablePlanetInventories"] = new List<int>(AvailablePlanetInventories);
             result["availableTechIds"] = new List<int>(AvailableTechIds);
+            result["researchQueueAvailable"] = ResearchQueueAvailable;
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -434,6 +436,7 @@ namespace DspProgressionStatusExporter
 
         private void ReadResearch(Dictionary<string, object> research)
         {
+            ResearchQueueAvailable = ToBool(GetValue(research, "queueAvailable"));
             foreach (object rowObject in Enumerate(GetValue(research, "technologies")))
             {
                 var row = rowObject as Dictionary<string, object>;

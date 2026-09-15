@@ -122,11 +122,12 @@ namespace DspProgressionStatusExporter
             };
 
             return new Dictionary<string, object> {
-                { "analysisVersion", "3.5" },
+                { "analysisVersion", "3.6" },
                 { "phaseSelectionAuthority", "player" },
                 { "phase", phaseResult },
                 { "progression", progression.Export() },
                 { "normalizedState", state.Export() },
+                { "ilsResearch", phase.Id == "ils" ? IlsResearchPolicy.Export(state, ilsStage) : null },
                 { "productionRisk", productionRisk },
                 { "findings", findings },
                 { "limitations", new List<object> {

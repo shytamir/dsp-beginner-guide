@@ -4,8 +4,8 @@
 
 The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
-roadmap for implementation on 2026-09-15. **GC3-01/02 are technically complete;
-GC3-03 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
+roadmap for implementation on 2026-09-15. **GC3-01 through GC3-03 are technically complete;
+G1 passed and GC3-04 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
@@ -101,7 +101,7 @@ readiness text states it.
 |---|---|
 | BLUE | Starter inputs and routine hardware replenish; Blue Cubes run continuously at 20/min or better; research is not hand-fed. |
 | RED | Two Labs sustain 20 Red Cubes/min while Refined Oil retains a continuing outlet. |
-| ILS | The player selects Departure, Haulback or Automation. Stable objectives evaluate only that stage. Haulback checks finished outpost smelting, aboard cargo and cargo secured at home separately. Research and transport corrections remain scheduled in GC3-03 through GC3-06. |
+| ILS | The player selects Departure, Haulback or Automation. Stable objectives evaluate only that stage. Haulback checks finished outpost smelting, aboard cargo and cargo secured at home separately. Research follows stage-owned prerequisites without repeated queue/batch tasks. Transport and action projection remain scheduled in GC3-04 through GC3-06. |
 | YELLOW | Three configured Yellow-Cube Labs produce continuously; Diamonds and Titanium Crystals each have visible storage. |
 | PURPLE | Three configured Purple-Cube Labs produce continuously; Processors and Particle Broadband each have visible storage. |
 | GREEN | Two configured Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. |
@@ -185,9 +185,17 @@ phase changes and reloads. First ILS entry suggests III only for researched
 otherwise I. Runtime evidence never changes an initialized stage. Invalid
 stage data preserves the phase and is initialized once on ILS entry.
 
+ILS research uses a bounded local table from the pinned Guide 3.0 reference,
+including implicit prerequisites and explicit upgrade ranks. Departure requires
+2902/1413; survey research remains optional. Haulback offers its support branches
+without turning them into cargo gates. Automation follows 1414/1605 and catches
+up their prerequisites; 2903 is excluded. Queued research produces waiting
+status. The 200-Yellow-Cube batch is a reference before its research starts,
+never a required stock counter. Missing research/queue evidence stays unknown.
+
 ## Snapshot contract
 
-Snapshot schema 2.18 serializes the selected-phase conclusions used by the
+Snapshot schema 2.19 serializes the selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. It
 includes provenance, playtime, research and Cube aggregates, selection
 diagnostics including selected ILS stage/origin, Mission Completed progress when available, focused evidence,
@@ -250,11 +258,11 @@ Intermediate branch components and branch progression are not modeled.
 | Contract | Version |
 |---|---:|
 | Release line | 2.1.x |
-| Snapshot schema | 2.18 |
-| Normalized state | 2.4 |
+| Snapshot schema | 2.19 |
+| Normalized state | 2.5 |
 | Guide selection | 1.7 |
-| Guide analysis | 3.5 |
-| Progression | 3.3 |
+| Guide analysis | 3.6 |
+| Progression | 3.4 |
 | Panel | 2.9 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use the

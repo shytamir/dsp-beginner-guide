@@ -4,6 +4,11 @@
 
 ### Guide 3.0 candidate
 
+- GC3-03: ILS research follows stage-owned branches and their real prerequisites.
+  Queued research waits without repeat actions; Drive Engine Lv3 is no longer
+  required. The first 200 Yellow Cubes remain a one-time guide batch reference.
+  Normalized state 2.5, analysis 3.6, progression 3.4 and snapshot 2.19.
+
 - GC3-02: Haulback distinguishes finished outpost production, Icarus cargo and
   cargo available at home. Unloading preserves the total; ore and remote stock
   cannot stand in for finished cargo aboard. Missing observations remain unknown.

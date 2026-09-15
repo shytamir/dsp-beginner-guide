@@ -111,6 +111,8 @@ namespace DspProgressionStatusExporter
                 { "selectionAuthority", Value(analysis, "phaseSelectionAuthority") },
                 { "phase", Value(analysis, "phase") },
                 { "objectives", Value(analysis, "progression") },
+                { "ilsResearch", Value(analysis, "ilsResearch") },
+                { "researchQueueAvailable", Value(Dictionary(analysis, "normalizedState"), "researchQueueAvailable") },
                 { "productionRisk", Value(analysis, "productionRisk") },
                 { "currentStatus", Value(analysis, "findings") },
                 { "limitations", Value(analysis, "limitations") }

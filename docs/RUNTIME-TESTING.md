@@ -205,7 +205,7 @@ it cannot isolate the intended boundary reliably.
 
 - `Save snapshot` writes one JSON only when clicked and reports success or
   failure for two seconds.
-- The JSON is no larger than 256 KiB and names snapshot schema `2.18`.
+- The JSON is no larger than 256 KiB and names snapshot schema `2.19`.
 - It contains focused selected-phase evidence and explicit coverage or
   omission diagnostics, not broad factory dumps.
 - Leave the panel visible for one minute and hidden for one minute. Report any
