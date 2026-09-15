@@ -44,6 +44,14 @@ prerequisite table; it does not discover a runtime graph or mutate the queue.
 Snapshots include only the selected stage's prerequisite closure and survey
 advice where relevant, with availability, queued, unlocked and started flags.
 
+Finished transport-package evidence reuses the normalized station list and
+slots. It counts at most one selected home tower and one source tower, plus
+their idle/working Vessel counts; inventory-held 2104/5002 is counted separately
+at home. Pool and selected-station field availability remain explicit. Missing
+fleet or policy fields cannot be treated as an observed zero/configuration.
+Compact snapshots replace the old protected-reserve proxy with the counted
+inventory/deployment sources and selected endpoint identities.
+
 ## Dyson and component evidence
 
 - Generation uses `DysonSphere.energyGenCurrentTick`.

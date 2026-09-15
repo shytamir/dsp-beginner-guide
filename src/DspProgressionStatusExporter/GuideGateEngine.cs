@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "3.4" },
+                { "contractVersion", "3.5" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -282,18 +282,21 @@ namespace DspProgressionStatusExporter
             gate.Conditions.Add(research);
             bool researchReady = research.Status == "ready";
 
-            int stations = CountStellarStations(state) + (int)Owned(state, 2104);
-            int vessels = CountLogisticsVessels(state) + (int)Owned(state, 5002);
-            bool fleetReady = stations >= 2 && vessels >= 5;
-            var missing = MissingIlsReserve(state);
-            bool reserveReady = fleetReady || missing.Count == 0;
+            IlsTransportEvidence transport = IlsTransportEvidence.Build(state);
             gate.Conditions.Add(Condition(
-                "ils-rush-reserve", "The protected ILS build reserve is complete",
-                reserveReady ? "ready" : "blocked", true,
-                fleetReady ? "Found two ILS stations and five Logistics Vessels." :
-                    (reserveReady ? "All protected components are stored together." :
-                        "Still needed: " + String.Join(", ", missing.ToArray()) + "."),
-                "observed", reserveReady || !researchReady ? null : "Store the missing components without spending the protected reserve."));
+                "ils-rush-hardware", "Two ILS towers and five Vessels",
+                transport.HardwareReady ? "ready" : transport.Available ? "blocked" : "unknown", true,
+                "Observed: " + (transport.InventoryTowers + transport.DeployedTowers) + "/2 towers; " +
+                    (transport.InventoryVessels + transport.AssignedVessels) + "/5 Vessels at home or assigned to the selected endpoints.",
+                "observed", researchReady && transport.Available && !transport.HardwareReady
+                    ? "Finish the package: two ILS towers and five Logistics Vessels." : null));
+            gate.Conditions.Add(Condition(
+                "ils-rush-deployment", "Configure the home and outpost stations",
+                transport.DeploymentReady ? "ready" : transport.Available ? "blocked" : "unknown", true,
+                transport.DeploymentReady ? "Home demands both finished materials with five assigned Vessels; the outpost supplies both."
+                    : transport.Available ? "Both endpoint policies and the home fleet are needed." : "Station evidence is unavailable.",
+                "observed", researchReady && transport.HardwareReady && transport.Available && !transport.DeploymentReady
+                    ? "Set home to Remote Demand, outpost to Remote Supply, and assign five Vessels at home." : null));
 
             bool titaniumRoute = HasSustainableRoute(state, 1106);
             bool siliconRoute = HasSustainableRoute(state, 1105) ||
@@ -308,7 +311,7 @@ namespace DspProgressionStatusExporter
                 routesReady ? "Both activated ILS routes were found." :
                     "Missing activated route: " + String.Join(" and ", missingRoutes.ToArray()) + ".",
                 routesReady ? "derived" : "observed",
-                routesReady || !researchReady || !fleetReady ? null : "Activate the missing ILS route."));
+                routesReady || !researchReady || !transport.DeploymentReady ? null : "Activate the missing ILS route."));
         }
 
         private static void EvaluatePurple(GuideGateResult gate, ObservedGameState state)
@@ -480,23 +483,6 @@ namespace DspProgressionStatusExporter
                 "Owned: " + firstOwned + " " + firstItemName + " and " +
                     secondOwned + " " + secondItemName + ".",
                 "observed", ready ? null : action));
-        }
-
-        private static int CountStellarStations(ObservedGameState state)
-        {
-            int count = 0;
-            foreach (ObservedStationState station in state.Stations)
-                if (station.IsStellar) count++;
-            return count;
-        }
-
-        private static int CountLogisticsVessels(ObservedGameState state)
-        {
-            int count = 0;
-            foreach (ObservedStationState station in state.Stations)
-                if (station.IsStellar)
-                    count += station.IdleShipCount + station.WorkShipCount;
-            return count;
         }
 
         private static void AddFlow(
@@ -770,55 +756,6 @@ namespace DspProgressionStatusExporter
             string name)
         {
             if (PlayerOwned(state, itemId) <= 0) missing.Add(name);
-        }
-
-        private static List<string> MissingIlsReserve(ObservedGameState state)
-        {
-            int planetId = BestIlsReservePlanet(state);
-            int[] itemIds = { 1103, 1106, 1303, 1206, 1107, 1203 };
-            long[] targets = { 80, 80, 130, 80, 180, 50 };
-            string[] names = {
-                "Steel", "Titanium Ingots", "Processors",
-                "Particle Containers", "Titanium Alloy", "Electromagnetic Turbines"
-            };
-            var missing = new List<string>();
-            for (int i = 0; i < itemIds.Length; i++)
-            {
-                long found = PlanetOwned(state, planetId, itemIds[i]) +
-                    PlayerOwned(state, itemIds[i]);
-                if (found < targets[i])
-                    missing.Add((targets[i] - found) + " " + names[i]);
-            }
-            long yellowTarget = state.UnlockedTechIds.Contains(1605) ? 0 :
-                (state.UnlockedTechIds.Contains(1414) ? 120 : 200);
-            long yellowFound = PlanetOwned(state, planetId, 6003) + PlayerOwned(state, 6003);
-            if (yellowFound < yellowTarget)
-                missing.Add((yellowTarget - yellowFound) + " Yellow Cubes");
-            return missing;
-        }
-
-        private static int BestIlsReservePlanet(ObservedGameState state)
-        {
-            if (state.PlayerPlanetId > 0 && state.PlanetItemCounts.ContainsKey(state.PlayerPlanetId))
-                return state.PlayerPlanetId;
-            int bestPlanetId = 0;
-            long bestScore = -1;
-            foreach (int planetId in state.PlanetItemCounts.Keys)
-            {
-                long score = PlanetOwned(state, planetId, 1103) +
-                    PlanetOwned(state, planetId, 1106) +
-                    PlanetOwned(state, planetId, 1303) +
-                    PlanetOwned(state, planetId, 1206) +
-                    PlanetOwned(state, planetId, 1107) +
-                    PlanetOwned(state, planetId, 1203) +
-                    PlanetOwned(state, planetId, 6003);
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestPlanetId = planetId;
-                }
-            }
-            return bestPlanetId;
         }
 
         private static string FormatPower(double watts)

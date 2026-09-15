@@ -4,6 +4,11 @@
 
 ### Guide 3.0 candidate
 
+- GC3-04: Automation counts finished towers and Vessels at home or assigned to
+  selected endpoints. Deployment/configuration is separate; consumed components
+  no longer need replacing. Normalized state 2.6, analysis 3.7, progression 3.5
+  and snapshot 2.20 include endpoint/count provenance.
+
 - GC3-03: ILS research follows stage-owned branches and their real prerequisites.
   Queued research waits without repeat actions; Drive Engine Lv3 is no longer
   required. The first 200 Yellow Cubes remain a one-time guide batch reference.

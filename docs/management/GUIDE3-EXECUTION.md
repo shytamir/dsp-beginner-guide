@@ -11,9 +11,10 @@ validation. Technical completion is not owner runtime acceptance or publication.
 |---|---|
 | GC3-01 | Technically complete; pushed as `522a5fc` |
 | GC3-02 | Technically complete; pushed as `9195e21` |
-| GC3-03 | Technically complete |
-| GC3-04 | Next |
-| GC3-05 through GC3-12 | Pending in dependency order |
+| GC3-03 | Technically complete; pushed as `4896d81` |
+| GC3-04 | Technically complete |
+| GC3-05 | Next |
+| GC3-06 through GC3-12 | Pending in dependency order |
 | G1 / M1 | Passed: stage, cargo and research technically coherent |
 | G2 through G4 | Pending |
 | GC3-13 / G5 | Reserved for owner workshop; not started |
@@ -113,3 +114,34 @@ a test array-count assertion were corrected before these successful runs.
 **Milestone M1:** Stage selection, cargo and research are technically coherent.
 G1 passed without a game session or human validation. Actual usability remains
 reserved for GC3-13; finished hardware and home-route proof are next.
+
+## GC3-04 — Track the finished transport package
+
+**Outcome:** Removed the simultaneous raw-component reserve gate. The package
+counts two finished towers and five Vessels from home inventory and the selected
+deployed endpoints. Configuration/fleet deployment has a separate objective.
+Building hardware cannot create a demand to replenish its consumed components.
+
+**Decisions:** Reused stationary stock, the Icarus package and normalized station
+fields. Select home by matching Demand slots, source by matching Supply slots,
+then stable IDs. An unconfigured source must be on the identified outpost.
+Each selected tower and idle/working Vessel is counted once; unrelated off-world
+hardware is excluded. Known sufficient hardware can pass even if additional
+inventory is unavailable, but an incomplete unknown count generates no build
+order. Persistent preference for equally suitable endpoints and current-policy
+receipt tracking belong to GC3-05. No raw-recipe reconstruction or protected-box
+claim remains in the package diagnostics.
+
+**Contracts:** normalized state 2.6, analysis 3.7, progression 3.5 and snapshot
+2.20. Compact evidence records inventory counts, selected endpoint IDs, assigned
+Vessels and availability. The linked guide retains the expanded component bill.
+
+**Validation:** Both builds had zero warnings/errors; all four retained suites,
+`Test-IlsHardware.ps1`, `Test-IlsEvidenceCollection.ps1` and both variant checks
+passed. Hardware fixtures include zero/one/two towers, four/five Vessels, raw
+components only, partial deployment, assigned plus working Vessels, unrelated
+hardware, unavailable collections, and build/deployment prerequisite ordering.
+Collection fixtures distinguish valid zero stations from missing station fields.
+
+**Reservation:** No game runtime claims. G2 still awaits receipt verification
+and the full ILS Pending journey; owner acceptance remains GC3-13.

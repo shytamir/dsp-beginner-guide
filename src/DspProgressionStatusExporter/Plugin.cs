@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.19";
+        private const string SchemaVersion = "2.20";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -1900,8 +1900,8 @@ namespace DspProgressionStatusExporter
                 return d;
             }
 
-            d["available"] = true;
             Array stationPool = GetMember(transport, "stationPool") as Array;
+            d["available"] = stationPool != null;
             int cursor = ToInt(GetMember(transport, "stationCursor"));
 
             var stations = new List<object>();
@@ -1915,7 +1915,9 @@ namespace DspProgressionStatusExporter
                 {
                     object station = stationPool.GetValue(i);
                     if (station == null) continue;
-                    int id = ToInt(GetMember(station, "id"));
+                    object rawId = GetMember(station, "id");
+                    if (rawId == null) d["available"] = false;
+                    int id = ToInt(rawId);
                     if (id <= 0) continue;
 
                     var row = new Dictionary<string, object>();
@@ -1923,6 +1925,9 @@ namespace DspProgressionStatusExporter
                     row["gid"] = Scalar(GetMember(station, "gid"));
                     row["isStellar"] = Scalar(GetMember(station, "isStellar"));
                     row["isCollector"] = Scalar(GetMember(station, "isCollector"));
+                    row["available"] = GetMember(station, "isStellar") is bool &&
+                        GetMember(station, "idleShipCount") != null && GetMember(station, "workShipCount") != null &&
+                        GetMember(station, "storage") is IEnumerable;
                     row["storage"] = ExportStationStorage(GetMember(station, "storage"));
                     row["fleet"] = ExportNamedMembers(
                         station,

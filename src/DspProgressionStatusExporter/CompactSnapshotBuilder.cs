@@ -21,10 +21,6 @@ namespace DspProgressionStatusExporter
             1003, 1004, 1105, 1106
         };
 
-        private static readonly int[] IlsReserveItems = {
-            1103, 1107, 1203, 1206, 1303, 2104, 5002, 6003
-        };
-
         private static readonly Dictionary<string, int[]> PhaseItems =
             new Dictionary<string, int[]>(StringComparer.OrdinalIgnoreCase) {
                 { "blue", new int[] {
@@ -33,9 +29,8 @@ namespace DspProgressionStatusExporter
                 } },
                 { "red", new int[] { 6002, 1114, 1120 } },
                 { "ils", new int[] {
-                    1003, 1004, 1103, 1105, 1106, 1107, 1203, 1206,
-                    1303, 2001, 2011, 2101, 2104, 2201, 2203, 2204,
-                    2301, 2302, 5002, 6003
+                    1003, 1004, 1105, 1106, 2001, 2011, 2101, 2104, 2201, 2203, 2204,
+                    2301, 2302, 5002
                 } },
                 { "yellow", new int[] { 6003, 1112, 1118 } },
                 { "purple", new int[] { 6004, 1303, 1402 } },
@@ -450,16 +445,6 @@ namespace DspProgressionStatusExporter
             };
             if (String.Equals(phaseId, "ils", StringComparison.OrdinalIgnoreCase))
             {
-                int stationCount = 0;
-                int vesselCount = 0;
-                foreach (ObservedStationState station in state.Stations)
-                {
-                    if (!station.IsStellar) continue;
-                    stationCount++;
-                    vesselCount += station.IdleShipCount + station.WorkShipCount;
-                }
-                result["stellarStationCount"] = stationCount;
-                result["deployedVesselCount"] = vesselCount;
                 result["stageEvidence"] = IlsStageEvidence(state);
             }
             return result;
@@ -479,8 +464,7 @@ namespace DspProgressionStatusExporter
                 { "playerInventory", CountEvidence(
                     state.PlayerItemCounts, IlsPlayerItems) },
                 { "planetCargo", IlsPlanetCargoEvidence(state) },
-                { "protectedReserve", CountEvidence(
-                    BestIlsReserve(state), IlsReserveItems) }
+                { "transportPackage", IlsTransportEvidence.Build(state).Export() }
             };
         }
 
@@ -524,31 +508,6 @@ namespace DspProgressionStatusExporter
                 });
             }
             return rows;
-        }
-
-        private static Dictionary<int, long> BestIlsReserve(
-            ObservedGameState state)
-        {
-            Dictionary<int, long> counts;
-            if (state.PlayerPlanetId > 0 &&
-                state.PlanetItemCounts.TryGetValue(
-                    state.PlayerPlanetId, out counts))
-                return counts;
-            Dictionary<int, long> best = new Dictionary<int, long>();
-            long bestTotal = -1;
-            foreach (Dictionary<int, long> candidate in state.PlanetItemCounts.Values)
-            {
-                long total = 0;
-                foreach (int itemId in IlsReserveItems)
-                {
-                    long count;
-                    if (candidate.TryGetValue(itemId, out count)) total += count;
-                }
-                if (total <= bestTotal) continue;
-                best = candidate;
-                bestTotal = total;
-            }
-            return best;
         }
 
         private static List<object> CountEvidence(

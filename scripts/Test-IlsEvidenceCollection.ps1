@@ -46,7 +46,7 @@ $factory.transport.stationPool = @($null,[object]::new())
 Assert (-not (Call 'Plugin' 'MergeLogisticsStorageCounts' @($counts,$factory))) 'Missing station identity passed availability'
 
 function ReadEvidence($Target,[string]$Method,$InputData) {
-    $Target.GetType().GetMethod($Method,[Reflection.BindingFlags]'Instance,NonPublic').Invoke($Target,@($InputData))
+    $Target.GetType().GetMethod($Method,[Reflection.BindingFlags]'Instance,NonPublic').Invoke($Target,(,$InputData))
 }
 $normalized = New 'ObservedGameState'
 $summary = [Collections.Generic.Dictionary[string,object]]::new()
@@ -75,4 +75,21 @@ $research['technologies'] = @($knownTech,$unknownTech)
 ReadEvidence $normalized 'ReadResearch' $research
 Assert ((Field $normalized 'AvailableTechIds').Contains(2902)) 'Locked known research became unknown'
 Assert (-not (Field $normalized 'AvailableTechIds').Contains(1413)) 'Missing research result became known'
+$planetRow = [Collections.Generic.Dictionary[string,object]]::new()
+$planetRow['id'] = 101
+$logistics = [Collections.Generic.Dictionary[string,object]]::new()
+$logistics['available'] = $true
+$logistics['stations'] = @()
+$factoryRow = [Collections.Generic.Dictionary[string,object]]::new()
+$factoryRow['planet'] = $planetRow
+$factoryRow['logistics'] = $logistics
+ReadEvidence $normalized 'ReadStations' @($factoryRow)
+Assert ((Field $normalized 'AvailableStationPlanets').Contains(101)) 'Valid empty station collection became unavailable'
+$stationRow = [Collections.Generic.Dictionary[string,object]]::new()
+$stationRow['id'] = 1
+$stationRow['isStellar'] = $true
+$stationRow['available'] = $false
+$logistics['stations'] = @($stationRow)
+ReadEvidence $normalized 'ReadStations' @($factoryRow)
+Assert (-not (Field (Field $normalized 'Stations')[0] 'EvidenceAvailable')) 'Missing station fields became available'
 Write-Host 'ILS collection and normalization availability tests passed.'

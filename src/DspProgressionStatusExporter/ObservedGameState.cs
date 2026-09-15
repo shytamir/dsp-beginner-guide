@@ -92,6 +92,7 @@ namespace DspProgressionStatusExporter
 
     internal sealed class ObservedStationState
     {
+        public bool EvidenceAvailable;
         public int PlanetId;
         public string PlanetName;
         public int StationId;
@@ -279,6 +280,7 @@ namespace DspProgressionStatusExporter
         public readonly HashSet<int> QueuedTechIds = new HashSet<int>();
         public readonly HashSet<int> AvailableTechIds = new HashSet<int>();
         public readonly HashSet<int> AvailablePlanetInventories = new HashSet<int>();
+        public readonly HashSet<int> AvailableStationPlanets = new HashSet<int>();
         public bool PlayerInventoryAvailable;
         public bool PlayerLocationAvailable;
         public bool ResearchQueueAvailable;
@@ -356,10 +358,11 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "2.5";
+            result["modelVersion"] = "2.6";
             result["playerInventoryAvailable"] = PlayerInventoryAvailable;
             result["playerLocationAvailable"] = PlayerLocationAvailable;
             result["availablePlanetInventories"] = new List<int>(AvailablePlanetInventories);
+            result["availableStationPlanets"] = new List<int>(AvailableStationPlanets);
             result["availableTechIds"] = new List<int>(AvailableTechIds);
             result["researchQueueAvailable"] = ResearchQueueAvailable;
             result["evidencePolicy"] = new Dictionary<string, object> {
@@ -570,6 +573,7 @@ namespace DspProgressionStatusExporter
                 int planetId = Plugin.ToInt(GetValue(planet, "id"));
                 string planetName = ToText(GetValue(planet, "name"));
                 Dictionary<string, object> logistics = GetDictionary(factory, "logistics");
+                if (planetId > 0 && ToBool(GetValue(logistics, "available"))) AvailableStationPlanets.Add(planetId);
                 foreach (object stationObject in Enumerate(GetValue(logistics, "stations")))
                 {
                     var station = stationObject as Dictionary<string, object>;
@@ -578,7 +582,8 @@ namespace DspProgressionStatusExporter
                     bool isStellar = ToBool(GetValue(station, "isStellar"));
                     Dictionary<string, object> fleet =
                         GetDictionary(station, "fleet");
-                    Stations.Add(new ObservedStationState {
+                    var observedStation = new ObservedStationState {
+                        EvidenceAvailable = ToBool(GetValue(station, "available")),
                         PlanetId = planetId,
                         PlanetName = planetName,
                         StationId = stationId,
@@ -587,11 +592,14 @@ namespace DspProgressionStatusExporter
                             GetValue(fleet, "idleShipCount")),
                         WorkShipCount = Plugin.ToInt(
                             GetValue(fleet, "workShipCount"))
-                    });
+                    };
+                    Stations.Add(observedStation);
                     foreach (object slotObject in Enumerate(GetValue(station, "storage")))
                     {
                         var slot = slotObject as Dictionary<string, object>;
                         if (slot == null) continue;
+                        if (GetValue(slot, "count") == null || String.IsNullOrEmpty(ToText(GetValue(slot, "remoteLogic"))))
+                            observedStation.EvidenceAvailable = false;
                         StationSlots.Add(new ObservedStationSlot {
                             PlanetId = planetId,
                             PlanetName = planetName,

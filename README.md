@@ -162,7 +162,7 @@ LOGISTICS material remains in the source guide but does not receive a panel.
   Statistics Panel values.
 - Dyson generation, sail population, and construction progress use the native
   Dyson system and editor aggregates.
-- Compact snapshot schema 2.19 exports conclusions, production-risk terms,
+- Compact snapshot schema 2.20 exports conclusions, production-risk terms,
   provenance, collector health, and only the focused evidence needed to audit
   those conclusions.
 - The click-through panel reuses DSP's vein-label font, material, and outline,
@@ -177,8 +177,8 @@ history.
 ## Project status
 
 The released product is complete for the adopted guide 2.3 contract. The owner
-authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-03 are technically
-complete; G1 passed and GC3-04 is next. [Execution records](docs/management/GUIDE3-EXECUTION.md)
+authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-04 are technically
+complete; G1 passed and GC3-05 is next. [Execution records](docs/management/GUIDE3-EXECUTION.md)
 separate automated completion from the pending final in-game owner workshop.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
 scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the
