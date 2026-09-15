@@ -4,6 +4,11 @@
 
 ### Guide 3.0 candidate
 
+- GC3-13 owner checkpoint: Accepted performance at roughly a 7 FPS cost and
+  confirmed ExpertMode works. Fixed Expert mode to use WHITE and display all six
+  Cube counters, preserving normal-mode phase/stage preferences. The accepted
+  candidate remains the full-playthrough build; this follow-up does not block it.
+
 - GC3-13 B1 follow-up: The first correction did not resolve the reported slowdown.
   The inherited public-version slowdown is included in this correction.
   Removed discarded player/factory diagnostics, unused building counting,

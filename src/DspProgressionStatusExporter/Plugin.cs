@@ -499,6 +499,13 @@ namespace DspProgressionStatusExporter
             object data,
             ObservedGameState observed)
         {
+            if (!guidePanel.GuidanceEnabled)
+                return new ManualPhaseSelection {
+                    PhaseId = GuidePresentationPolicy.ExpertPhaseId,
+                    SeedSource = "expert-mode",
+                    PersistenceState = "not-persisted"
+                };
+
             PhaseSaveIdentity identity = BuildPhaseSaveIdentity(data);
             string saveKey = identity.SaveKey;
             if (!String.Equals(

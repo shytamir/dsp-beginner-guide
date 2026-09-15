@@ -21,6 +21,18 @@ $controller=New 'GuidePanelController'
 Assert ($controller.GuidanceEnabled -and -not $controller.IsVisible) 'Default controller mode/start visibility failed'
 $controller.SetExpertMode($true)
 Assert (-not $controller.GuidanceEnabled -and -not $controller.IsVisible) 'Expert controller started visible'
+$plugin = [Runtime.Serialization.FormatterServices]::GetUninitializedObject((GetModelType 'Plugin'))
+$instanceFlags=[Reflection.BindingFlags]'Public,NonPublic,Instance'
+$plugin.GetType().GetField('guidePanel',$instanceFlags).SetValue($plugin,$controller)
+$storedSelection = Selection 'nav3;phase=ils;ils=2;ilsOrigin=manual-control'
+$plugin.GetType().GetField('activePhaseSelection',$instanceFlags).SetValue($plugin,$storedSelection)
+$storedBefore = $storedSelection.Serialize()
+$ensurePhase = $plugin.GetType().GetMethod('EnsurePhaseSelection',$instanceFlags)
+foreach ($refresh in 1..3) {
+    $effective = $ensurePhase.Invoke($plugin,@($null,$null))
+    Assert ((Field $effective 'PhaseId') -eq 'white') 'Expert plugin did not pin collection/analysis to WHITE'
+    Assert ((Field $effective 'PersistenceState') -eq 'not-persisted' -and $storedSelection.Serialize() -eq $storedBefore) 'Expert phase overwrote the normal selection'
+}
 $script:navigations=0; $script:snapshots=0
 $controller.SetNavigationAction([Action[string]]{param($command) $script:navigations++})
 $instanceFlags=[Reflection.BindingFlags]'Public,NonPublic,Instance'

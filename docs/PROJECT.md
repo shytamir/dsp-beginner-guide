@@ -5,9 +5,10 @@
 The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
 roadmap for implementation on 2026-09-15. **GC3-01 through GC3-12 are technically complete;
-G1-G4 passed their original technical checks. GC3-13 is open with its first blocker,
-B1 (periodic panel slowdown). The first correction failed owner retest; a second,
-bounded correction removes unused work from panel collection and awaits retest.** See the [execution record](management/GUIDE3-EXECUTION.md).
+G1-G4 passed their original technical checks. The owner accepted B1 performance
+at roughly a 7 FPS cost and confirmed the ExpertMode flag works. GC3-13 remains
+open for the full playthrough using the accepted candidate. The Expert fixed-WHITE
+follow-up does not block that test.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
@@ -228,8 +229,10 @@ rejected rather than written.
 `[General] ExpertMode` defaults to false and is read once at startup. True creates
 only the existing Cube-rate bar and guide button under a non-intercepting root.
 No adjoining panel, header/body, navigation, collapse, stage selector, risk glyph
-or snapshot control is created. The same model supplies rates, selected phase
-and guide anchor. F8 remains on-demand; switching modes requires a restart.
+or snapshot control is created. Expert mode fixes its effective phase to WHITE,
+showing all six Cube counters with WHITE rate/color policy and the WHITE guide
+anchor. This override is not persisted: normal mode retains its saved phase and
+ILS stage. F8 remains on-demand; switching modes requires a restart.
 
 
 The panel is click-through except for phase/ILS-stage navigation, collapse, explicit

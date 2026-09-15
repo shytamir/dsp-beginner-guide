@@ -1,12 +1,17 @@
 # Guide 3.0 owner acceptance workshop — GC3-13
 
-**State:** Open; the first B1 correction failed owner retest. Further acceptance
-testing is blocked until the follow-up passes the same-save check.
-**Replacement candidate:** local sequence `2.2.101`, under
+**State:** Full playthrough pending. The owner accepted B1 performance at roughly
+a 7 FPS cost and confirmed the ExpertMode flag works. Expert fixed-WHITE is a
+separate follow-up and does not block playthrough testing.
+**Accepted performance / full-playthrough candidate:** `2.2.101.5cc8f33`, under
 `artifacts/guide3/workshop-blocker-01-refresh/`. `candidate.json` and `BUILD-INFO.txt`
 record its exact clean source revision, release label and DLL/package hashes.
 Use its `public/DspGuideCheck.dll` or `packages/DSPGuideCheck-2.2.101.zip` for
 ordinary testing; the diagnostic variant remains available separately.
+**Expert fixed-WHITE candidate:** local sequence `2.2.102`, under
+`artifacts/guide3/workshop-expert-white/`, with its own source/identity manifest.
+Its in-game counter/anchor check remains pending; replacing the playthrough
+candidate is not required by this correction.
 The rejected `e89f73e` and `ff71d06` candidates are historical evidence only.
 Do not install a preflight build or both DLL variants together.
 **Authority:** [Accepted roadmap](../ROADMAP.md) and [execution record](GUIDE3-EXECUTION.md).
@@ -38,16 +43,20 @@ candidate binaries performed the discarded work; static comparison does not
 establish how much of either slowdown it caused. No new instrumentation or
 diagnostic export is part of this correction.
 
-**Owner retest:** With DSP closed, replace the previous mod DLL with the public
-DLL from the replacement candidate. Restart DSP with ExpertMode false and load
-the same mature save. Select WHITE and show the overlay across several normal
-refreshes. Confirm whether the periodic dip is gone and the bar/panel still work.
-No timing logs or snapshot export are required for this retest. If acceptable,
-continue with the Expert-mode case first, then the planned playthrough.
+**Owner disposition (2026-09-16):** The remaining hit is roughly 7 FPS and is
+acceptable. B1 is closed by that explicit owner acceptance. The ExpertMode flag
+works; fix its effective phase to WHITE so every Cube counter is displayed.
+The owner will use the accepted candidate for the full playthrough regardless
+of that fix. GC3-13/G5 stay open; the playthrough and final acceptance have not
+been completed.
 
-**Disposition:** First correction rejected; follow-up owner retest pending. B1 and G5 stay open
-until the owner confirms the result. Technical checks do not establish in-game
-performance or acceptance.
+## Expert follow-up — fixed WHITE
+
+Use WHITE for Expert collection, analysis, all six Cube counters and the guide
+anchor. Do not seed or overwrite normal-mode phase/ILS-stage preferences.
+On the corrected build, check all six counters with an earlier phase saved,
+then disable ExpertMode and restart to confirm normal selection returns.
+This check is pending and does not block the accepted candidate's playthrough.
 
 ## Before the workshop
 
@@ -71,16 +80,16 @@ performance or acceptance.
 | DYSON bridge | Swarm work leads to the bridge link, ordered research, receivers and Photon Materialization. Check the required Hydrogen outlet and automatic science-district delivery yourself; global totals cannot complete this player check. |
 | PHOTON | Exercise warming, each missing input, multiple deficits, recovery and two-minute sustained 40/min for five colored Cubes plus Antimatter. Reserve requires 2,000 stationary Antimatter. Current bar colors may recover before history completes. WHITE keeps its existing goals. |
 | Normal interface | In both variants, inspect 1080p/4K, navigation, ILS selector, source links, collapse, scrolling, typography, pointer behavior and save reload. Only diagnostic normal mode has Save snapshot; F8 never exports. |
-| Expert interface | Enable ExpertMode and restart each variant. F8 reveals only the Cube-rate bar and working DON'T PANIC. Former panel area passes pointer input; no title/body, arrows, collapse, stages, risk glyph or export control exists. Check refresh/reload, rates/anchors and 1080p/4K. Disable and restart to recover normal controls and stored selection. |
+| Expert interface | The owner confirmed the flag works. On the corrected build, F8 reveals all six Cube counters and DON'T PANIC using WHITE, regardless of saved normal phase. Former panel area passes pointer input; no title/body, arrows, collapse, stages, risk glyph or export control exists. Check refresh/reload and 1080p/4K. Disable and restart to recover normal controls and stored selection. |
 | Stability and utility | Inspect new logs, visible performance and missing-evidence behavior. Judge usefulness against R1-R7, including the cost of manual ILS stages and the two-minute policy. |
 
 ## Decision record — owner completes at the workshop
 
 - Source / package / DLL hashes:
 - Saves and display resolutions exercised:
-- Accepted cases and evidence paths:
-- In-scope defects requiring repair:
-- Known limits accepted or rejected:
+- Accepted cases and evidence paths: owner reports acceptable performance and working ExpertMode flag; source `5cc8f33`, retained candidate above.
+- In-scope defects requiring repair: Expert fixed-WHITE implemented; corrected-build in-game confirmation pending.
+- Known limits accepted or rejected: remaining roughly 7 FPS hit accepted by owner.
 - **Owner decision: pending** (accept / reject / revise with bounded defects).
 
 Do not close GC3-13 without an explicit owner decision. Repair accepted-scope

@@ -6,8 +6,9 @@ are tracked in the [execution record](GUIDE3-EXECUTION.md).
 **Execution draft:** [ROADMAP.md](../ROADMAP.md).
 
 **GC3-13 B1 correction (2026-09-16):** The first correction failed owner retest.
-The follow-up removes unused panel collection; performance acceptance is still
-open. The workshop found an unacceptable
+The owner accepted the follow-up at roughly a 7 FPS cost. The full playthrough
+remains pending; Expert mode's fixed-WHITE refinement does not block it.
+The workshop found an unacceptable
 periodic slowdown. The original D3 copied prerequisite-table decision is
 superseded by native `LDB.techs` data. Station observations now preserve native
 slot ownership, receipt tracking is limited to selected Automation, and panel
@@ -320,6 +321,11 @@ history. Other phases retain their current bands and icon layout.
 ## Owner-requested presentation option
 
 ### D10. Expert mode keeps only the Cube-rate bar and guide button
+
+**Owner workshop refinement:** Expert mode fixes its effective phase to WHITE
+so all six counters remain visible. The guide link also opens WHITE. The normal
+phase/stage preference is retained without seeding or overwriting it in Expert
+mode. This supersedes the original selected-phase policy below.
 
 `Plugin.Awake` already binds settings through BepInEx `Config.Bind`.
 `GuidePanelController.EnsureCreated` currently constructs the entire panel;

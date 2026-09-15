@@ -25,7 +25,7 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
 | G3 / M3 | Passed: Guide 3.0 handoffs and PHOTON readiness |
 | G4 | Passed: both variants, local/hosted checks and retained candidate ready |
-| GC3-13 / G5 | Open; first B1 correction failed retest; unused-collection follow-up awaits retest |
+| GC3-13 / G5 | Open; B1 accepted at roughly 7 FPS; full playthrough pending; Expert fixed-WHITE follow-up does not block it |
 
 ## GC3-13 B1 — periodic panel slowdown
 
@@ -180,10 +180,41 @@ No game assembly is copied into tracked files.
 `artifacts/guide3/workshop-blocker-01-refresh`, binds the final clean commit to
 the `2.2.101` DLLs, package, source archive, manifest and validation reports.
 
-**Acceptance boundary:** No live performance measurement or reproduction was
-performed by the agent. The full added version-to-version cost is not isolated.
-Keep B1 blocked until the owner confirms acceptable performance with the same
-save and WHITE visible; only then resume Expert-mode and playthrough acceptance.
+**Owner acceptance (2026-09-16):** The owner accepted the remaining roughly
+7 FPS impact and confirmed the ExpertMode flag works. B1 is closed. The retained
+`2.2.101.5cc8f33` candidate will be used for the full playthrough regardless of
+the Expert fixed-WHITE follow-up. No agent-run live measurement is claimed;
+the remaining cost has not been isolated. GC3-13/G5 remain open for playthrough
+and final owner acceptance.
+
+## GC3-13 — Expert fixed-WHITE follow-up
+
+**Owner request:** Expert mode must use WHITE so all Cube counters are displayed.
+This is a bounded workshop correction, independent of the accepted candidate's
+full playthrough, and supersedes GC3-11's original selected-phase behavior.
+
+**Implementation and decision:** Return an effective WHITE selection before
+normal-mode selection binding, seeding or persistence. Collection and analysis
+therefore both use WHITE; all six counters keep existing WHITE values/colors and
+DON'T PANIC opens WHITE. Preserve the normal phase and ILS stage for a later
+restart with ExpertMode false. No telemetry, cadence, schema or UI layout
+change; no new selection is written to the config or game/save state.
+
+**Validation:**
+
+- `dotnet build src/DspProgressionStatusExporter/DspProgressionStatusExporter.csproj -c Release`
+  passed with zero warnings/errors.
+- `pwsh -NoProfile -File scripts/Test-ExpertConfiguration.ps1` passed, including
+  all nine normal phases, six Expert counters, WHITE anchor, repeated refresh,
+  actual plugin selection with an ILS preference, no persistence/config access
+  during Expert selection, default/false/true config and inert hidden controls.
+- Final handoff uses `scripts/Test-Guide3Candidate.ps1 -Sequence 102 -OutputDirectory
+  artifacts/guide3/workshop-expert-white` on the clean commit; its reports and
+  manifest bind both variants and the public package to the tested source.
+
+**Acceptance:** Corrected-build in-game counters/link confirmation is pending.
+The owner already accepted the flag's operation. Neither this follow-up nor
+technical validation closes the full-playthrough workshop or authorizes publication.
 
 ## GC3-01 — Select and retain the ILS stage
 

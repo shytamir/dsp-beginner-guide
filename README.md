@@ -168,9 +168,10 @@ ExpertMode = true
 Restart DSP after changing the setting. It defaults to false. Expert mode shows
 only the existing Cube-rate bar and `DON'T PANIC` button when F8 opens it.
 It omits the adjoining panel and every other control, including navigation,
-collapse, ILS stages, risk glyph and diagnostic snapshot button. Stored phase
-and stage still determine rates and the guide link. Set false and restart to
-restore normal controls. F8 starts hidden and never saves in either mode.
+collapse, ILS stages, risk glyph and diagnostic snapshot button. Expert mode
+uses WHITE, so all six Cube counters are always displayed and the guide button
+opens WHITE. Set false and restart to restore normal controls and your saved
+phase/ILS stage. F8 starts hidden and never saves in either mode.
 
 ## Current contract
 
@@ -218,11 +219,11 @@ history.
 
 The released product is complete for the adopted guide 2.3 contract. The owner
 authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-12 are technically
-complete and G1-G4 passed their original checks. GC3-13 is blocked by B1, the
-reported periodic slowdown. The first correction failed owner retest. The
-follow-up removes unused panel collection; its candidate is in
-`artifacts/guide3/workshop-blocker-01-refresh/`. Its `candidate.json` identifies
-the tested source, versions and hashes. Owner retest remains pending. [Execution records](docs/management/GUIDE3-EXECUTION.md)
+complete and G1-G4 passed their original checks. The owner accepted B1 performance
+at roughly a 7 FPS cost and confirmed ExpertMode works. The full playthrough will
+use the retained candidate in `artifacts/guide3/workshop-blocker-01-refresh/`,
+independently of the Expert fixed-WHITE follow-up. GC3-13 remains open.
+Candidate manifests identify tested source, versions and hashes. [Execution records](docs/management/GUIDE3-EXECUTION.md)
 separate automated completion from the pending final in-game owner workshop.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
 scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the

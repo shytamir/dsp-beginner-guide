@@ -1,6 +1,6 @@
 # Guide 3.0 companion improvements roadmap
 
-**Status:** GC3-01 through GC3-12 completed their technical gates. GC3-13 is open and blocked by B1: the candidate's periodic slowdown. The first correction failed owner retest; removal of unused panel collection now awaits retest. G5 remains open.
+**Status:** GC3-01 through GC3-12 completed their technical gates. The owner accepted B1 performance at roughly a 7 FPS cost and confirmed ExpertMode works. GC3-13/G5 remain open for the full playthrough on the accepted candidate; the Expert fixed-WHITE follow-up does not block it.
 **Prepared:** 2026-09-15.
 **Implementation:** Owner authorized GC3-01 through GC3-12 on 2026-09-15, with a push after each story. GC3-13 remains the human validation stop.
 **Execution record:** [Story decisions and validation](management/GUIDE3-EXECUTION.md).
@@ -396,7 +396,8 @@ pass the startup value to `GuidePanelController` before its first `Prepare`.
 Use a bounded Expert creation/apply/layout path that creates only the existing
 Cube-rate bar and `DON'T PANIC` button under a non-intercepting overlay root.
 Document configuration and the required game restart. Retain the current
-telemetry/model pipeline, selected-phase rate policy and source-guide anchor.
+telemetry/model pipeline. Owner workshop refinement: Expert mode uses WHITE
+for all six counters and the guide link, without persisting that override.
 
 **Definition of done:**
 
@@ -408,16 +409,16 @@ telemetry/model pipeline, selected-phase rate policy and source-guide anchor.
   collapse control, previous/next arrows, ILS stage selector, risk glyph or
   diagnostic `Save snapshot` control. These controls have no active callbacks,
   focus targets or invisible pointer interception areas.
-- The bar retains its existing Cube set, native rates, unknown-value handling
-  and colors for the selected phase, including GC3-10's PHOTON policy. The
-  guide button retains the model's source anchor. Layout fits the retained
+- The Expert bar shows all six Cubes using WHITE's native rates, unknown-value
+  handling and colors, and the guide button opens WHITE. Normal mode retains
+  selected-phase behavior, including GC3-10's PHOTON policy. Layout fits the retained
   bar/button without reserving the adjoining panel or an empty header.
 - The overlay starts hidden; F8 still opens/closes it and never saves. Refresh,
   reopening and save changes cannot recreate the omitted UI or alter a stored
-  phase/ILS stage. Existing first-selection seeding remains unchanged; returning
+  phase/ILS stage. Expert mode does not seed or persist a normal selection; returning
   to normal mode after restart restores access to the stored selection.
 - Automated fixtures exercise default/false/true configuration, presentation
-  policy and callback eligibility, selected-phase rate/link parity, and
+  policy and callback eligibility, Expert WHITE rates/link and saved normal selection, and
   show/hide/refresh model behavior in both variants. Guarded controller creation,
   update and teardown paths compile with zero errors. Tests use synthetic
   inputs; actual Unity visibility, pointer behavior and layout remain reserved
@@ -476,7 +477,7 @@ criteria before presenting affected results for acceptance again.
 
 **Definition of done:**
 
-- Resolve **B1 — periodic panel slowdown** before resuming the acceptance cases.
+- **B1 — periodic panel slowdown: accepted by the owner at roughly a 7 FPS cost.**
   The owner reported roughly 55 to 22 FPS every 15 seconds for nearly two seconds
   on a mature save, with Expert off and WHITE visible. The first correction did
   not reduce it. A controlled owner comparison then found an approximately
@@ -495,7 +496,9 @@ criteria before presenting affected results for acceptance again.
   are not established by static inspection. No new measurement or diagnostic
   system is authorized. Technical checks and a
   packaged candidate precede owner retest on that same save. Only owner confirmation
-  can close B1; then test Expert mode before continuing the playthrough.
+  can close B1. That acceptance is now recorded: the flag works, and the owner
+  will use the accepted candidate for the full playthrough regardless of the
+  Expert fixed-WHITE follow-up. This does not close GC3-13/G5.
 - Workshop covers ILS stage selection/persistence and correction of an initial
   suggestion; preparation, loading, return and consumed cargo; useful research
   and hardware actions; configured versus observed home delivery; and no
@@ -507,7 +510,8 @@ criteria before presenting affected results for acceptance again.
   snapshot control, save reload, missing-evidence behavior and visible
   performance/log regressions.
 - In both variants, enable Expert mode through the config and restart: only
-  the Cube-rate bar and working `DON'T PANIC` button appear when requested.
+  all six Cube counters and working `DON'T PANIC` button appear when requested,
+  using WHITE regardless of the normal-mode saved phase.
   Check rates/anchors, F8, refresh, save reload, 1080p/4K placement and pointer
   pass-through over the former panel. All omitted controls remain absent and
   inert. Disable the setting and restart to confirm normal controls and stored
@@ -523,7 +527,7 @@ criteria before presenting affected results for acceptance again.
   current management state, and archive this roadmap only on explicit owner
   closeout instruction. Technical completion alone cannot close this story.
 
-**Out of scope:** An exhaustive new playthrough, optional/combat paths,
+**Out of scope:** Optional/combat paths,
 unrequested publication, unrelated feature requests or automatic acceptance.
 
 ## Gate definitions
