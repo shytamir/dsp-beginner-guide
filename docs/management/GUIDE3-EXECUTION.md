@@ -14,9 +14,10 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | GC3-03 | Technically complete; pushed as `4896d81` |
 | GC3-04 | Technically complete; pushed as `696d79e` |
 | GC3-05 | Technically complete; pushed as `2b9db24` |
-| GC3-06 | Technically complete |
-| GC3-07 | Next |
-| GC3-08 through GC3-12 | Pending in dependency order |
+| GC3-06 | Technically complete; pushed as `c75b2c6` |
+| GC3-07 | Technically complete |
+| GC3-08 | Next |
+| GC3-09 through GC3-12 | Pending in dependency order |
 | G1 / M1 | Passed: stage, cargo and research technically coherent |
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
 | G3 through G4 | Pending |
@@ -200,3 +201,23 @@ limit, unique labels and stage anchors pass.
 
 **Milestone M2:** The complete synthetic ILS journey is technically coherent.
 G2 passed; player-facing utility and actual Unity behavior remain GC3-13.
+
+## GC3-07 — Healthy YELLOW/PURPLE without extra storage
+
+**Outcome:** Removed the separate terminal-storage objectives from these two
+phases. Existing three-Lab positive-production readiness remains; missing recipe
+or per-item production evidence is unknown without an invented construction task.
+
+**Decisions:** Input collection and shared risk calculation are unchanged.
+Actual draining/starved risks still qualify. GREEN stores and BLUE/RED/WHITE
+exact targets are unchanged. No new rate or continuity threshold was invented.
+
+**Contracts:** analysis 3.10 and progression 3.7; snapshot shape unchanged.
+
+**Validation:** Both variants compiled with zero warnings/errors. Four retained
+suites and Test-GuideHandoffs passed for both, covering zero storage, stopped
+production, incomplete Labs, missing recipe/item evidence and unchanged GREEN.
+Retained phase fixtures verify actionable input depletion and exact-target
+suppression. The new fixture's configured-machine field name was corrected
+before success. The touched retained test also removes an extra EOF blank line
+introduced in GC3-06. Runtime utility remains reserved for GC3-13.

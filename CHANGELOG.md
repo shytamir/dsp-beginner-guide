@@ -4,6 +4,10 @@
 
 ### Guide 3.0 candidate
 
+- GC3-07: YELLOW/PURPLE no longer require separate input stores. Three supplied
+  Labs can pass without buffers; genuine input shortages remain visible.
+  Missing Lab/item evidence stays unknown. Analysis 3.10, progression 3.7.
+
 - GC3-06: ILS Pending projects at most three eligible stage-owned tasks. Research,
   assembly, deployment and receipt respect prerequisites; waiting evidence adds
   no repeat work. Analysis 3.9, panel 2.10 and snapshot 2.22 export candidates.

@@ -390,10 +390,6 @@ function Assert-CubeInputGate {
     }
 }
 
-Assert-CubeInputGate 'yellow' 'yellow-inputs' 1112 1118 `
-    'Buffer both Yellow Cube inputs in visible storage.'
-Assert-CubeInputGate 'purple' 'purple-inputs' 1303 1402 `
-    'Buffer both Purple Cube inputs in visible storage.'
 Assert-CubeInputGate 'green' 'green-inputs' 1305 1209 `
     'Buffer both Green Cube inputs in visible storage.'
 
@@ -753,4 +749,3 @@ foreach ($obsoleteFindingId in @(
 }
 
 Write-Output 'Guide 2.3 phase contract test passed.'
-

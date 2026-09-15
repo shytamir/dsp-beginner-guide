@@ -4,8 +4,8 @@
 
 The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
-roadmap for implementation on 2026-09-15. **GC3-01 through GC3-06 are technically complete;
-G1/G2 passed and GC3-07 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
+roadmap for implementation on 2026-09-15. **GC3-01 through GC3-07 are technically complete;
+G1/G2 passed and GC3-08 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
@@ -102,8 +102,8 @@ readiness text states it.
 | BLUE | Starter inputs and routine hardware replenish; Blue Cubes run continuously at 20/min or better; research is not hand-fed. |
 | RED | Two Labs sustain 20 Red Cubes/min while Refined Oil retains a continuing outlet. |
 | ILS | The player selects Departure, Haulback or Automation. Stable objectives evaluate only that stage. Haulback checks finished outpost smelting, aboard cargo and cargo secured at home separately. Research follows stage-owned prerequisites without repeated queue/batch tasks. Automation counts two finished ILS towers/five Vessels and checks deployment separately. Home delivery requires configured endpoints, source materials and session-observed finished inputs at home. Pending projects at most three eligible, distinct stage-owned actions in prerequisite order. |
-| YELLOW | Three configured Yellow-Cube Labs produce continuously; Diamonds and Titanium Crystals each have visible storage. |
-| PURPLE | Three configured Purple-Cube Labs produce continuously; Processors and Particle Broadband each have visible storage. |
+| YELLOW | Three configured Yellow-Cube Labs produce; separate input storage is not required. |
+| PURPLE | Three configured Purple-Cube Labs produce; separate input storage is not required. |
 | GREEN | Two configured Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. |
 | DYSON | The Photon swarm produces and launches Solar Sails and generates useful power. |
 | PHOTON | Critical Photon and Antimatter production runs; actual rates appear against the 48/min receiver-array reference; 2,000 stored Antimatter marks the midpoint. |
@@ -256,10 +256,11 @@ configured-Lab and stored-Cube counts without repeating the rate rail, and its
 single Pending action is to complete Mission Completed research. The objective
 shows queued, authoritative active-progress, or complete state when available.
 
-YELLOW and PURPLE use GREEN's combined terminal-input pattern: both direct
-Cube ingredients must have positive visible storage, while each input and the
-Cube remains independently eligible for concise production-risk findings.
-Intermediate branch components and branch progression are not modeled.
+YELLOW and PURPLE have no separate storage objective. Three configured Labs
+and positive available native production satisfy their existing Lab policy.
+Direct inputs and Cubes remain eligible for actual draining/starved findings.
+Missing recipe/item observations remain unknown. GREEN retains its two input
+stores; internal branch progression is not modeled.
 
 ## Contracts
 
@@ -269,8 +270,8 @@ Intermediate branch components and branch progression are not modeled.
 | Snapshot schema | 2.22 |
 | Normalized state | 2.7 |
 | Guide selection | 1.7 |
-| Guide analysis | 3.9 |
-| Progression | 3.6 |
+| Guide analysis | 3.10 |
+| Progression | 3.7 |
 | Panel | 2.10 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use the

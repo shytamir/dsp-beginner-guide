@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "3.6" },
+                { "contractVersion", "3.7" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -192,10 +192,6 @@ namespace DspProgressionStatusExporter
                 "Three Yellow Cube (Structure Matrix) labs run continuously",
                 27, 6003, 3,
                 "Configure and supply three Yellow Cube labs.");
-            AddVisibleCubeInputs(gate, state, "yellow-inputs",
-                "Diamonds and Titanium Crystals are visible in storage",
-                1112, "Diamonds", 1118, "Titanium Crystals",
-                "Buffer both Yellow Cube inputs in visible storage.");
         }
 
         private static void EvaluateIls(GuideGateResult gate, ObservedGameState state, int stage)
@@ -316,10 +312,6 @@ namespace DspProgressionStatusExporter
                 "Three Purple Cube (Information Matrix) labs run continuously",
                 55, 6004, 3,
                 "Configure and supply three Purple Cube labs.");
-            AddVisibleCubeInputs(gate, state, "purple-inputs",
-                "Processors and Particle Broadband are visible in storage",
-                1303, "Processors", 1402, "Particle Broadband",
-                "Buffer both Purple Cube inputs in visible storage.");
         }
 
         private static void EvaluateGreen(GuideGateResult gate, ObservedGameState state)
@@ -443,6 +435,15 @@ namespace DspProgressionStatusExporter
             string action)
         {
             int labs = ConfiguredRecipeMachines(state, recipeId);
+            ObservedItemFlow flow;
+            bool terminalEvidenceMissing = (itemId == 6003 || itemId == 6004) &&
+                (!state.RecipeTelemetryAvailable || !state.ItemFlows.TryGetValue(itemId, out flow) || !flow.OneMinuteAvailable);
+            if (terminalEvidenceMissing)
+            {
+                gate.Conditions.Add(Condition(id, label, "unknown", true,
+                    "Lab configuration or production evidence is unavailable.", "unknown", null));
+                return;
+            }
             if (!state.ProductionWindowReady)
             {
                 gate.Conditions.Add(Condition(

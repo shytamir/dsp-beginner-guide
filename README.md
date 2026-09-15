@@ -151,9 +151,8 @@ LOGISTICS material remains in the source guide but does not receive a panel.
 - ILS presents only the active preparation, expedition, or research-rush
   checkpoint, excludes the starter planet from outpost evidence, and uses
   planet-local cargo evidence rather than global stock.
-- YELLOW and PURPLE mirror GREEN's concise terminal-input check: both direct
-  Cube ingredients must be visible in storage, without modeling internal
-  branch progression.
+- YELLOW and PURPLE require three supplied Labs without a separate storage
+  objective. Their direct inputs remain eligible for genuine shortage warnings.
 - DYSON reports Solar Sail production, launches, and swarm generation;
   PHOTON reports actual Photon and Antimatter rates plus receiver demand
   against available Dyson generation.
@@ -177,8 +176,8 @@ history.
 ## Project status
 
 The released product is complete for the adopted guide 2.3 contract. The owner
-authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-06 are technically
-complete; G1/G2 passed and GC3-07 is next. [Execution records](docs/management/GUIDE3-EXECUTION.md)
+authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-07 are technically
+complete; G1/G2 passed and GC3-08 is next. [Execution records](docs/management/GUIDE3-EXECUTION.md)
 separate automated completion from the pending final in-game owner workshop.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
 scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the
