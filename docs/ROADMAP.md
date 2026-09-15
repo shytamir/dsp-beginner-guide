@@ -14,8 +14,9 @@ signals useful against the published Guide 3.0.
 
 The delivered result has player-owned ILS stages; truthful cargo, hardware
 and home-delivery checks; prerequisite-aware Pending tasks; non-blocking
-YELLOW/PURPLE buffer advice; a visible required receiver bridge; and PHOTON
-readiness based on five colored Cubes plus Antimatter at 40/min.
+YELLOW/PURPLE buffer advice; a visible required receiver bridge; PHOTON
+readiness based on five colored Cubes plus Antimatter at 40/min; and an opt-in
+Expert mode showing only the existing Cube-rate bar and `DON'T PANIC` button.
 
 This is the sole active roadmap. At the inspected mod baseline there was no
 standalone placeholder roadmap file: the no-active-work state lived in
@@ -42,7 +43,7 @@ Roadmap acceptance is the pending planning decision. It does not claim that
 the implementation or runtime behavior has been accepted. Execution begins
 only after owner roadmap acceptance and implementation authorization.
 
-Within execution, **GC3-12 is the only human validation story**. The owner's
+Within execution, **GC3-13 is the only human validation story**. The owner's
 2026-09-15 direction defers the repository's normal per-change DSP screenshots
 and user-run checkpoints to that final workshop. No earlier story requires
 owner sign-off, a supplied save, an interactive game session, or manual timing.
@@ -75,11 +76,11 @@ Milestones record the outcome after a gate passes.
 | A — Understand the selected ILS stage | E1: Stable ILS context and accurate preparation/haulback | GC3-01, GC3-02, GC3-03 | G1 | M1: ILS stage, cargo and research guidance are technically coherent |
 | B — Finish ILS with useful actions | E2: A real transport package and corroborated home delivery | GC3-04, GC3-05, GC3-06 | G2 | M2: Complete ILS fixture journey with actionable Pending tasks |
 | C — Repair consequential Guide 3.0 handoffs | E3: Trustworthy mid/late-route readiness | GC3-07, GC3-08, GC3-09, GC3-10 | G3 | M3: Selected Guide 3.0 outcomes pass automated regression |
-| D — Prepare and accept the candidate | E4: A reproducible candidate and an explicit owner decision | GC3-11, then GC3-12 | G4, then G5 | M4: Candidate ready for workshop; M5: Owner decision recorded |
+| D — Prepare and accept the candidate | E4: A configurable, reproducible candidate for owner acceptance | GC3-11, GC3-12, then GC3-13 | G4, then G5 | M4: Normal/Expert candidate ready for workshop; M5: Owner decision recorded |
 
 ### Dependency schedule
 
-Default serial order is GC3-01 through GC3-12. The table identifies actual
+Default serial order is GC3-01 through GC3-13. The table identifies actual
 dependencies; it does not authorize parallel agents or concurrent edits.
 
 | Story | Prerequisites |
@@ -94,8 +95,9 @@ dependencies; it does not authorize parallel agents or concurrent edits.
 | GC3-08 | G2 |
 | GC3-09 | G2; otherwise functionally independent of GC3-07/08 |
 | GC3-10 | GC3-08 and GC3-09 |
-| GC3-11 | G3 |
-| GC3-12 | G4 |
+| GC3-11 | G3; reuse GC3-01 selection/anchor and GC3-10 Cube-rate rules |
+| GC3-12 | GC3-11 |
+| GC3-13 | G4 |
 
 ## E1 — Stable ILS context and accurate preparation/haulback
 
@@ -381,9 +383,50 @@ and live-power diagnostics. Update compact evidence and PHOTON action selection.
 **Out of scope:** Rate gates for White Cubes within PHOTON, efficiency-rank
 requirements, branch tracing, Antimatter transportation automation.
 
-## E4 — A reproducible candidate and an explicit owner decision
+## E4 — A configurable, reproducible candidate for owner acceptance
 
-### GC3-11 — Produce the automatically verified workshop candidate
+### GC3-11 — Choose a minimal Expert overlay through configuration
+
+**Value:** Experienced players can keep Cube production rates and the guide
+shortcut visible without the adjoining guidance panel or its controls.
+
+**Scope:** Implement D10. Bind `[General] ExpertMode = false` in `Plugin` and
+pass the startup value to `GuidePanelController` before its first `Prepare`.
+Use a bounded Expert creation/apply/layout path that creates only the existing
+Cube-rate bar and `DON'T PANIC` button under a non-intercepting overlay root.
+Document configuration and the required game restart. Retain the current
+telemetry/model pipeline, selected-phase rate policy and source-guide anchor.
+
+**Definition of done:**
+
+- An absent entry defaults to false. False retains the normal panel and its
+  existing controls in both public and diagnostic builds; true takes effect
+  on the next game launch. No in-panel toggle or live config watcher is added.
+- Expert mode creates no adjoining background/edge, title/phase icon,
+  objectives, Pending/Current Status/Next Actions body, scroll controls,
+  collapse control, previous/next arrows, ILS stage selector, risk glyph or
+  diagnostic `Save snapshot` control. These controls have no active callbacks,
+  focus targets or invisible pointer interception areas.
+- The bar retains its existing Cube set, native rates, unknown-value handling
+  and colors for the selected phase, including GC3-10's PHOTON policy. The
+  guide button retains the model's source anchor. Layout fits the retained
+  bar/button without reserving the adjoining panel or an empty header.
+- The overlay starts hidden; F8 still opens/closes it and never saves. Refresh,
+  reopening and save changes cannot recreate the omitted UI or alter a stored
+  phase/ILS stage. Existing first-selection seeding remains unchanged; returning
+  to normal mode after restart restores access to the stored selection.
+- Automated fixtures exercise default/false/true configuration, presentation
+  policy and callback eligibility, selected-phase rate/link parity, and
+  show/hide/refresh model behavior in both variants. Guarded controller creation,
+  update and teardown paths compile with zero errors. Tests use synthetic
+  inputs; actual Unity visibility, pointer behavior and layout remain reserved
+  for GC3-13, rather than being claimed from policy tests or compilation.
+
+**Out of scope:** Automatic phase/stage advancement, new navigation shortcuts,
+always-on startup display, inventory counters, extra alerts, live mode switching,
+telemetry/performance redesign, snapshot schema changes or unrelated UI cleanup.
+
+### GC3-12 — Produce the automatically verified workshop candidate
 
 **Value:** The owner receives a reproducible candidate with known automated
 coverage and precise workshop tasks, rather than becoming its first debugger.
@@ -399,7 +442,8 @@ in-game validation. Prepare the workshop checklist and candidate hashes.
 **Definition of done:**
 
 - One documented local command succeeds on the installed toolchain with zero
-  build errors and all applicable deterministic suites passing for both variants.
+  build errors and all applicable deterministic suites passing for both variants,
+  including normal/Expert configuration and presentation-policy coverage.
   Game-reference discovery and the known desktop SDK access requirement are
   documented; no owner-provided save is required by this command.
 - Snapshot fixtures contain stage/availability/receipt/rate provenance, omit
@@ -419,13 +463,13 @@ in-game validation. Prepare the workshop checklist and candidate hashes.
 **Out of scope:** Thunderstore upload, release/tag creation, game deployment,
 new CI infrastructure, UI screenshot claims from compilation, owner acceptance.
 
-### GC3-12 — Owner acceptance workshop
+### GC3-13 — Owner acceptance workshop
 
 **Value:** The owner decides whether the technically complete candidate actually
 helps during play and whether its remaining evidence limits are acceptable.
 
 **Scope:** This is the final execution story and the only human validation
-workshop. Use the exact GC3-11 candidate in DSP through BepInEx. Gather focused
+workshop. Use the exact GC3-12 candidate in DSP through BepInEx. Gather focused
 screenshots/snapshots only here, and repair defects within the already agreed
 criteria before presenting affected results for acceptance again.
 
@@ -437,9 +481,16 @@ criteria before presenting affected results for acceptance again.
   unrelated-planet success. Purpose-built saves may be used at this stage.
 - Owner exercises healthy no-buffer YELLOW/PURPLE, the DYSON bridge/player-check
   wording, PHOTON warming/deficit/recovery/40-min readiness, and unchanged WHITE.
-- Both variants are checked for navigation, source links, collapse, pointer
-  behavior, representative 1080p/4K layout, diagnostic-only snapshot control,
-  save reload, missing-evidence behavior and visible performance/log regressions.
+- Both variants in normal mode are checked for navigation, source links,
+  collapse, pointer behavior, representative 1080p/4K layout, diagnostic-only
+  snapshot control, save reload, missing-evidence behavior and visible
+  performance/log regressions.
+- In both variants, enable Expert mode through the config and restart: only
+  the Cube-rate bar and working `DON'T PANIC` button appear when requested.
+  Check rates/anchors, F8, refresh, save reload, 1080p/4K placement and pointer
+  pass-through over the former panel. All omitted controls remain absent and
+  inert. Disable the setting and restart to confirm normal controls and stored
+  phase/ILS stage return. No snapshot can be triggered in Expert mode.
 - Feedback includes the cost of manual ILS stage choice and the two-minute
   rate window. Before/after utility is judged against the specific problems in
   R1-R7, not full textual conformance to the guide.
@@ -461,10 +512,10 @@ unrequested publication, unrelated feature requests or automatic acceptance.
 | G1 | GC3-01/02/03 done; retained local suites plus new selection/cargo/research fixtures pass against both variants; source links and serialization cases covered | None |
 | G2 | GC3-04/05/06 done; complete synthetic ILS journey, unrelated-home negative cases, receipt reset/quiet cases and Pending eligibility/order pass in both variants | None |
 | G3 | GC3-07 through GC3-10 done; all phase regression, bridge uncertainty and PHOTON sample-boundary cases pass; no top-level phase additions or removed exact legacy targets | None |
-| G4 | GC3-11 done; candidate versions/hashes, local and portable-CI reports, valid public ZIP, bounded snapshots and workshop procedure available | None |
-| G5 | GC3-12 workshop criteria satisfied and explicit owner acceptance recorded | Final owner workshop only |
+| G4 | GC3-11/12 done; both modes covered in both variants; candidate versions/hashes, local and portable-CI reports, valid public ZIP, bounded snapshots and workshop procedure available | None |
+| G5 | GC3-13 workshop criteria satisfied and explicit owner acceptance recorded | Final owner workshop only |
 
-Before GC3-11's wrapper exists, build diagnostic/public outputs separately with
+Before GC3-12's wrapper exists, build diagnostic/public outputs separately with
 `IncludeSnapshotControl=true/false`, run each relevant PowerShell suite using
 its `-DllPath`, and supply the installed `-GameRoot` to game-dependent suites.
 Use `Test-SnapshotControlVariant.ps1` for each variant. These are technical gate
@@ -480,5 +531,5 @@ accept `-DllPath`, use synthetic inputs, and report failures as nonzero exits.
   placed in the execution path.
 - All pre-workshop checks can run without human-provided game state.
 - Runtime, interaction, performance and utility acceptance remain accurately
-  reserved for GC3-12.
+  reserved for GC3-13.
 - This draft and its publication do not change the shipped product contract.

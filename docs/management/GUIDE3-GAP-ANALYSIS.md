@@ -11,6 +11,10 @@ Guide authorship changes do not automatically become mod requirements. The
 comparison covers the nine retained phases and their required receiver bridge;
 optional routes and combat remain outside the mod contract.
 
+The owner's subsequent Expert-mode request is a separate, bounded presentation
+enhancement, not a discrepancy in the guide. D10 resolves its implementation
+boundary for GC3-11 before candidate verification and the final workshop.
+
 Sources inspected:
 
 - The [production guide](https://dsp-beginner-guide.pages.dev/) was fetched on
@@ -300,6 +304,46 @@ RED and GREEN can look comfortable at 20/min. While PHOTON is selected, use
 comfortable at/above 40, unknown for unavailable item evidence. These colors
 describe the latest native rate; the objective separately reports sustained
 history. Other phases retain their current bands and icon layout.
+
+## Owner-requested presentation option
+
+### D10. Expert mode keeps only the Cube-rate bar and guide button
+
+`Plugin.Awake` already binds settings through BepInEx `Config.Bind`.
+`GuidePanelController.EnsureCreated` currently constructs the entire panel;
+the Cube-rate bar and `DON'T PANIC` are children of that same root. The existing
+collapse path retains the header, navigation and risk glyph, so it cannot
+satisfy this requirement. `Apply` and `Layout` also directly access body/header
+objects. Simply hiding the root would remove the requested bar and button.
+
+Bind the boolean `[General] ExpertMode` with default false and capture it at
+startup before controller creation. Apply configuration changes on game restart;
+do not add a live watcher. Add a narrow mode branch within the existing
+controller: create the shared overlay root, Cube views and guide button, skip
+all other presentation objects, then update/layout only those retained objects.
+Guard normal-only refresh, interaction and teardown paths against absent views.
+The Expert root has no adjoining background/edge or invisible input surface;
+its layout bounds fit the bar/button using the existing screen anchor. No
+separate controller framework or telemetry fork is needed.
+
+"Cube counter bar" means the existing production-rate display, with its existing
+phase-dependent Cube set, values and colors (including GC3-10). The model's source
+anchor remains authoritative. Omit the production-risk glyph as well as the
+entire adjoining panel, header, collapse/navigation/ILS-stage/scroll controls
+and diagnostic snapshot footer: only the two requested surfaces remain.
+
+F8 continues to toggle an initially hidden overlay and never exports. The
+normal selection persistence and first-selection seed still apply; Expert mode
+does not infer or advance phases because navigation is unavailable. Returning
+to normal mode after a restart gives access to the retained phase/ILS stage.
+Collection/analysis continue unchanged, so this is not a promised performance
+optimization. No snapshot contract change is justified by this display option.
+
+Both builds require automated default/mode, presentation-policy, rate/anchor
+parity and callback-eligibility coverage using synthetic inputs. Such tests do
+not prove Unity visibility or pointer pass-through; those concrete checks and
+1080p/4K layout are included in the final owner workshop, with no new earlier
+human validation or investigation gate.
 
 ## Boundaries and unresolved observations
 

@@ -8,8 +8,9 @@ planning, pending owner acceptance of the Guide 3.0 companion roadmap**.
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its bounded draft
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
-tasks, and consequential Guide 3.0 readiness differences. The supporting
-[gap analysis](management/GUIDE3-GAP-ANALYSIS.md) records verified evidence,
+tasks, consequential Guide 3.0 readiness differences, and the owner-requested
+opt-in Expert mode showing only the Cube-rate bar and `DON'T PANIC`. The
+supporting [gap analysis](management/GUIDE3-GAP-ANALYSIS.md) records verified evidence,
 implementation decisions and excluded work.
 
 No implementation is authorized by drafting or pushing these documents. After
