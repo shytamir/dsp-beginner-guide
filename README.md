@@ -8,9 +8,10 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-The current release implements guide **2.3**, which remains the baseline for
-the implemented nine-phase contract. The published guide is now 3.0; proposed
-companion changes are described under [Project status](#project-status).
+The released baseline implements guide **2.3**. The **2.2.x candidate** adds the
+accepted Guide 3.0 improvements and awaits owner runtime acceptance. See the
+[workshop checklist](docs/management/GUIDE3-WORKSHOP.md). The candidate retains nine phases; its implementation state is described under
+[Project status](#project-status).
 
 ## Features
 
@@ -22,7 +23,7 @@ companion changes are described under [Project status](#project-status).
   [DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
 - Native Statistics Panel production evidence plus focused logistics, power,
   Dyson and Ray Receiver evidence.
-- Sixty-second receiver continuity tracking for the PHOTON phase, with up to
+- Sixty-second receiver continuity tracking for the DYSON bridge, with up to
   two unhealthy samples treated as noise.
 - Player-requested JSON snapshots for diagnostics and guide development.
 - Native-styled, collapsible and scrollable panel.
@@ -68,6 +69,26 @@ src\DspProgressionStatusExporter\bin\Release\net472\DspGuideCheck.dll
 The game and BepInEx assemblies are referenced from the local installation;
 they are not redistributed in this repository.
 
+### Verify the workshop candidate
+
+From a clean checkout, run with PowerShell 7:
+
+```powershell
+pwsh -NoProfile -File scripts/Test-Guide3Candidate.ps1
+```
+
+Use `-GameRoot` for another DSP installation and `-Sequence N` to match a
+GitHub workflow run number. The default sequence 1 is local verification only;
+CI keeps using its run number as the patch. Output under ignored
+`artifacts/guide3/candidate-<source>-<sequence>/` includes both DLLs, public ZIP,
+source archive, versions/hashes, test logs, snapshot fixtures and workshop copy.
+The command verifies installed game references and uses the existing local SDK.
+This desktop's sandbox cannot read the SDK registry paths: run the build under
+the authenticated desktop context. PowerShell 7 is required for the local
+hidden-controller fixture; Windows PowerShell 5 cannot resolve its Unity calls.
+No game session or player save is needed. `-AllowWorkingTree` is a preflight
+option; its output is explicitly not a workshop candidate.
+
 ## Versioning and continuous integration
 
 `VERSION` records the manually selected major and minor version numbers. Every
@@ -81,9 +102,9 @@ Assembly/file version:  M.m.N.0
 Diagnostic label:       M.m.N.X
 ```
 
-For example, workflow run 42 publishes package and BepInEx version `2.1.42`,
-assembly/file version `2.1.42.0`, and diagnostic label
-`2.1.42.abcdef1`. The workflow sequence advances without committing a
+For example, workflow run 42 produces package and BepInEx version `2.2.42`,
+assembly/file version `2.2.42.0`, and diagnostic label
+`2.2.42.abcdef1`. The workflow sequence advances without committing a
 generated version change back to `main`.
 
 The hosted build downloads the official BepInEx 5 release as a compile
@@ -188,7 +209,8 @@ restore normal controls. F8 starts hidden and never saves in either mode.
   icons beside Cube rates. Only its explicit controls capture pointer input.
 
 The critical-path migration, telemetry alignment, persistence, snapshot, and
-panel contracts have completed in-game acceptance. Packaging has passed its
+baseline panel contracts completed in-game acceptance; the Guide 3.0 candidate
+has not. Baseline packaging passed its
 automated contract checks. See [CHANGELOG.md](CHANGELOG.md) for release
 history.
 
@@ -196,11 +218,12 @@ history.
 
 The released product is complete for the adopted guide 2.3 contract. The owner
 authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-11 are technically
-complete; G1/G2/G3 passed and GC3-12 is next. [Execution records](docs/management/GUIDE3-EXECUTION.md)
+complete; G1/G2/G3 passed. GC3-12 passed local preflight and awaits the final
+committed candidate and hosted CI confirmation. [Execution records](docs/management/GUIDE3-EXECUTION.md)
 separate automated completion from the pending final in-game owner workshop.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
 scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the
-proposed fixes and deliberate exclusions.
+implemented fixes and deliberate exclusions.
 
 ## Repository layout
 

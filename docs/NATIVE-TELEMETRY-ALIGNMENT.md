@@ -4,6 +4,10 @@ This document records the maintained runtime evidence contract. Its original
 derivation and acceptance record is archived at
 [`docs/archive/technical/NATIVE-TELEMETRY-ALIGNMENT-DERIVATION.md`](archive/technical/NATIVE-TELEMETRY-ALIGNMENT-DERIVATION.md).
 
+The Guide 3.0 candidate implements the evidence policies below. Synthetic
+collector, analysis and compact-export fixtures pass; actual save behavior and
+player utility remain pending in [GC3-13](management/GUIDE3-WORKSHOP.md).
+
 ## Production statistics
 
 - Resolve watched items through

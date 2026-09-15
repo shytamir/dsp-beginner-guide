@@ -5,7 +5,8 @@
 The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
 roadmap for implementation on 2026-09-15. **GC3-01 through GC3-11 are technically complete;
-G1/G2/G3 passed and GC3-12 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
+G1/G2/G3 passed. GC3-12 passed local preflight; final committed-candidate and
+hosted CI confirmation are pending.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
@@ -20,14 +21,14 @@ is the only execution-stage human validation workshop; normal per-change
 runtime and presentation checkpoints are consolidated there. Technical
 completion, owner acceptance and publication remain separate states.
 
-The contracts below describe the current implementation. Remaining roadmap
-outcomes are not claimed as implemented; in-game acceptance remains pending.
+The contracts below describe the current implementation. The technical roadmap
+outcomes are implemented; in-game acceptance remains pending.
 
 The bounded maintenance cycle prompted by the full critical-path playthrough
 and its subsequent Cube demand-reference refinement concluded. Its
 [`completed maintenance roadmap`](archive/project-management/COMPLETED-MAINTENANCE-ROADMAP.md)
 is archived and carries no active implementation story or validation gate.
-The newly requested planning cycle addresses a meaningful guide change and
+The accepted Guide 3.0 cycle addresses a meaningful guide change and
 reproducible companion gaps. Maintenance intake otherwise remains limited to:
 
 - a meaningful change to the published guide;
@@ -77,10 +78,10 @@ warning system.
 
 ## Guide authority
 
-- Adopted authority: public guide 2.3 edition.
-- Implemented guide baseline: `2.3`.
+- Candidate authority: public guide 3.0, limited to the accepted roadmap outcomes.
+- Released baseline: `2.3`; implemented candidate: accepted Guide 3.0 gaps plus Expert mode.
 - Planning reference: the published guide declares `guide-version=3.0`, verified
-  on 2026-09-15. The proposed alignment does not yet replace the runtime baseline.
+  on 2026-09-15. The candidate implements the accepted changes; the released baseline remains separate.
 - Current implementation: the nine-phase default critical path.
 
 ```text
@@ -279,7 +280,7 @@ in one combined input objective and a separate stationary-stock objective. This 
 
 | Contract | Version |
 |---|---:|
-| Release line | 2.1.x |
+| Candidate release line | 2.2.x |
 | Snapshot schema | 2.24 |
 | Normalized state | 2.8 |
 | Guide selection | 1.7 |

@@ -68,15 +68,14 @@ when validating the Thunderstore surface.
   not count as an outpost. Select II deliberately to check smelting and cargo;
   only finished items count. Check partial loading, transit, partial unloading
   at home and missing evidence without any automatic stage changes.
-- YELLOW: three configured Cube Labs run continuously; Diamond and Titanium
-  Crystal storage is visible.
-- PURPLE: three configured Cube Labs run continuously; Processor and Particle
-  Broadband storage is visible.
+- YELLOW: three supplied Cube Labs pass without separate input stores.
+- PURPLE: three supplied Cube Labs pass without separate input stores.
 - GREEN: two configured Cube Labs run continuously and Quantum Chip and
   Graviton Lens storage is visible.
-- DYSON: Solar Sails are produced and launched and the swarm generates power.
-- PHOTON: lensed receiver supply, Critical Photon and Antimatter production,
-  the 48/min reference, and the 2,000-Antimatter midpoint remain distinct.
+- DYSON: swarm readiness leads to required receiver research, sustained lensed
+  receivers and Photon Materialization, plus the explicit physical handoff check.
+- PHOTON: five colored Cubes plus Antimatter sustain 40/min for 120 game seconds
+  and at least 20 samples; the 2,000 reserve excludes Icarus.
 - WHITE: concise White-Cube research, configured-Lab and stored-Cube evidence,
   the 40/min gate, and Mission Completed state remain the stable contract.
 
@@ -108,37 +107,15 @@ state; reloading purpose-built saves is fine.
    resolved native Text source, font, material, and attached mesh effects.
    Report any fallback warning or new plugin error.
 
-## CUBE-BRANCH-01 focused regression
+## YELLOW/PURPLE no-buffer regression
 
-Use the diagnostic DLL and saves where YELLOW and PURPLE production already
-exist. For each phase, keep the three Cube Labs configured throughout and use
-ordinary storage boxes to control only the terminal-input evidence.
-
-1. Before the Cube checks, load a pre-flight starter-planet save that produces
-   High-Purity Silicon from Stone. Select ILS and confirm the preparation
-   checkpoint remains active. If Drive Engine II can be completed in that
-   save, confirm the same result after research; no snapshot is required.
-2. Stop the two terminal-input belts before their storage boxes, empty those
-   boxes and remove those items from Icarus and logistics-station storage.
-   Select the phase and confirm its combined input objective is blocked.
-3. Put at least one unit of only the first named input into a storage box:
-   Diamond for YELLOW, Processor for PURPLE. Leave the other input absent and
-   confirm the combined objective remains blocked with one instruction to
-   buffer both inputs.
-4. Put at least one Titanium Crystal (YELLOW) or Particle Broadband (PURPLE)
-   into another storage box. Within the normal panel refresh window, confirm
-   the combined objective completes and reports both owned counts.
-5. Restore both feeds and allow all three Cube Labs to produce. Confirm the
-   separate Lab objective completes; no new substage or intermediate branch
-   objective appears.
-6. In one phase, let one terminal input continue feeding the Labs while its
-   production falls below consumption. Confirm the concise draining risk and
-   matching Next Action can appear independently, then restore production and
-   confirm it clears.
-7. Save one diagnostic snapshot for each phase in the both-input, producing
-   state. Report any new plugin warning, exception, objective churn, selection
-   change, or regression in navigation, collapse, Cube rates, typography, risk
-   glyph, `DON'T PANIC`, or `Save snapshot`.
+1. Keep three Labs supplied and producing with no separate terminal-input boxes.
+   Confirm the Lab objective passes and no mandatory buffer Pending task appears.
+2. Stop one input feed long enough to affect production. Confirm the production
+   objective and eligible draining/starved risk remain useful. Restore feed.
+3. Check partial Lab configuration and missing observations. Unknown evidence
+   must not become an invented storage instruction. GREEN still requires stores.
+4. Capture representative normal-mode screenshots/snapshots at GC3-13.
 
 ## Production-risk spot check
 
@@ -184,7 +161,7 @@ exercise. Run `build.cmd` and confirm the receiver-continuity suite accepts
 zero, one, and two unhealthy samples, rejects the third, rejects an unready
 window, and accepts recovery after an old failure leaves the window.
 
-For runtime integration, use four fully warmed Ray Receivers configured for
+For runtime integration, select DYSON and use four fully warmed Ray Receivers configured for
 Critical Photon production with a stable Graviton Lens supply:
 
 1. Confirm the healthy four-receiver objective becomes complete after its

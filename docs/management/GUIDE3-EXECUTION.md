@@ -19,8 +19,8 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | GC3-08 | Technically complete; pushed as `d69843e` |
 | GC3-09 | Technically complete; pushed as `05bd817` |
 | GC3-10 | Technically complete; pushed as `b8dea50` |
-| GC3-11 | Technically complete |
-| GC3-12 | Next |
+| GC3-11 | Technically complete; pushed as `07007a6` |
+| GC3-12 | Local preflight passed; final committed candidate and hosted CI pending |
 | G1 / M1 | Passed: stage, cargo and research technically coherent |
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
 | G3 / M3 | Passed: Guide 3.0 handoffs and PHOTON readiness |
@@ -329,3 +329,38 @@ The hidden-lifecycle fixture requires PowerShell 7; Windows PowerShell 5 eagerly
 resolves Unity native calls outside the game and cannot run that fixture.
 Actual Show/creation, visibility, focus, pointer pass-through and 1080p/4K layout
 remain explicitly unvalidated until GC3-13; compilation is not that evidence.
+
+## GC3-12 — Verified workshop candidate
+
+**Outcome:** Added Test-Guide3Candidate as the single local verification entry
+point. It builds both variants from installed references, isolates fixture
+processes, verifies actual plugin identity and public/diagnostic markers, checks
+compact snapshot parity and bounds, and invokes the existing artifact/package
+validators. Clean runs retain source.zip, candidate.json with hashes, reports
+and the workshop procedure. Hosted CI now runs the portable suites for both
+DLLs, including receiver continuity and all pure story outcomes.
+
+**Decisions:** Use PowerShell 7 for the existing hidden-controller fixture. Keep
+game-dependent production lookup, phase/typography, collection, BepInEx config
+and snapshot checks local; hosted compile references cannot validate Unity
+interaction. Generate a candidate-specific BuildVersion.cs under ignored
+artifacts without dirtying tracked source. The 2.2.x line keeps the existing CI
+run-number patch; no versioning framework or release workflow was added.
+Preflight output from dirty source is explicitly unsuitable for acceptance.
+
+**Local validation (2026-09-16):**
+
+- `pwsh -NoProfile -File scripts/Test-Guide3Candidate.ps1 -Sequence 98 -OutputDirectory D:/Shy/dsp-beginner-guide/artifacts/guide3/preflight-98 -AllowWorkingTree` passed.
+- Both builds: zero warnings/errors. Both variants passed the four retained
+  suites, all story fixture chains, variant/compiled-identity checks and existing
+  artifact validation. Diagnostic/public snapshot fixtures match exactly.
+- Eleven phase/stage snapshots retain selection, availability, receipt and rate
+  provenance; the largest is 43,529 bytes, below 256 KiB. Unrelated evidence is
+  omitted. Package layout, manifest, icon, license and DLL hash checks passed.
+- PowerShell 7.6.5 and the installed SDK/game references ran under the
+  authenticated desktop context. No interactive game, player save or new
+  screenshot was used.
+
+**Final verification:** The committed-source candidate and its matching hosted
+CI run will be recorded here after the story push. G4 remains pending that
+confirmation; GC3-13 is not started.

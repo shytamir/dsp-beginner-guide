@@ -33,3 +33,14 @@ implementation; its execution policy consolidates human
 validation into the final workshop. Proposed features should identify the
 published-guide change, reproducible defect, or in-scope unmet player need
 they address. Consult [PROJECT.md](docs/PROJECT.md) for current authority.
+
+## Guide 3.0 candidate checks
+
+Run `pwsh -NoProfile -File scripts/Test-Guide3Candidate.ps1` on a clean checkout.
+This PowerShell 7 command builds both local-game variants, runs retained and
+story fixtures, checks compact parity/size and package identity, and retains a
+hashed candidate under ignored artifacts. See the README for GameRoot, SDK
+access and sequence options. Hosted CI runs Test-Guide3Portable for both DLLs;
+production lookup, full phase/typography contracts, collector normalization,
+BepInEx config/hidden-controller and snapshot fixtures require local game
+references. None substitutes for the final owner workshop.

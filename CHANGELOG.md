@@ -4,6 +4,12 @@
 
 ### Guide 3.0 candidate
 
+- GC3-12: Prepared the 2.2.x candidate line with one PowerShell 7 command for
+  both local variants, retained/story fixtures, bounded snapshot parity, identity
+  and package checks. Hosted CI runs the portable suites for both DLLs. Clean
+  candidates retain source, hashes, reports and the final owner workshop locally.
+  In-game acceptance and publication remain pending.
+
 - GC3-11: Added default-off `[General] ExpertMode`, applied after restart. It
   creates only the Cube-rate bar and DON'T PANIC button, retaining selected-phase
   rates and guide anchors. All adjoining guidance controls and snapshot export

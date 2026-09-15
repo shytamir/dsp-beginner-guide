@@ -23,6 +23,14 @@ unsolicited alerts.
 
 <p align="center"><img alt="Know when your Photon array is truly sustained" src="https://shytamir.github.io/DSP_Guide/assets/images/mod/know-when-your-photon-array-is-truly-sustained.png"><br><small><em><span style="color:#b8b8b8">Know when your Photon array is truly sustained</span></em></small></p>
 
+## Expert mode
+
+For only the Cube-rate bar and `DON'T PANIC` button, set
+`[General] ExpertMode = true` in the mod's BepInEx config and restart DSP.
+It defaults to false. F8 still opens and closes the overlay. Your stored phase
+and ILS stage determine its rates and guide link; set false and restart to
+restore the guidance panel and navigation controls.
+
 ## Installation
 
 The simplest option is a Thunderstore-compatible mod manager. Install

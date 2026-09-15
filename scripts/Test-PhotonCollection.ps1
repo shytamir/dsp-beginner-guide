@@ -1,7 +1,7 @@
 [CmdletBinding()]
-param([string]$DllPath)
+param([string]$DllPath,[string]$GameRoot='C:\Program Files (x86)\Steam\steamapps\common\Dyson Sphere Program')
 $ErrorActionPreference = 'Stop'
-. "$PSScriptRoot/Test-IlsEvidenceCollection.ps1" -DllPath $DllPath
+. "$PSScriptRoot/Test-IlsEvidenceCollection.ps1" -DllPath $DllPath -GameRoot $GameRoot
 Add-Type @"
 public class GcProduct { public int itemId; public long[] total = new long[14]; }
 public class GcProductFactory { public int[] productIndices = new int[7000]; public GcProduct[] productPool = new GcProduct[7]; }

@@ -1,6 +1,6 @@
 # Guide 3.0 companion improvements roadmap
 
-**Status:** Accepted for implementation — GC3-01 through GC3-11 technically complete; G1/G2/G3 passed; GC3-12 next.
+**Status:** Accepted for implementation — GC3-01 through GC3-11 technically complete; G1/G2/G3 passed; GC3-12 local preflight passed, final source/CI confirmation pending.
 **Prepared:** 2026-09-15.
 **Implementation:** Owner authorized GC3-01 through GC3-12 on 2026-09-15, with a push after each story. GC3-13 remains the human validation stop.
 **Execution record:** [Story decisions and validation](management/GUIDE3-EXECUTION.md).
@@ -516,12 +516,12 @@ unrequested publication, unrelated feature requests or automatic acceptance.
 | G4 | GC3-11/12 done; both modes covered in both variants; candidate versions/hashes, local and portable-CI reports, valid public ZIP, bounded snapshots and workshop procedure available | None |
 | G5 | GC3-13 workshop criteria satisfied and explicit owner acceptance recorded | Final owner workshop only |
 
-Before GC3-12's wrapper exists, build diagnostic/public outputs separately with
-`IncludeSnapshotControl=true/false`, run each relevant PowerShell suite using
-its `-DllPath`, and supply the installed `-GameRoot` to game-dependent suites.
-Use `Test-SnapshotControlVariant.ps1` for each variant. These are technical gate
-commands; no deployment or screenshot is required. Each new story suite must
-accept `-DllPath`, use synthetic inputs, and report failures as nonzero exits.
+Run `pwsh -NoProfile -File scripts/Test-Guide3Candidate.ps1 -Sequence N` for
+GC3-12, matching the source revision's CI run number. See the README for local
+game references and SDK access. The wrapper builds both variants and executes
+the retained and story suites with synthetic inputs. No deployment or screenshot
+is required. The [workshop checklist](management/GUIDE3-WORKSHOP.md) defines
+the remaining human checks.
 
 ## Planning readiness check
 
@@ -533,4 +533,4 @@ accept `-DllPath`, use synthetic inputs, and report failures as nonzero exits.
 - All pre-workshop checks can run without human-provided game state.
 - Runtime, interaction, performance and utility acceptance remain accurately
   reserved for GC3-13.
-- This draft and its publication do not change the shipped product contract.
+- The implemented candidate has not been owner-accepted or published.

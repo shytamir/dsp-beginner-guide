@@ -17,6 +17,8 @@ param(
 
     [string]$RepositoryRoot = (Split-Path -Parent $PSScriptRoot),
 
+    [string]$BuildVersionPath = (Join-Path $RepositoryRoot 'src\DspProgressionStatusExporter\BuildVersion.cs'),
+
     [string]$ReportPath = (
         Join-Path $RepositoryRoot 'artifacts\TEST-REPORT.md'
     )
@@ -52,8 +54,7 @@ if ($ExpectedSemanticVersion -notmatch '^\d+\.\d+\.\d+$') {
     throw "Semantic version is invalid: $ExpectedSemanticVersion."
 }
 
-$versionSourcePath = Join-Path $RepositoryRoot `
-    'src\DspProgressionStatusExporter\BuildVersion.cs'
+$versionSourcePath = $BuildVersionPath
 $versionSource = Get-Content -Raw -LiteralPath $versionSourcePath
 if (-not $versionSource.Contains(
         "BepInPluginVersion = `"$ExpectedSemanticVersion`"")) {

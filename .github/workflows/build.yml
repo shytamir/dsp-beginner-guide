@@ -113,8 +113,9 @@ jobs:
           ./scripts/Test-SnapshotControlVariant.ps1 `
             -DllPath 'artifacts/build/diagnostic/DspGuideCheck.dll' `
             -ExpectedVariant diagnostic
-          ./scripts/Test-ProductionRisk.ps1 `
-            -DllPath 'artifacts/build/diagnostic/DspGuideCheck.dll'
+          ./scripts/Test-Guide3Portable.ps1 `
+            -DllPath 'artifacts/build/diagnostic/DspGuideCheck.dll' `
+            -ReportPath 'artifacts/DIAGNOSTIC-BEHAVIOR-REPORT.md'
 
       - name: Build public DLL
         id: public_build
@@ -149,6 +150,9 @@ jobs:
           ./scripts/Test-SnapshotControlVariant.ps1 `
             -DllPath 'artifacts/build/public/DspGuideCheck.dll' `
             -ExpectedVariant public
+          ./scripts/Test-Guide3Portable.ps1 `
+            -DllPath 'artifacts/build/public/DspGuideCheck.dll' `
+            -ReportPath 'artifacts/PUBLIC-BEHAVIOR-REPORT.md'
 
       - name: Build Thunderstore package
         id: package
@@ -181,6 +185,8 @@ jobs:
             artifacts/DIAGNOSTIC-TEST-REPORT.md
             artifacts/PUBLIC-TEST-REPORT.md
             artifacts/PACKAGE-REPORT.md
+            artifacts/DIAGNOSTIC-BEHAVIOR-REPORT.md
+            artifacts/PUBLIC-BEHAVIOR-REPORT.md
           if-no-files-found: error
           retention-days: 30
 
