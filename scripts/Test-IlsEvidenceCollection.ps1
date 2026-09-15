@@ -128,3 +128,14 @@ $trafficData.statistics.traffic.factoryTrafficPool = $null
 $trafficCollector.GetType().GetMethod('SampleNow').Invoke($trafficCollector,@($trafficData,900L)) | Out-Null
 Assert (-not $trafficCollector.Export()['available']) 'Stale traffic reported available after collection failure'
 Write-Host 'ILS native-counter collection, normalization, zero, reset and failure fixtures passed.'
+Add-Type @"
+public class GcRecipeSystem { public object[] assemblerPool; public object[] labPool; }
+public class GcRecipeFactory { public GcRecipeSystem factorySystem = new GcRecipeSystem(); }
+public class GcRecipeData { public GcRecipeFactory[] factories = new[] { new GcRecipeFactory() }; }
+"@
+$recipeData = [GcRecipeData]::new()
+Assert (-not (Call 'RecipeTelemetry' 'Export' @($recipeData))['available']) 'Missing recipe pools became known zero machines'
+$recipeData.factories[0].factorySystem.assemblerPool = @()
+$recipeData.factories[0].factorySystem.labPool = @()
+Assert ((Call 'RecipeTelemetry' 'Export' @($recipeData))['available']) 'Valid empty recipe pools became unavailable'
+Write-Host 'Recipe collection distinguishes unavailable pools from known zero machines.'

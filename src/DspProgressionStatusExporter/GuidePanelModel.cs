@@ -189,6 +189,8 @@ namespace DspProgressionStatusExporter
                     model.Title = PlayerFacingText.Normalize(gateTitle);
                 AddObjectives(model, currentGate);
                 if (model.PhaseId == "ils") AddIlsPending(model, AsList(Get(analysis, "ilsActions")));
+                if (model.PhaseId == "dyson" && HasCompletedObjective(model, "dyson-sails") && HasCompletedObjective(model, "dyson-swarm"))
+                    model.SourceGuideAnchor = "receiver-antimatter-bridge";
             }
 
             bool completedWhite =

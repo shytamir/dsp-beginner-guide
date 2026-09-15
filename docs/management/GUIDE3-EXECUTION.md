@@ -15,9 +15,10 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | GC3-04 | Technically complete; pushed as `696d79e` |
 | GC3-05 | Technically complete; pushed as `2b9db24` |
 | GC3-06 | Technically complete; pushed as `c75b2c6` |
-| GC3-07 | Technically complete |
-| GC3-08 | Next |
-| GC3-09 through GC3-12 | Pending in dependency order |
+| GC3-07 | Technically complete; pushed as `2fb9770` |
+| GC3-08 | Technically complete |
+| GC3-09 | Next |
+| GC3-10 through GC3-12 | Pending in dependency order |
 | G1 / M1 | Passed: stage, cargo and research technically coherent |
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
 | G3 through G4 | Pending |
@@ -221,3 +222,28 @@ Retained phase fixtures verify actionable input depletion and exact-target
 suppression. The new fixture's configured-machine field name was corrected
 before success. The touched retained test also removes an extra EOF blank line
 introduced in GC3-06. Runtime utility remains reserved for GC3-13.
+
+## GC3-08 — Required receiver bridge
+
+**Outcome:** DYSON keeps its swarm objectives and adds stable research, receiver,
+conversion and player-check rows. Once swarm objectives pass, the guide link
+opens receiver-antimatter-bridge. Nine selectable phases remain unchanged.
+
+**Decisions:** Reuse the tested four-receiver policy, including its two-sample
+tolerance. Research follows 1504/1505/1506; queued or unknown work creates no
+repeat action. Conversion requires recipe 74, native Photon production and
+consumption, Antimatter production and positive stationary stock. Observed
+cluster stock excludes Icarus. Missing component pools now retain uncertainty.
+No belt topology, source-power threshold or efficiency-rank gate was added.
+The required Hydrogen/delivery check always remains evidence-incomplete.
+
+**Contracts:** snapshot 2.23, analysis 3.11 and progression 3.8. DYSON compact
+evidence now includes recipe 74, material rates, receiver details and stationary
+stock scope. No presentation-shape or normalized-state shape change.
+
+**Validation:** Both variants compiled without warnings/errors; four retained
+suites and Test-GuideHandoffs passed. After the collector availability fix, both
+variants rebuilt and passed handoff, collector and receiver-tolerance suites.
+Fixtures cover absent/partial/full arrays, wrong recipe, no conversion, Icarus
+stock, missing inputs, ordered research, stable IDs, anchors and the unresolved
+player check. GC3-13 retains actual connectivity and presentation acceptance.

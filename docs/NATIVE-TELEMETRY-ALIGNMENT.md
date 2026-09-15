@@ -81,3 +81,12 @@ its baseline after observing configured endpoints. It uses no ship polling or
 new collection cadence. Native internal traffic and other destinations are
 excluded. Missing data clears receipt flags; quiet valid samples retain them.
 Source stock or production corroborates supply; source power is not required.
+
+### DYSON receiver bridge (GC3-08)
+
+Reuse receiver continuity (including two unhealthy samples), recipe 74 and
+available native Photon production/consumption plus Antimatter production.
+Stationary Antimatter sums observed cluster storage and station inventories,
+excluding Icarus. These aggregates do not establish conveyor connectivity,
+Hydrogen disposal or science-district delivery. Those remain player checks.
+Missing assembler/lab pools make recipe collection unavailable.

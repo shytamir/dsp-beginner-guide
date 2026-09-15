@@ -4,8 +4,8 @@
 
 The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
-roadmap for implementation on 2026-09-15. **GC3-01 through GC3-07 are technically complete;
-G1/G2 passed and GC3-08 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
+roadmap for implementation on 2026-09-15. **GC3-01 through GC3-08 are technically complete;
+G1/G2 passed and GC3-09 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
@@ -105,7 +105,7 @@ readiness text states it.
 | YELLOW | Three configured Yellow-Cube Labs produce; separate input storage is not required. |
 | PURPLE | Three configured Purple-Cube Labs produce; separate input storage is not required. |
 | GREEN | Two configured Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. |
-| DYSON | The Photon swarm produces and launches Solar Sails and generates useful power. |
+| DYSON | The swarm produces/launches Solar Sails and generates power, followed by receiver research, four sustained lensed receivers, observed Photon Materialization and stationary Antimatter. The Hydrogen outlet and automatic science-district delivery remain a required player check. |
 | PHOTON | Critical Photon and Antimatter production runs; actual rates appear against the 48/min receiver-array reference; 2,000 stored Antimatter marks the midpoint. |
 | WHITE | White Cubes are researched; ten Labs sustain 40/min with the configured-Lab and stored-White-Cube counts shown; Mission Completed state and authoritative active progress are shown. |
 
@@ -203,7 +203,7 @@ protected-reserve claim is removed. Receipt flags use birth-planet cumulative in
 
 ## Snapshot contract
 
-Snapshot schema 2.22 serializes the selected-phase conclusions used by the
+Snapshot schema 2.23 serializes the selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. It
 includes provenance, playtime, research and Cube aggregates, selection
 diagnostics including selected ILS stage/origin, Mission Completed progress when available, focused evidence,
@@ -267,11 +267,11 @@ stores; internal branch progression is not modeled.
 | Contract | Version |
 |---|---:|
 | Release line | 2.1.x |
-| Snapshot schema | 2.22 |
+| Snapshot schema | 2.23 |
 | Normalized state | 2.7 |
 | Guide selection | 1.7 |
-| Guide analysis | 3.10 |
-| Progression | 3.7 |
+| Guide analysis | 3.11 |
+| Progression | 3.8 |
 | Panel | 2.10 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use the

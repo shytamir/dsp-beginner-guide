@@ -35,7 +35,7 @@ namespace DspProgressionStatusExporter
                 { "yellow", new int[] { 6003, 1112, 1118 } },
                 { "purple", new int[] { 6004, 1303, 1402 } },
                 { "green", new int[] { 6005, 1305, 1209 } },
-                { "dyson", new int[] { 1501 } },
+                { "dyson", new int[] { 1501, 1208, 1122 } },
                 { "photon", new int[] { 1208, 1122 } },
                 { "white", new int[] { 6001, 6002, 6003, 6004, 6005, 6006, 1122 } }
             };
@@ -43,7 +43,7 @@ namespace DspProgressionStatusExporter
         private static readonly Dictionary<string, int> PhaseRecipeIds =
             new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) {
                 { "blue", 9 }, { "red", 18 }, { "yellow", 27 },
-                { "purple", 55 }, { "green", 102 }, { "white", 75 }
+                { "purple", 55 }, { "green", 102 }, { "dyson", 74 }, { "white", 75 }
             };
 
         public static Dictionary<string, object> Build(
@@ -306,6 +306,13 @@ namespace DspProgressionStatusExporter
                         ? (object)flow.TenMinuteNetPerMinute : null }
                 } }
             };
+            if (itemId == 1122)
+            {
+                bool known;
+                row["stationaryStock"] = GuideGateEngine.StationaryStock(state, itemId, out known);
+                row["stationaryStockAvailable"] = known;
+                row["stationaryScope"] = "Observed cluster storage and station stock; excludes Icarus.";
+            }
             if (includeLifetime)
             {
                 row["lifetimeProduced"] =
@@ -628,7 +635,7 @@ namespace DspProgressionStatusExporter
                     { "ejectorsFiringNow", d.EjectorsFiringNow }
                 };
             }
-            if (phaseId == "photon" || phaseId == "white")
+            if (phaseId == "dyson" || phaseId == "photon" || phaseId == "white")
                 result["receivers"] = ReceiverEvidence(d);
             return result;
         }

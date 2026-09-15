@@ -24,12 +24,16 @@ namespace DspProgressionStatusExporter
             try
             {
                 int factoryIndex = 0;
-                foreach (object factory in Plugin.Enumerate(Plugin.GetMember(gameData, "factories")))
+                object factoryPool = Plugin.GetMember(gameData, "factories");
+                bool available = factoryPool is System.Collections.IEnumerable;
+                foreach (object factory in Plugin.Enumerate(factoryPool))
                 {
                     if (factory != null)
                     {
                         Dictionary<int, int> configured = new Dictionary<int, int>();
                         object factorySystem = Plugin.GetMember(factory, "factorySystem");
+                        available &= Plugin.GetMember(factorySystem, "assemblerPool") is System.Collections.IEnumerable &&
+                            Plugin.GetMember(factorySystem, "labPool") is System.Collections.IEnumerable;
                         CountRecipes(Plugin.GetMember(factorySystem, "assemblerPool"), configured);
                         CountRecipes(Plugin.GetMember(factorySystem, "labPool"), configured);
 
@@ -44,7 +48,7 @@ namespace DspProgressionStatusExporter
                     }
                     factoryIndex++;
                 }
-                result["available"] = true;
+                result["available"] = available;
             }
             catch (Exception ex)
             {

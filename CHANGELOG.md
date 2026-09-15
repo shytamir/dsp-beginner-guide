@@ -4,6 +4,11 @@
 
 ### Guide 3.0 candidate
 
+- GC3-08: DYSON includes the required receiver-to-Antimatter bridge, ordered
+  research and an explicit Hydrogen/science-delivery player check. The bridge
+  link follows swarm readiness. Snapshot 2.23 adds scoped conversion evidence;
+  analysis 3.11 and progression 3.8 retain the existing receiver tolerance.
+
 - GC3-07: YELLOW/PURPLE no longer require separate input stores. Three supplied
   Labs can pass without buffers; genuine input shortages remain visible.
   Missing Lab/item evidence stays unknown. Analysis 3.10, progression 3.7.

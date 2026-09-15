@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "3.7" },
+                { "contractVersion", "3.8" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -345,9 +345,10 @@ namespace DspProgressionStatusExporter
                 "Found " + state.Dyson.SwarmSailCount + " active sails generating " +
                     FormatPower(state.Dyson.SwarmGenerationWatts) + ".",
                 "observed", swarmReady ? null : "Keep sails in orbit and confirm the swarm is generating power."));
+            AddDysonBridge(gate, state);
         }
 
-        private static void EvaluatePhoton(GuideGateResult gate, ObservedGameState state)
+        private static void AddReceiverCondition(GuideGateResult gate, ObservedGameState state, string id, bool allowAction)
         {
             bool receiverEvidence = state.Dyson.ReceiverTelemetryAvailable;
             bool receiversReady = receiverEvidence &&
@@ -355,14 +356,73 @@ namespace DspProgressionStatusExporter
                 state.Dyson.LensedPhotonReceiverCount >= 4 &&
                 state.Dyson.SustainedPhotonReceiverCount >= 4;
             gate.Conditions.Add(Condition(
-                "photon-receivers", "Four lensed Ray Receivers remain continuously supplied",
+                id, "Four lensed Ray Receivers remain continuously supplied",
                 receiversReady ? "ready" : (receiverEvidence ? "blocked" : "unknown"), true,
                 receiverEvidence
                     ? state.Dyson.SustainedPhotonReceiverCount + "/4 sustained; " +
                         state.Dyson.LensedPhotonReceiverCount + "/4 currently lensed."
                     : "Receiver continuity telemetry is not ready.",
                 receiverEvidence ? "observed" : "unknown",
-                receiversReady ? null : "Keep four Photon Generation receivers lensed and continuously supplied."));
+                receiversReady || !allowAction || !receiverEvidence ? null : "Keep four Photon Generation receivers lensed and continuously supplied."));
+        }
+
+        internal static long StationaryStock(ObservedGameState state, int itemId, out bool available)
+        {
+            long total = 0;
+            available = state.PlanetItemCounts.Count > 0;
+            foreach (var planet in state.PlanetItemCounts)
+            {
+                bool known = state.AvailablePlanetInventories.Contains(planet.Key);
+                available &= known;
+                long count;
+                if (known && planet.Value.TryGetValue(itemId, out count)) total += Math.Max(0L, count);
+            }
+            return total;
+        }
+
+        private static bool AddBridgeResearch(GuideGateResult gate, ObservedGameState state)
+        {
+            int[] ids = { 1504, 1505, 1506 };
+            string[] names = { "Ray Receiver", "Planetary Ionosphere Utilization", "Dirac Inversion Mechanism" };
+            for (int i = 0; i < ids.Length; i++)
+            {
+                if (state.UnlockedTechIds.Contains(ids[i])) continue;
+                bool queued = state.QueuedTechIds.Contains(ids[i]);
+                bool known = state.AvailableTechIds.Contains(ids[i]) && state.ResearchQueueAvailable;
+                gate.Conditions.Add(Condition("dyson-bridge-research", "Receiver research", queued ? "watch" : known ? "blocked" : "unknown", true,
+                    queued ? names[i] + " queued." : known ? names[i] + " is not yet researched." : "Research evidence is unavailable.",
+                    "observed", known && !queued ? "Research " + names[i] + "." : null));
+                return false;
+            }
+            gate.Conditions.Add(Condition("dyson-bridge-research", "Receiver research", "ready", true, "Receiver and conversion research complete.", "observed", null));
+            return true;
+        }
+
+        private static void AddDysonBridge(GuideGateResult gate, ObservedGameState state)
+        {
+            bool researchReady = AddBridgeResearch(gate, state);
+            AddReceiverCondition(gate, state, "dyson-receivers", researchReady);
+            ObservedItemFlow photons, antimatter;
+            bool ratesKnown = state.ItemFlows.TryGetValue(1208, out photons) && photons.OneMinuteAvailable;
+            ratesKnown &= state.ItemFlows.TryGetValue(1122, out antimatter) && antimatter.OneMinuteAvailable;
+            bool stockKnown;
+            long stock = StationaryStock(state, 1122, out stockKnown);
+            bool known = state.RecipeTelemetryAvailable && ratesKnown && (stockKnown || stock > 0);
+            bool ready = known && ConfiguredRecipeMachines(state, 74) > 0 && photons.ProducedPerMinute > 0 &&
+                photons.ConsumedPerMinute > 0 && antimatter.ProducedPerMinute > 0 && stock > 0;
+            gate.Conditions.Add(Condition("dyson-conversion", "Convert Critical Photons to Antimatter", ready ? "ready" : known ? "blocked" : "unknown", true,
+                ready ? "Cluster production and consumption observed; " + stock + " Antimatter in stationary storage."
+                    : known ? "Needs Photon Materialization, Photon production and consumption, and stored Antimatter."
+                    : "Conversion or stationary inventory evidence is unavailable.",
+                "cluster-level observation", !ready && known && researchReady ? "Run Photon Materialization in a Collider and store its Antimatter." : null));
+            AddManualCondition(gate, "dyson-handoff", "Check the Hydrogen outlet and science delivery",
+                "Player check: confirm returned Hydrogen has an outlet and Antimatter reaches the science district automatically.",
+                ready ? "Check the Hydrogen outlet and automatic Antimatter delivery." : null);
+        }
+
+        private static void EvaluatePhoton(GuideGateResult gate, ObservedGameState state)
+        {
+            AddReceiverCondition(gate, state, "photon-receivers", true);
             double photons = ItemRate(state, 1208);
             double antimatterRate = ItemRate(state, 1122);
             bool productionReady = state.ProductionWindowReady && photons > 0 && antimatterRate > 0;

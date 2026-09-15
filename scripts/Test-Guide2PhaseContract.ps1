@@ -731,8 +731,8 @@ $pluginSource = Get-Content -Raw -LiteralPath (
     Join-Path (Split-Path -Parent $PSScriptRoot) `
         'src\DspProgressionStatusExporter\Plugin.cs'
 )
-if (-not $pluginSource.Contains('SchemaVersion = "2.22"')) {
-    throw 'Snapshot schema version is not 2.22.'
+if (-not $pluginSource.Contains('SchemaVersion = "2.23"')) {
+    throw 'Snapshot schema version is not 2.23.'
 }
 foreach ($obsoleteFindingId in @(
         'gas-giant-opportunity',
