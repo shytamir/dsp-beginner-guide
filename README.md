@@ -219,9 +219,10 @@ history.
 The released product is complete for the adopted guide 2.3 contract. The owner
 authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-12 are technically
 complete and G1-G4 passed their original checks. GC3-13 is blocked by B1, the
-reported periodic slowdown; the corrected candidate is in
-`artifacts/guide3/workshop-blocker-01/`. Its `candidate.json` identifies the
-tested source, versions and hashes. Owner retest is pending. [Execution records](docs/management/GUIDE3-EXECUTION.md)
+reported periodic slowdown. The first correction failed owner retest. The
+follow-up removes unused panel collection; its candidate is in
+`artifacts/guide3/workshop-blocker-01-refresh/`. Its `candidate.json` identifies
+the tested source, versions and hashes. Owner retest remains pending. [Execution records](docs/management/GUIDE3-EXECUTION.md)
 separate automated completion from the pending final in-game owner workshop.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
 scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the

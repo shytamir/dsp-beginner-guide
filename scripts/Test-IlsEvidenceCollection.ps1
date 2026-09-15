@@ -186,3 +186,153 @@ $unrelatedSlot = New 'ObservedStationSlot'; SetField $unrelatedSlot 'ItemId' 110
 (Field $stationState 'StationSlots').Add($unrelatedSlot)
 Assert ((Call 'IlsTransportEvidence' 'CountPolicies' @((Field $stationState 'Stations')[0],'Demand')) -eq 1) 'Endpoint policy lookup searched unrelated global slots'
 Write-Host 'Native research definitions, missing metadata, station ownership and slot isolation passed.'
+
+# The panel consumes tank/station rows, not a second full factory diagnostic export.
+Add-Type @"
+public class PanelTank { public int fluidId; public long fluidCount; public long fluidCapacity; }
+public class PanelEntity { public int id; public int protoId; }
+public class PanelSlot { public int itemId = 1106; public long count = 30; public long max = 100; public string localLogic = "Supply"; public string remoteLogic = "Demand"; }
+public class PanelStation { public int id = 1; public bool isStellar = true; public int idleShipCount = 2; public int workShipCount = 1; public object[] storage = new object[] { new PanelSlot() }; }
+public class PanelStorage {
+    public bool DepotsRead; public object[] Depots; public int storageCursor = 2;
+    public object[] storagePool { get { DepotsRead = true; return Depots; } }
+    public object[] tankPool; public int tankCursor = 3;
+}
+public class PanelPlanet { public int id = 101; public string displayName = "Home"; }
+public class PanelFactory {
+    public PanelPlanet planet = new PanelPlanet(); public PanelStorage factoryStorage = new PanelStorage();
+    public object transport; public int entityCursor = 4;
+    public bool EntitiesRead; public bool DiagnosticsRead;
+    public object[] Entities;
+    public object[] entityPool { get { EntitiesRead = true; return Entities; } }
+    public object powerSystem { get { DiagnosticsRead = true; return null; } }
+    public object factorySystem { get { DiagnosticsRead = true; return null; } }
+    public object enemySystem { get { DiagnosticsRead = true; return null; } }
+}
+public class PanelWorld { public object[] factories; }
+"@
+$panelFactory = [PanelFactory]::new()
+$panelFactory.transport = [CargoTransport]::new()
+$depot = [CargoStorage]::new()
+$depotGrid = [CargoGrid]::new(); $depotGrid.itemId = 1106; $depotGrid.count = 20
+$depot.grids = @($depotGrid)
+$panelFactory.factoryStorage.Depots = @($null,$depot)
+$tankA = [PanelTank]::new(); $tankA.fluidId = 1114; $tankA.fluidCount = 50; $tankA.fluidCapacity = 100
+$tankB = [PanelTank]::new(); $tankB.fluidId = 1114; $tankB.fluidCount = 20; $tankB.fluidCapacity = -1
+$panelFactory.factoryStorage.tankPool = @($null,$tankA,$tankB)
+$panelFactory.transport.stationPool = @($null,[PanelStation]::new()); $panelFactory.transport.stationCursor = 2
+$labA = [PanelEntity]::new(); $labA.id = 1; $labA.protoId = 2901
+$labB = [PanelEntity]::new(); $labB.id = 2; $labB.protoId = 2901
+$deleted = [PanelEntity]::new(); $deleted.protoId = 2901
+$panelFactory.Entities = @($null,$labA,$labB,$deleted,$labA)
+$panelWorld = [PanelWorld]::new(); $panelWorld.factories = @($panelFactory,$null)
+$factoryRows = @(Call 'Plugin' 'ExportFactories' @($panelWorld))
+$panelEvidence = New 'ObservedGameState'
+ReadEvidence $panelEvidence 'ReadTanks' $factoryRows
+ReadEvidence $panelEvidence 'ReadStations' $factoryRows
+$capacity = (Field $panelEvidence 'TankStorage')[1114]
+Assert ((Field $capacity 'Count') -eq 70 -and (Field $capacity 'Capacity') -eq 100) 'Panel tank amount/capacity changed'
+$station = (Field $panelEvidence 'Stations')[0]
+Assert ((Field $station 'EvidenceAvailable') -and (Field $station 'PlanetId') -eq 101) 'Panel station evidence/identity changed'
+Assert ((Field $station 'IdleShipCount') -eq 2 -and (Field $station 'WorkShipCount') -eq 1) 'Panel fleet counts changed'
+$slot = (Field $station 'Slots')[0]
+Assert ((Field $slot 'Count') -eq 30 -and (Field $slot 'Maximum') -eq 100 -and (Field $slot 'RemoteLogic') -eq 'Demand') 'Panel station storage changed'
+Write-Host 'Panel tank, station, fleet and storage evidence preserved.'
+Assert (-not $panelFactory.EntitiesRead) 'Factory rows still duplicate the entity count'
+Assert (-not $panelFactory.factoryStorage.DepotsRead) 'Factory rows still scan discarded storage containers'
+Assert (-not $panelFactory.DiagnosticsRead) 'Factory rows still read discarded diagnostics'
+$progression = Call 'Plugin' 'ExportProgressionSummary' @($panelWorld)
+ReadEvidence $panelEvidence 'ReadBuildingCounts' $progression
+Assert ((Field $panelEvidence 'FactoryBuildingCounts')[2901] -eq 2) 'Building count lost live entities or included deleted/out-of-cursor slots'
+$panelFactory.factoryStorage = $null
+$panelFactory.transport = $null
+$missingRows = @(Call 'Plugin' 'ExportFactories' @($panelWorld))
+$missingEvidence = New 'ObservedGameState'
+ReadEvidence $missingEvidence 'ReadTanks' $missingRows
+ReadEvidence $missingEvidence 'ReadStations' $missingRows
+Assert ((Field $missingEvidence 'TankStorage').Count -eq 0 -and (Field $missingEvidence 'AvailableStationPlanets').Count -eq 0) 'Missing tank/station pools did not fail softly'
+Write-Host 'Panel collection skips discarded factory diagnostics and preserves building counts/missing evidence.'
+
+Add-Type @"
+public class PanelRecipe { public int id = 1; public int recipeId; }
+public class PanelRecipeSystem {
+    public bool AssemblersRead; public object[] Assemblers;
+    public object[] assemblerPool { get { AssemblersRead = true; return Assemblers; } }
+    public int assemblerCursor = 2; public object[] labPool; public int labCursor = 2;
+}
+public class PanelRecipeFactory { public object factorySystem; }
+public class PanelNativePower {
+    public long energyGenCurrentTick = 100; public long energyGenCurrentTick_Layers = 60;
+    public long energyGenCurrentTick_Swarm = 40; public long energyReqCurrentTick = 50; public int rocketCount = 2;
+    public bool NodesRead; public object layersIdBased { get { NodesRead = true; return null; } }
+}
+public class PanelTechState { public bool unlocked; public long hashUploaded = 25; public long hashNeeded = 100; }
+public class PanelHistory { public System.Collections.IDictionary techStates = new System.Collections.Hashtable(); public int[] techQueue = new int[] { 1508 }; }
+public class PanelGameMain { public static PanelHistory history = new PanelHistory(); }
+"@
+$recipeSystem = [PanelRecipeSystem]::new()
+$matrix = [PanelRecipe]::new(); $matrix.recipeId = 75
+$conversion = [PanelRecipe]::new(); $conversion.recipeId = 74
+$recipeSystem.labPool = @($null,$matrix,$matrix)
+$recipeSystem.Assemblers = @($null,$conversion,$conversion)
+$recipeFactory = [PanelRecipeFactory]::new(); $recipeFactory.factorySystem = $recipeSystem
+$recipeWorld = [PanelWorld]::new(); $recipeWorld.factories = @($recipeFactory)
+$whiteRecipes = Call 'RecipeTelemetry' 'ExportForPanel' @($recipeWorld,'white')
+Assert ($whiteRecipes['available'] -and -not $recipeSystem.AssemblersRead) 'WHITE queried unrelated assemblers'
+Assert ($whiteRecipes['factories'][0]['recipes'][0]['configuredMachineCount'] -eq 1) 'Recipe collection ignored native cursor'
+$dysonRecipes = Call 'RecipeTelemetry' 'ExportForPanel' @($recipeWorld,'dyson')
+Assert ($recipeSystem.AssemblersRead -and $dysonRecipes['factories'][0]['recipes'].Count -eq 2) 'DYSON lost conversion recipe evidence'
+$nativePower = [PanelNativePower]::new()
+$power = Call 'Plugin' 'ExportNativeDysonPower' @($nativePower)
+Assert ($power['available'] -and $power['energyGenCurrentTick_Swarm'] -eq 40 -and -not $nativePower.NodesRead) 'Live Dyson power traversed construction nodes or changed native fields'
+$pluginType = GetModelType 'Plugin'
+$mainTypeField = $pluginType.GetField('gameMainType',$static)
+$oldMainType = $mainTypeField.GetValue($null)
+$techNames = $pluginType.GetField('TechNames',$static).GetValue($null)
+$savedNames = [Collections.Generic.Dictionary[int,string]]::new($techNames)
+try {
+    $mainTypeField.SetValue($null,[PanelGameMain]); $techNames.Clear()
+    foreach ($id in @(1507,1508,2902)) { $techNames[$id] = "Technology $id" }
+    $unlockedTech = [PanelTechState]::new(); $unlockedTech.unlocked = $true
+    [PanelGameMain]::history.techStates[1507] = $unlockedTech
+    [PanelGameMain]::history.techStates[1508] = [PanelTechState]::new()
+    $nativeResearch = Call 'Plugin' 'ExportResearch' @()
+    $researchState = New 'ObservedGameState'; ReadEvidence $researchState 'ReadResearch' $nativeResearch
+    Assert ((Field $researchState 'UnlockedTechIds').Contains(1507)) 'Native unlocked flag was lost'
+    Assert (-not (Field $researchState 'UnlockedTechIds').Contains(1508)) 'Incomplete research became complete'
+    Assert ((Field $researchState 'AvailableTechIds').Contains(2902)) 'Absent native tech state lost TechUnlocked false semantics'
+    Assert ((Field $researchState 'TechProgress')[1508].HashUploaded -eq 25) 'Mission hash progress changed'
+    [PanelGameMain]::history.techStates = $null
+    $missingResearch = New 'ObservedGameState'; ReadEvidence $missingResearch 'ReadResearch' (Call 'Plugin' 'ExportResearch' @())
+    Assert ((Field $missingResearch 'AvailableTechIds').Count -eq 0) 'Missing native research was claimed known'
+} finally {
+    $mainTypeField.SetValue($null,$oldMainType); $techNames.Clear()
+    foreach ($pair in $savedNames.GetEnumerator()) { $techNames[$pair.Key] = $pair.Value }
+}
+# Execute the actual installed native GetItemCount on an isolated, synthetic storage.
+$gameAssembly = [Reflection.Assembly]::LoadFrom((Join-Path $GameRoot 'DSPGAME_Data/Managed/Assembly-CSharp.dll'))
+$storageType = $gameAssembly.GetType('StorageComponent',$true)
+$nativeStorage = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($storageType)
+$gridsField = $storageType.GetField('grids')
+$gridType = $gridsField.FieldType.GetElementType()
+$nativeGrids = [Array]::CreateInstance($gridType,3)
+foreach ($i in 0..2) {
+    $nativeGrid = [Activator]::CreateInstance($gridType)
+    $gridType.GetField('itemId').SetValue($nativeGrid, $(if($i -eq 1){1122}else{6006}))
+    $gridType.GetField('count').SetValue($nativeGrid, $(if($i -eq 1){7}else{11}))
+    $nativeGrids.SetValue($nativeGrid,$i)
+}
+$gridsField.SetValue($nativeStorage,$nativeGrids)
+$storageType.GetField('size').SetValue($nativeStorage,3)
+$allCounts = [Collections.Generic.Dictionary[int,long]]::new()
+$whiteCounts = [Collections.Generic.Dictionary[int,long]]::new()
+Assert (Call 'Plugin' 'MergeStorageCounts' @($allCounts,$nativeStorage)) 'Native fixture grids were unavailable'
+Assert (Call 'Plugin' 'MergeSelectedStorageCount' @($whiteCounts,$nativeStorage,6006)) 'Native item count was unavailable'
+Assert ($whiteCounts[6006] -eq $allCounts[6006] -and $whiteCounts[6006] -eq 22 -and $whiteCounts.Count -eq 1) 'Native item count changed storage scope/quantity'
+$absentCounts = [Collections.Generic.Dictionary[int,long]]::new()
+Assert (Call 'Plugin' 'MergeSelectedStorageCount' @($absentCounts,$nativeStorage,1106)) 'Known zero stock became missing'
+Assert ($absentCounts.Count -eq 0) 'Native item count invented absent stock'
+$fallbackCounts = [Collections.Generic.Dictionary[int,long]]::new()
+Assert (Call 'Plugin' 'MergeSelectedStorageCount' @($fallbackCounts,$depot,1106)) 'Missing native method broke reflective fallback'
+Assert ($fallbackCounts[1106] -eq 20) 'Reflective fallback count changed'
+Write-Host 'Native storage method, research flags, bounded recipes and Dyson power fixtures passed.'

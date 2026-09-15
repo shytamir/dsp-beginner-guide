@@ -63,6 +63,17 @@ namespace DspProgressionStatusExporter
 
     internal static class GuideGateEngine
     {
+        // Zero requests the full inventory scope used by the other phases.
+        internal static int LiveInventoryItem(string phaseId)
+        {
+            return phaseId == "white" ? 6006 : phaseId == "dyson" || phaseId == "photon" ? 1122 : 0;
+        }
+
+        internal static bool LiveRecipesNeedAssemblers(string phaseId)
+        {
+            return phaseId == "dyson";
+        }
+
         private sealed class GateDefinition
         {
             public string Id;

@@ -1,6 +1,6 @@
 # Guide 3.0 companion improvements roadmap
 
-**Status:** GC3-01 through GC3-12 completed their technical gates. GC3-13 is open and blocked by B1: the candidate's periodic slowdown. The native-data correction awaits owner retest; G5 remains open.
+**Status:** GC3-01 through GC3-12 completed their technical gates. GC3-13 is open and blocked by B1: the candidate's periodic slowdown. The first correction failed owner retest; removal of unused panel collection now awaits retest. G5 remains open.
 **Prepared:** 2026-09-15.
 **Implementation:** Owner authorized GC3-01 through GC3-12 on 2026-09-15, with a push after each story. GC3-13 remains the human validation stop.
 **Execution record:** [Story decisions and validation](management/GUIDE3-EXECUTION.md).
@@ -478,11 +478,22 @@ criteria before presenting affected results for acceptance again.
 
 - Resolve **B1 — periodic panel slowdown** before resuming the acceptance cases.
   The owner reported roughly 55 to 22 FPS every 15 seconds for nearly two seconds
-  on a mature save, with Expert off and WHITE visible; the prior installed version
-  had no noticeable periodic dip. The correction preserves native station-slot
+  on a mature save, with Expert off and WHITE visible. The first correction did
+  not reduce it. A controlled owner comparison then found an approximately
+  19 FPS drop with public `2.1.83` visible; hiding the candidate stops its dip.
+  The first correction preserves native station-slot
   ownership, reads native research prerequisites, scopes receipt observation to
   ILS Automation, and removes the unused full-state export from panel analysis.
-  No new measurement or diagnostic system is authorized. Technical checks and a
+  The owner also scoped the inherited 19 FPS hit into this build. The follow-up
+  removes unused player/factory diagnostics, all unused entity counting and
+  discarded storage-container exports. Live refresh uses native item counts
+  for WHITE/Antimatter stock, native research flags and native Dyson power;
+  construction/launcher details stay in deliberate exports, and live assembler
+  recipe reads belong only to DYSON. Other recipe reads respect native cursors.
+  Retain consumed evidence and compact snapshot semantics. These removals address
+  confirmed waste; their in-game effect and the remaining version difference
+  are not established by static inspection. No new measurement or diagnostic
+  system is authorized. Technical checks and a
   packaged candidate precede owner retest on that same save. Only owner confirmation
   can close B1; then test Expert mode before continuing the playthrough.
 - Workshop covers ILS stage selection/persistence and correction of an initial

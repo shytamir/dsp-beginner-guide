@@ -5,7 +5,9 @@ are tracked in the [execution record](GUIDE3-EXECUTION.md).
 **Decision authority:** [PROJECT.md](../PROJECT.md).
 **Execution draft:** [ROADMAP.md](../ROADMAP.md).
 
-**GC3-13 B1 correction (2026-09-16):** The workshop found an unacceptable
+**GC3-13 B1 correction (2026-09-16):** The first correction failed owner retest.
+The follow-up removes unused panel collection; performance acceptance is still
+open. The workshop found an unacceptable
 periodic slowdown. The original D3 copied prerequisite-table decision is
 superseded by native `LDB.techs` data. Station observations now preserve native
 slot ownership, receipt tracking is limited to selected Automation, and panel

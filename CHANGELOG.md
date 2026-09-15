@@ -4,12 +4,22 @@
 
 ### Guide 3.0 candidate
 
+- GC3-13 B1 follow-up: The first correction did not resolve the reported slowdown.
+  The inherited public-version slowdown is included in this correction.
+  Removed discarded player/factory diagnostics, unused building counting,
+  full storage-container exports and redundant station-stock aggregation from
+  panel collection. Live WHITE/Antimatter stock uses native item counts; research
+  reads native flags, and Dyson guidance uses native power without construction
+  or launcher walks. Recipe reads respect cursors and query assemblers only for
+  DYSON. Preserve consumed evidence, compact snapshots, prose and
+  refresh cadence. Runtime performance still requires owner retest.
+
 - GC3-13 B1: Corrected the periodic refresh's ILS station lookup to reuse each
   station's own slots and observe receipts only in selected ILS Automation.
   Replaced the copied research-prerequisite table with native technology data;
   removed unused full-state diagnostic materialization from panel analysis and
   redundant availability reads. No new timing or diagnostic collection. The
-  replacement candidate needs owner retest before the workshop resumes.
+  owner retest failed; the follow-up above supersedes this candidate.
 
 - GC3-12: Prepared the 2.2.x candidate line with one PowerShell 7 command for
   both local variants, retained/story fixtures, bounded snapshot parity, identity

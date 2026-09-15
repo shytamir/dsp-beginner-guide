@@ -1,12 +1,13 @@
 # Guide 3.0 owner acceptance workshop — GC3-13
 
-**State:** Open; B1 blocks further acceptance testing until owner retest.
-**Replacement candidate:** local sequence `2.2.99`, under
-`artifacts/guide3/workshop-blocker-01/`. `candidate.json` and `BUILD-INFO.txt`
+**State:** Open; the first B1 correction failed owner retest. Further acceptance
+testing is blocked until the follow-up passes the same-save check.
+**Replacement candidate:** local sequence `2.2.101`, under
+`artifacts/guide3/workshop-blocker-01-refresh/`. `candidate.json` and `BUILD-INFO.txt`
 record its exact clean source revision, release label and DLL/package hashes.
-Use its `public/DspGuideCheck.dll` or `packages/DSPGuideCheck-2.2.99.zip` for
+Use its `public/DspGuideCheck.dll` or `packages/DSPGuideCheck-2.2.101.zip` for
 ordinary testing; the diagnostic variant remains available separately.
-The rejected `2.2.98.e89f73e` candidate is retained only as historical evidence.
+The rejected `e89f73e` and `ff71d06` candidates are historical evidence only.
 Do not install a preflight build or both DLL variants together.
 **Authority:** [Accepted roadmap](../ROADMAP.md) and [execution record](GUIDE3-EXECUTION.md).
 
@@ -14,15 +15,28 @@ Do not install a preflight build or both DLL variants together.
 
 **Owner report:** A mature factory drops from roughly 55 FPS to 22 FPS every
 15 seconds for nearly two seconds. ExpertMode is false, the panel is visible,
-and WHITE is selected. The previously installed version had no noticeable
-periodic dip. This blocks the playthrough, not merely acceptance closeout.
+and WHITE is selected. The first correction, installed as `2.2.100.ff71d06`,
+did not improve it. Hiding the overlay stops the dip. A fresh comparison with
+public `2.1.83.22a5998` also showed a smaller, approximately 19 FPS drop only
+while its panel was visible. This supersedes the initial report that the public
+version had no dip. This blocks the playthrough, not merely acceptance closeout.
 
-**Correction:** Reuse each native station's slot ownership and native research
+**First correction (failed runtime retest):** Reuse each native station's slot ownership and native research
 prerequisites, observe receipts only in selected ILS Automation, omit the unused
 full-state diagnostic export during panel analysis, and reuse already-read
 availability fields. No new measurement, telemetry cadence or diagnostic system.
 The [execution record](GUIDE3-EXECUTION.md#gc3-13-b1--periodic-panel-slowdown)
 contains the reasons and technical checks.
+
+**Follow-up:** The owner included the inherited roughly 19 FPS hit in this build.
+Stop building unused player/factory diagnostics, storage-container details,
+entity counts and station-stock aggregates for panel inputs. Use native stock
+counts for WHITE/Antimatter, native research flags and native Dyson power.
+Keep construction/launcher details in deliberate exports; bound recipe reads to
+native cursors and omit assemblers outside DYSON. Both published and
+candidate binaries performed the discarded work; static comparison does not
+establish how much of either slowdown it caused. No new instrumentation or
+diagnostic export is part of this correction.
 
 **Owner retest:** With DSP closed, replace the previous mod DLL with the public
 DLL from the replacement candidate. Restart DSP with ExpertMode false and load
@@ -31,7 +45,7 @@ refreshes. Confirm whether the periodic dip is gone and the bar/panel still work
 No timing logs or snapshot export are required for this retest. If acceptable,
 continue with the Expert-mode case first, then the planned playthrough.
 
-**Disposition:** Correction supplied; owner retest pending. B1 and G5 stay open
+**Disposition:** First correction rejected; follow-up owner retest pending. B1 and G5 stay open
 until the owner confirms the result. Technical checks do not establish in-game
 performance or acceptance.
 

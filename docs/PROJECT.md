@@ -6,7 +6,8 @@ The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
 roadmap for implementation on 2026-09-15. **GC3-01 through GC3-12 are technically complete;
 G1-G4 passed their original technical checks. GC3-13 is open with its first blocker,
-B1 (periodic panel slowdown), awaiting owner retest of the native-data correction.** See the [execution record](management/GUIDE3-EXECUTION.md).
+B1 (periodic panel slowdown). The first correction failed owner retest; a second,
+bounded correction removes unused work from panel collection and awaits retest.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending

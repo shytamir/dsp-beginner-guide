@@ -25,7 +25,7 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
 | G3 / M3 | Passed: Guide 3.0 handoffs and PHOTON readiness |
 | G4 | Passed: both variants, local/hosted checks and retained candidate ready |
-| GC3-13 / G5 | Open; B1 periodic slowdown correction awaits owner retest |
+| GC3-13 / G5 | Open; first B1 correction failed retest; unused-collection follow-up awaits retest |
 
 ## GC3-13 B1 — periodic panel slowdown
 
@@ -35,6 +35,8 @@ ExpertMode false and WHITE visible. The prior installed version had no
 noticeable periodic dip. The owner authorized bounded native-data corrections,
 tests, an installable candidate and a push to main; explicitly no new measurements.
 This is the workshop's first blocking issue, not a new roadmap epic or story.
+
+### First correction — failed owner retest
 
 **Changes and reasons:**
 
@@ -89,9 +91,99 @@ artifacts/guide3/workshop-blocker-01` from the clean correction commit. Its
 source. This folder replaces the GC3-12 candidate for retest; original records
 below remain historical. The final source archive and reports stay local/ignored.
 
-**Acceptance:** Technical correction only. The owner must retest the same save
-before B1 closes and Expert/playthrough testing resumes. GC3-13/G5 remain open;
-no release, tag or publication is authorized by this repair.
+**Acceptance:** Rejected at runtime: the owner reported no improvement. The
+following follow-up supersedes this candidate. GC3-13/G5 remain open; no release,
+tag or publication is authorized by this repair.
+
+### Follow-up — remove discarded collection (2026-09-16)
+
+**Verified comparison:** The installed correction's binary identifies itself as
+`2.2.100.ff71d06`; its compiled code includes the scoped ILS correction. The
+[public package](https://thunderstore.io/c/dyson-sphere-program/p/DSPGuideCheckMod/DSPGuideCheck/)
+identifies its DLL as `2.1.83.22a5998`, matching the owner's mod-manager version.
+Read-only decompilation of both binaries confirms the same 15-second broad
+collection stages. This was not a stale correction DLL. The owner then verified:
+
+- Hiding the candidate overlay stops the periodic dip.
+- Public `2.1.83` also drops by approximately 19 FPS with WHITE visible, versus
+  approximately 33 FPS for the candidate. This replaces the initial no-dip
+  baseline report; both inherited cost and additional degradation need acceptance.
+
+**Scope extension:** The owner explicitly included the public version's roughly
+19 FPS hit in this build: review and correct inherited native-data underuse and
+overloaded 15-second collection as part of the same B1 issue.
+
+**Confirmed work with no consumer:** `ObservedGameState.Build` never reads the
+legacy `player` export. From factory rows it reads tanks and stations only;
+power and production come from their existing telemetry inputs. It discards
+factory-level building counts, container details, generic power/production/enemy
+metrics and station-stock aggregates. Progression's aggregate building counts
+are normalized but have no active guide or compact-snapshot consumer either.
+Removing only the final normalized export in the first correction left this
+upstream work intact.
+
+**Change and scope:** Stop those unused exports in the shared collection used
+by panel opening, timed refresh and deliberate compact snapshots. Reduce tank
+rows to consumed item/count/capacity and station fleet reads to the consumed
+ship counts. Remove both building-count passes from active collection. No phase
+rules, player prose, refresh cadence, native
+sampler, snapshot schema, diagnostic mechanism or game/save state changes.
+No new cache, scheduling framework, approximate inventory source or measurement.
+Existing unused helper definitions are left alone; they are no longer called by
+these paths. This patch removes confirmed waste, not a demonstrated explanation
+of the full difference between the two versions.
+
+**Remaining 15-second contributors and native decisions:**
+
+| Contributor | Verified native source and decision |
+|---|---|
+| Research | `GameHistoryData.TechUnlocked(id)` returns `techStates[id].unlocked` or false for an absent entry. Read that table once per refresh with cached prototype names and only consumed hash progress; omit generic capability reflection. Missing tables remain unknown. |
+| Inventory | WHITE needs White Cube stock; DYSON/PHOTON need stationary Antimatter. Use native read-only `StorageComponent.GetItemCount(int)` for those depot/package/fuel reads, preserving existing tank/station reads and inventory boundaries. Missing methods retain the existing reflective fallback. Other phases and deliberate snapshots retain full inventory collection. |
+| Statistics inventory cache | `ProductStat.storageCount`/detailed counts are refreshed by the on-request `ProductionExtraInfoCalculator` and have different scope. Its refresh scans factories and writes native statistics. Do not force a rebuild or substitute potentially stale/different stock. |
+| Dyson | Live guidance needs native sphere energy fields, `DysonSwarm.sailCount` and the existing receiver sampler export. Omit construction-node and launcher detail walks from live refresh; retain them for deliberate compact snapshots. The separate existing five-second sampler is unchanged. |
+| Recipes | No equivalent maintained recipe-count aggregate was found in `FactorySystem`. Read native component recipe IDs up to their cursors. The live panel reads assemblers only for DYSON's conversion check; Cube lab checks use labs. Native reference speed is not a configured-machine count. |
+| Stations/tanks | Slot policy, capacity, stock and ship counts still come from their dedicated native pools. They supply local-buffer conclusions and ILS objectives; aggregate traffic cannot replace station configuration. Removed unused diagnostic and duplicate-stock reads. |
+| Production/traffic/power | Existing exports use their already collected native statistics/sampler results. No new sampling or per-entity collection is added here. |
+| Normalization/analysis/UI | Preserve selected-phase rules, station ownership and row reuse. Removing unrelated inventory and recipe rows from live inputs does not alter the selected objectives; deliberate snapshots retain their fuller evidence. |
+
+Native inspection used installed `Assembly-CSharp.dll`, SHA-256
+`ae0ba95f75bd879a62aa4ce253b2ab78eaa4fb3c7c595f5e1fee75ebe0e0ef85`.
+No game assembly is copied into tracked files.
+
+**Validation:**
+
+- `dotnet build src/DspProgressionStatusExporter/DspProgressionStatusExporter.csproj -c Release`
+  passed with zero warnings/errors after rerunning with access to the installed
+  SDK cache; the sandbox initially denied that SDK directory.
+- `pwsh -NoProfile -File scripts/Test-IlsEvidenceCollection.ps1` passed. New
+  fixtures verify preserved tank amounts/capacities, station identity, fleet,
+  stock/policies, live building counts and unavailable pools. Fixture getters
+  also assert that the factory-row collector never touches depot grids, entity
+  counts or generic factory diagnostics. A fixture type dependency was corrected
+  once before the passing run; there was no runtime code repair.
+- Expanded fixtures execute the installed `StorageComponent.GetItemCount` on
+  isolated synthetic native grids, comparing its totals with the original grid
+  reader, including known-zero and fallback cases. They also verify native
+  research flags/hash progress, missing metadata, recipe cursor bounds, WHITE's
+  omitted assembler reads, retained DYSON conversion recipes and native power
+  reads without construction-node access.
+- Running that script against the retained `ff71d06` public DLL passed the same
+  tank/station/fleet/stock assertions, then failed the new discarded-work guard
+  with `Factory rows still duplicate the entity count`, as expected. The guard
+  detects the previous behavior; it is not a timing benchmark.
+- `pwsh -NoProfile -File scripts/Test-Guide3Candidate.ps1 -Sequence 101 -OutputDirectory artifacts/guide3/blocker01-refresh-preflight -AllowWorkingTree`
+  passed both variants, all retained/story/native-collector fixtures, configuration,
+  snapshot parity, identity and public package checks. Both builds had zero
+  warnings/errors. Preflight artifacts are not the owner candidate.
+
+**Handoff:** The same candidate command without `-AllowWorkingTree`, targeting
+`artifacts/guide3/workshop-blocker-01-refresh`, binds the final clean commit to
+the `2.2.101` DLLs, package, source archive, manifest and validation reports.
+
+**Acceptance boundary:** No live performance measurement or reproduction was
+performed by the agent. The full added version-to-version cost is not isolated.
+Keep B1 blocked until the owner confirms acceptable performance with the same
+save and WHITE visible; only then resume Expert-mode and playthrough acceptance.
 
 ## GC3-01 — Select and retain the ILS stage
 

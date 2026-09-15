@@ -252,14 +252,11 @@ namespace DspProgressionStatusExporter
                 var live = new Dictionary<string, object>();
                 Dictionary<string, object> research = ExportResearch();
                 live["research"] = research;
-                live["player"] = ExportPlayer(player);
                 live["location"] = ExportLocation(player);
                 live["factories"] = ExportFactories(data);
                 live["ownedInventorySummary"] =
                     ExportOwnedInventorySummary(data, player);
                 live["dyson"] = ExportDyson(data);
-                live["progressionSummary"] =
-                    ExportProgressionSummary(data, player);
                 Dictionary<string, object> production = productionTelemetry.Export();
                 Dictionary<string, object> traffic = trafficTelemetry.Export();
                 Dictionary<string, object> powerTelemetryExport = powerTelemetry.Export();
@@ -335,23 +332,21 @@ namespace DspProgressionStatusExporter
                     return null;
                 }
                 BuildProtoNameCaches();
+                string phaseId = EnsurePhaseSelection(data, null).PhaseId;
                 var live = new Dictionary<string, object>();
                 live["research"] = ExportResearch();
-                live["player"] = ExportPlayer(player);
                 live["location"] = ExportLocation(player);
                 live["factories"] = ExportFactories(data);
                 live["ownedInventorySummary"] =
-                    ExportOwnedInventorySummary(data, player);
-                live["dyson"] = ExportDyson(data);
-                live["progressionSummary"] =
-                    ExportProgressionSummary(data, player);
+                    ExportOwnedInventorySummary(data, player, GuideGateEngine.LiveInventoryItem(phaseId));
+                live["dyson"] = ExportDyson(data, false);
 
                 Dictionary<string, object> production =
                     productionTelemetry.Export();
                 Dictionary<string, object> traffic =
                     trafficTelemetry.Export();
                 Dictionary<string, object> power = powerTelemetry.Export();
-                Dictionary<string, object> recipes = RecipeTelemetry.Export(data);
+                Dictionary<string, object> recipes = RecipeTelemetry.ExportForPanel(data, phaseId);
                 ObservedGameState observed =
                     ObservedGameState.Build(live, production, traffic, power, recipes);
                 ManualPhaseSelection selection =
@@ -394,11 +389,12 @@ namespace DspProgressionStatusExporter
             Dictionary<string, object> power = null;
             Dictionary<string, object> recipes = null;
             ObservedGameState observed = null;
+            string phaseId = null;
             try
             {
                 BuildProtoNameCaches();
+                phaseId = EnsurePhaseSelection(data, null).PhaseId;
                 live["research"] = ExportResearch();
-                live["player"] = ExportPlayer(player);
                 live["location"] = ExportLocation(player);
             }
             catch (Exception ex)
@@ -424,8 +420,8 @@ namespace DspProgressionStatusExporter
             try
             {
                 live["ownedInventorySummary"] =
-                    ExportOwnedInventorySummary(data, player);
-                live["dyson"] = ExportDyson(data);
+                    ExportOwnedInventorySummary(data, player, GuideGateEngine.LiveInventoryItem(phaseId));
+                live["dyson"] = ExportDyson(data, false);
             }
             catch (Exception ex)
             {
@@ -437,8 +433,6 @@ namespace DspProgressionStatusExporter
 
             try
             {
-                live["progressionSummary"] =
-                    ExportProgressionSummary(data, player);
                 production = productionTelemetry.Export();
                 traffic = trafficTelemetry.Export();
                 power = powerTelemetry.Export();
@@ -453,7 +447,7 @@ namespace DspProgressionStatusExporter
 
             try
             {
-                recipes = RecipeTelemetry.Export(data);
+                recipes = RecipeTelemetry.ExportForPanel(data, phaseId);
             }
             catch (Exception ex)
             {
@@ -818,37 +812,29 @@ namespace DspProgressionStatusExporter
             result["available"] = true;
 
             object techSet = GetStatic(ldbType, "techs");
-            object dataArray = GetMember(techSet, "dataArray");
             if (ResearchDefinitions.Count == 0)
                 foreach (int id in IlsResearchPolicy.ResearchTargets)
                     ReadResearchDefinition(techSet, id, ResearchDefinitions);
             result["definitions"] = ResearchDefinitions;
 
             var techRows = new List<object>();
-            foreach (object proto in Enumerate(dataArray))
+            object techStates = GetMember(history, "techStates");
+            foreach (KeyValuePair<int, string> proto in TechNames)
             {
-                if (proto == null) continue;
-                int id = ToInt(GetMember(proto, "ID"));
-                if (id <= 0) continue;
-
+                int id = proto.Key;
                 var row = new Dictionary<string, object>();
                 row["id"] = id;
-                row["name"] = ProtoName(proto);
-
-                object unlocked = TryInvoke(history, "TechUnlocked", id);
-                if (!(unlocked is bool))
-                    unlocked = TryInvoke(history, "TechUnlocked", id, false);
-                row["unlocked"] = unlocked is bool ? unlocked : null;
-
-                object state = DictionaryLookup(GetMember(history, "techStates"), id);
+                row["name"] = proto.Value;
+                object state = DictionaryLookup(techStates, id);
+                // GameHistoryData.TechUnlocked(id) reads this exact native flag.
+                row["unlocked"] = techStates == null ? null :
+                    state == null ? (object)false : GetMember(state, "unlocked");
                 if (state != null)
                 {
                     row["state"] = ExportNamedMembers(
                         state,
                         new string[] {
-                            "curLevel", "currentLevel", "level", "maxLevel",
-                            "hashUploaded", "hashNeeded", "uHashUploaded",
-                            "unlocked", "isUnlocked"
+                            "hashUploaded", "hashNeeded", "uHashUploaded"
                         }
                     );
                 }
@@ -863,18 +849,6 @@ namespace DspProgressionStatusExporter
             result["techQueue"] = ExportSimpleSequence(queue);
             result["universeObserveLevel"] = Scalar(GetMember(history, "universeObserveLevel"));
             result["missionAccomplished"] = Scalar(GetMember(history, "missionAccomplished"));
-
-            result["capabilityMetrics"] = ExportScalarObject(
-                history,
-                1,
-                new string[] {
-                    "tech", "universe", "observe", "mining", "research", "hash",
-                    "logistic", "drone", "ship", "vessel", "courier", "storage",
-                    "sorter", "stack", "blueprint", "construction", "solar",
-                    "ray", "dyson", "warp", "sail", "walk", "core", "inventory",
-                    "package", "shield", "fleet", "damage"
-                }
-            );
 
             return result;
         }
@@ -957,14 +931,10 @@ namespace DspProgressionStatusExporter
                 object planet = GetMember(factory, "planet");
                 row["planet"] = ExportCelestialIdentity(planet);
 
-                var buildingCounts = CountFactoryEntities(factory);
-                row["buildingCounts"] = NamedCountRows(buildingCounts);
-
+                // Only tanks and stations are consumed from these factory rows.
+                // Inventory and telemetry arrive through their dedicated inputs.
                 row["ownedStorage"] = ExportOwnedStorage(factory);
                 row["logistics"] = ExportLogistics(factory);
-                row["power"] = ExportPower(factory);
-                row["production"] = ExportProduction(factory);
-                row["enemy"] = ExportEnemySummary(factory);
 
                 rows.Add(row);
             }
@@ -1155,7 +1125,7 @@ namespace DspProgressionStatusExporter
             return d;
         }
 
-        private Dictionary<string, object> ExportDyson(object data)
+        private Dictionary<string, object> ExportDyson(object data, bool includeConstructionDetails = true)
         {
             ResetDysonSamplingFor(data);
             var d = new Dictionary<string, object>();
@@ -1190,7 +1160,7 @@ namespace DspProgressionStatusExporter
                     }
 
                     row["metrics"] =
-                        ExportNativeDysonAggregate(sphere);
+                        includeConstructionDetails ? ExportNativeDysonAggregate(sphere) : ExportNativeDysonPower(sphere);
                     Dictionary<string, object> constructionRate =
                         ExportObservedDysonConstructionRate(slotIndex);
                     if (constructionRate.Count > 0)
@@ -1224,6 +1194,7 @@ namespace DspProgressionStatusExporter
             d["receiverContinuity"] = receiverTelemetry.Export();
 
             var planets = new List<object>();
+            if (includeConstructionDetails)
             foreach (object factory in Enumerate(GetMember(data, "factories")))
             {
                 if (factory == null) continue;
@@ -1309,10 +1280,10 @@ namespace DspProgressionStatusExporter
         }
 
         private static Dictionary<string, object>
-            ExportNativeDysonAggregate(object sphere)
+            ExportNativeDysonPower(object sphere)
         {
             var d = new Dictionary<string, object> {
-                { "source", "Dyson statistics/editor aggregates: DysonSphere generation fields and DysonNode totalSp/totalSpMax/totalCp/totalCpMax" },
+                { "source", "DysonSphere native generation fields" },
                 { "scope", "dyson-system" }
             };
             string[] sphereMembers = {
@@ -1331,6 +1302,15 @@ namespace DspProgressionStatusExporter
                 sphereMembersAvailable++;
             }
 
+            d["available"] = sphereMembersAvailable > 0;
+            d["sphereMemberCoverage"] = sphereMembersAvailable + "/" + sphereMembers.Length;
+            return d;
+        }
+
+        private static Dictionary<string, object> ExportNativeDysonAggregate(object sphere)
+        {
+            var d = ExportNativeDysonPower(sphere);
+            d["source"] = "Dyson statistics/editor aggregates: DysonSphere generation fields and DysonNode totalSp/totalSpMax/totalCp/totalCpMax";
             long layerCount = 0;
             long plannedNodeCount = 0;
             long constructedNodeCount = 0;
@@ -1387,11 +1367,8 @@ namespace DspProgressionStatusExporter
                 }
             }
 
-            d["available"] = sphereMembersAvailable > 0;
             d["constructionAggregateAvailable"] =
                 plannedNodeCount == 0 || aggregateNodesRead > 0;
-            d["sphereMemberCoverage"] =
-                sphereMembersAvailable + "/" + sphereMembers.Length;
             d["layerCount"] = layerCount;
             d["totalNodeCount"] = plannedNodeCount;
             d["totalConstructedNodeCount"] = constructedNodeCount;
@@ -1569,66 +1546,9 @@ namespace DspProgressionStatusExporter
             return d;
         }
 
-        private static Dictionary<string, object> ExportProgressionSummary(object data, object player)
+        private static Dictionary<string, object> ExportProgressionSummary(object data)
         {
             var d = new Dictionary<string, object>();
-            object history = GetStatic(gameMainType, "history");
-
-            int[] milestoneTechIds = new int[] {
-                1002, // blue
-                1111, // red
-                2902, // Drive Engine Lv2
-                1413, // Titanium Smelting
-                1604, // PLS
-                1414, // Titanium Alloy
-                1605, // ILS
-                1312, // purple
-                1704, // Gravitational Wave Refraction
-                2904, // mecha warp
-                1705, // green
-                3404, // vessel warp
-                1505, // Planetary Ionosphere Utilization
-                1506, // Dirac
-                1507, // white
-                1508  // mission
-            };
-
-            var milestones = new List<object>();
-            foreach (int tid in milestoneTechIds)
-            {
-                var m = new Dictionary<string, object>();
-                m["techId"] = tid;
-                m["name"] = TechNames.ContainsKey(tid) ? TechNames[tid] : null;
-                object unlocked = TryInvoke(history, "TechUnlocked", tid);
-                if (!(unlocked is bool))
-                    unlocked = TryInvoke(history, "TechUnlocked", tid, false);
-                m["unlocked"] = unlocked is bool ? unlocked : null;
-                milestones.Add(m);
-            }
-            d["milestoneTechs"] = milestones;
-
-            int[] keyItemIds = new int[] {
-                1003, 1004, 1105, 1106, 1118, // silicon/titanium chain
-                1206, 1210,                   // particle container / warper
-                6001, 6002, 6003, 6004, 6005, 6006
-            };
-
-            var allInventory = new Dictionary<int, long>();
-            MergeStorageCounts(allInventory, GetMember(player, "package", "packageStorage"));
-            object mecha = GetMember(player, "mecha");
-            MergeStorageCounts(allInventory, GetMember(mecha, "reactorStorage", "fuelStorage", "fuelChamber"));
-
-            var keyItems = new List<object>();
-            foreach (int iid in keyItemIds)
-            {
-                var x = new Dictionary<string, object>();
-                x["itemId"] = iid;
-                x["name"] = ItemNames.ContainsKey(iid) ? ItemNames[iid] : null;
-                x["playerCount"] = allInventory.ContainsKey(iid) ? allInventory[iid] : 0L;
-                keyItems.Add(x);
-            }
-            d["keyPlayerItems"] = keyItems;
-
             var aggregateBuildings = new Dictionary<int, long>();
             foreach (object factory in Enumerate(GetMember(data, "factories")))
             {
@@ -1659,18 +1579,32 @@ namespace DspProgressionStatusExporter
             return d;
         }
 
-        private static Dictionary<string, object> ExportOwnedInventorySummary(object data, object player)
+        private static bool MergeSelectedStorageCount(Dictionary<int, long> counts, object storage, int itemId)
+        {
+            if (itemId <= 0) return MergeStorageCounts(counts, storage);
+            object count = TryInvoke(storage, "GetItemCount", itemId);
+            if (!(count is int)) return MergeStorageCounts(counts, storage);
+            if ((int)count > 0)
+            {
+                long previous;
+                counts.TryGetValue(itemId, out previous);
+                counts[itemId] = previous + (int)count;
+            }
+            return true;
+        }
+
+        private static Dictionary<string, object> ExportOwnedInventorySummary(object data, object player, int itemId = 0)
         {
             var d = new Dictionary<string, object>();
             var aggregate = new Dictionary<int, long>();
             var playerInventory = new Dictionary<int, long>();
 
             // Personal inventory and fuel are included because they are also owned stock.
-            d["playerInventoryAvailable"] = MergeStorageCounts(playerInventory, GetMember(player, "package", "packageStorage"));
+            d["playerInventoryAvailable"] = MergeSelectedStorageCount(playerInventory, GetMember(player, "package", "packageStorage"), itemId);
             MergeCounts(aggregate, playerInventory);
             object mecha = GetMember(player, "mecha");
-            MergeStorageCounts(aggregate, GetMember(mecha, "reactorStorage", "fuelStorage", "fuelChamber"));
-            MergeStorageCounts(aggregate, GetMember(player, "deliveryPackage"));
+            MergeSelectedStorageCount(aggregate, GetMember(mecha, "reactorStorage", "fuelStorage", "fuelChamber"), itemId);
+            MergeSelectedStorageCount(aggregate, GetMember(player, "deliveryPackage"), itemId);
 
             var byPlanet = new List<object>();
 
@@ -1679,7 +1613,7 @@ namespace DspProgressionStatusExporter
                 if (factory == null) continue;
 
                 var planetCounts = new Dictionary<int, long>();
-                bool storageAvailable = MergeOwnedStorageCounts(planetCounts, factory);
+                bool storageAvailable = MergeOwnedStorageCountsForItem(planetCounts, factory, itemId);
                 bool logisticsAvailable = MergeLogisticsStorageCounts(planetCounts, factory);
                 MergeCounts(aggregate, planetCounts);
 
@@ -1702,99 +1636,28 @@ namespace DspProgressionStatusExporter
         {
             var d = new Dictionary<string, object>();
             object factoryStorage = GetMember(factory, "factoryStorage", "storageSystem");
-            if (factoryStorage == null)
-            {
-                d["available"] = false;
-                return d;
-            }
-
-            d["available"] = true;
-            var aggregate = new Dictionary<int, long>();
-            var containers = new List<object>();
             var tanks = new List<object>();
-
-            Array storagePool = GetMember(factoryStorage, "storagePool") as Array;
-            int storageCursor = ToInt(GetMember(factoryStorage, "storageCursor"));
-            if (storagePool != null)
-            {
-                if (storageCursor <= 0 || storageCursor > storagePool.Length) storageCursor = storagePool.Length;
-
-                for (int i = 1; i < storageCursor; i++)
-                {
-                    object component = storagePool.GetValue(i);
-                    if (component == null) continue;
-
-                    var counts = new Dictionary<int, long>();
-                    MergeStorageCounts(counts, component);
-
-                    int componentId = ToInt(GetMember(component, "id", "storageId"));
-                    int entityId = ToInt(GetMember(component, "entityId"));
-                    if (componentId <= 0 && entityId <= 0 && counts.Count == 0) continue;
-
-                    var row = new Dictionary<string, object>();
-                    row["storageId"] = componentId > 0 ? (object)componentId : i;
-                    row["entityId"] = entityId > 0 ? (object)entityId : null;
-                    row["building"] = ExportEntityBuildingIdentity(factory, entityId);
-                    row["contents"] = NamedCountRows(counts);
-                    row["metrics"] = ExportScalarObject(component, 1, new string[] {
-                        "id", "entity", "size", "count", "bans", "filter", "storage"
-                    });
-                    containers.Add(row);
-                    MergeCounts(aggregate, counts);
-                }
-            }
-
             Array tankPool = GetMember(factoryStorage, "tankPool") as Array;
             int tankCursor = ToInt(GetMember(factoryStorage, "tankCursor"));
             if (tankPool != null)
             {
                 if (tankCursor <= 0 || tankCursor > tankPool.Length) tankCursor = tankPool.Length;
-
                 for (int i = 1; i < tankCursor; i++)
                 {
                     object tank = tankPool.GetValue(i);
                     if (tank == null) continue;
-
-                    int componentId = ToInt(GetMember(tank, "id", "tankId"));
-                    int entityId = ToInt(GetMember(tank, "entityId"));
                     int itemId = ToInt(GetMember(tank, "fluidId", "itemId", "itemID"));
-                    long count = ToLong(GetMember(tank, "fluidCount", "count"));
-                    long capacity = ToLong(GetMember(tank, "fluidCapacity", "capacity", "max"));
-
-                    if (componentId <= 0 && entityId <= 0 && itemId <= 0 && count <= 0) continue;
-
-                    var row = new Dictionary<string, object>();
-                    row["tankId"] = componentId > 0 ? (object)componentId : i;
-                    row["entityId"] = entityId > 0 ? (object)entityId : null;
-                    row["building"] = ExportEntityBuildingIdentity(factory, entityId);
-                    row["itemId"] = itemId > 0 ? (object)itemId : null;
-                    row["name"] = itemId > 0 && ItemNames.ContainsKey(itemId) ? ItemNames[itemId] : null;
-                    row["count"] = count;
-                    row["capacity"] = capacity > 0 ? (object)capacity : null;
-                    row["metrics"] = ExportScalarObject(tank, 1, new string[] {
-                        "id", "entity", "fluid", "item", "count", "capacity", "input", "output"
+                    if (itemId <= 0) continue;
+                    tanks.Add(new Dictionary<string, object> {
+                        { "itemId", itemId },
+                        { "count", ToLong(GetMember(tank, "fluidCount", "count")) },
+                        { "capacity", Math.Max(0L, ToLong(GetMember(tank, "fluidCapacity", "capacity", "max"))) }
                     });
-                    tanks.Add(row);
-
-                    if (itemId > 0 && count > 0)
-                    {
-                        if (!aggregate.ContainsKey(itemId)) aggregate[itemId] = 0;
-                        aggregate[itemId] += count;
-                    }
                 }
             }
-
-            d["containerCount"] = containers.Count;
-            d["containers"] = containers;
-            d["tankCount"] = tanks.Count;
             d["tanks"] = tanks;
-            d["aggregateContents"] = NamedCountRows(aggregate);
-            d["factoryStorageMetrics"] = ExportScalarObject(factoryStorage, 1, new string[] {
-                "storage", "tank", "cursor", "count"
-            });
             return d;
         }
-
         private static Dictionary<string, object> ExportEntityBuildingIdentity(object factory, int entityId)
         {
             var d = new Dictionary<string, object>();
@@ -1817,6 +1680,11 @@ namespace DspProgressionStatusExporter
 
         private static bool MergeOwnedStorageCounts(Dictionary<int, long> counts, object factory)
         {
+            return MergeOwnedStorageCountsForItem(counts, factory, 0);
+        }
+
+        private static bool MergeOwnedStorageCountsForItem(Dictionary<int, long> counts, object factory, int selectedItemId)
+        {
             if (factory == null) return false;
             object factoryStorage = GetMember(factory, "factoryStorage", "storageSystem");
             if (factoryStorage == null) return false;
@@ -1833,7 +1701,7 @@ namespace DspProgressionStatusExporter
                     if (component == null) continue;
                     object rawId = GetMember(component, "id", "storageId");
                     if (rawId == null) available = false;
-                    else if (ToInt(rawId) > 0) available &= MergeStorageCounts(counts, component);
+                    else if (ToInt(rawId) > 0) available &= MergeSelectedStorageCount(counts, component, selectedItemId);
                 }
             }
 
@@ -1934,7 +1802,6 @@ namespace DspProgressionStatusExporter
             int cursor = ToInt(GetMember(transport, "stationCursor"));
 
             var stations = new List<object>();
-            var aggregateStorage = new Dictionary<int, long>();
 
             if (stationPool != null)
             {
@@ -1951,35 +1818,23 @@ namespace DspProgressionStatusExporter
 
                     var row = new Dictionary<string, object>();
                     row["id"] = id;
-                    row["gid"] = Scalar(GetMember(station, "gid"));
                     row["isStellar"] = Scalar(GetMember(station, "isStellar"));
-                    row["isCollector"] = Scalar(GetMember(station, "isCollector"));
                     object storage = GetMember(station, "storage");
                     row["storage"] = ExportStationStorage(storage);
                     Dictionary<string, object> fleet = ExportNamedMembers(
                         station,
                         new string[] {
-                            "idleDroneCount", "workDroneCount",
-                            "idleShipCount", "workShipCount",
-                            "warperCount", "warperMaxCount"
+                            "idleShipCount", "workShipCount"
                         }
                     );
                     row["fleet"] = fleet;
                     row["available"] = row["isStellar"] is bool && fleet.ContainsKey("idleShipCount") &&
                         fleet.ContainsKey("workShipCount") && storage is IEnumerable;
-                    MergeStationStorage(aggregateStorage, storage);
                     stations.Add(row);
                 }
             }
 
-            d["stationCount"] = stations.Count;
             d["stations"] = stations;
-            d["aggregateStationStorage"] = NamedCountRows(aggregateStorage);
-            d["transportMetrics"] = ExportScalarObject(
-                transport,
-                1,
-                new string[] { "station", "drone", "ship", "vessel", "courier", "dispenser", "cursor", "count" }
-            );
 
             return d;
         }
