@@ -19,7 +19,7 @@ namespace DspProgressionStatusExporter
     public sealed class Plugin : BaseUnityPlugin
     {
         private const string PluginVersion = BuildVersion.PluginVersion;
-        private const string SchemaVersion = "2.17";
+        private const string SchemaVersion = "2.18";
         private const float TelemetryIntervalSeconds = 5f;
         private const float PanelRefreshIntervalSeconds = 15f;
         private static ManualLogSource Log;
@@ -1636,7 +1636,7 @@ namespace DspProgressionStatusExporter
             var playerInventory = new Dictionary<int, long>();
 
             // Personal inventory and fuel are included because they are also owned stock.
-            MergeStorageCounts(playerInventory, GetMember(player, "package", "packageStorage"));
+            d["playerInventoryAvailable"] = MergeStorageCounts(playerInventory, GetMember(player, "package", "packageStorage"));
             MergeCounts(aggregate, playerInventory);
             object mecha = GetMember(player, "mecha");
             MergeStorageCounts(aggregate, GetMember(mecha, "reactorStorage", "fuelStorage", "fuelChamber"));
@@ -1649,13 +1649,14 @@ namespace DspProgressionStatusExporter
                 if (factory == null) continue;
 
                 var planetCounts = new Dictionary<int, long>();
-                MergeOwnedStorageCounts(planetCounts, factory);
-                MergeLogisticsStorageCounts(planetCounts, factory);
+                bool storageAvailable = MergeOwnedStorageCounts(planetCounts, factory);
+                bool logisticsAvailable = MergeLogisticsStorageCounts(planetCounts, factory);
                 MergeCounts(aggregate, planetCounts);
 
                 var row = new Dictionary<string, object>();
                 row["planet"] = ExportCelestialIdentity(GetMember(factory, "planet"));
                 row["contents"] = NamedCountRows(planetCounts);
+                row["available"] = storageAvailable && logisticsAvailable;
                 byPlanet.Add(row);
             }
 
@@ -1784,13 +1785,14 @@ namespace DspProgressionStatusExporter
             return d;
         }
 
-        private static void MergeOwnedStorageCounts(Dictionary<int, long> counts, object factory)
+        private static bool MergeOwnedStorageCounts(Dictionary<int, long> counts, object factory)
         {
-            if (factory == null) return;
+            if (factory == null) return false;
             object factoryStorage = GetMember(factory, "factoryStorage", "storageSystem");
-            if (factoryStorage == null) return;
+            if (factoryStorage == null) return false;
 
             Array storagePool = GetMember(factoryStorage, "storagePool") as Array;
+            bool available = storagePool != null;
             int storageCursor = ToInt(GetMember(factoryStorage, "storageCursor"));
             if (storagePool != null)
             {
@@ -1798,11 +1800,15 @@ namespace DspProgressionStatusExporter
                 for (int i = 1; i < storageCursor; i++)
                 {
                     object component = storagePool.GetValue(i);
-                    if (component != null) MergeStorageCounts(counts, component);
+                    if (component == null) continue;
+                    object rawId = GetMember(component, "id", "storageId");
+                    if (rawId == null) available = false;
+                    else if (ToInt(rawId) > 0) available &= MergeStorageCounts(counts, component);
                 }
             }
 
             Array tankPool = GetMember(factoryStorage, "tankPool") as Array;
+            available &= tankPool != null;
             int tankCursor = ToInt(GetMember(factoryStorage, "tankCursor"));
             if (tankPool != null)
             {
@@ -1811,34 +1817,45 @@ namespace DspProgressionStatusExporter
                 {
                     object tank = tankPool.GetValue(i);
                     if (tank == null) continue;
-                    int itemId = ToInt(GetMember(tank, "fluidId", "itemId", "itemID"));
-                    long count = ToLong(GetMember(tank, "fluidCount", "count"));
+                    object rawId = GetMember(tank, "id", "tankId");
+                    if (rawId == null) available = false;
+                    if (ToInt(rawId) <= 0) continue;
+                    object rawItem = GetMember(tank, "fluidId", "itemId", "itemID");
+                    object rawCount = GetMember(tank, "fluidCount", "count");
+                    available &= rawItem != null && rawCount != null;
+                    int itemId = ToInt(rawItem);
+                    long count = ToLong(rawCount);
                     if (itemId <= 0 || count <= 0) continue;
                     if (!counts.ContainsKey(itemId)) counts[itemId] = 0;
                     counts[itemId] += count;
                 }
             }
+            return available;
         }
 
-        private static void MergeLogisticsStorageCounts(Dictionary<int, long> counts, object factory)
+        private static bool MergeLogisticsStorageCounts(Dictionary<int, long> counts, object factory)
         {
-            if (factory == null) return;
+            if (factory == null) return false;
             object transport = GetMember(factory, "transport", "planetTransport");
-            if (transport == null) return;
+            if (transport == null) return false;
 
             Array stationPool = GetMember(transport, "stationPool") as Array;
             int cursor = ToInt(GetMember(transport, "stationCursor"));
-            if (stationPool == null) return;
+            if (stationPool == null) return false;
             if (cursor <= 0 || cursor > stationPool.Length) cursor = stationPool.Length;
 
+            bool available = true;
             for (int i = 1; i < cursor; i++)
             {
                 object station = stationPool.GetValue(i);
                 if (station == null) continue;
-                int id = ToInt(GetMember(station, "id"));
+                object rawId = GetMember(station, "id");
+                if (rawId == null) available = false;
+                int id = ToInt(rawId);
                 if (id <= 0) continue;
-                MergeStationStorage(counts, GetMember(station, "storage"));
+                available &= MergeStationStorage(counts, GetMember(station, "storage"));
             }
+            return available;
         }
 
         // --------------------------------------------------------------------
@@ -2013,24 +2030,30 @@ namespace DspProgressionStatusExporter
             return NamedCountRows(counts);
         }
 
-        private static void MergeStorageCounts(Dictionary<int, long> counts, object storage)
+        private static bool MergeStorageCounts(Dictionary<int, long> counts, object storage)
         {
-            if (storage == null) return;
+            if (storage == null) return false;
 
             object grids = GetMember(storage, "grids");
             if (grids == null && storage is IEnumerable)
                 grids = storage;
 
+            if (!(grids is IEnumerable)) return false;
+            bool available = true;
             foreach (object grid in Enumerate(grids))
             {
                 if (grid == null) continue;
-                int itemId = ToInt(GetMember(grid, "itemId", "itemID"));
-                long count = ToLong(GetMember(grid, "count"));
+                object rawItem = GetMember(grid, "itemId", "itemID");
+                object rawCount = GetMember(grid, "count");
+                available &= rawItem != null && rawCount != null;
+                int itemId = ToInt(rawItem);
+                long count = ToLong(rawCount);
                 if (itemId <= 0 || count <= 0) continue;
 
                 if (!counts.ContainsKey(itemId)) counts[itemId] = 0;
                 counts[itemId] += count;
             }
+            return available;
         }
 
         private static List<object> ExportStationStorage(object storage)
@@ -2054,18 +2077,24 @@ namespace DspProgressionStatusExporter
             return rows;
         }
 
-        private static void MergeStationStorage(Dictionary<int, long> counts, object storage)
+        private static bool MergeStationStorage(Dictionary<int, long> counts, object storage)
         {
+            if (!(storage is IEnumerable)) return false;
+            bool available = true;
             foreach (object slot in Enumerate(storage))
             {
                 if (slot == null) continue;
-                int itemId = ToInt(GetMember(slot, "itemId", "itemID"));
-                long count = ToLong(GetMember(slot, "count"));
+                object rawItem = GetMember(slot, "itemId", "itemID");
+                object rawCount = GetMember(slot, "count");
+                available &= rawItem != null && rawCount != null;
+                int itemId = ToInt(rawItem);
+                long count = ToLong(rawCount);
                 if (itemId <= 0 || count <= 0) continue;
 
                 if (!counts.ContainsKey(itemId)) counts[itemId] = 0;
                 counts[itemId] += count;
             }
+            return available;
         }
 
         private static List<object> NamedCountRows(Dictionary<int, long> counts)

@@ -22,6 +22,23 @@ derivation and acceptance record is archived at
 - Retain bounded one-minute samples for continuity; never derive production
   rates from inventory or lifetime-counter deltas.
 
+## ILS cargo scope and availability
+
+The normalized state retains Icarus package counts separately from stationary
+planet stock. The existing storage/grid, tank and station-pool collectors report
+whether their input collections and relevant fields were available; a valid
+empty collection differs from a missing collection. No extra inventory scan
+or delta-based production estimator is introduced.
+
+Stage II uses native one-minute production of finished items 1106/1105 only.
+Prefer a known current non-birth planet; otherwise use the lowest-ID outpost
+with finished production or known stock. Birth identity must be known. At home,
+add package and birth-planet stationary counts once, against 860/520. This proves
+current availability, not past hauling, fuel sufficiency or a protected reserve.
+Raw location-field presence distinguishes a known space location (zero) from
+missing evidence. Research rows retain per-ID availability of their unlocked
+result, so missing reflection results cannot become locked technology claims.
+
 ## Dyson and component evidence
 
 - Generation uses `DysonSphere.energyGenCurrentTick`.

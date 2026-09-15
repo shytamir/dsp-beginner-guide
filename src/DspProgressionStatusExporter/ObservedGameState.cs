@@ -277,6 +277,10 @@ namespace DspProgressionStatusExporter
     {
         public readonly HashSet<int> UnlockedTechIds = new HashSet<int>();
         public readonly HashSet<int> QueuedTechIds = new HashSet<int>();
+        public readonly HashSet<int> AvailableTechIds = new HashSet<int>();
+        public readonly HashSet<int> AvailablePlanetInventories = new HashSet<int>();
+        public bool PlayerInventoryAvailable;
+        public bool PlayerLocationAvailable;
         public readonly Dictionary<int, string> TechNames = new Dictionary<int, string>();
         public readonly Dictionary<int, ObservedTechProgress> TechProgress =
             new Dictionary<int, ObservedTechProgress>();
@@ -351,7 +355,11 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "2.3";
+            result["modelVersion"] = "2.4";
+            result["playerInventoryAvailable"] = PlayerInventoryAvailable;
+            result["playerLocationAvailable"] = PlayerLocationAvailable;
+            result["availablePlanetInventories"] = new List<int>(AvailablePlanetInventories);
+            result["availableTechIds"] = new List<int>(AvailableTechIds);
             result["evidencePolicy"] = new Dictionary<string, object> {
                 { "observed", "Direct runtime value or native game aggregate." },
                 { "derived", "Deterministic calculation from observed values." },
@@ -433,6 +441,7 @@ namespace DspProgressionStatusExporter
                 int id = Plugin.ToInt(GetValue(row, "id"));
                 object name = GetValue(row, "name");
                 if (id > 0 && name != null) TechNames[id] = name.ToString();
+                if (id > 0 && GetValue(row, "unlocked") is bool) AvailableTechIds.Add(id);
                 if (id > 0 && ToBool(GetValue(row, "unlocked"))) UnlockedTechIds.Add(id);
                 Dictionary<string, object> techState =
                     GetDictionary(row, "state");
@@ -468,12 +477,14 @@ namespace DspProgressionStatusExporter
 
         private void ReadLocation(Dictionary<string, object> location)
         {
+            PlayerLocationAvailable = GetValue(location, "playerPlanetId") != null;
             PlayerPlanetId = Plugin.ToInt(GetValue(location, "playerPlanetId"));
             StarterPlanetId = Plugin.ToInt(GetValue(location, "starterPlanetId"));
         }
 
         private void ReadOwnedItems(Dictionary<string, object> summary)
         {
+            PlayerInventoryAvailable = ToBool(GetValue(summary, "playerInventoryAvailable"));
             foreach (object rowObject in Enumerate(GetValue(summary, "allOwnedItems")))
             {
                 var row = rowObject as Dictionary<string, object>;
@@ -489,6 +500,7 @@ namespace DspProgressionStatusExporter
                 Dictionary<string, object> planet = GetDictionary(planetRow, "planet");
                 int planetId = Plugin.ToInt(GetValue(planet, "id"));
                 if (planetId <= 0) continue;
+                if (ToBool(GetValue(planetRow, "available"))) AvailablePlanetInventories.Add(planetId);
                 string planetName = ToText(GetValue(planet, "name"));
                 if (!String.IsNullOrEmpty(planetName)) PlanetNames[planetId] = planetName;
                 var counts = new Dictionary<int, long>();

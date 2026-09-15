@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "3.2" },
+                { "contractVersion", "3.3" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -200,71 +200,81 @@ namespace DspProgressionStatusExporter
 
         private static void EvaluateIls(GuideGateResult gate, ObservedGameState state, int stage)
         {
-            int expeditionPlanetId = FindExpeditionPlanet(state);
-            double titaniumRate = PlanetProduction(state, expeditionPlanetId, 1004, 1106);
-            double siliconRate = PlanetProduction(state, expeditionPlanetId, 1003, 1105);
-            long titaniumCargo = PlanetOwned(state, expeditionPlanetId, 1106);
-            long siliconCargo = PlanetOwned(state, expeditionPlanetId, 1105);
-            if (stage != 2 && stage != 3)
-            {
-                EvaluateIlsPreparation(gate, state);
-                return;
-            }
-            if (stage == 2)
-            {
-                EvaluateIlsExpedition(gate, state, expeditionPlanetId,
-                    titaniumRate, siliconRate, titaniumCargo, siliconCargo);
-                return;
-            }
-            EvaluateIlsRush(gate, state);
+            if (stage == 3) EvaluateIlsRush(gate, state);
+            else if (stage == 2) EvaluateIlsExpedition(gate, state);
+            else EvaluateIlsPreparation(gate, state);
         }
 
         private static void EvaluateIlsPreparation(GuideGateResult gate, ObservedGameState state)
         {
             var missing = new List<string>();
-            if (!state.UnlockedTechIds.Contains(2902)) missing.Add("Drive Engine Lv2");
-            if (!state.UnlockedTechIds.Contains(1413)) missing.Add("Titanium Smelting");
-            AddMissingPlayerItem(state, missing, 2301, "Mining Machine");
-            AddMissingPlayerItem(state, missing, 2302, "Arc Smelter");
-            AddMissingPlayerItem(state, missing, 2101, "Storage Mk.I");
-            AddMissingPlayerItem(state, missing, 2001, "Conveyor Belt");
-            AddMissingPlayerItem(state, missing, 2011, "Sorter");
-            AddMissingPlayerItem(state, missing, 2201, "Tesla Tower");
-            if (PlayerOwned(state, 2203) <= 0 && PlayerOwned(state, 2204) <= 0)
-                missing.Add("independent power");
-            bool ready = missing.Count == 0;
+            bool researchKnown = state.AvailableTechIds.Contains(2902) && state.AvailableTechIds.Contains(1413);
+            if (state.AvailableTechIds.Contains(2902) && !state.UnlockedTechIds.Contains(2902)) missing.Add("Drive Engine Lv2");
+            if (state.AvailableTechIds.Contains(1413) && !state.UnlockedTechIds.Contains(1413)) missing.Add("Titanium Smelting");
+            if (state.PlayerInventoryAvailable)
+            {
+                AddMissingPlayerItem(state, missing, 2301, "Mining Machine");
+                AddMissingPlayerItem(state, missing, 2302, "Arc Smelter");
+                AddMissingPlayerItem(state, missing, 2101, "Storage Mk.I");
+                AddMissingPlayerItem(state, missing, 2001, "Conveyor Belt");
+                AddMissingPlayerItem(state, missing, 2011, "Sorter");
+                AddMissingPlayerItem(state, missing, 2201, "Tesla Tower");
+                if (PlayerOwned(state, 2203) <= 0 && PlayerOwned(state, 2204) <= 0)
+                    missing.Add("independent power");
+            }
+            bool available = researchKnown && state.PlayerInventoryAvailable;
+            bool ready = available && missing.Count == 0;
             gate.Conditions.Add(Condition(
-                "ils-preparation", "The interplanetary expedition is ready to launch",
-                ready ? "ready" : "blocked", true,
-                ready ? "Required flight technology and outpost essentials are in Icarus." :
-                    "Still needed: " + String.Join(", ", missing.ToArray()) + ".",
-                "observed", ready ? null : "Research the missing technology and load the listed outpost essentials."));
+                "ils-preparation", "Departure essentials",
+                ready ? "ready" : (available ? "blocked" : "unknown"), true,
+                !available ? "Research or Icarus inventory is unavailable." : ready
+                    ? "Required research and equipment observed. Check fuel and building space before departure."
+                    : "Still needed: " + String.Join(", ", missing.ToArray()) + ".",
+                "observed", available && !ready ? "Research or load the listed essentials." : null));
         }
 
-        private static void EvaluateIlsExpedition(
-            GuideGateResult gate,
-            ObservedGameState state,
-            int planetId,
-            double titaniumRate,
-            double siliconRate,
-            long titaniumCargo,
-            long siliconCargo)
+        private static void EvaluateIlsExpedition(GuideGateResult gate, ObservedGameState state)
         {
-            bool productionReady = titaniumRate > 0 && siliconRate > 0;
-            string planetName = PlanetName(state, planetId);
+            int planetId = FindExpeditionPlanet(state);
+            double titaniumRate, siliconRate;
+            bool titaniumKnown = TryPlanetProduction(state, planetId, 1106, out titaniumRate);
+            bool siliconKnown = TryPlanetProduction(state, planetId, 1105, out siliconRate);
+            bool productionKnown = titaniumKnown && siliconKnown;
+            bool productionReady = productionKnown && titaniumRate > 0 && siliconRate > 0;
             gate.Conditions.Add(Condition(
-                "ils-expedition-production", "Titanium and Silicon production is active on " + planetName,
-                productionReady ? "ready" : "blocked", true,
-                "Found Titanium at " + Math.Round(titaniumRate, 1) +
-                    "/min and Silicon at " + Math.Round(siliconRate, 1) + "/min.",
-                "observed", productionReady ? null : "Start both Titanium and Silicon production on the expedition planet."));
-            bool cargoReady = titaniumCargo >= 860 && siliconCargo >= 520;
+                "ils-expedition-production", "Outpost smelting",
+                productionReady ? "ready" : (productionKnown ? "blocked" : "unknown"), true,
+                productionKnown ? PlanetName(state, planetId) + ": " + Math.Round(titaniumRate, 1) +
+                    "/min Titanium Ingots; " + Math.Round(siliconRate, 1) + "/min High-Purity Silicon."
+                    : "Outpost production is unavailable.",
+                "observed", productionKnown && !productionReady ? "Smelt both Titanium Ingots and High-Purity Silicon at the outpost." : null));
+
+            bool homeKnown = state.PlayerLocationAvailable && state.StarterPlanetId > 0;
+            bool atHome = homeKnown && state.PlayerPlanetId == state.StarterPlanetId;
+            bool cargoKnown = homeKnown && state.PlayerInventoryAvailable && (!atHome || state.AvailablePlanetInventories.Contains(state.StarterPlanetId));
+            long titanium = PlayerOwned(state, 1106) + (atHome ? PlanetOwned(state, state.StarterPlanetId, 1106) : 0);
+            long silicon = PlayerOwned(state, 1105) + (atHome ? PlanetOwned(state, state.StarterPlanetId, 1105) : 0);
+            bool cargoReady = cargoKnown && titanium >= 860 && silicon >= 520;
+            string cargoDetail = cargoKnown ? titanium + "/860 Titanium Ingots; " + silicon +
+                "/520 High-Purity Silicon " + (atHome ? "aboard or stored at home." : "aboard Icarus.")
+                : "Cargo inventory is unavailable.";
+            if (!atHome && state.AvailablePlanetInventories.Contains(planetId))
+                cargoDetail += " Outpost stock: " + PlanetOwned(state, planetId, 1106) + " Titanium; " + PlanetOwned(state, planetId, 1105) + " Silicon.";
+            var load = new List<string>();
+            if (titanium < 860) load.Add((860 - titanium) + " Titanium Ingots");
+            if (silicon < 520) load.Add((520 - silicon) + " High-Purity Silicon");
             gate.Conditions.Add(Condition(
-                "ils-expedition-cargo", "The return cargo is buffered in local storage",
-                cargoReady ? "ready" : "blocked", true,
-                titaniumCargo + "/860 Titanium Ingots and " +
-                    siliconCargo + "/520 High-Purity Silicon stored on " + planetName + ".",
-                "observed", cargoReady ? null : "Buffer the full return cargo in local storage."));
+                "ils-expedition-cargo", "Return cargo",
+                cargoReady ? "ready" : (cargoKnown ? "blocked" : "unknown"), true,
+                cargoDetail, "observed", cargoKnown && !cargoReady
+                    ? (atHome ? "Gather " : "Load ") + String.Join(" and ", load.ToArray()) + (atHome ? " at home." : " into Icarus.") : null));
+            bool homeReady = atHome && cargoReady;
+            gate.Conditions.Add(Condition(
+                "ils-expedition-home", "Cargo at home",
+                homeReady ? "ready" : (homeKnown && cargoKnown ? "blocked" : "unknown"), true,
+                homeReady ? "Cargo available at home. Continue with III Automation."
+                    : !homeKnown ? "Home location is unavailable." : atHome ? "Home reached; the full cargo is not available." : "Return to the home planet with the cargo.",
+                "observed", homeKnown && !atHome && cargoReady ? "Bring the cargo home." : null));
         }
 
         private static void EvaluateIlsRush(GuideGateResult gate, ObservedGameState state)
@@ -690,36 +700,35 @@ namespace DspProgressionStatusExporter
             return total;
         }
 
-        private static int FindExpeditionPlanet(ObservedGameState state)
+        internal static int FindExpeditionPlanet(ObservedGameState state)
         {
-            var planetIds = new HashSet<int>();
+            if (state.StarterPlanetId <= 0) return 0;
+            if (state.PlayerLocationAvailable && state.PlayerPlanetId > 0 && state.PlayerPlanetId != state.StarterPlanetId)
+                return state.PlayerPlanetId;
+            var planetIds = new SortedSet<int>();
             foreach (ObservedFactoryItemFlow flow in state.FactoryItemFlows)
-                if (flow.PlanetId > 0) planetIds.Add(flow.PlanetId);
-            foreach (int planetId in state.PlanetItemCounts.Keys)
-                if (planetId > 0) planetIds.Add(planetId);
-
-            int bestPlanetId = 0;
-            double bestScore = 0.0;
+                if (flow.PlanetId > 0 && flow.OneMinuteAvailable && flow.ProducedPerMinute > 0 &&
+                    (flow.ItemId == 1105 || flow.ItemId == 1106)) planetIds.Add(flow.PlanetId);
+            foreach (int planetId in state.AvailablePlanetInventories)
+                if (PlanetOwned(state, planetId, 1105) > 0 || PlanetOwned(state, planetId, 1106) > 0) planetIds.Add(planetId);
             foreach (int planetId in planetIds)
-            {
-                if (state.StarterPlanetId > 0 &&
-                    planetId == state.StarterPlanetId)
-                    continue;
-                double titaniumRate = PlanetProduction(state, planetId, 1004, 1106);
-                double siliconRate = PlanetProduction(state, planetId, 1003, 1105);
-                long titanium = PlanetOwned(state, planetId, 1106);
-                long silicon = PlanetOwned(state, planetId, 1105);
-                double score = (titaniumRate > 0 ? 1000.0 : 0.0) +
-                    (siliconRate > 0 ? 1000.0 : 0.0) +
-                    Math.Min(titanium, 860) / 860.0 +
-                    Math.Min(silicon, 520) / 520.0;
-                if (score > bestScore)
+                if (planetId != state.StarterPlanetId) return planetId;
+            return 0;
+        }
+
+        private static bool TryPlanetProduction(ObservedGameState state, int planetId, int itemId, out double rate)
+        {
+            rate = 0;
+            bool found = false;
+            if (planetId <= 0) return false;
+            foreach (ObservedFactoryItemFlow flow in state.FactoryItemFlows)
+                if (flow.PlanetId == planetId && flow.ItemId == itemId)
                 {
-                    bestScore = score;
-                    bestPlanetId = planetId;
+                    if (!flow.OneMinuteAvailable) return false;
+                    found = true;
+                    rate += flow.ProducedPerMinute;
                 }
-            }
-            return bestPlanetId;
+            return found;
         }
 
         private static double PlanetProduction(

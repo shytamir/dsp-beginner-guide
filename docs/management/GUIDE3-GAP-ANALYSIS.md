@@ -1,6 +1,7 @@
 # Guide 3.0 companion gap analysis
 
-**Status:** Planning evidence, 2026-09-15. Proposed changes are unimplemented.
+**Status:** Planning evidence, 2026-09-15. Implementation progress and decisions
+are tracked in the [execution record](GUIDE3-EXECUTION.md).
 **Decision authority:** [PROJECT.md](../PROJECT.md).
 **Execution draft:** [ROADMAP.md](../ROADMAP.md).
 

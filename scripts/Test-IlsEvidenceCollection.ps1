@@ -1,0 +1,78 @@
+[CmdletBinding()]
+param(
+    [string]$DllPath,
+    [string]$GameRoot = 'C:\Program Files (x86)\Steam\steamapps\common\Dyson Sphere Program'
+)
+$ErrorActionPreference = 'Stop'
+foreach ($name in @('UnityEngine.CoreModule.dll','UnityEngine.dll','UnityEngine.InputLegacyModule.dll')) {
+    [Reflection.Assembly]::LoadFrom((Join-Path $GameRoot "DSPGAME_Data\Managed\$name")) | Out-Null
+}
+[Reflection.Assembly]::LoadFrom((Join-Path $GameRoot 'BepInEx\core\BepInEx.dll')) | Out-Null
+. "$PSScriptRoot/Test-IlsCargo.ps1" -DllPath $DllPath
+Add-Type -TypeDefinition @'
+public class CargoGrid { public int itemId; public long count; }
+public class CargoStorage { public int id = 1; public object[] grids; }
+public class CargoStorageSystem { public object[] storagePool; public int storageCursor; public object[] tankPool; public int tankCursor; }
+public class CargoTransport { public object[] stationPool; public int stationCursor; }
+public class CargoFactory { public CargoStorageSystem factoryStorage; public CargoTransport transport; }
+'@
+$counts = [Collections.Generic.Dictionary[int,long]]::new()
+$storage = [CargoStorage]::new()
+$storage.grids = @()
+Assert (Call 'Plugin' 'MergeStorageCounts' @($counts,$storage)) 'Empty valid package not available'
+$storage.grids = $null
+Assert (-not (Call 'Plugin' 'MergeStorageCounts' @($counts,$storage))) 'Missing grids became an empty package'
+$grid = [CargoGrid]::new()
+$grid.itemId = 1106
+$grid.count = 860
+$storage.grids = @($grid)
+Assert (Call 'Plugin' 'MergeStorageCounts' @($counts,$storage)) 'Valid package unavailable'
+Assert ($counts[1106] -eq 860) 'Package count incorrect'
+$storage.grids = @([object]::new())
+Assert (-not (Call 'Plugin' 'MergeStorageCounts' @($counts,$storage))) 'Missing grid fields passed availability'
+$factory = [CargoFactory]::new()
+Assert (-not (Call 'Plugin' 'MergeOwnedStorageCounts' @($counts,$factory))) 'Missing storage system became empty stock'
+$factory.factoryStorage = [CargoStorageSystem]::new()
+$factory.factoryStorage.storagePool = @($null)
+$factory.factoryStorage.tankPool = @($null)
+Assert (Call 'Plugin' 'MergeOwnedStorageCounts' @($counts,$factory)) 'Valid empty stationary storage unavailable'
+$factory.factoryStorage.storagePool = @($null,[object]::new())
+Assert (-not (Call 'Plugin' 'MergeOwnedStorageCounts' @($counts,$factory))) 'Missing component identity passed availability'
+Assert (-not (Call 'Plugin' 'MergeLogisticsStorageCounts' @($counts,$factory))) 'Missing station pool became empty stock'
+$factory.transport = [CargoTransport]::new()
+$factory.transport.stationPool = @($null)
+Assert (Call 'Plugin' 'MergeLogisticsStorageCounts' @($counts,$factory)) 'Valid zero stations unavailable'
+$factory.transport.stationPool = @($null,[object]::new())
+Assert (-not (Call 'Plugin' 'MergeLogisticsStorageCounts' @($counts,$factory))) 'Missing station identity passed availability'
+
+function ReadEvidence($Target,[string]$Method,$InputData) {
+    $Target.GetType().GetMethod($Method,[Reflection.BindingFlags]'Instance,NonPublic').Invoke($Target,@($InputData))
+}
+$normalized = New 'ObservedGameState'
+$summary = [Collections.Generic.Dictionary[string,object]]::new()
+$summary['playerInventoryAvailable'] = $true
+$summary['playerInventoryItems'] = @()
+ReadEvidence $normalized 'ReadOwnedItems' $summary
+Assert (Field $normalized 'PlayerInventoryAvailable') 'Empty available inventory lost in normalization'
+$summary['playerInventoryAvailable'] = $false
+ReadEvidence $normalized 'ReadOwnedItems' $summary
+Assert (-not (Field $normalized 'PlayerInventoryAvailable')) 'Unavailable package became available in normalization'
+$location = [Collections.Generic.Dictionary[string,object]]::new()
+$location['playerPlanetId'] = 0
+ReadEvidence $normalized 'ReadLocation' $location
+Assert (Field $normalized 'PlayerLocationAvailable') 'Known space location became missing'
+$location['playerPlanetId'] = $null
+ReadEvidence $normalized 'ReadLocation' $location
+Assert (-not (Field $normalized 'PlayerLocationAvailable')) 'Missing location became observed space'
+$research = [Collections.Generic.Dictionary[string,object]]::new()
+$knownTech = [Collections.Generic.Dictionary[string,object]]::new()
+$knownTech['id'] = 2902
+$knownTech['unlocked'] = $false
+$unknownTech = [Collections.Generic.Dictionary[string,object]]::new()
+$unknownTech['id'] = 1413
+$unknownTech['unlocked'] = $null
+$research['technologies'] = @($knownTech,$unknownTech)
+ReadEvidence $normalized 'ReadResearch' $research
+Assert ((Field $normalized 'AvailableTechIds').Contains(2902)) 'Locked known research became unknown'
+Assert (-not (Field $normalized 'AvailableTechIds').Contains(1413)) 'Missing research result became known'
+Write-Host 'ILS collection and normalization availability tests passed.'

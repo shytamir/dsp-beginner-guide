@@ -14,7 +14,7 @@ namespace DspProgressionStatusExporter
         };
 
         private static readonly int[] IlsPlayerItems = {
-            2001, 2011, 2101, 2201, 2203, 2204, 2301, 2302
+            1105, 1106, 2001, 2011, 2101, 2201, 2203, 2204, 2301, 2302
         };
 
         private static readonly int[] IlsCargoItems = {
@@ -469,6 +469,11 @@ namespace DspProgressionStatusExporter
             return new Dictionary<string, object> {
                 { "playerPlanetId", state.PlayerPlanetId },
                 { "starterPlanetId", state.StarterPlanetId },
+                { "selectedOutpostPlanetId", GuideGateEngine.FindExpeditionPlanet(state) },
+                { "playerLocationAvailable", state.PlayerLocationAvailable },
+                { "playerInventoryAvailable", state.PlayerInventoryAvailable },
+                { "availablePlanetInventories", new List<int>(state.AvailablePlanetInventories) },
+                { "departureResearchAvailable", state.AvailableTechIds.Contains(2902) && state.AvailableTechIds.Contains(1413) },
                 { "playerInventory", CountEvidence(
                     state.PlayerItemCounts, IlsPlayerItems) },
                 { "planetCargo", IlsPlanetCargoEvidence(state) },

@@ -65,7 +65,9 @@ when validating the Thunderstore surface.
   not another objective.
 - ILS: exactly one preparation, non-starter-planet expedition, or
   research-rush checkpoint is active. Starter-planet Silicon production does
-  not count as an outpost.
+  not count as an outpost. Select II deliberately to check smelting and cargo;
+  only finished items count. Check partial loading, transit, partial unloading
+  at home and missing evidence without any automatic stage changes.
 - YELLOW: three configured Cube Labs run continuously; Diamond and Titanium
   Crystal storage is visible.
 - PURPLE: three configured Cube Labs run continuously; Processor and Particle
@@ -203,7 +205,7 @@ it cannot isolate the intended boundary reliably.
 
 - `Save snapshot` writes one JSON only when clicked and reports success or
   failure for two seconds.
-- The JSON is no larger than 256 KiB and names snapshot schema `2.17`.
+- The JSON is no larger than 256 KiB and names snapshot schema `2.18`.
 - It contains focused selected-phase evidence and explicit coverage or
   omission diagnostics, not broad factory dumps.
 - Leave the panel visible for one minute and hidden for one minute. Report any

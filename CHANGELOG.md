@@ -4,6 +4,11 @@
 
 ### Guide 3.0 candidate
 
+- GC3-02: Haulback distinguishes finished outpost production, Icarus cargo and
+  cargo available at home. Unloading preserves the total; ore and remote stock
+  cannot stand in for finished cargo aboard. Missing observations remain unknown.
+  Normalized state 2.4, analysis 3.5, progression 3.3 and snapshot 2.18.
+
 - GC3-01: ILS stages are selected explicitly and retained per playthrough.
   A one-time first-entry suggestion replaces repeated automatic stage changes;
   `DON'T PANIC` follows the selected stage. Selection 1.7, analysis 3.4,
