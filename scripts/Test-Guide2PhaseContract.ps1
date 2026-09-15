@@ -692,7 +692,7 @@ $controllerSource = Get-Content -Raw -LiteralPath (
         'src\DspProgressionStatusExporter\GuidePanelController.cs'
 )
 if ($controllerSource -notmatch
-    '"SourceGuideLink",\s*cubeRateColumn\.transform,') {
+    '"SourceGuideLink",\s*cubeRateColumnRect,') {
     throw "DON'T PANIC is not parented to the fixed Cube-rate rail."
 }
 if (-not $controllerSource.Contains(

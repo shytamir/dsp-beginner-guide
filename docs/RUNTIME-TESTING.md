@@ -215,3 +215,14 @@ Report the tested DLL variant, DSP and mod versions, save/phase used, checks
 performed, and any mismatch. Provide screenshots for presentation failures and
 a diagnostic snapshot only when runtime analysis requires repository-side
 audit.
+
+## Expert mode — GC3-13 only
+
+For both variants, set `[General] ExpertMode = true` and restart DSP. Confirm
+the overlay starts hidden, F8 opens/closes only the Cube-rate bar and working
+DON'T PANIC button, and no old panel area intercepts clicks. Check 1080p/4K,
+refresh, save reload, retained phase/stage and PHOTON rate colors/guide anchors.
+No navigation, collapse, scrolling, risk glyph or snapshot control may appear.
+Set false and restart to restore normal controls and stored selection.
+Automated policy/config/guard tests do not establish actual Unity layout or
+pointer behavior; those remain workshop observations.

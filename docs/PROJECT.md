@@ -4,8 +4,8 @@
 
 The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
-roadmap for implementation on 2026-09-15. **GC3-01 through GC3-10 are technically complete;
-G1/G2/G3 passed and GC3-11 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
+roadmap for implementation on 2026-09-15. **GC3-01 through GC3-11 are technically complete;
+G1/G2/G3 passed and GC3-12 is next.** See the [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
@@ -215,6 +215,13 @@ dumps are excluded. Receiver detail is capped, and exports above 256 KiB are
 rejected rather than written.
 
 ## Panel contract
+
+`[General] ExpertMode` defaults to false and is read once at startup. True creates
+only the existing Cube-rate bar and guide button under a non-intercepting root.
+No adjoining panel, header/body, navigation, collapse, stage selector, risk glyph
+or snapshot control is created. The same model supplies rates, selected phase
+and guide anchor. F8 remains on-demand; switching modes requires a restart.
+
 
 The panel is click-through except for phase/ILS-stage navigation, collapse, explicit
 scrolling, `DON'T PANIC`, and the diagnostic build's `Save snapshot` control.

@@ -97,12 +97,13 @@ namespace DspProgressionStatusExporter
                 "Include compact collector performance timings in saved snapshots. Recommended: true."
             );
 
+            guidePanel.SetExpertMode(GuidePresentationPolicy.BindExpertMode(Config));
             gameMainType = FindType("GameMain");
             ldbType = FindType("LDB");
 #if DSP_GUIDE_SNAPSHOT_CONTROL
-            guidePanel.SetSnapshotAction(SaveSnapshotFromPanel);
+            if (guidePanel.GuidanceEnabled) guidePanel.SetSnapshotAction(SaveSnapshotFromPanel);
 #endif
-            guidePanel.SetNavigationAction(HandleGuideNavigation);
+            if (guidePanel.GuidanceEnabled) guidePanel.SetNavigationAction(HandleGuideNavigation);
             guidePanel.SetWarningAction(delegate(string message) {
                 if (Log != null) Log.LogWarning(message);
             });

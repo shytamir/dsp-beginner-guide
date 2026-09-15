@@ -18,9 +18,9 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | GC3-07 | Technically complete; pushed as `2fb9770` |
 | GC3-08 | Technically complete; pushed as `d69843e` |
 | GC3-09 | Technically complete; pushed as `05bd817` |
-| GC3-10 | Technically complete |
-| GC3-11 | Next |
-| GC3-12 | Pending |
+| GC3-10 | Technically complete; pushed as `b8dea50` |
+| GC3-11 | Technically complete |
+| GC3-12 | Next |
 | G1 / M1 | Passed: stage, cargo and research technically coherent |
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
 | G3 / M3 | Passed: Guide 3.0 handoffs and PHOTON readiness |
@@ -300,3 +300,32 @@ remain covered by retained fixtures.
 
 **Milestone M3:** G3 passes without runtime/owner validation. Expert presentation
 and candidate packaging are next; actual utility remains reserved for GC3-13.
+
+## GC3-11 — Configurable Expert overlay
+
+**Outcome:** Default-off ExpertMode is bound through BepInEx before Prepare.
+Expert creation skips the panel background/edge, title/header/body, navigation,
+stages, collapse, scrolling, risk glyph and diagnostic snapshot control.
+Only the existing bar and guide button are created, sized without an empty
+panel/header. Normal and Expert reuse bar/button construction and rate models.
+
+**Decisions:** Startup-only immutable presentation policy; no live watcher or
+new telemetry path. Plugin does not register navigation/snapshot actions in
+Expert mode, and controller callbacks independently reject them. Refresh uses
+the same selected phase/stage, source anchor and rates. Root has no Graphic;
+only the guide button is interactive. Hidden refresh stays hidden.
+
+**Contracts:** No snapshot or analysis version change for presentation-only
+work. Normal mode is retained by default; returning to it requires restart.
+
+**Validation:** Both variants compile with zero warnings/errors. Four retained
+suites, variant checks and Test-ExpertConfiguration pass. Its portable policy
+suite includes prior phase outcomes and checks default/false/true, callback
+eligibility and rate/link parity. Local fixtures bind actual BepInEx config,
+exercise omitted callback guards, and check hidden update/tick/teardown without
+creating Unity objects. A ConfigFile enumeration issue in the fixture and the
+retained shared-parent source assertion were corrected before final success.
+The hidden-lifecycle fixture requires PowerShell 7; Windows PowerShell 5 eagerly
+resolves Unity native calls outside the game and cannot run that fixture.
+Actual Show/creation, visibility, focus, pointer pass-through and 1080p/4K layout
+remain explicitly unvalidated until GC3-13; compilation is not that evidence.

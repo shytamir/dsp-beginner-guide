@@ -555,6 +555,15 @@ namespace DspProgressionStatusExporter
         private Image collapseImage;
         private Text collapseFallbackText;
         private NativeGoalStyle style;
+        private GuidePresentationPolicy presentation = new GuidePresentationPolicy();
+        public bool GuidanceEnabled { get { return presentation.GuidanceEnabled; } }
+
+        public void SetExpertMode(bool expertMode)
+        {
+            if (panelObject != null) throw new InvalidOperationException("Presentation mode must be selected before Prepare.");
+            presentation = new GuidePresentationPolicy(expertMode);
+        }
+
         private bool collapsed;
         private string phaseId;
         private string sourceGuideAnchor;
@@ -612,6 +621,7 @@ namespace DspProgressionStatusExporter
                     ? nativeTextPresentation.PrimaryEffect
                     : null;
             var result = new Dictionary<string, object>();
+            result["presentationMode"] = presentation.ExpertMode ? "expert" : "normal";
             result["styleSource"] =
                 style != null && style.NativeRect != null
                     ? "native-uigoalpanel"
@@ -629,13 +639,13 @@ namespace DspProgressionStatusExporter
             result["manualWheelSupport"] = false;
             result["scrollControls"] = "explicit-up-down-buttons";
             result["phaseNavigation"] =
-                "player-controlled-critical-path-previous-next";
+                presentation.GuidanceEnabled ? "player-controlled-critical-path-previous-next" : "omitted";
             result["panelPointerPolicy"] =
                 "click-through-except-interactive-controls";
             result["cubeRateColumn"] =
-                "native-one-minute-rates-click-through-fixed-below-collapse";
+                presentation.GuidanceEnabled ? "native-one-minute-rates-click-through-fixed-below-collapse" : "native-one-minute-rates-click-through-top-right";
             result["riskSignalIndicator"] =
-                "native-glyph-click-through-fixed-on-cube-rate-column";
+                presentation.GuidanceEnabled ? "native-glyph-click-through-fixed-on-cube-rate-column" : "omitted";
             result["sourceGuidePlacement"] =
                 "collapse-proof-below-last-cube-right-aligned";
             result["textOutline"] = true;
@@ -756,7 +766,7 @@ namespace DspProgressionStatusExporter
 
         public void Tick(float unscaledDeltaTime)
         {
-            if (!IsVisible) return;
+            if (!IsVisible || !presentation.GuidanceEnabled) return;
             bool changed = AnimateRows(
                 objectiveViews, unscaledDeltaTime);
             changed |= AnimateRows(
@@ -862,9 +872,17 @@ namespace DspProgressionStatusExporter
             panelObject = CreateObject(
                 "DSPGuideCheckPanel",
                 parent,
-                typeof(Image));
+                presentation.GuidanceEnabled ? new[] { typeof(Image) } : Type.EmptyTypes);
             panelRect = panelObject.GetComponent<RectTransform>();
             ConfigurePanelAnchor();
+            if (!presentation.GuidanceEnabled)
+            {
+                CreateCubeRateColumn();
+                CreateSourceGuideButton();
+                panelObject.transform.SetAsLastSibling();
+                panelObject.SetActive(false);
+                return;
+            }
             Image background = panelObject.GetComponent<Image>();
             style.Background.Apply(background);
             background.raycastTarget = false;
@@ -934,18 +952,7 @@ namespace DspProgressionStatusExporter
                     collapseFallbackText.rectTransform, 0f, 0f, 0f, 0f);
             }
 
-            GameObject cubeRateColumn = CreateObject(
-                "CubeRateColumn", panelObject.transform);
-            cubeRateColumnRect =
-                cubeRateColumn.GetComponent<RectTransform>();
-            GameObject riskSignalObject = CreateObject(
-                "ProductionRiskSignal",
-                cubeRateColumn.transform,
-                typeof(Image));
-            riskSignalIcon = riskSignalObject.GetComponent<Image>();
-            riskSignalIcon.raycastTarget = false;
-            riskSignalIcon.preserveAspect = true;
-            riskSignalIcon.enabled = false;
+            CreateCubeRateColumn();
 
             CreateHeaderControl(
                 "PreviousPhase",
@@ -1021,9 +1028,46 @@ namespace DspProgressionStatusExporter
                 out snapshotLinkRect);
             snapshotLinkDefaultColor = snapshotLinkText.color;
 #endif
+            CreateSourceGuideButton();
+            CreateScrollControl(
+                "ScrollUp",
+                "▲",
+                ScrollUp,
+                out scrollUpRect);
+            CreateScrollControl(
+                "ScrollDown",
+                "▼",
+                ScrollDown,
+                out scrollDownRect);
+            cubeRateColumnRect.SetAsLastSibling();
+
+            panelObject.transform.SetAsLastSibling();
+            panelObject.SetActive(false);
+        }
+
+        private void CreateCubeRateColumn()
+        {
+            GameObject cubeRateColumn = CreateObject(
+                "CubeRateColumn", panelObject.transform);
+            cubeRateColumnRect =
+                cubeRateColumn.GetComponent<RectTransform>();
+            if (!presentation.GuidanceEnabled) return;
+            GameObject riskSignalObject = CreateObject(
+                "ProductionRiskSignal",
+                cubeRateColumn.transform,
+                typeof(Image));
+            riskSignalIcon = riskSignalObject.GetComponent<Image>();
+            riskSignalIcon.raycastTarget = false;
+            riskSignalIcon.preserveAspect = true;
+            riskSignalIcon.enabled = false;
+
+        }
+
+        private void CreateSourceGuideButton()
+        {
             sourceGuideLinkText = CreateFooterLink(
                 "SourceGuideLink",
-                cubeRateColumn.transform,
+                cubeRateColumnRect,
                 DontPanicLabel,
                 OpenSourceGuide,
                 out sourceGuideLinkRect);
@@ -1048,20 +1092,6 @@ namespace DspProgressionStatusExporter
             sourceGuideLinkText.color = DontPanicColor;
             sourceGuideLinkText.lineSpacing = 0.82f;
             sourceGuideLinkText.alignment = TextAnchor.MiddleCenter;
-            CreateScrollControl(
-                "ScrollUp",
-                "▲",
-                ScrollUp,
-                out scrollUpRect);
-            CreateScrollControl(
-                "ScrollDown",
-                "▼",
-                ScrollDown,
-                out scrollDownRect);
-            cubeRateColumnRect.SetAsLastSibling();
-
-            panelObject.transform.SetAsLastSibling();
-            panelObject.SetActive(false);
         }
 
         private void ConfigurePanelAnchor()
@@ -1095,6 +1125,13 @@ namespace DspProgressionStatusExporter
             if (model == null) return;
             sourceGuideAnchor = model.SourceGuideAnchor;
             ilsStage = model.IlsStage;
+            if (!presentation.GuidanceEnabled)
+            {
+                phaseId = model.PhaseId;
+                ApplyCubeRates(model.CubeRates);
+                Layout();
+                return;
+            }
             titleText.text = GuideRichText.Title(model.PhaseId, model.Title);
             Sprite phaseIcon = matrixIcons != null
                 ? matrixIcons.Get(model.PhaseId)
@@ -1348,9 +1385,46 @@ namespace DspProgressionStatusExporter
             UpdateCompletionVisual(view);
         }
 
+        private void LayoutCubeRateColumn(float left, float top)
+        {
+            SetTopRect(
+                cubeRateColumnRect,
+                left,
+                top,
+                CubeRateSquareSize,
+                cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap));
+            for (int i = 0; i < cubeRateViews.Count; i++)
+                SetTopRect(
+                    cubeRateViews[i].Root.GetComponent<RectTransform>(),
+                    0f,
+                    i * (CubeRateSquareSize + CubeRateGap),
+                    CubeRateSquareSize,
+                    CubeRateSquareSize);
+            if (riskSignalIcon != null) SetTopRect(
+                riskSignalIcon.rectTransform,
+                -(RiskSignalIconSize + 1f),
+                3f,
+                RiskSignalIconSize,
+                RiskSignalIconSize);
+            SetTopRect(
+                sourceGuideLinkRect,
+                CubeRateSquareSize - DontPanicWidth,
+                cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap),
+                DontPanicWidth,
+                DontPanicHeight);
+        }
+
         private void Layout()
         {
             ResetPanelAnchor();
+            if (!presentation.GuidanceEnabled)
+            {
+                panelWidth = Mathf.Max(CubeRateSquareSize, DontPanicWidth);
+                panelRect.sizeDelta = new Vector2(panelWidth,
+                    cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap) + DontPanicHeight);
+                LayoutCubeRateColumn(panelWidth - CubeRateSquareSize, 0f);
+                return;
+            }
 
             previousPhaseRect.gameObject.SetActive(!String.Equals(
                 phaseId, "blue", StringComparison.OrdinalIgnoreCase));
@@ -1411,31 +1485,7 @@ namespace DspProgressionStatusExporter
                 7f,
                 38f,
                 38f);
-            SetTopRect(
-                cubeRateColumnRect,
-                panelWidth - 51f,
-                49f,
-                CubeRateSquareSize,
-                cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap));
-            for (int i = 0; i < cubeRateViews.Count; i++)
-                SetTopRect(
-                    cubeRateViews[i].Root.GetComponent<RectTransform>(),
-                    0f,
-                    i * (CubeRateSquareSize + CubeRateGap),
-                    CubeRateSquareSize,
-                    CubeRateSquareSize);
-            SetTopRect(
-                riskSignalIcon.rectTransform,
-                -(RiskSignalIconSize + 1f),
-                3f,
-                RiskSignalIconSize,
-                RiskSignalIconSize);
-            SetTopRect(
-                sourceGuideLinkRect,
-                CubeRateSquareSize - DontPanicWidth,
-                cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap),
-                DontPanicWidth,
-                DontPanicHeight);
+            LayoutCubeRateColumn(panelWidth - 51f, 49f);
             if (collapseImage != null)
                 collapseImage.rectTransform.localEulerAngles =
                     new Vector3(0f, 0f, collapsed ? 180f : 0f);
@@ -1817,6 +1867,7 @@ namespace DspProgressionStatusExporter
 #if DSP_GUIDE_SNAPSHOT_CONTROL
         private void SaveSnapshot()
         {
+            if (!presentation.SnapshotEnabled) return;
             bool succeeded = false;
             try
             {
@@ -1860,6 +1911,7 @@ namespace DspProgressionStatusExporter
 
         private void ToggleCollapsed()
         {
+            if (!presentation.GuidanceEnabled) return;
             collapsed = !collapsed;
             Layout();
             ClearButtonFocus();
@@ -1867,6 +1919,7 @@ namespace DspProgressionStatusExporter
 
         private void Navigate(string command)
         {
+            if (!presentation.GuidanceEnabled) return;
             try
             {
                 if (navigationAction != null)
@@ -1880,12 +1933,14 @@ namespace DspProgressionStatusExporter
 
         private void ScrollUp()
         {
+            if (!presentation.GuidanceEnabled) return;
             ScrollBody(-ScrollStep);
             ClearButtonFocus();
         }
 
         private void ScrollDown()
         {
+            if (!presentation.GuidanceEnabled) return;
             ScrollBody(ScrollStep);
             ClearButtonFocus();
         }

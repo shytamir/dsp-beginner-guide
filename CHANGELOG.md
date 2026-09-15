@@ -4,6 +4,11 @@
 
 ### Guide 3.0 candidate
 
+- GC3-11: Added default-off `[General] ExpertMode`, applied after restart. It
+  creates only the Cube-rate bar and DON'T PANIC button, retaining selected-phase
+  rates and guide anchors. All adjoining guidance controls and snapshot export
+  callbacks are omitted/inert. Normal presentation and snapshot schema remain.
+
 - GC3-10: PHOTON now evaluates six sustained WHITE inputs and 2,000 stationary
   Antimatter. Pending names the first current shortage; the five Cube colors
   use 40/min without changing other phases. Receiver construction belongs to

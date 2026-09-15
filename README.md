@@ -135,6 +135,22 @@ BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
 FLIGHT and TITANIUM are checkpoints inside ILS. Optional WARP, SPHERE, and
 LOGISTICS material remains in the source guide but does not receive a panel.
 
+### Expert mode
+
+In the mod's BepInEx config file, set:
+
+```ini
+[General]
+ExpertMode = true
+```
+
+Restart DSP after changing the setting. It defaults to false. Expert mode shows
+only the existing Cube-rate bar and `DON'T PANIC` button when F8 opens it.
+It omits the adjoining panel and every other control, including navigation,
+collapse, ILS stages, risk glyph and diagnostic snapshot button. Stored phase
+and stage still determine rates and the guide link. Set false and restart to
+restore normal controls. F8 starts hidden and never saves in either mode.
+
 ## Current contract
 
 - Objectives come from each retained phase's local readiness checklist.
@@ -179,8 +195,8 @@ history.
 ## Project status
 
 The released product is complete for the adopted guide 2.3 contract. The owner
-authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-10 are technically
-complete; G1/G2/G3 passed and GC3-11 is next. [Execution records](docs/management/GUIDE3-EXECUTION.md)
+authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-11 are technically
+complete; G1/G2/G3 passed and GC3-12 is next. [Execution records](docs/management/GUIDE3-EXECUTION.md)
 separate automated completion from the pending final in-game owner workshop.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
 scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the
