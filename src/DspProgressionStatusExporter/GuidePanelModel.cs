@@ -344,7 +344,8 @@ namespace DspProgressionStatusExporter
                 bool available =
                     state != null &&
                     state.ProductionWindowReady &&
-                    state.ItemFlows.TryGetValue(spec.ItemId, out flow);
+                    state.ItemFlows.TryGetValue(spec.ItemId, out flow) &&
+                    (model.PhaseId != "photon" || flow.OneMinuteAvailable);
                 if (!available)
                 {
                     model.CubeRates.Add(new GuidePanelCubeRateModel {
@@ -360,7 +361,9 @@ namespace DspProgressionStatusExporter
                     CubeId = spec.CubeId,
                     RateText = perMinute.ToString(
                         "0.##", CultureInfo.InvariantCulture) + "/m",
-                    Level = CubeLevel(spec, perMinute, i == focusIndex)
+                    Level = model.PhaseId == "photon"
+                        ? (perMinute >= 40 ? CubeRateLevel.Comfortable : CubeRateLevel.BelowMinimum)
+                        : CubeLevel(spec, perMinute, i == focusIndex)
                 });
             }
         }

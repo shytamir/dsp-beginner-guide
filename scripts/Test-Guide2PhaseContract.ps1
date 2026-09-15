@@ -469,39 +469,39 @@ Set-ObservedField $true 'ReceiverTelemetryAvailable' $dyson
 Set-ObservedField 4 'ConfiguredPhotonReceiverCount' $dyson
 Set-ObservedField 4 'LensedPhotonReceiverCount' $dyson
 Set-ObservedField 4 'SustainedPhotonReceiverCount' $dyson
-$photonGate = Get-SelectedGate 'photon' $photonState
-$receiverCondition = Get-GateCondition $photonGate 'photon-receivers'
+$photonGate = Get-SelectedGate 'dyson' $photonState
+$receiverCondition = Get-GateCondition $photonGate 'dyson-receivers'
 if ($null -eq $receiverCondition -or
     $receiverCondition.GetType().GetField(
         'Status', $instanceFlags
     ).GetValue($receiverCondition) -ne 'ready') {
-    throw 'PHOTON does not accept four sustained lensed receivers.'
+    throw 'DYSON does not accept four sustained lensed receivers.'
 }
 Set-ObservedField 3 'SustainedPhotonReceiverCount' $dyson
-$photonGate = Get-SelectedGate 'photon' $photonState
-$receiverCondition = Get-GateCondition $photonGate 'photon-receivers'
+$photonGate = Get-SelectedGate 'dyson' $photonState
+$receiverCondition = Get-GateCondition $photonGate 'dyson-receivers'
 if ($receiverCondition.GetType().GetField(
         'Status', $instanceFlags
     ).GetValue($receiverCondition) -ne 'blocked') {
-    throw 'PHOTON does not retain four-receiver continuity as a hard objective.'
+    throw 'DYSON does not retain four-receiver continuity as a hard objective.'
 }
 Set-ObservedField 4 'SustainedPhotonReceiverCount' $dyson
 Set-ObservedField 3 'ConfiguredPhotonReceiverCount' $dyson
-$photonGate = Get-SelectedGate 'photon' $photonState
-$receiverCondition = Get-GateCondition $photonGate 'photon-receivers'
+$photonGate = Get-SelectedGate 'dyson' $photonState
+$receiverCondition = Get-GateCondition $photonGate 'dyson-receivers'
 if ($receiverCondition.GetType().GetField(
         'Status', $instanceFlags
     ).GetValue($receiverCondition) -ne 'blocked') {
-    throw 'PHOTON accepts a receiver that is not currently configured.'
+    throw 'DYSON accepts a receiver that is not currently configured.'
 }
 Set-ObservedField 4 'ConfiguredPhotonReceiverCount' $dyson
 Set-ObservedField 3 'LensedPhotonReceiverCount' $dyson
-$photonGate = Get-SelectedGate 'photon' $photonState
-$receiverCondition = Get-GateCondition $photonGate 'photon-receivers'
+$photonGate = Get-SelectedGate 'dyson' $photonState
+$receiverCondition = Get-GateCondition $photonGate 'dyson-receivers'
 if ($receiverCondition.GetType().GetField(
         'Status', $instanceFlags
     ).GetValue($receiverCondition) -ne 'blocked') {
-    throw 'PHOTON accepts a receiver that is not currently lensed.'
+    throw 'DYSON accepts a receiver that is not currently lensed.'
 }
 
 $whiteUnresearched = New-ObservedState

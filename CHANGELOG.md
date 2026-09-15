@@ -4,6 +4,11 @@
 
 ### Guide 3.0 candidate
 
+- GC3-10: PHOTON now evaluates six sustained WHITE inputs and 2,000 stationary
+  Antimatter. Pending names the first current shortage; the five Cube colors
+  use 40/min without changing other phases. Receiver construction belongs to
+  DYSON. Analysis 3.12 and progression 3.9.
+
 - GC3-09: Added bounded 120-game-second/20-sample readiness at 40/min for five
   colored Cubes and Antimatter, using existing native samples. Missing evidence
   breaks history; pause cannot fill it. Normalized 2.8 and snapshot 2.24 expose

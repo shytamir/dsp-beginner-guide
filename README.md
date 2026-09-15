@@ -156,8 +156,9 @@ LOGISTICS material remains in the source guide but does not receive a panel.
 - DYSON includes swarm production, receiver research/continuity and conversion
   to stationary Antimatter. Hydrogen disposal and science delivery remain player
   checks; the guide link opens the bridge once the swarm is ready.
-  PHOTON reports actual Photon and Antimatter rates plus receiver demand
-  against available Dyson generation.
+- PHOTON requires five colored Cubes and Antimatter at sustained 40/min plus
+  2,000 stationary Antimatter. Its Cube colors use current 40/min readiness;
+  receiver power remains diagnostic.
 - No phase displays a fixed factory-power objective.
 - Production uses DSP's pre-aggregated one-minute and normalized ten-minute
   Statistics Panel values.
@@ -178,8 +179,8 @@ history.
 ## Project status
 
 The released product is complete for the adopted guide 2.3 contract. The owner
-authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-09 are technically
-complete; G1/G2 passed and GC3-10 is next. [Execution records](docs/management/GUIDE3-EXECUTION.md)
+authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-10 are technically
+complete; G1/G2/G3 passed and GC3-11 is next. [Execution records](docs/management/GUIDE3-EXECUTION.md)
 separate automated completion from the pending final in-game owner workshop.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
 scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the

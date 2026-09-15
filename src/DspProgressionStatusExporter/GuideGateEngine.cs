@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "3.8" },
+                { "contractVersion", "3.9" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -77,7 +77,7 @@ namespace DspProgressionStatusExporter
             new GateDefinition { Id = "purple", Title = "Run three continuous Purple Cube labs" },
             new GateDefinition { Id = "green", Title = "Run two continuous Green Cube labs" },
             new GateDefinition { Id = "dyson", Title = "Build the Photon swarm" },
-            new GateDefinition { Id = "photon", Title = "Run the Critical Photon receiver array" },
+            new GateDefinition { Id = "photon", Title = "Prepare the inputs for White Cubes" },
             new GateDefinition { Id = "white", Title = "Complete the main progression route" }
         };
 
@@ -422,23 +422,35 @@ namespace DspProgressionStatusExporter
 
         private static void EvaluatePhoton(GuideGateResult gate, ObservedGameState state)
         {
-            AddReceiverCondition(gate, state, "photon-receivers", true);
-            double photons = ItemRate(state, 1208);
-            double antimatterRate = ItemRate(state, 1122);
-            bool productionReady = state.ProductionWindowReady && photons > 0 && antimatterRate > 0;
-            gate.Conditions.Add(Condition(
-                "photon-production", "Critical Photon and Antimatter production is running",
-                productionReady ? "ready" : (state.ProductionWindowReady ? "blocked" : "unknown"), true,
-                "Found " + Math.Round(photons, 1) + " Critical Photons/min and " +
-                    Math.Round(antimatterRate, 1) + " Antimatter/min; 48/min is the receiver-array reference.",
-                state.ProductionWindowReady ? "observed" : "unknown",
-                productionReady ? null : "Establish continuous Critical Photon and Antimatter production."));
-            long antimatter = Owned(state, 1122);
-            gate.Conditions.Add(Condition(
-                "antimatter-stock", "The Antimatter bank reaches the 2,000 midpoint",
-                antimatter >= 2000 ? "ready" : "blocked", true,
-                antimatter + "/2,000 stored" + (antimatter >= 2000 ? " - halfway to the final research cost." : "."),
-                "observed", antimatter >= 2000 ? null : "Bank 2,000 Antimatter to reach the midway checkpoint."));
+            string[] names = { "Blue Cubes", "Red Cubes", "Yellow Cubes", "Purple Cubes", "Green Cubes", "Antimatter" };
+            bool ready = true, unavailable = false, below = false;
+            string action = null;
+            var details = new List<string>();
+            for (int i = 0; i < PhotonReadiness.ItemIds.Length; i++)
+            {
+                int id = PhotonReadiness.ItemIds[i];
+                SustainedInputReadiness input;
+                ObservedItemFlow flow;
+                bool currentKnown = state.ItemFlows.TryGetValue(id, out flow) && flow.OneMinuteAvailable;
+                string reason = state.PhotonInputs.TryGetValue(id, out input) && currentKnown ? input.Reason : "unavailable";
+                bool inputReady = reason == "ready" && flow.ProducedPerMinute >= 40;
+                ready &= inputReady;
+                unavailable |= reason == "unavailable";
+                below |= reason == "below-target";
+                if (!inputReady) details.Add(names[i] + ": " + reason.Replace('-', ' ') + ".");
+                if (action == null && reason == "below-target" && currentKnown && flow.ProducedPerMinute < 40)
+                    action = "Bring " + names[i] + " production to at least 40/min.";
+            }
+            gate.Conditions.Add(Condition("photon-inputs", "Five colored Cubes and Antimatter sustain 40/min",
+                ready ? "ready" : unavailable ? "unknown" : below ? "blocked" : "watch", true,
+                ready ? "All six inputs sustained 40/min over the two-minute observation window."
+                    : String.Join(" ", details.ToArray()), "sampled native aggregates", action));
+            bool stockKnown;
+            long stock = StationaryStock(state, 1122, out stockKnown);
+            gate.Conditions.Add(Condition("antimatter-stock", "Store 2,000 Antimatter", stock >= 2000 ? "ready" : stockKnown ? "blocked" : "unknown", true,
+                stockKnown || stock >= 2000 ? stock + "/2,000 in observed cluster storage and stations; excludes Icarus."
+                    : "Stationary Antimatter inventory is unavailable.",
+                "observed stationary stock", stockKnown && stock < 2000 ? "Store 2,000 Antimatter for White science." : null));
         }
 
         private static void EvaluateWhite(GuideGateResult gate, ObservedGameState state)

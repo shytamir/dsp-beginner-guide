@@ -17,12 +17,14 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | GC3-06 | Technically complete; pushed as `c75b2c6` |
 | GC3-07 | Technically complete; pushed as `2fb9770` |
 | GC3-08 | Technically complete; pushed as `d69843e` |
-| GC3-09 | Technically complete |
-| GC3-10 | Next |
-| GC3-11 through GC3-12 | Pending in dependency order |
+| GC3-09 | Technically complete; pushed as `05bd817` |
+| GC3-10 | Technically complete |
+| GC3-11 | Next |
+| GC3-12 | Pending |
 | G1 / M1 | Passed: stage, cargo and research technically coherent |
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
-| G3 through G4 | Pending |
+| G3 / M3 | Passed: Guide 3.0 handoffs and PHOTON readiness |
+| G4 | Pending |
 | GC3-13 / G5 | Reserved for owner workshop; not started |
 
 ## GC3-01 — Select and retain the ILS stage
@@ -271,3 +273,30 @@ Cases include 119/120 seconds, 19/20 samples, 0/39.99/40/48 rates, isolated low
 sample expiry, missing data/recovery, repeated paused ticks, fixed memory bound
 and game-data replacement. Synthetic native-shaped objects verify the actual
 collector and normalization connection. PHOTON objectives consume this in GC3-10.
+
+## GC3-10 — WHITE-input readiness in PHOTON
+
+**Outcome:** Two stable objectives require all six sustained inputs and 2,000
+stationary Antimatter. Receiver construction remains in DYSON; receiver/power
+evidence is retained. Five Cube colors now use current 40/min availability.
+
+**Decisions:** Pending selects the first current shortage in Blue/Red/Yellow/
+Purple/Green/Antimatter order. A recovered current rate waiting for its low
+history to age out does not prompt another upgrade. Warming/unknown inputs
+remain status. The independent storage task counts cluster storage/stations,
+excluding Icarus and making no science-district delivery claim. Current Status
+risks keep their existing separate cap and purpose.
+
+**Contracts:** analysis 3.12 and progression 3.9; current snapshot/panel shapes
+remain unchanged. PHOTON compact item evidence includes the five colored Cubes.
+
+**Validation / G3:** Both variants compiled with zero warnings/errors. Four
+retained suites, Test-PhotonOutcome and Test-PhotonReadiness pass. Handoff
+fixtures are included by the outcome suite. Cases cover each individual input,
+several deficits, all ready, 1,999/2,000 stationary stock, Icarus-only stock,
+40/48 semantics, missing rates, waiting recovery, R6 and coexistence with three
+Current Status risks. Existing BLUE/RED/WHITE exact targets and GREEN stores
+remain covered by retained fixtures.
+
+**Milestone M3:** G3 passes without runtime/owner validation. Expert presentation
+and candidate packaging are next; actual utility remains reserved for GC3-13.

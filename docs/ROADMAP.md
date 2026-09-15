@@ -1,6 +1,6 @@
 # Guide 3.0 companion improvements roadmap
 
-**Status:** Accepted for implementation — GC3-01 through GC3-09 technically complete; G1/G2 passed; GC3-10 next.
+**Status:** Accepted for implementation — GC3-01 through GC3-10 technically complete; G1/G2/G3 passed; GC3-11 next.
 **Prepared:** 2026-09-15.
 **Implementation:** Owner authorized GC3-01 through GC3-12 on 2026-09-15, with a push after each story. GC3-13 remains the human validation stop.
 **Execution record:** [Story decisions and validation](management/GUIDE3-EXECUTION.md).
