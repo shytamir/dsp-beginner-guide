@@ -2,6 +2,7 @@
 
 **Status:** Completed; publication pending. GC3-01 through GC3-12 passed their technical gates. On 2026-09-19 the owner completed the full playthrough without observable regressions and accepted ILS for this version. GC3-13/G5 close with the two requested DYSON corrections implemented. The roughly 7 FPS cost remains accepted.
 **Prepared:** 2026-09-15.
+**Release promotion:** Owner selected 3.0 on 2026-09-19; the original 2.2.x candidate identities below remain historical evidence. Store publication is pending.
 **Implementation:** Owner authorized GC3-01 through GC3-12 on 2026-09-15, with a push after each story. GC3-13 records the final owner workshop and bounded corrections. This completed roadmap is retained for the publication handoff.
 **Execution record:** [Story decisions and validation](management/GUIDE3-EXECUTION.md).
 **Authority:** [PROJECT.md](PROJECT.md).

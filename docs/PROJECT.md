@@ -8,7 +8,8 @@ roadmap for implementation on 2026-09-15. **GC3-01 through GC3-12 are technicall
 complete. GC3-13/G5 are closed following the owner's 2026-09-19 full-playthrough
 acceptance and the two requested DYSON corrections. No observable regressions
 were reported; the roughly 7 FPS cost and ILS behavior are accepted for this
-version. The final package is prepared for publication.** See the
+version. The owner promoted the release line to 3.0 on 2026-09-19;
+store publication remains pending.** See the
 [execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
@@ -294,7 +295,7 @@ in one combined input objective and a separate stationary-stock objective. This 
 
 | Contract | Version |
 |---|---:|
-| Candidate release line | 2.2.x |
+| Promoted release line | 3.0.x |
 | Snapshot schema | 2.24 |
 | Normalized state | 2.8 |
 | Guide selection | 1.7 |

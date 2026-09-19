@@ -71,6 +71,25 @@ two corrections. Publication is pending. No post-fix game session, installed-DLL
 hash or exhaustive acceptance-case matrix is claimed. Expert fixed-WHITE remains
 automatically tested without later owner runtime confirmation.
 
+## 3.0 version promotion — 2026-09-19
+
+**Authorization:** The owner requested promotion to 3.0 with strict artifact
+version verification. Update only `VERSION`, local `BuildVersion` constants,
+project version defaults and the corresponding release records. Preserve the
+accepted behavior, snapshot schema 2.24 and all analysis contracts.
+
+**Procedure:** Build the local defaults and verify the compiled plugin identity.
+Commit and push the promotion, then use that commit's actual CI run number as
+`N`. Verify both DLL variants and the public ZIP downloaded from that run:
+package/BepInEx/exporter `3.0.N`, assembly/file `3.0.N.0`, and diagnostic product
+label `3.0.N.<commit>`. The packaged DLL must hash-match the public artifact;
+the diagnostic build must retain snapshot control and the public build omit it.
+Run the existing clean-source candidate command with the same sequence against
+installed game references. Retain manifests and validation reports under
+`artifacts/release-3.0/`; report actual run/commit/version identities at handoff.
+The historical 2.2.x candidate artifacts remain unchanged. Store publication
+and any release/tag remain separate from this source/artifact promotion.
+
 ## GC3-13 B1 — periodic panel slowdown
 
 **Report and authorization (2026-09-16):** The owner reported roughly 55 to

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### 3.0 promotion
+
+- Promoted the accepted Guide 3.0 implementation from the 2.2.x candidate line
+  to 3.0.x. `VERSION`, local plugin constants and project metadata agree.
+  The existing CI run number remains the patch: package/plugin `3.0.N`,
+  assembly/file `3.0.N.0`, diagnostic label `3.0.N.<commit>`.
+  Gameplay behavior and schema/analysis contracts are unchanged by promotion.
+  Store publication remains separate.
+
 ### Guide 3.0 candidate
 
 - GC3-13 closeout (2026-09-19): The owner completed the full playthrough on

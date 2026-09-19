@@ -8,7 +8,7 @@ and presents stable objectives plus concise, phase-aware status.
 The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
-The released baseline implements guide **2.3**. The **2.2.x candidate** adds the
+The released baseline implements guide **2.3**. The promoted **3.0.x release line** adds the
 accepted Guide 3.0 improvements. The owner completed the full playthrough with
 no observable regressions; the two requested DYSON corrections are implemented.
 Publication is pending. See the [workshop record](docs/management/GUIDE3-WORKSHOP.md). The candidate retains nine phases; its implementation state is described under
@@ -103,9 +103,9 @@ Assembly/file version:  M.m.N.0
 Diagnostic label:       M.m.N.X
 ```
 
-For example, workflow run 42 produces package and BepInEx version `2.2.42`,
-assembly/file version `2.2.42.0`, and diagnostic label
-`2.2.42.abcdef1`. The workflow sequence advances without committing a
+For example, workflow run 42 produces package and BepInEx version `3.0.42`,
+assembly/file version `3.0.42.0`, and diagnostic label
+`3.0.42.abcdef1`. The workflow sequence advances without committing a
 generated version change back to `main`.
 
 The hosted build downloads the official BepInEx 5 release as a compile
@@ -224,7 +224,8 @@ authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); all technical stories are
 complete. GC3-13/G5 record the owner's completed full playthrough on `2.2.101`,
 with no observable regressions and two bounded DYSON corrections now implemented.
 The roughly 7 FPS cost is accepted, and ILS is accepted for this version.
-Publication is pending. Candidate manifests identify source, versions and hashes.
+The owner promoted the release line to **3.0** on 2026-09-19. Store publication
+is pending. Candidate manifests identify source, versions and hashes.
 [Execution records](docs/management/GUIDE3-EXECUTION.md) distinguish owner evidence
 from automated checks of the final corrections and the Expert fixed-WHITE follow-up.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
