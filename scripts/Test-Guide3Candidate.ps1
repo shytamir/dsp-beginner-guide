@@ -59,7 +59,7 @@ if($dirty.Count -eq 0) {
     & git -c "safe.directory=$gitRepo" -C $repo archive --format=zip "--output=$(Join-Path $output 'source.zip')" HEAD
     if($LASTEXITCODE -ne 0) { throw 'Source archive failed.' }
 }
-Copy-Item -LiteralPath (Join-Path $repo 'docs/management/GUIDE3-WORKSHOP.md') -Destination (Join-Path $output 'WORKSHOP.md')
+Copy-Item -LiteralPath (Join-Path $repo 'docs/archive/project-management/guide-3.0/GUIDE3-WORKSHOP.md') -Destination (Join-Path $output 'WORKSHOP.md')
 $manifest | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $output 'candidate.json')
 Write-Host "Candidate verification passed: $output"
 if($dirty.Count -gt 0) { Write-Host 'Preflight only: uncommitted source is not a workshop candidate.' }

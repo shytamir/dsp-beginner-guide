@@ -7,24 +7,24 @@
 - Inspected read-only: 2026-08-02
 - Scope: the default industrial route from BOOTSTRAP through WHITE
 
-This report supersedes `GUIDE-REVISION-INGESTION.md` for future guide-derived
-work. The older document remains the implementation record for the v1.18
+This report superseded `GUIDE-REVISION-INGESTION.md` during the guide 1.22.2
+migration. The older document remained the implementation record for the v1.18
 baseline.
 
-Implementation and representative runtime acceptance are complete. The gaps
-and stories below are retained as the derivation record, not an open roadmap.
+Implementation and representative runtime acceptance were complete. The gaps
+and stories below were retained as the derivation record, not an open roadmap.
 
 ## Adopted scope
 
-The panel phase sequence becomes:
+The adopted panel phase sequence became:
 
 ```text
 BOOTSTRAP -> BLUE -> RED -> ILS -> YELLOW -> PURPLE -> GREEN
           -> DYSON -> PHOTON -> WHITE
 ```
 
-FLIGHT and TITANIUM are now checkpoints inside ILS rather than independent
-phases. SPHERE, WARP, and LOGISTICS are outside the mod's new critical-path
+FLIGHT and TITANIUM became checkpoints inside ILS rather than independent
+phases. SPHERE, WARP, and LOGISTICS were outside the mod's new critical-path
 scope. They must not have navigation controls, panels, objectives, findings,
 or snapshot phase contracts.
 
@@ -32,14 +32,14 @@ These interpretation rules keep the panel aligned with the guide without
 turning it into a rate dashboard:
 
 - the player still owns phase selection; evidence never navigates;
-- the phase-local `Ready to move on when` list is the objective authority;
+- the phase-local `Ready to move on when` list was the objective authority;
 - the ILS mission manifest, `Before flying home`, and `Done when` checkpoints
   jointly define its stable objective inventory;
-- a numerical pace is a hard objective only when the phase-local readiness
+- a numerical pace was a hard objective only when the phase-local readiness
   text repeats it;
-- dashboard and one-screen-summary rates otherwise remain reference context;
+- dashboard and one-screen-summary rates otherwise remained reference context;
 - supporting production appears only as a concise Current Status warning when
-  a real shortage is found;
+  a real shortage was found;
 - optional paths described elsewhere in the guide do not become hidden
   requirements or mod phases.
 
@@ -48,15 +48,15 @@ turning it into a rate dashboard:
 | Retained phase | Published phase-local readiness contract | Original gap and delivered disposition |
 |---|---|---|
 | BOOTSTRAP | Inputs arrive continuously; routine mall hardware replenishes automatically; the grid provides roughly 5-10 MW for the mall, Labs, and oil preparation. | Keep the replenishment and power evidence, but replace generic handcrafting/player-check rows with the three published conclusions. |
-| BLUE | Blue Cubes run continuously at 20/min or better; research is not hand-fed; roughly 5-10 MW is available for Blue and the coming oil district. | Keep 20/min as the only Blue rate objective. Treat 40/min and component comfort as reference/status, not completion requirements. |
+| BLUE | Blue Cubes run continuously at 20/min or better; research was not hand-fed; roughly 5-10 MW was available for Blue and the coming oil district. | Keep 20/min as the only Blue rate objective. Treat 40/min and component comfort as reference/status, not completion requirements. |
 | RED | Two Labs sustain 20 Red Cubes/min while Hydrogen and Refined Oil both keep leaving the Refineries. | Replace the old 10/min gate and remove flight preparation, staged materials, and older-cube checks from the objective list. |
 | ILS | Prepare the trip; establish powered remote Titanium and Silicon smelting; return with 860 Titanium Ingots and 520 High-Purity Silicon; complete the finite 200-Yellow-Cube research purchase; deploy two ILS towers and five Vessels; make both resources arrive home without Icarus. | The current framework spreads this one mission across FLIGHT, TITANIUM, YELLOW, and ILS, then places sustainable YELLOW before ILS. Consolidate the expedition and retire those duplicate boundaries. |
 | YELLOW | Three Yellow-Cube Labs produce continuously. | Replace the finite-batch/ILS-unlock gate. Keep imported Titanium, chemistry balance, and the 22.5/min dashboard pace as status or reference only. |
 | PURPLE | Three Purple-Cube Labs produce continuously. | Remove 12/min and all supporting-item/branch/older-cube rows from hard objectives. Report a detected endpoint or older-cube shortage only in Current Status. |
 | GREEN | Two Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. | Remove the 10/min, Warper, Deuterium, Strange Matter, and Dyson-preparation gates. Those supplies may produce one actionable warning when genuinely deficient. |
-| DYSON | Critical Photons become Antimatter reliably, and Antimatter reaches the science district without hand-carrying. | Solar Sail pace, Ejector duty, generation, receiver research, and the former 1.655 GW target are supporting diagnostics, not completion objectives. Remove the SPHERE alternative from the panel contract. |
-| PHOTON | At least 2,000 Antimatter is stored and the player is satisfied that the rising production trend can support WHITE. | Make stored Antimatter the measurable objective and leave sufficiency as an explicit player check. Receiver continuity, lens supply, Critical Photon conversion, and Hydrogen outlet health become focused status/pending evidence rather than extra completion gates. |
-| WHITE | Universe Matrix is researched; all six inputs reach the Labs continuously; ten Labs sustain 40 White Cubes/min; Mission Completed consumes or has consumed 4,000 White Cubes. | Replace the generic selected-pace model with these four explicit readiness rows. Preserve the concise Mission Accomplished endpoint without introducing a later phase. |
+| DYSON | Critical Photons become Antimatter reliably, and Antimatter reaches the science district without hand-carrying. | Solar Sail pace, Ejector duty, generation, receiver research, and the former 1.655 GW target were supporting diagnostics, not completion objectives. Remove the SPHERE alternative from the panel contract. |
+| PHOTON | At least 2,000 Antimatter was stored and the player was satisfied that the rising production trend can support WHITE. | Make stored Antimatter the measurable objective and leave sufficiency as an explicit player check. Receiver continuity, lens supply, Critical Photon conversion, and Hydrogen outlet health become focused status/pending evidence rather than extra completion gates. |
+| WHITE | Universe Matrix was researched; all six inputs reach the Labs continuously; ten Labs sustain 40 White Cubes/min; Mission Completed consumes or has consumed 4,000 White Cubes. | Replace the generic selected-pace model with these four explicit readiness rows. Preserve the concise Mission Accomplished endpoint without introducing a later phase. |
 
 ## Resolved gaps outside the objective inventory
 
@@ -73,7 +73,7 @@ turning it into a rate dashboard:
 
 Implementation status: SCOPE-01, ILS-02, OBJ-02, LATE-01, and PRUNE-01 were
 delivered together in the guide 1.22.2 critical-path migration. Their
-acceptance criteria passed the representative runtime test and remain useful
+acceptance criteria passed the representative runtime test and remained useful
 as regression criteria.
 
 ### SCOPE-01 - Restrict navigation to the critical path
@@ -116,10 +116,10 @@ Scope:
 
 Acceptance:
 
-- the ILS objective list remains stable from preparation through automatic
+- the ILS objective list remained stable from preparation through automatic
   delivery;
 - 860 Titanium Ingots, 520 High-Purity Silicon, the 200-Yellow-Cube purchase,
-  two ILS towers, five Vessels, and both active resource routes are reported
+  two ILS towers, five Vessels, and both active resource routes were reported
   against their matching guide checkpoints;
 - no objective claims that a plan or route exists without positive evidence;
 - completing ILS does not select YELLOW automatically.
@@ -135,7 +135,7 @@ Scope:
 - rebuild those six objective inventories from the gap table above;
 - keep exact hard rate thresholds only for BLUE at 20/min and RED at 20/min;
 - evaluate continuous production, required Lab counts, endpoint storage, and
-  phase power only where the published readiness text requires them;
+  phase power only where the published readiness text required them;
 - move comfort paces and supporting-chain health to Current Status, emitting
   them only when actionable.
 
@@ -152,7 +152,7 @@ Acceptance:
 ### LATE-01 - Realign DYSON, PHOTON, and WHITE
 
 **User story:** As a player on the default late-game route, I receive a small
-set of trustworthy readiness conclusions while detailed native telemetry is
+set of trustworthy readiness conclusions while detailed native telemetry was
 used only to explain a real problem.
 
 Scope:
@@ -190,7 +190,7 @@ Scope:
 
 Acceptance:
 
-- no removed phase ID or optional-route finding remains in player-facing or
+- no removed phase ID or optional-route finding remained in player-facing or
   snapshot contracts;
 - every retained telemetry field has a documented objective, status, or
   diagnostic consumer;
@@ -209,5 +209,5 @@ The coordinated migration was implemented in this dependency order:
 4. LATE-01
 5. PRUNE-01
 
-PRUNE-01 deliberately follows the objective work so telemetry is removed only
-after the retained consumers are known.
+PRUNE-01 deliberately followed the objective work so telemetry was removed only
+after the retained consumers were known.

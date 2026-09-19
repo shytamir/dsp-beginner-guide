@@ -2,57 +2,31 @@
 
 ## Product state
 
-The released DSP Guide Check implementation remains complete for the adopted
-DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
-roadmap for implementation on 2026-09-15. **GC3-01 through GC3-12 are technically
-complete. GC3-13/G5 are closed following the owner's 2026-09-19 full-playthrough
-acceptance and the two requested DYSON corrections. No observable regressions
-were reported; the roughly 7 FPS cost and ILS behavior are accepted for this
-version. The owner promoted the release line to 3.0 on 2026-09-19;
-store publication remains pending.** See the
-[execution record](management/GUIDE3-EXECUTION.md).
+DSP Guide Check **3.0.104** implements the DSP Practical Progression Guide
+**3.0** default critical path. The owner confirmed successful publication on
+2026-09-19. The repository is in **maintenance mode**, with no active epic,
+story or acceptance gate.
 
-[`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
-addresses ILS stage ownership, cargo and transport evidence, actionable Pending
-tasks, consequential Guide 3.0 readiness differences, and the owner-requested
-opt-in Expert mode showing only the Cube-rate bar and `DON'T PANIC`. The
-supporting [gap analysis](management/GUIDE3-GAP-ANALYSIS.md) records verified evidence,
-implementation decisions and excluded work.
+[ROADMAP.md](ROADMAP.md) is the maintenance placeholder. The completed roadmap,
+implementation decisions and acceptance evidence were
+[archived together](archive/project-management/guide-3.0/ROADMAP.md).
 
-The owner authorized implementation and a push after each technical story.
-Intermediate story gates use agent-run automated checks. At the owner's request, the final story
-is the only execution-stage human validation workshop; normal per-change
-runtime and presentation checkpoints are consolidated there. Technical
-completion, owner acceptance and publication remain separate states.
+The published package came from source `ea3314b7ec33aef5073127675aa4f5c4a60abe70`,
+[CI run 104](https://github.com/shytamir/dsp-beginner-guide/actions/runs/35415921325).
+Its version is `3.0.104`; assembly/file metadata is `3.0.104.0`, and the
+diagnostic label is `3.0.104.ea3314b`. Later CI builds do not change that
+published baseline by themselves.
 
-The contracts below describe the current implementation. Owner playthrough
-evidence covers `2.2.101`; the final DYSON corrections and Expert fixed-WHITE
-follow-up have automated coverage, without a later in-game confirmation.
-Publication remains separate and pending.
-
-The bounded maintenance cycle prompted by the full critical-path playthrough
-and its subsequent Cube demand-reference refinement concluded. Its
-[`completed maintenance roadmap`](archive/project-management/COMPLETED-MAINTENANCE-ROADMAP.md)
-is archived and carries no active implementation story or validation gate.
-The accepted Guide 3.0 cycle addresses a meaningful guide change and
-reproducible companion gaps. Maintenance intake otherwise remains limited to:
+Maintenance intake is limited to:
 
 - a meaningful change to the published guide;
 - a reproducible defect or compatibility regression;
 - an accepted feature request within the existing product scope;
-- required maintenance of the game, BepInEx, build, or package contract.
+- required maintenance of the game, BepInEx, build or package contract.
 
-Completed stories, migrations, roadmaps, and validation gates are historical
-records under [`docs/archive/`](archive/README.md). They do not represent open
-work or override this document.
-
-The completed cycle accepted concise WHITE presentation, native typography,
-GREEN-style YELLOW/PURPLE terminal-input tracking, the ILS starter-planet
-exclusion, exact-target Cube risk suppression, a 40/min Cube demand-reference
-ceiling, and tolerant PHOTON receiver continuity. It rejected the unsupported
-Drive Engine Lv2 claim and excluded RED coproduct diagnosis. Temporary
-playthrough observations and separate guide-authoring work did not become
-authoritative mod tasks.
+Historical evidence and limitations are retained in
+[the archive](archive/README.md); they do not create active obligations or
+override this document.
 
 ## Purpose and scope
 
@@ -84,10 +58,9 @@ warning system.
 
 ## Guide authority
 
-- Candidate authority: public guide 3.0, limited to the accepted roadmap outcomes.
-- Released baseline: `2.3`; implemented candidate: accepted Guide 3.0 gaps plus Expert mode.
-- Planning reference: the published guide declares `guide-version=3.0`, verified
-  on 2026-09-15. The candidate implements the accepted changes; the released baseline remains separate.
+- Implemented guide authority: DSP Practical Progression Guide **3.0**.
+- Published mod: **3.0.104**, covering the default critical path and Expert mode.
+- Optional guide routes remain outside the mod's scope.
 - Current implementation: the nine-phase default critical path.
 
 ```text
@@ -285,7 +258,7 @@ Direct inputs and Cubes remain eligible for actual draining/starved findings.
 Missing recipe/item observations remain unknown. GREEN retains its two input
 stores; internal branch progression is not modeled.
 
-PHOTON input sampling now retains at most 26 points per item for five colored
+PHOTON input sampling retains at most 26 points per item for five colored
 Cubes and Antimatter. Readiness requires 120 game seconds, 20 distinct samples
 and every sampled native one-minute aggregate at least 40/min. Missing samples
 break the item history; paused time does not fill it. PHOTON consumes this policy
@@ -295,7 +268,7 @@ in one combined input objective and a separate stationary-stock objective. This 
 
 | Contract | Version |
 |---|---:|
-| Promoted release line | 3.0.x |
+| Published mod | 3.0.104 |
 | Snapshot schema | 2.24 |
 | Normalized state | 2.8 |
 | Guide selection | 1.7 |

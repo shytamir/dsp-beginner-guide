@@ -2,12 +2,12 @@
 
 ## Status and authority
 
-Implemented for the adopted public guide 2.3 edition on 2026-08-09. This is a
-completed implementation record and does not define active work.
+Implemented for the adopted public guide 2.3 edition on 2026-08-09. This was a
+completed implementation record and carried no active work.
 
 ## User story
 
-As a player returning to the multi-stage ILS expedition, I want `DON'T PANIC`
+As a player returning to the multi-stage ILS expedition, I wanted `DON'T PANIC`
 to open the source guide at the checkpoint currently shown by DSP Guide Check
 so that I resume the relevant preparation, expedition, or automation guidance
 instead of rereading the phase entrance.
@@ -24,17 +24,17 @@ instead of rereading the phase entrance.
   click; it never changes or persists the player-selected phase.
 - Checkpoint resolution belongs to the presentation model. The Unity
   controller performs no runtime inference.
-- The presentation-only anchor is excluded from the snapshot contract, so no
-  snapshot schema or serialized panel-contract change is required.
+- The presentation-only anchor was excluded from the snapshot contract, so no
+  snapshot schema or serialized panel-contract change was required.
 - Focused deterministic coverage and the release build pass with zero errors.
 
 ## Implementation boundary
 
-`GuideGateEngine` remains the sole authority for the active ILS checkpoint.
+`GuideGateEngine` remained the sole authority for the active ILS checkpoint.
 `GuidePanelModelBuilder` maps the checkpoint's existing condition IDs to the
 three stable guide 2.3 anchors, and `GuidePanelController` opens the resolved
-anchor. The established `#ils` phase anchor remains the soft fallback.
+anchor. The established `#ils` phase anchor remained the soft fallback.
 
-The same change adopts guide 2.3 in current repository authority metadata. It
-does not add optional-route panels, stage persistence, automatic phase
+The same change adopted guide 2.3 in repository authority metadata. It
+did not add optional-route panels, stage persistence, automatic phase
 navigation, new telemetry, or a serialized field.

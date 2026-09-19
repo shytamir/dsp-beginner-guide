@@ -3,9 +3,18 @@
 <p align="center"><img alt="See the problem and know what to do—without leaving the game" src="https://shytamir.github.io/DSP_Guide/assets/images/mod/see-the-problem-and-know-what-to-do-without-leaving-the-game.png"><br><small><em><span style="color:#b8b8b8">See the problem and know what to do—without leaving the game</span></em></small></p>
 
 DSP Guide Check is an on-demand companion for the
-[DSP Practical Progression Guide](https://dsp-beginner-guide.pages.dev/).
+[DSP Practical Progression Guide 3.0](https://dsp-beginner-guide.pages.dev/).
 It gives you stable objectives for the guide phase you choose and a short
 status summary based on what your factory is doing now.
+
+## Features
+
+- Nine player-selected phases from BLUE through WHITE.
+- ILS Departure, Haulback and Automation stages saved for each playthrough.
+- Stable objectives, Cube production counters and concise shortage advice.
+- A collapsible panel with a direct link to the matching guide section.
+- Optional [Expert mode](#expert-mode): set `ExpertMode = true` in the config
+  for all six Cube counters and `DON'T PANIC`, without the guidance panel.
 
 ## Quick start
 
@@ -30,6 +39,8 @@ For only the Cube-rate bar and `DON'T PANIC` button, set
 It defaults to false. F8 still opens and closes the overlay. Expert mode shows
 all six Cube counters and opens the guide at WHITE. Set false and restart to
 restore the guidance panel, navigation controls and your saved phase and ILS stage.
+The adjoining panel is hidden in Expert mode, including the collapse control,
+Previous/Next arrows and ILS stage selector.
 
 ## Installation
 

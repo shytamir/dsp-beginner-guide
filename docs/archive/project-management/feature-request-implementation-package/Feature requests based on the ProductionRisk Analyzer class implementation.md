@@ -1,5 +1,12 @@
 # Feature requests based on the ProductionRisk Analyzer class implementation
 
+This historical proposal accompanied an external implementation package that
+was not adopted as the repository baseline. The mockups and proposed behavior
+below were design suggestions, not delivered features or active work. The
+[audit](Audit%20Report%20of%20Feature%20Request%20Implementation%20Package.md)
+recorded its defects; the [production-risk roadmap](../PRODUCTION-RISK-ROADMAP.md)
+recorded the bounded implementation that followed.
+
 ## 1. Translating Risk Math into Intuitive Player Diagnostics
 
 Reporting a raw float like `0.87` means nothing to a player. The goal of the expanded drawer is to translate $S \times D \times B$ into an immediate **Root Cause** and **Call to Action**.

@@ -1,8 +1,10 @@
 # DSP Guide Check - Guide 2.0 runtime validation
 
-This protocol uses only Dyson Sphere Program with the mod installed through
-BepInEx. It validates the current nine-phase guide 2.0 contract; no coding
-tools are needed.
+This archived protocol described the nine-phase Guide 2.0 contract and its
+production-risk acceptance cases. It used DSP with the mod installed through
+BepInEx. The procedures below were the requested checks, not a claim that every
+case was independently observed. Later guide versions superseded these criteria;
+the maintained protocol is [RUNTIME-TESTING.md](../../RUNTIME-TESTING.md).
 
 ## Preparation
 
@@ -16,12 +18,13 @@ tools are needed.
 
 ## RISK-05 bounded interpreted presentation regression
 
-The focused gate is accepted. Three simultaneous GREEN risks passed the
+The focused gate was accepted. Three simultaneous GREEN risks passed the
 compact Current Status, paired Next Actions, critical promotion, recovery,
 reset, buffer-note, interaction, layout, performance, and log checks. A fourth
 simultaneous end-product candidate was not reproduced in game; its
-same-severity retention rule remains deterministically covered and is a
-non-blocking checkpoint for a future natural four-candidate case.
+same-severity retention rule had deterministic coverage. The missing natural
+four-candidate observation was accepted as a non-blocking evidence limit and
+did not remain an active gate after closure.
 
 Use the latest diagnostic DLL and a mature WHITE save whose Cube inputs and
 White Cube production have ten-minute history. Keep the WHITE phase selected

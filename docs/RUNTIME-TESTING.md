@@ -4,11 +4,9 @@ This is the reusable runtime protocol for the maintained product. Historical
 feature gates and their accepted evidence are archived under
 [`docs/archive/validation/`](archive/validation/).
 
-For the accepted Guide 3.0 roadmap, perform these in-game checks only in
-GC3-13. Earlier stories use synthetic automated fixtures; their results and
-the next story are in the [execution record](management/GUIDE3-EXECUTION.md).
-Include ILS I/II/III selection, collapse visibility, per-playthrough persistence
-and each stage's guide anchor in that workshop.
+Choose the checks affected by the accepted maintenance change. Include ILS
+I/II/III selection, collapse visibility, per-playthrough persistence and each
+stage's guide anchor when navigation or ILS behavior changes.
 
 Use only Dyson Sphere Program with the current mod installed through BepInEx.
 Use the diagnostic DLL when a JSON snapshot is requested; use the public DLL
@@ -63,8 +61,8 @@ when validating the Thunderstore surface.
   20/min; research is not hand-fed.
 - RED: two configured Labs sustain 20 Red Cubes/min; oil congestion is status,
   not another objective.
-- ILS: exactly one preparation, non-starter-planet expedition, or
-  research-rush checkpoint is active. Starter-planet Silicon production does
+- ILS: exactly one player-selected Departure, Haulback or Automation stage
+  is active. Starter-planet Silicon production does
   not count as an outpost. Select II deliberately to check smelting and cargo;
   only finished items count. Check partial loading, transit, partial unloading
   at home and missing evidence without any automatic stage changes.
@@ -72,16 +70,18 @@ when validating the Thunderstore surface.
 - PURPLE: three supplied Cube Labs pass without separate input stores.
 - GREEN: two configured Cube Labs run continuously and Quantum Chip and
   Graviton Lens storage is visible.
-- DYSON: swarm readiness leads to required receiver research, sustained lensed
-  receivers and Photon Materialization, plus the explicit physical handoff check.
+- DYSON: five objectives cover Sail production/launching, swarm power,
+  receiver research, four sustained lensed Ray Receivers in Photon Generation,
+  and Photon Materialization with stationary Antimatter. There is no manual
+  Hydrogen/science-delivery objective or Pending reminder.
 - PHOTON: five colored Cubes plus Antimatter sustain 40/min for 120 game seconds
   and at least 20 samples; the 2,000 reserve excludes Icarus.
 - WHITE: concise White-Cube research, configured-Lab and stored-Cube evidence,
   the 40/min gate, and Mission Completed state remain the stable contract.
 
-## WHITE-CONCISE-01 focused regression
+## WHITE presentation and native typography
 
-This gate also validates `NATIVE-TYPE-01`. Use the diagnostic DLL and one
+Use the diagnostic DLL and one
 WHITE-ready playthrough. Capture the panel and one snapshot in each available
 state; reloading purpose-built saves is fine.
 
@@ -115,7 +115,7 @@ state; reloading purpose-built saves is fine.
    objective and eligible draining/starved risk remain useful. Restore feed.
 3. Check partial Lab configuration and missing observations. Unknown evidence
    must not become an invented storage instruction. GREEN still requires stores.
-4. Capture representative normal-mode screenshots/snapshots at GC3-13.
+4. Capture representative normal-mode evidence for the change under test.
 
 ## Production-risk spot check
 
@@ -154,7 +154,7 @@ phase target.
    Confirm both variants retain their expected snapshot-control behavior and
    report new warnings or exceptions.
 
-## PHOTON-CONTINUITY-01 focused regression
+## Receiver continuity
 
 The exact tolerance boundary is deterministic rather than a manual timing
 exercise. Run `build.cmd` and confirm the receiver-continuity suite accepts
@@ -193,13 +193,14 @@ performed, and any mismatch. Provide screenshots for presentation failures and
 a diagnostic snapshot only when runtime analysis requires repository-side
 audit.
 
-## Expert mode — GC3-13 only
+## Expert mode
 
 For both variants, set `[General] ExpertMode = true` and restart DSP. Confirm
 the overlay starts hidden, F8 opens/closes only the Cube-rate bar and working
 DON'T PANIC button, and no old panel area intercepts clicks. Check 1080p/4K,
-refresh, save reload, retained phase/stage and PHOTON rate colors/guide anchors.
+refresh and save reload. All six Cube counters use WHITE, and the guide button
+opens WHITE regardless of the saved normal-mode phase or ILS stage.
 No navigation, collapse, scrolling, risk glyph or snapshot control may appear.
 Set false and restart to restore normal controls and stored selection.
 Automated policy/config/guard tests do not establish actual Unity layout or
-pointer behavior; those remain workshop observations.
+pointer behavior; verify those in game when the affected behavior changes.

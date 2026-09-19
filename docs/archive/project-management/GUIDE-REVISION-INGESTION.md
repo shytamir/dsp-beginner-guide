@@ -1,8 +1,8 @@
 # GUIDE-01 - Adopted guide authority
 
-> Historical baseline: this document records the v1.18 implementation against
-> guide v1.1. Future guide-derived work is governed by
-> `GUIDE-1.22.2-GAP-ANALYSIS.md`.
+> Historical baseline: this document recorded the v1.18 implementation against
+> guide v1.1. The guide 1.22.2 migration subsequently superseded it.
+> Current authority is [PROJECT.md](../../PROJECT.md).
 
 ## Source
 
@@ -18,7 +18,7 @@
 - Inspected read-only on 2026-07-30.
 
 The prepared comparison baseline
-`0020f050cb46679c480008f95cba7cc676359891` is not present in the current
+`0020f050cb46679c480008f95cba7cc676359891` was not present in the current
 guide repository history, so a mechanical baseline diff was unavailable.
 GUIDE-01 therefore re-read and re-derived the complete published contract
 rather than assuming unchanged statements.
@@ -26,22 +26,22 @@ rather than assuming unchanged statements.
 ## Product contract
 
 - The player selects and changes phases; runtime evidence never navigates.
-- Objectives are the selected phase's published readiness checklist.
-- Pending rows are unresolved actions toward those objectives.
-- Reference and comfort paces are context, except when the readiness checklist
+- Objectives were the selected phase's published readiness checklist.
+- Pending rows were unresolved actions toward those objectives.
+- Reference and comfort paces were context, except when the readiness checklist
   explicitly names the pace.
 - Warnings appear only when relevant; optional routes never become hidden
   requirements.
-- Unprovable checklist items remain explicit player checks.
-- WARP is an optional reference route with no completion gate.
-- DYSON and SPHERE are player-selected alternatives leading to PHOTON.
+- Unprovable checklist items remained explicit player checks.
+- WARP was an optional reference route with no completion gate.
+- DYSON and SPHERE were player-selected alternatives leading to PHOTON.
 - WHITE ends the main route at Mission Accomplished.
-- LOGISTICS is the new, manually selected post-completion phase.
-- Combat remains outside scope.
+- LOGISTICS was the new, manually selected post-completion phase.
+- Combat remained outside scope.
 
 ## Adopted phase records
 
-The phase identifier is also its published guide anchor.
+The phase identifier was also its published guide anchor.
 
 ### BOOTSTRAP
 
@@ -60,7 +60,7 @@ The phase identifier is also its published guide anchor.
   power room; basic component supply no longer consumes every metal batch.
 - Evidence: native production, stock, native power, and a player check for
   direct lab feeding.
-- Reference: 40/min is comfortable.
+- Reference: 40/min was comfortable.
 
 ### RED
 
@@ -70,7 +70,7 @@ The phase identifier is also its published guide anchor.
   Blue keeps pace.
 - Evidence: native production, tank fill, stock, and demand-aware Cube
   capability.
-- Reference: 20/min is comfortable.
+- Reference: 20/min was comfortable.
 
 ### FLIGHT
 
@@ -96,7 +96,7 @@ The phase identifier is also its published guide anchor.
   spent; Titanium Alloy; ILS complete or finishing; most non-Yellow ILS
   hardware ready.
 - Evidence: native production, stock, research/queue state, and station stock.
-- Reference: 15/min is comfortable.
+- Reference: 15/min was comfortable.
 
 ### ILS
 
@@ -114,7 +114,7 @@ The phase identifier is also its published guide anchor.
   Particle Broadband, Graphene, and Carbon Nanotubes; both branches complete
   or progressing; older Blue, Red, and Yellow rechecked.
 - Evidence: native production, reserves and consumption, and research queue.
-- Reference: 24/min is comfortable. Supporting item stability does not invent
+- Reference: 24/min was comfortable. Supporting item stability does not invent
   an exact rate not stated by the readiness checklist.
 
 ### WARP
@@ -132,7 +132,7 @@ The phase identifier is also its published guide anchor.
 - Evidence: native production, stock, recipe configuration, and deployed
   Dyson infrastructure.
 - References: 20/min comfortable and roughly 40/min endgame pace. Scaling
-  remains an explicit player check because the chosen endgame pace is not a
+  remained an explicit player check because the chosen endgame pace was not a
   single universal completion threshold.
 
 ### DYSON
@@ -173,9 +173,9 @@ The phase identifier is also its published guide anchor.
   pace; matching Antimatter; continuous White Cubes; Mission Completed
   consuming or having consumed 4,000 White Cubes.
 - Evidence: research and native production. The current default selected pace
-  is 40/min.
-- Endpoint: after Mission Completed the concise objective is
-  `Mission Accomplished!`; navigation still remains manual.
+  was 40/min.
+- Endpoint: after Mission Completed the concise objective was
+  `Mission Accomplished!`; navigation still remained manual.
 
 ### LOGISTICS
 
@@ -196,7 +196,7 @@ The phase identifier is also its published guide anchor.
 - Changed: every main-phase objective inventory now follows the published
   readiness checklist; exact rate gates exist only where that checklist gives
   an exact pace.
-- Moved: comfort/reference paces and causal warnings remain outside objective
+- Moved: comfort/reference paces and causal warnings remained outside objective
   completion unless the readiness checklist explicitly names them.
 - Removed: future-phase research gates, invented supporting-item rate gates,
   automatic-route implications, and WARP completion objectives.
@@ -221,8 +221,8 @@ The phase identifier is also its published guide anchor.
 
 ## Runtime acceptance
 
-The release build validates deterministic wiring and contract serialization.
-In-game acceptance still requires representative early, middle, late, route,
-PHOTON, WHITE, and LOGISTICS checkpoints using
-`docs/RUNTIME-TESTING.md`. Runtime validation must confirm that objectives
-remain stable and that no selected phase changes without player input.
+The release build validated deterministic wiring and contract serialization.
+At that stage, the acceptance plan required representative early, middle, late,
+route, PHOTON, WHITE and LOGISTICS checkpoints. The checks were intended to
+confirm stable objectives and player-owned selection. This historical plan
+did not itself establish that every checkpoint had passed.

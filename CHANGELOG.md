@@ -1,111 +1,25 @@
 # Changelog
 
-## Unreleased
+## 3.0.104 — 2026-09-19
 
-### 3.0 promotion
+Published successfully, as confirmed by the owner.
 
-- Promoted the accepted Guide 3.0 implementation from the 2.2.x candidate line
-  to 3.0.x. `VERSION`, local plugin constants and project metadata agree.
-  The existing CI run number remains the patch: package/plugin `3.0.N`,
-  assembly/file `3.0.N.0`, diagnostic label `3.0.N.<commit>`.
-  Gameplay behavior and schema/analysis contracts are unchanged by promotion.
-  Store publication remains separate.
+- Implemented the DSP Practical Progression Guide 3.0 default critical path.
+- Added player-selected ILS Departure, Haulback and Automation stages with
+  clearer cargo, research, transport and home-delivery guidance.
+- Removed unnecessary storage objectives from YELLOW and PURPLE.
+- Extended DYSON through Photon Generation receivers and Antimatter conversion,
+  with five concise objectives.
+- Required sustained PHOTON inputs and the 2,000-Antimatter reserve.
+- Added default-off Expert mode: all six Cube counters and `DON'T PANIC`,
+  with WHITE selected and normal-mode preferences preserved.
+- Reduced periodic panel work by reusing native game data and omitting
+  unused collection.
 
-### Guide 3.0 candidate
+The completed implementation and owner evidence were retained in the
+[Guide 3.0 release record](docs/archive/project-management/guide-3.0/GUIDE3-EXECUTION.md).
 
-- GC3-13 closeout (2026-09-19): The owner completed the full playthrough on
-  2.2.101 with no observable regressions and accepted ILS for this version.
-  Removed DYSON's manual Hydrogen/science-delivery objective and its Pending
-  reminder; this advice stays in the guide. The receiver objective now names
-  Photon Generation explicitly. Receiver sampling and completion thresholds
-  are unchanged. Analysis 3.13 and progression 3.10; snapshot schema stays 2.24.
-  Final corrections are technically validated; publication is pending.
-
-- GC3-13 owner checkpoint: Accepted performance at roughly a 7 FPS cost and
-  confirmed ExpertMode works. Fixed Expert mode to use WHITE and display all six
-  Cube counters, preserving normal-mode phase/stage preferences. The accepted
-  candidate remains the full-playthrough build; this follow-up does not block it.
-
-- GC3-13 B1 follow-up: The first correction did not resolve the reported slowdown.
-  The inherited public-version slowdown is included in this correction.
-  Removed discarded player/factory diagnostics, unused building counting,
-  full storage-container exports and redundant station-stock aggregation from
-  panel collection. Live WHITE/Antimatter stock uses native item counts; research
-  reads native flags, and Dyson guidance uses native power without construction
-  or launcher walks. Recipe reads respect cursors and query assemblers only for
-  DYSON. Preserve consumed evidence, compact snapshots, prose and
-  refresh cadence. The owner subsequently accepted the roughly 7 FPS impact.
-
-- GC3-13 B1: Corrected the periodic refresh's ILS station lookup to reuse each
-  station's own slots and observe receipts only in selected ILS Automation.
-  Replaced the copied research-prerequisite table with native technology data;
-  removed unused full-state diagnostic materialization from panel analysis and
-  redundant availability reads. No new timing or diagnostic collection. The
-  owner retest failed; the follow-up above supersedes this candidate.
-
-- GC3-12: Prepared the 2.2.x candidate line with one PowerShell 7 command for
-  both local variants, retained/story fixtures, bounded snapshot parity, identity
-  and package checks. Hosted CI runs the portable suites for both DLLs. Clean
-  candidates retain source, hashes, reports and the final owner workshop locally.
-  Owner playthrough acceptance is recorded above; publication remains pending.
-
-- GC3-11: Added default-off `[General] ExpertMode`, applied after restart. It
-  creates only the Cube-rate bar and DON'T PANIC button, retaining selected-phase
-  rates and guide anchors. All adjoining guidance controls and snapshot export
-  callbacks are omitted/inert. Normal presentation and snapshot schema remain.
-
-- GC3-10: PHOTON now evaluates six sustained WHITE inputs and 2,000 stationary
-  Antimatter. Pending names the first current shortage; the five Cube colors
-  use 40/min without changing other phases. Receiver construction belongs to
-  DYSON. Analysis 3.12 and progression 3.9.
-
-- GC3-09: Added bounded 120-game-second/20-sample readiness at 40/min for five
-  colored Cubes and Antimatter, using existing native samples. Missing evidence
-  breaks history; pause cannot fill it. Normalized 2.8 and snapshot 2.24 expose
-  elapsed time, sample count, minimum rate and reason.
-
-- GC3-08: DYSON includes the required receiver-to-Antimatter bridge, ordered
-  research and originally an explicit Hydrogen/science-delivery player check
-  (removed at owner closeout above). The bridge
-  link follows swarm readiness. Snapshot 2.23 adds scoped conversion evidence;
-  analysis 3.11 and progression 3.8 retain the existing receiver tolerance.
-
-- GC3-07: YELLOW/PURPLE no longer require separate input stores. Three supplied
-  Labs can pass without buffers; genuine input shortages remain visible.
-  Missing Lab/item evidence stays unknown. Analysis 3.10, progression 3.7.
-
-- GC3-06: ILS Pending projects at most three eligible stage-owned tasks. Research,
-  assembly, deployment and receipt respect prerequisites; waiting evidence adds
-  no repeat work. Analysis 3.9, panel 2.10 and snapshot 2.22 export candidates.
-
-- GC3-05: Home delivery now requires finished source material, matching home/outpost
-  policies, five home Vessels and subsequent home inputs for both materials.
-  Session receipt flags survive quiet periods; diagnostics expose reset reasons
-  and planet-level attribution limits. Snapshot 2.21, normalized 2.7, analysis 3.8,
-  progression 3.6.
-
-- GC3-04: Automation counts finished towers and Vessels at home or assigned to
-  selected endpoints. Deployment/configuration is separate; consumed components
-  no longer need replacing. Normalized state 2.6, analysis 3.7, progression 3.5
-  and snapshot 2.20 include endpoint/count provenance.
-
-- GC3-03: ILS research follows stage-owned branches and their real prerequisites.
-  Queued research waits without repeat actions; Drive Engine Lv3 is no longer
-  required. The first 200 Yellow Cubes remain a one-time guide batch reference.
-  Normalized state 2.5, analysis 3.6, progression 3.4 and snapshot 2.19.
-
-- GC3-02: Haulback distinguishes finished outpost production, Icarus cargo and
-  cargo available at home. Unloading preserves the total; ore and remote stock
-  cannot stand in for finished cargo aboard. Missing observations remain unknown.
-  Normalized state 2.4, analysis 3.5, progression 3.3 and snapshot 2.18.
-
-- GC3-01: ILS stages are selected explicitly and retained per playthrough.
-  A one-time first-entry suggestion replaces repeated automatic stage changes;
-  `DON'T PANIC` follows the selected stage. Selection 1.7, analysis 3.4,
-  progression 3.2, panel 2.9 and snapshot 2.17 carry stage provenance.
-  Automated checks pass in both variants; owner runtime acceptance is pending.
-
-### 2.1 maintenance summary
+## 2.1 maintenance history
 
 - Changed: concise WHITE status, native panel typography, useful YELLOW and
   PURPLE terminal-input tracking, safer ILS stage evidence, exact-target Cube
@@ -117,7 +31,7 @@
 
 ### Changed
 
-- Adopted the published guide 2.3 edition as the current development authority
+- Adopted the published guide 2.3 edition as the development authority at that time
   without changing the retained nine-phase runtime contract. During ILS,
   `DON'T PANIC` now opens the published preparation, expedition, or automation
   stage that matches the checkpoint currently presented by the panel; other
@@ -212,9 +126,9 @@
   compact snapshot schema to 2.9 for the RISK-05 runtime gate.
 - Accepted the RISK-05 three-risk GREEN presentation, paired actions, critical
   promotion, recovery, reset, buffer-note, interaction, layout, performance,
-  and log gate with no discovered regression. Four-candidate churn remains a
-  non-blocking deterministic regression checkpoint because no natural
-  four-end-product case was reproduced in game.
+  and log gate with no discovered regression. Four-candidate churn had
+  deterministic coverage; the absence of a natural four-end-product case in
+  game was accepted as a non-blocking evidence limit.
 - Added a fixed, click-through native DSP signal glyph beside the Cube-rate
   rail for the analyzer-selected production risk. Draining and starved use
   distinct embedded signals; quiet states display no glyph. Advanced the

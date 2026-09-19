@@ -1,11 +1,14 @@
-# Thunderstore Package Contract
+# Completed Thunderstore packaging implementation
 
 ## Purpose
 
+This archived record described the original packaging implementation. The
+maintained contract was [THUNDERSTORE-PACKAGE.md](../../THUNDERSTORE-PACKAGE.md).
+
 The hosted build produces one installable Thunderstore package for DSP Guide
 Check plus separate diagnostic and public DLL artifacts. The repository source
-layout and C# namespace remain unchanged; the public assembly and package
-identity are `DspGuideCheck.dll` and `DSPGuideCheck`.
+layout and C# namespace remained unchanged; the public assembly and package
+identity were `DspGuideCheck.dll` and `DSPGuideCheck`.
 
 ## ZIP layout
 
@@ -22,13 +25,13 @@ BepInEx/
       DspGuideCheck.dll
 ```
 
-The three required Thunderstore files are at the ZIP root. No source,
+The three required Thunderstore files were at the ZIP root. No source,
 diagnostic reports, game assemblies, or additional wrapper directory belongs
 inside the installable package.
 
 ## Manifest
 
-`packaging/manifest.template.json` is the source template. CI replaces the
+`packaging/manifest.template.json` was the source template. CI replaces the
 single `{{VERSION_NUMBER}}` placeholder before packaging.
 
 - Name: `DSPGuideCheck`
@@ -37,19 +40,19 @@ single `{{VERSION_NUMBER}}` placeholder before packaging.
 - Description: the plain-text first paragraph of the repository README
 - Version: `M.m.N`
 
-The package README is maintained separately at `packaging/README.md`. It uses
+The package README was maintained separately at `packaging/README.md`. It uses
 portable Markdown and absolute public links so it renders outside GitHub.
-`packaging/icon.png` is a 256 by 256 PNG with no game-owned assets.
+`packaging/icon.png` was a 256 by 256 PNG with no game-owned assets.
 
 ## Version mapping
 
 `VERSION` provides `M` and `m`. The GitHub Actions run number supplies `N`.
-The same `M.m.N` value is used by the Thunderstore manifest, BepInEx plugin
+The same `M.m.N` value was used by the Thunderstore manifest, BepInEx plugin
 identity, and product semantic version.
 
 Assembly and file metadata retain the required four-number representation
-`M.m.N.0`. The commit-bearing `M.m.N.X` release label remains diagnostic
-metadata only and is not a Thunderstore version.
+`M.m.N.0`. The commit-bearing `M.m.N.X` release label remained diagnostic
+metadata only and was not a Thunderstore version.
 
 ## Build and validation
 
@@ -69,25 +72,25 @@ The workflow:
 8. uploads the installable ZIP, both identifiable DLL variants, and their
    build and package reports.
 
-The GitHub artifact is a transport container. Its
-`DSPGuideCheck-M.m.N.zip` member is the package intended for a mod manager or
+The GitHub artifact was a transport container. Its
+`DSPGuideCheck-M.m.N.zip` member was the package intended for a mod manager or
 Thunderstore upload.
 
-## Release-blocking next actions
+## Completed release stories
 
-Complete these stories in order before publishing the release candidate.
+These stories were completed and accepted before the release candidate was published.
 
 ### STORE-README-01 — Give mod users a purpose-built store README
 
 **Status:** Completed and accepted by the release owner.
 
-**User story:** As a Thunderstore user, I want a concise README that tells me
+**User story:** As a Thunderstore user, I wanted a concise README that tells me
 how to install and open DSP Guide Check, so I can start using it without
 reading development or telemetry documentation.
 
 Acceptance criteria:
 
-- `packaging/README.md` is the authoritative store README, and CI explicitly
+- `packaging/README.md` was the authoritative store README, and CI explicitly
   packages that file rather than the repository-root README;
 - it links to the published practical progression guide and the mod source
   repository;
@@ -98,13 +101,13 @@ Acceptance criteria:
 - it does not mention snapshot export, schema details, build tooling, or other
   developer-facing internals;
 - package validation proves the ZIP contains the dedicated README, and the
-  rendered copy is presented to the release owner for final review.
+  rendered copy was presented to the release owner for final review.
 
 ### STORE-SNAPSHOT-01 — Omit snapshot export from the public package
 
 **Status:** Completed and accepted by the release owner.
 
-**User story:** As a Thunderstore user, I want the public panel to omit the
+**User story:** As a Thunderstore user, I wanted the public panel to omit the
 forensic snapshot control, so the normal mod surface stays focused on guide
 progression while maintainers retain a diagnostic build when needed.
 
@@ -114,13 +117,13 @@ Acceptance criteria:
   of the `Save snapshot` control without panel exceptions or dead space;
 - the ordinary diagnostic build retains snapshot export, while a distinct
   public build omits its control;
-- the build-time switch and both local variants are implemented and validated
-  before the hosted workflow is changed;
+- the build-time switch and both local variants were implemented and validated
+  before the hosted workflow was changed;
 - CI produces identifiable diagnostic and public DLL variants, and only the
   public no-control DLL enters the Thunderstore ZIP;
 - the store README contains no snapshot-export reference;
-- an in-game gate confirms the diagnostic control remains available, the
-  public control is absent, and the remaining panel layout and controls work.
+- an in-game gate confirms the diagnostic control remained available, the
+  public control was absent, and the remaining panel layout and controls work.
 
 The release-owner gate passed on public package version `1.18.49`: the control
 was absent and non-interactive with no dead footer spacing, the remaining

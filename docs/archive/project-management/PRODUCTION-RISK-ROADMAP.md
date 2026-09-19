@@ -2,27 +2,27 @@
 
 ## Decision
 
-The feature-package source files are not an implementation baseline. Their
-runtime access, buffer model, navigation layer, and UI structure do not match
+The feature-package source files were rejected as an implementation baseline. Their
+runtime access, buffer model, navigation layer, and UI structure did not match
 this repository's verified APIs or architecture.
 
-The underlying feature remains valuable and is adopted as a product goal:
+The underlying feature was adopted as a product goal:
 
 - compare recent production with a longer native baseline;
 - distinguish a real supply collapse from startup, pulsed production, and
   output backpressure;
-- account for accessible supply runway where its scope is provable;
+- account for accessible supply runway where its scope was provable;
 - translate the result into one useful player-facing diagnosis; and
 - expose the selected phase's worst actionable risk through a quiet,
   game-native signal glyph on the fixed Cube-rate rail.
 
-The implementation must extend the existing collector, normalized state,
-analyzer, panel-model, and UI layers. It must not introduce a second factory
+The implementation was required to extend the existing collector, normalized state,
+analyzer, panel-model, and UI layers. It was not to introduce a second factory
 scanner, phase controller, navigation surface, or dashboard.
 
 ## Adopted mathematical contract
 
-For an evaluated item, all rates are normalized to items per minute before
+For an evaluated item, all rates were normalized to items per minute before
 they reach the risk engine:
 
 ```text
@@ -41,22 +41,22 @@ risk = drop * thinness       otherwise
 
 The score measures **deterioration with little remaining runway**. It does not
 by itself prove that a stable line meets a guide target. Standing demand
-deficits and exact guide readiness targets remain separate interpreter inputs,
+deficits and exact guide readiness targets remained separate interpreter inputs,
 so a chronically undersized line cannot disappear merely because its recent
-and historical rates are equally low.
+and historical rates were equally low.
 
-Two refinements are mandatory:
+Two refinements were mandatory:
 
-- `R10 < epsilon` is not proof of startup. A genuine zero rate may represent
+- `R10 < epsilon` was not proof of startup. A genuine zero rate may represent
   an idle, saturated, disconnected, or absent line. Warm-up suppression must
   use explicit history-coverage evidence.
 - A high fill ratio suppresses risk only when both the stock scope and maximum
-  capacity are authoritative for that item. Broad planet inventory totals and
+  capacity were authoritative for that item. Broad planet inventory totals and
   guessed mixed-container capacity cannot establish backpressure.
 
 ## Verified native windows
 
-The existing Statistics Panel path remains the single collector authority:
+The existing Statistics Panel path remained the single collector authority:
 
 | Window | Production | Consumption | Normalization |
 |---|---:|---:|---:|
@@ -65,13 +65,13 @@ The existing Statistics Panel path remains the single collector authority:
 | 1 hour | `ProductStat.total[3]` | `ProductStat.total[10]` | divide by 60 |
 
 Import and export terms may enter the formula only after an equivalent native
-rate and matching scope have been verified. Until then they remain unavailable
-and are omitted rather than approximated from inventory movement.
+rate and matching scope had been verified. Until then they remained unavailable
+and were omitted rather than approximated from inventory movement.
 
 ## Roadmap status
 
-`RISK-01` through `RISK-05` are implemented and accepted. The production-risk
-roadmap is complete.
+`RISK-01` through `RISK-05` were implemented and accepted. The production-risk
+roadmap was complete.
 
 ### RISK-01 - Native multi-window evidence
 
@@ -80,7 +80,7 @@ line as a legitimate zero, matched the active Graviton Lens line to the native
 one-minute and normalized ten-minute views, and kept the first warming snapshot
 distinct from the later ready snapshot without a performance regression.
 
-**User story:** As the risk analyzer, I need trustworthy one-minute and
+**User story:** As the risk analyzer, I needed trustworthy one-minute and
 ten-minute production and consumption evidence with explicit coverage state,
 so a recent slowdown can be compared with a real baseline without mistaking
 missing history for zero production.
@@ -105,8 +105,8 @@ Acceptance:
 
 - The 1-minute and 10-minute values match their respective Statistics Panel
   views after normalization.
-- A legitimate zero is preserved as zero; unavailable and warming evidence
-  remain distinct.
+- A legitimate zero was preserved as zero; unavailable and warming evidence
+  remained distinct.
 - Existing one-minute consumers, sampling cadence, bounded watch set, and
   performance behavior do not regress.
 
@@ -116,13 +116,13 @@ Acceptance:
 proved a full authoritative Local Supply slot as backpressured, preserved
 finite runway while the slot drained, exposed zero runway when empty, and did
 not count 427 Quantum Chips held in a mixed depot as accessible stock. The
-remote-only configuration remains a focused regression checkpoint if remote
-logic changes; it is not a blocker for the guide's locally supplied component
+remote-only configuration remained a focused regression checkpoint if remote
+logic changes; it was not a blocker for the guide's locally supplied component
 flows.
 
-**User story:** As the risk analyzer, I need a conservative measure of stock
+**User story:** As the risk analyzer, I needed a conservative measure of stock
 that can actually cushion current demand, so idle production with a useful
-buffer is not reported as starvation and a full output buffer is recognized
+buffer was not reported as starvation and a full output buffer was recognized
 as backpressure only when the runtime proves it.
 
 Scope:
@@ -130,7 +130,7 @@ Scope:
 - Define eligible buffer sources and their scope before collecting them.
 - Use authoritative item-configured logistics slots for current/max saturation
   where available.
-- Count other storage toward runway only when the item and accessibility are
+- Count other storage toward runway only when the item and accessibility were
   known; do not invent an item-specific maximum for mixed containers.
 - Keep broad `ProductStat.storageCount` as corroborating planet inventory at
   most; never label it chest stock, accessible runway, or capacity.
@@ -142,16 +142,16 @@ Scope:
 
 Implemented policy:
 
-- Eligible runway is limited to item-configured logistics slots set to local
-  Supply and is evaluated per planet.
+- Eligible runway was limited to item-configured logistics slots set to local
+  Supply and was evaluated per planet.
 - Runway uses the same planet's native one-minute consumption evidence.
-- Backpressure is proven only when every eligible contributor in that scope
-  is full; otherwise it is not proven, or unknown when no eligible source
+- Backpressure was proven only when every eligible contributor in that scope
+  was full; otherwise it was not proven, or unknown when no eligible source
   exists.
-- Remote-only slots, non-supply slots, and tank aggregates are excluded with
+- Remote-only slots, non-supply slots, and tank aggregates were excluded with
   an explicit reason in snapshot evidence.
-- Import and export rates are not used because their runtime meaning and scope
-  have not been independently verified.
+- Import and export rates were not used because their runtime meaning and scope
+  had not been independently verified.
 
 Acceptance:
 
@@ -171,7 +171,7 @@ observed the warning clear within 15 seconds of restored production and
 accepted balanced recovery without a snapshot after an independent supporting
 line subsequently failed.
 
-**User story:** As a player, I want the mod to distinguish warming, balanced,
+**User story:** As a player, I wanted the mod to distinguish warming, balanced,
 backpressured, draining, and starved production, so I receive a useful cause
 and next action rather than a raw score or a false alarm.
 
@@ -185,7 +185,7 @@ Scope:
   deterioration score; do not multiply them into invisibility.
 - Use conservative tolerance and state hysteresis so pulsed recipes and small
   rate noise do not cause presentation flicker.
-- Return `Unknown` when required evidence is unavailable and `Warming` only
+- Return `Unknown` when required evidence was unavailable and `Warming` only
   when coverage evidence supports it.
 - Retain deterministic actionable selected-phase results for a bounded
   presentation consumer while preserving one strongest forensic selection.
@@ -198,11 +198,11 @@ Implemented policy:
 - Buffered items combine planet-local one- and ten-minute native rates only
   with the matching planet's accessible runway and backpressure evidence.
 - Unbuffered items and exact phase targets use the entire-cluster native
-  scope; an exact target remains separate from the deterioration score.
+  scope; an exact target remained separate from the deterioration score.
 - A five-percent or 0.5-item/minute deadband suppresses insignificant rate
   noise, while native one-minute windows smooth pulsed recipes.
-- Unknown, warming, backpressured, and balanced results are quiet. Draining
-  and starved results are actionable and deterministically ordered for the
+- Unknown, warming, backpressured, and balanced results were quiet. Draining
+  and starved results were actionable and deterministically ordered for the
   bounded presentation contract.
 - Compact diagnostics retain the selected state, severity, score, baseline,
   drop, thinness, deficit flags, runway, and backpressure status.
@@ -211,10 +211,10 @@ Acceptance:
 
 - The construction/startup scenarios in the supplied math reference produce
   the intended suppression or dampening.
-- A stable but chronically undersized line is reported as a deficit when
+- A stable but chronically undersized line was reported as a deficit when
   demand or an exact guide target proves one.
 - The same normalized evidence always produces the same score and diagnosis.
-- Actionable results remain deterministic and separately distinguish urgent
+- Actionable results remained deterministic and separately distinguish urgent
   draining from critical starvation.
 
 ### RISK-04 - Native risk-signal presentation
@@ -224,7 +224,7 @@ distinct draining and starved glyphs, fixed placement with the panel body
 collapsed, 4K legibility, click-through behavior, normal F8 hiding, intact
 navigation and layout, and no visible performance or log regression.
 
-**User story:** As a player who has opened Guide Check, I want the strongest
+**User story:** As a player who has opened Guide Check, I wanted the strongest
   actionable production risk represented by a small, distinct game-native
   signal icon on the panel's fixed Cube-rate column, so I can recognize a
   developing shortage or stopped supply at a glance without decoding another
@@ -242,7 +242,7 @@ Scope:
 - Read only the analyzer's already-selected result. The panel model and UI do
   not rescore findings or choose a different priority.
 - Keep the glyph fixed on the collapse-proof Cube-rate rail. Show it only
-  while the player-requested panel session is present; F8-hidden means hidden.
+  while the player-requested panel session was present; F8-hidden means hidden.
 - Do not pulse, flash, animate continuously, capture input, or change phase.
 - Load, cache, and dispose the embedded resources with the existing panel
   icons. Missing or undecodable resources fail softly by omitting the glyph.
@@ -252,11 +252,11 @@ Scope:
 Acceptance:
 
 - Draining and starved display different, immediately recognizable native
-  glyphs at a legible 4K scale; they are not color variants of one mark.
+  glyphs at a legible 4K scale; they were not color variants of one mark.
 - Collapsing the panel body retains the same glyph in the same rail-relative
   position, without recomputing the selected risk.
 - Quiet states display no glyph, and hiding the panel hides it completely.
-- The indicator is fixed, non-interactive, and non-animated.
+- The indicator was fixed, non-interactive, and non-animated.
 - Existing title and Cube icons, rate text, navigation, layout, snapshots,
   click-through behavior, and performance do not regress.
 
@@ -268,11 +268,10 @@ three compact Current Status rows; three paired Next Actions; critical
 promotion, recovery, phase/session reset, buffer-note behavior, interaction,
 layout, performance, and clean logs. No regression or new issue was found.
 The release owner did not reproduce a fourth simultaneous end-product
-candidate in game. Same-severity incumbent retention remains deterministically
-covered and is a non-blocking focused regression checkpoint if a natural
-four-candidate case is identified.
+candidate in game. Same-severity incumbent retention had deterministic
+coverage, which the owner accepted without an in-game four-candidate case.
 
-**User story:** As a player responding to production trouble, I want a small,
+**User story:** As a player responding to production trouble, I wanted a small,
 stable list of plain-language conditions and immediate actions, so I can see
 what needs attention without reading forensic statistics or watching the list
 churn as rates fluctuate.
@@ -295,7 +294,7 @@ Scope:
 - Derive a trustworthy depletion estimate only from authoritative accessible
   stock divided by the positive net deficit (`consumption - production`). If
   a displayed risk names a tracked objective, append one short buffer estimate
-  there; omit the estimate when its inputs are unavailable or it is empty.
+  there; omit the estimate when its inputs were unavailable or it was empty.
 - Keep detailed rates, scores, scope, runway, and evidence in the deliberate
   snapshot rather than normal panel prose.
 - Keep existing non-production findings eligible only for unused slots within
@@ -307,8 +306,8 @@ Acceptance:
   Status rows and paired Next Actions without evidence-detail text.
 - A fourth same-severity candidate neither replaces nor reorders three active
   incumbents across refreshes.
-- A new starved candidate is promoted ahead of draining rows and displaces at
-  most the lowest urgent incumbent when the list is full.
+- A new starved candidate was promoted ahead of draining rows and displaces at
+  most the lowest urgent incumbent when the list was full.
 - Clearing an incumbent frees its slot; changing phase or reopening the panel
   recomputes a fresh deterministic selection.
 - A tracked draining objective shows a concise net-depletion estimate only
@@ -318,14 +317,13 @@ Acceptance:
 
 ## Delivery order and gates
 
-Implement in order: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04` ->
+The delivery order was: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04` ->
 `RISK-05`.
 
-- `RISK-01` requires a user checkpoint comparing 1-minute and 10-minute native
-  rates before buffer or scoring work begins.
+- `RISK-01` required a user checkpoint comparing 1-minute and 10-minute native
+  rates before buffer or scoring work began.
 - `RISK-02` passed with full, draining, empty, and mixed-storage snapshots.
-  Remote-only exclusion remains a focused regression checkpoint if remote
-  logic changes.
+  Remote-only exclusion was retained in the reusable regression protocol.
 - `RISK-03` passed deterministic tests and its focused in-game diagnostic
   gate, including the release-owner-approved direct observation of balanced
   recovery.
@@ -334,8 +332,7 @@ Implement in order: `RISK-01` -> `RISK-02` -> `RISK-03` -> `RISK-04` ->
 - `RISK-05` passed compact one- and three-risk presentation, critical
   promotion, recovery, phase/session reset, trustworthy buffer-note,
   interaction, layout, performance, and log checks. Four-candidate churn was
-  not reproduced in game; its deterministic coverage is accepted as
-  sufficient and the scenario remains a non-blocking regression checkpoint.
+  not reproduced in game; its deterministic coverage was accepted as sufficient.
 
-No story authorizes automatic phase changes, unsolicited alerts, combat
+No story authorized automatic phase changes, unsolicited alerts, combat
 guidance, broad factory scans, or adoption of the discarded package files.

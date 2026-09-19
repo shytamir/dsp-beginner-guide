@@ -4,9 +4,7 @@ This document records the maintained runtime evidence contract. Its original
 derivation and acceptance record is archived at
 [`docs/archive/technical/NATIVE-TELEMETRY-ALIGNMENT-DERIVATION.md`](archive/technical/NATIVE-TELEMETRY-ALIGNMENT-DERIVATION.md).
 
-The Guide 3.0 candidate implements the evidence policies below. Synthetic
-collector, analysis and compact-export fixtures pass; actual save behavior and
-player utility remain pending in [GC3-13](management/GUIDE3-WORKSHOP.md).
+DSP Guide Check implements Guide 3.0 using the evidence policies below.
 
 ## Production statistics
 
@@ -80,7 +78,7 @@ inventory/deployment sources and selected endpoint identities.
 - If an expected member is unavailable, mark the evidence unknown and fail
   softly; do not substitute a semantically different proxy.
 
-### ILS home receipt (GC3-05)
+### ILS home receipt
 
 The existing traffic sample exports the latest native finished-item input totals,
 availability, game tick and reset epoch. A two-item session tracker establishes
@@ -88,22 +86,23 @@ its baseline after observing configured endpoints. It uses no ship polling or
 new collection cadence. Native internal traffic and other destinations are
 excluded. Missing data clears receipt flags; quiet valid samples retain them.
 Source stock or production corroborates supply; source power is not required.
-GC3-13 B1 restricts this observation to selected ILS Automation and clears its
-baseline when leaving that stage. Native station-slot ownership is preserved
+Observation is restricted to selected ILS Automation and clears its baseline
+when leaving that stage. Native station-slot ownership is preserved
 through normalization, so endpoint policy and source-stock checks inspect only
 the owning station's slots. Route caches are not substituted for the existing
 configuration objective, and no native route rebuild is invoked.
 
-### DYSON receiver bridge (GC3-08)
+### DYSON receiver bridge
 
 Reuse receiver continuity (including two unhealthy samples), recipe 74 and
 available native Photon production/consumption plus Antimatter production.
 Stationary Antimatter sums observed cluster storage and station inventories,
 excluding Icarus. These aggregates do not establish conveyor connectivity,
-Hydrogen disposal or science-district delivery. Those remain player checks.
+Hydrogen disposal or science-district delivery. That guidance stays in the
+source guide and does not create a panel objective.
 Missing assembler/lab pools make recipe collection unavailable.
 
-### PHOTON sustained inputs (GC3-09)
+### PHOTON sustained inputs
 
 Six existing native aggregate samples (6001-6005, 1122) feed a pure bounded
 policy at the existing cadence. Keep the sample on/before 120 game seconds and

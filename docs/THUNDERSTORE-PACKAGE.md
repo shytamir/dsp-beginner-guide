@@ -34,7 +34,8 @@ Manifest identity:
 - Name: `DSPGuideCheck`.
 - Website: `https://github.com/shytamir/dsp-beginner-guide`.
 - Dependency: `xiaoye97-BepInEx-5.4.17`.
-- Description: plain-text first paragraph of the repository README.
+- Description: player-facing summary in `packaging/manifest.template.json`,
+  checked against the exact text in `scripts/Test-ThunderstorePackage.ps1`.
 - Version: `M.m.N`.
 
 ## Version mapping
