@@ -53,7 +53,7 @@ namespace DspProgressionStatusExporter
             var gates = new List<object>();
             foreach (GuideGateResult gate in Gates) gates.Add(gate.Export());
             return new Dictionary<string, object> {
-                { "contractVersion", "3.9" },
+                { "contractVersion", "3.10" },
                 { "selectionAuthority", "player" },
                 { "selectedPhase", SelectedPhase },
                 { "gateEvaluations", gates }
@@ -367,7 +367,7 @@ namespace DspProgressionStatusExporter
                 state.Dyson.LensedPhotonReceiverCount >= 4 &&
                 state.Dyson.SustainedPhotonReceiverCount >= 4;
             gate.Conditions.Add(Condition(
-                id, "Four lensed Ray Receivers remain continuously supplied",
+                id, "Four lensed Ray Receivers in Photon Generation",
                 receiversReady ? "ready" : (receiverEvidence ? "blocked" : "unknown"), true,
                 receiverEvidence
                     ? state.Dyson.SustainedPhotonReceiverCount + "/4 sustained; " +
@@ -426,9 +426,6 @@ namespace DspProgressionStatusExporter
                     : known ? "Needs Photon Materialization, Photon production and consumption, and stored Antimatter."
                     : "Conversion or stationary inventory evidence is unavailable.",
                 "cluster-level observation", !ready && known && researchReady ? "Run Photon Materialization in a Collider and store its Antimatter." : null));
-            AddManualCondition(gate, "dyson-handoff", "Check the Hydrogen outlet and science delivery",
-                "Player check: confirm returned Hydrogen has an outlet and Antimatter reaches the science district automatically.",
-                ready ? "Check the Hydrogen outlet and automatic Antimatter delivery." : null);
         }
 
         private static void EvaluatePhoton(GuideGateResult gate, ObservedGameState state)

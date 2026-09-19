@@ -51,7 +51,7 @@ $packages=Join-Path $output 'packages'
 Check 'New-ThunderstorePackage' @('-DllPath',$publicDll,'-VersionNumber',$version.PACKAGE_VERSION,'-OutputDirectory',$packages)
 $package=Join-Path $packages "DSPGuideCheck-$($version.PACKAGE_VERSION).zip"
 Check 'Test-ThunderstorePackage' @('-PackagePath',$package,'-ExpectedVersion',$version.PACKAGE_VERSION,'-ExpectedDllPath',$publicDll,'-ReportPath',(Join-Path $reportRoot 'package.md'))
-$manifest=[ordered]@{ sourceRevision=$source; sourceClean=($dirty.Count -eq 0); workingTreeChanges=$dirty; packageVersion=$version.PACKAGE_VERSION; releaseLabel=$version.RELEASE_LABEL; powerShell=$PSVersionTable.PSVersion.ToString(); gameRoot=$GameRoot; runtimeValidation='reserved for GC3-13'; snapshotParity='passed'; artifacts=@() }
+$manifest=[ordered]@{ sourceRevision=$source; sourceClean=($dirty.Count -eq 0); workingTreeChanges=$dirty; packageVersion=$version.PACKAGE_VERSION; releaseLabel=$version.RELEASE_LABEL; powerShell=$PSVersionTable.PSVersion.ToString(); gameRoot=$GameRoot; runtimeValidation='automated checks only; owner evidence is recorded in WORKSHOP.md'; snapshotParity='passed'; artifacts=@() }
 foreach($file in @((Join-Path $output 'diagnostic/DspGuideCheck.dll'),$publicDll,$package)) {
     $manifest.artifacts += [ordered]@{path=$file;bytes=(Get-Item -LiteralPath $file).Length;sha256=(Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()}
 }

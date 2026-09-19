@@ -4,6 +4,14 @@
 
 ### Guide 3.0 candidate
 
+- GC3-13 closeout (2026-09-19): The owner completed the full playthrough on
+  2.2.101 with no observable regressions and accepted ILS for this version.
+  Removed DYSON's manual Hydrogen/science-delivery objective and its Pending
+  reminder; this advice stays in the guide. The receiver objective now names
+  Photon Generation explicitly. Receiver sampling and completion thresholds
+  are unchanged. Analysis 3.13 and progression 3.10; snapshot schema stays 2.24.
+  Final corrections are technically validated; publication is pending.
+
 - GC3-13 owner checkpoint: Accepted performance at roughly a 7 FPS cost and
   confirmed ExpertMode works. Fixed Expert mode to use WHITE and display all six
   Cube counters, preserving normal-mode phase/stage preferences. The accepted
@@ -17,7 +25,7 @@
   reads native flags, and Dyson guidance uses native power without construction
   or launcher walks. Recipe reads respect cursors and query assemblers only for
   DYSON. Preserve consumed evidence, compact snapshots, prose and
-  refresh cadence. Runtime performance still requires owner retest.
+  refresh cadence. The owner subsequently accepted the roughly 7 FPS impact.
 
 - GC3-13 B1: Corrected the periodic refresh's ILS station lookup to reuse each
   station's own slots and observe receipts only in selected ILS Automation.
@@ -30,7 +38,7 @@
   both local variants, retained/story fixtures, bounded snapshot parity, identity
   and package checks. Hosted CI runs the portable suites for both DLLs. Clean
   candidates retain source, hashes, reports and the final owner workshop locally.
-  In-game acceptance and publication remain pending.
+  Owner playthrough acceptance is recorded above; publication remains pending.
 
 - GC3-11: Added default-off `[General] ExpertMode`, applied after restart. It
   creates only the Cube-rate bar and DON'T PANIC button, retaining selected-phase
@@ -48,7 +56,8 @@
   elapsed time, sample count, minimum rate and reason.
 
 - GC3-08: DYSON includes the required receiver-to-Antimatter bridge, ordered
-  research and an explicit Hydrogen/science-delivery player check. The bridge
+  research and originally an explicit Hydrogen/science-delivery player check
+  (removed at owner closeout above). The bridge
   link follows swarm readiness. Snapshot 2.23 adds scoped conversion evidence;
   analysis 3.11 and progression 3.8 retain the existing receiver tolerance.
 

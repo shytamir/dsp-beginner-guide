@@ -25,7 +25,51 @@ validation. Technical completion is not owner runtime acceptance or publication.
 | G2 / M2 | Passed: complete ILS journey and eligible Pending tasks |
 | G3 / M3 | Passed: Guide 3.0 handoffs and PHOTON readiness |
 | G4 | Passed: both variants, local/hosted checks and retained candidate ready |
-| GC3-13 / G5 | Open; B1 accepted at roughly 7 FPS; full playthrough pending; Expert fixed-WHITE follow-up does not block it |
+| GC3-13 / G5 / M5 | Complete; owner full-playthrough acceptance 2026-09-19 with B2/B3 corrected; publication pending |
+
+## GC3-13 — Full-playthrough acceptance and publication preparation
+
+**Owner report (2026-09-19):** Full playthrough completed with no observable
+regressions. ILS is accepted for this version. The only reported issues are the
+lengthy manual DYSON delivery objective and the receiver label omitting Photon
+Generation. The owner requested these corrections and preparation for publishing.
+
+**Evidence:** The supplied snapshot/screenshot pairs are indexed in the
+[workshop record](GUIDE3-WORKSHOP.md#full-playthrough-and-final-dyson-corrections--2026-09-19).
+Both snapshots identify `2.2.101`. The first has four deployed but zero Photon
+Generation receivers; the later snapshot has four configured, lensed and
+sustained receivers. Screenshots show the corresponding `0/4` and `4/4` values
+and the manual objective. The evidence supports a wording correction.
+
+**Changes and decisions:**
+
+- Remove `dyson-handoff` and its Pending reminder. Routing and Hydrogen advice
+  stays in the guide. Five stable objectives remain; observed DYSON readiness
+  no longer stays evidence-incomplete solely because of that manual row.
+- Name Photon Generation in the receiver objective. Preserve existing native
+  data, sampling, tolerance and counts. No new collection or performance work.
+- Update the store README's stale Expert description to the already implemented
+  WHITE behavior; this is documentation only.
+- Analysis 3.13 and progression 3.10 identify the changed objective contract.
+  Snapshot schema remains 2.24 because its structure is unchanged.
+
+**Validation and handoff:** Release `dotnet build` passed with zero warnings or
+errors. `Test-GuideHandoffs.ps1` passed five-objective completion, no redundant
+Pending action, explicit receiver mode, `0/4` and `4/4` evidence, existing
+receiver thresholds, conversion failures, stable IDs and guide anchors.
+The clean-source handoff command is:
+
+```powershell
+pwsh -NoProfile -File scripts/Test-Guide3Candidate.ps1 -Sequence 103 -OutputDirectory artifacts/guide3/publish-ready
+```
+
+Its manifest and reports bind public/diagnostic DLLs, snapshot parity and the
+validated public ZIP to the final commit. User snapshots remain external.
+
+**Disposition:** GC3-13/G5/M5 complete under the owner's acceptance with these
+two corrections. Publication is pending. No post-fix game session, installed-DLL
+hash or exhaustive acceptance-case matrix is claimed. Expert fixed-WHITE remains
+automatically tested without later owner runtime confirmation.
 
 ## GC3-13 B1 — periodic panel slowdown
 
@@ -416,6 +460,9 @@ before success. The touched retained test also removes an extra EOF blank line
 introduced in GC3-06. Runtime utility remains reserved for GC3-13.
 
 ## GC3-08 — Required receiver bridge
+
+The 2026-09-19 owner closeout above supersedes this story's manual handoff row.
+The original implementation evidence below is retained as history.
 
 **Outcome:** DYSON keeps its swarm objectives and adds stable research, receiver,
 conversion and player-check rows. Once swarm objectives pass, the guide link

@@ -9,8 +9,9 @@ The player asks; the instrument answers. The panel is hidden by default,
 never changes the factory or save, and never advances phases automatically.
 
 The released baseline implements guide **2.3**. The **2.2.x candidate** adds the
-accepted Guide 3.0 improvements and awaits owner runtime acceptance. See the
-[workshop checklist](docs/management/GUIDE3-WORKSHOP.md). The candidate retains nine phases; its implementation state is described under
+accepted Guide 3.0 improvements. The owner completed the full playthrough with
+no observable regressions; the two requested DYSON corrections are implemented.
+Publication is pending. See the [workshop record](docs/management/GUIDE3-WORKSHOP.md). The candidate retains nine phases; its implementation state is described under
 [Project status](#project-status).
 
 ## Features
@@ -191,9 +192,10 @@ phase/ILS stage. F8 starts hidden and never saves in either mode.
   planet-local cargo evidence rather than global stock.
 - YELLOW and PURPLE require three supplied Labs without a separate storage
   objective. Their direct inputs remain eligible for genuine shortage warnings.
-- DYSON includes swarm production, receiver research/continuity and conversion
-  to stationary Antimatter. Hydrogen disposal and science delivery remain player
-  checks; the guide link opens the bridge once the swarm is ready.
+- DYSON includes swarm production, receiver research/continuity in Photon
+  Generation mode and conversion to stationary Antimatter. Hydrogen disposal
+  and science delivery advice stays in the guide; the link opens the bridge
+  once the swarm is ready.
 - PHOTON requires five colored Cubes and Antimatter at sustained 40/min plus
   2,000 stationary Antimatter. Its Cube colors use current 40/min readiness;
   receiver power remains diagnostic.
@@ -210,21 +212,21 @@ phase/ILS stage. F8 starts hidden and never saves in either mode.
   icons beside Cube rates. Only its explicit controls capture pointer input.
 
 The critical-path migration, telemetry alignment, persistence, snapshot, and
-baseline panel contracts completed in-game acceptance; the Guide 3.0 candidate
-has not. Baseline packaging passed its
-automated contract checks. See [CHANGELOG.md](CHANGELOG.md) for release
+baseline panel contracts completed in-game acceptance. The owner accepted the
+Guide 3.0 full playthrough on 2026-09-19 with two final DYSON corrections;
+the corrected package receives automated validation. See [CHANGELOG.md](CHANGELOG.md) for release
 history.
 
 ## Project status
 
 The released product is complete for the adopted guide 2.3 contract. The owner
-authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); GC3-01 through GC3-12 are technically
-complete and G1-G4 passed their original checks. The owner accepted B1 performance
-at roughly a 7 FPS cost and confirmed ExpertMode works. The full playthrough will
-use the retained candidate in `artifacts/guide3/workshop-blocker-01-refresh/`,
-independently of the Expert fixed-WHITE follow-up. GC3-13 remains open.
-Candidate manifests identify tested source, versions and hashes. [Execution records](docs/management/GUIDE3-EXECUTION.md)
-separate automated completion from the pending final in-game owner workshop.
+authorized [the Guide 3.0 roadmap](docs/ROADMAP.md); all technical stories are
+complete. GC3-13/G5 record the owner's completed full playthrough on `2.2.101`,
+with no observable regressions and two bounded DYSON corrections now implemented.
+The roughly 7 FPS cost is accepted, and ILS is accepted for this version.
+Publication is pending. Candidate manifests identify source, versions and hashes.
+[Execution records](docs/management/GUIDE3-EXECUTION.md) distinguish owner evidence
+from automated checks of the final corrections and the Expert fixed-WHITE follow-up.
 [docs/PROJECT.md](docs/PROJECT.md) remains the authority for current state and
 scope; the [gap analysis](docs/management/GUIDE3-GAP-ANALYSIS.md) explains the
 implemented fixes and deliberate exclusions.

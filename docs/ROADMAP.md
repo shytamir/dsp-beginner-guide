@@ -1,8 +1,8 @@
 # Guide 3.0 companion improvements roadmap
 
-**Status:** GC3-01 through GC3-12 completed their technical gates. The owner accepted B1 performance at roughly a 7 FPS cost and confirmed ExpertMode works. GC3-13/G5 remain open for the full playthrough on the accepted candidate; the Expert fixed-WHITE follow-up does not block it.
+**Status:** Completed; publication pending. GC3-01 through GC3-12 passed their technical gates. On 2026-09-19 the owner completed the full playthrough without observable regressions and accepted ILS for this version. GC3-13/G5 close with the two requested DYSON corrections implemented. The roughly 7 FPS cost remains accepted.
 **Prepared:** 2026-09-15.
-**Implementation:** Owner authorized GC3-01 through GC3-12 on 2026-09-15, with a push after each story. GC3-13 remains the human validation stop.
+**Implementation:** Owner authorized GC3-01 through GC3-12 on 2026-09-15, with a push after each story. GC3-13 records the final owner workshop and bounded corrections. This completed roadmap is retained for the publication handoff.
 **Execution record:** [Story decisions and validation](management/GUIDE3-EXECUTION.md).
 **Authority:** [PROJECT.md](PROJECT.md).
 **Evidence and resolved designs:** [Guide 3.0 gap analysis](management/GUIDE3-GAP-ANALYSIS.md).
@@ -19,7 +19,7 @@ YELLOW/PURPLE buffer advice; a visible required receiver bridge; PHOTON
 readiness based on five colored Cubes plus Antimatter at 40/min; and an opt-in
 Expert mode showing only the existing Cube-rate bar and `DON'T PANIC` button.
 
-This is the sole active roadmap. At the inspected mod baseline there was no
+This is the sole roadmap for the completed Guide 3.0 cycle. At the inspected mod baseline there was no
 standalone placeholder roadmap file: the no-active-work state lived in
 `PROJECT.md`. This document replaces that planning state. Archived roadmaps
 remain historical and unchanged; the separate guide repository is a read-only
@@ -306,11 +306,17 @@ filler-research gates, changes to the shared production-risk calculation.
 **Value:** The player can find the missing Receiver-to-Antimatter work before
 PHOTON asks them to strengthen a line they have not built.
 
-**Scope:** Apply D8. Preserve current swarm conditions and append stable
-receiver, conversion and explicit player-check conditions to DYSON. Use
+**Scope:** Apply D8 with the owner refinement below. Preserve current swarm
+conditions and append stable receiver and conversion conditions to DYSON. Use
 existing recipe/receiver/item evidence, with only the necessary compact
 snapshot additions. Resolve the bridge guide anchor from the presentation
 model once the swarm conditions are ready.
+
+**Owner refinement (2026-09-19):** Remove the Hydrogen/science-delivery
+player-check objective and Pending reminder. Keep that advice in the guide.
+Name Photon Generation in the receiver objective; retain existing sampling
+and continuity thresholds. The original player-check decision is retained in
+the execution record as history.
 
 **Definition of done:**
 
@@ -319,12 +325,12 @@ model once the swarm conditions are ready.
 - Missing 1504/1505/1506 advice respects prerequisites. Receiver checks retain
   the tested two-unhealthy-sample tolerance; recipe 74 and the scoped material
   evidence in D8 are checked without conflating configuration with production.
-- The Hydrogen outlet/science-district delivery remains an explicit required
-  player check and cannot be auto-completed from global output. The panel
-  distinguishes observed readiness from evidence still requiring judgment.
+- Hydrogen outlet/science-district delivery advice remains in the guide;
+  the panel has no manual handoff objective or Pending reminder. Receiver
+  wording names Photon Generation, matching the counts already collected.
 - Fixtures cover absent/partial/healthy arrays, wrong Collider recipe, no
   conversion, Icarus-only Antimatter, unknown evidence, source anchors and the
-  unresolved player check. No fixed 1.655-GW or efficiency-rank gate appears.
+  five-objective completion. No fixed 1.655-GW or efficiency-rank gate appears.
 
 **Out of scope:** A tenth phase, automatic navigation, Hydrogen blockage
 attribution, conveyor connectivity proof, redesigning receiver continuity.
@@ -498,12 +504,13 @@ criteria before presenting affected results for acceptance again.
   packaged candidate precede owner retest on that same save. Only owner confirmation
   can close B1. That acceptance is now recorded: the flag works, and the owner
   will use the accepted candidate for the full playthrough regardless of the
-  Expert fixed-WHITE follow-up. This does not close GC3-13/G5.
+  Expert fixed-WHITE follow-up. The later full-playthrough acceptance below
+  closes GC3-13/G5.
 - Workshop covers ILS stage selection/persistence and correction of an initial
   suggestion; preparation, loading, return and consumed cargo; useful research
   and hardware actions; configured versus observed home delivery; and no
   unrelated-planet success. Purpose-built saves may be used at this stage.
-- Owner exercises healthy no-buffer YELLOW/PURPLE, the DYSON bridge/player-check
+- Owner exercises healthy no-buffer YELLOW/PURPLE, the DYSON bridge
   wording, PHOTON warming/deficit/recovery/40-min readiness, and unchanged WHITE.
 - Both variants in normal mode are checked for navigation, source links,
   collapse, pointer behavior, representative 1080p/4K layout, diagnostic-only
@@ -529,6 +536,16 @@ criteria before presenting affected results for acceptance again.
 
 **Out of scope:** Optional/combat paths,
 unrequested publication, unrelated feature requests or automatic acceptance.
+
+**Owner closeout (2026-09-19):** Full playthrough completed on `2.2.101` with
+no observable regressions. ILS is accepted for this version. The only reported
+issues were DYSON's lengthy manual handoff objective and ambiguous receiver
+mode label; both are corrected within this story. The screenshots and snapshots
+are indexed in the [workshop record](management/GUIDE3-WORKSHOP.md).
+This is owner-reported playthrough acceptance, not a claim that every optional
+case/resolution above was separately exercised. Final text/layout and Expert
+fixed-WHITE have automated checks but no later in-game confirmation.
+G5/M5 are complete; publication remains pending.
 
 ## Gate definitions
 
@@ -557,4 +574,5 @@ the remaining human checks.
 - All pre-workshop checks can run without human-provided game state.
 - Runtime, interaction, performance and utility acceptance remain accurately
   reserved for GC3-13.
-- The implemented candidate has not been owner-accepted or published.
+- Owner full-playthrough acceptance and final corrections are recorded under
+  GC3-13. Publication remains pending.

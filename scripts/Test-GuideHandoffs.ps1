@@ -55,8 +55,18 @@ function BridgeState {
 $s = BridgeState
 Assert ((PhaseCondition $s 'dyson' 'dyson-conversion')['status'] -eq 'ready') 'Observed conversion failed'
 Assert ((Field (PhasePanel $s 'dyson') 'SourceGuideAnchor') -eq 'receiver-antimatter-bridge') 'Ready swarm lacks bridge anchor'
-$check = PhaseCondition $s 'dyson' 'dyson-handoff'
-Assert ($check['required'] -and $check['status'] -eq 'unknown' -and $check['evidenceKind'] -eq 'player-check') 'Physical handoff was automatically completed'
+$gate = (PhaseAnalysis $s 'dyson')['progression']['gateEvaluations'][0]
+Assert ($gate['conditions'].Count -eq 5 -and $gate['status'] -eq 'complete') 'Healthy DYSON retains an extra delivery gate'
+$panel = PhasePanel $s 'dyson'
+Assert ((Field $panel 'Objectives').Count -eq 5 -and (Field $panel 'Pending').Count -eq 0) 'Healthy DYSON still asks for a manual delivery check'
+Assert ((PhaseCondition $s 'dyson' 'dyson-receivers')['label'] -match 'Photon Generation') 'Receiver objective omits the required mode'
+SetField (Field $s 'Dyson') 'ReceiverCount' 4
+foreach ($count in @(0,4)) {
+    foreach ($name in @('ConfiguredPhotonReceiverCount','LensedPhotonReceiverCount','SustainedPhotonReceiverCount')) { SetField (Field $s 'Dyson') $name $count }
+    $receiver = PhaseCondition $s 'dyson' 'dyson-receivers'
+    $expected = if ($count -eq 4) { 'ready' } else { 'blocked' }
+    Assert ($receiver['status'] -eq $expected -and $receiver['evidence'] -eq "$count/4 sustained; $count/4 currently lensed.") 'Receiver mode/count evidence changed'
+}
 foreach ($count in @(0,3,4)) {
     SetField (Field $s 'Dyson') 'SustainedPhotonReceiverCount' $count
     $expected = if ($count -eq 4) { 'ready' } else { 'blocked' }
@@ -84,4 +94,4 @@ $a = @((PhaseAnalysis $s 'dyson')['progression']['gateEvaluations'][0]['conditio
 $b = @((PhaseAnalysis (New 'ObservedGameState') 'dyson')['progression']['gateEvaluations'][0]['conditions'] | ForEach-Object { $_['id'] }) -join ','
 Assert ($a -eq $b) 'DYSON objectives changed with evidence'
 Assert ((Field (PhasePanel (New 'ObservedGameState') 'dyson') 'SourceGuideAnchor') -eq 'dyson') 'Unready swarm skipped its guide anchor'
-Write-Host 'DYSON bridge research, receivers, conversion, stationary stock, stable objectives and manual handoff passed.'
+Write-Host 'DYSON bridge research, Photon Generation receivers, conversion, stationary stock and five stable objectives passed.'

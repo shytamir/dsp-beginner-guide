@@ -4,11 +4,12 @@
 
 The released DSP Guide Check implementation remains complete for the adopted
 DSP Practical Progression Guide 2.3 contract. The owner accepted the Guide 3.0
-roadmap for implementation on 2026-09-15. **GC3-01 through GC3-12 are technically complete;
-G1-G4 passed their original technical checks. The owner accepted B1 performance
-at roughly a 7 FPS cost and confirmed the ExpertMode flag works. GC3-13 remains
-open for the full playthrough using the accepted candidate. The Expert fixed-WHITE
-follow-up does not block that test.** See the [execution record](management/GUIDE3-EXECUTION.md).
+roadmap for implementation on 2026-09-15. **GC3-01 through GC3-12 are technically
+complete. GC3-13/G5 are closed following the owner's 2026-09-19 full-playthrough
+acceptance and the two requested DYSON corrections. No observable regressions
+were reported; the roughly 7 FPS cost and ILS behavior are accepted for this
+version. The final package is prepared for publication.** See the
+[execution record](management/GUIDE3-EXECUTION.md).
 
 [`ROADMAP.md`](ROADMAP.md) is the sole current roadmap. Its accepted scope
 addresses ILS stage ownership, cargo and transport evidence, actionable Pending
@@ -23,8 +24,10 @@ is the only execution-stage human validation workshop; normal per-change
 runtime and presentation checkpoints are consolidated there. Technical
 completion, owner acceptance and publication remain separate states.
 
-The contracts below describe the current implementation. The technical roadmap
-outcomes are implemented; in-game acceptance remains pending.
+The contracts below describe the current implementation. Owner playthrough
+evidence covers `2.2.101`; the final DYSON corrections and Expert fixed-WHITE
+follow-up have automated coverage, without a later in-game confirmation.
+Publication remains separate and pending.
 
 The bounded maintenance cycle prompted by the full critical-path playthrough
 and its subsequent Cube demand-reference refinement concluded. Its
@@ -108,7 +111,7 @@ readiness text states it.
 | YELLOW | Three configured Yellow-Cube Labs produce; separate input storage is not required. |
 | PURPLE | Three configured Purple-Cube Labs produce; separate input storage is not required. |
 | GREEN | Two configured Green-Cube Labs produce continuously; Quantum Chips and Graviton Lenses each have visible storage. |
-| DYSON | The swarm produces/launches Solar Sails and generates power, followed by receiver research, four sustained lensed receivers, observed Photon Materialization and stationary Antimatter. The Hydrogen outlet and automatic science-district delivery remain a required player check. |
+| DYSON | Five objectives: Solar Sail production/launching, swarm power, receiver research, four sustained lensed Ray Receivers in Photon Generation, and observed Photon Materialization with stationary Antimatter. Hydrogen disposal and automatic science delivery remain guide advice, not panel objectives. |
 | PHOTON | Five colored Cubes plus Antimatter sustain at least 40/min for 120 game seconds and 20 samples; 2,000 stationary Antimatter is required. Receivers remain diagnostic, with their construction gate in DYSON. |
 | WHITE | White Cubes are researched; ten Labs sustain 40/min with the configured-Lab and stored-White-Cube counts shown; Mission Completed state and authoritative active progress are shown. |
 
@@ -295,8 +298,8 @@ in one combined input objective and a separate stationary-stock objective. This 
 | Snapshot schema | 2.24 |
 | Normalized state | 2.8 |
 | Guide selection | 1.7 |
-| Guide analysis | 3.12 |
-| Progression | 3.9 |
+| Guide analysis | 3.13 |
+| Progression | 3.10 |
 | Panel | 2.10 |
 
 The CI run number supplies the release patch. BepInEx and Thunderstore use the

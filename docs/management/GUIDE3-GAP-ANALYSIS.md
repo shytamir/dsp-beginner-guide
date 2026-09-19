@@ -6,15 +6,16 @@ are tracked in the [execution record](GUIDE3-EXECUTION.md).
 **Execution draft:** [ROADMAP.md](../ROADMAP.md).
 
 **GC3-13 B1 correction (2026-09-16):** The first correction failed owner retest.
-The owner accepted the follow-up at roughly a 7 FPS cost. The full playthrough
-remains pending; Expert mode's fixed-WHITE refinement does not block it.
+The owner accepted the follow-up at roughly a 7 FPS cost and completed the
+full playthrough on 2026-09-19 with no observable regressions. ILS is accepted
+for this version. Expert mode's fixed-WHITE refinement did not block that test.
 The workshop found an unacceptable
 periodic slowdown. The original D3 copied prerequisite-table decision is
 superseded by native `LDB.techs` data. Station observations now preserve native
 slot ownership, receipt tracking is limited to selected Automation, and panel
 analysis no longer exports the full normalized diagnostic state. See the
 [B1 execution record](GUIDE3-EXECUTION.md#gc3-13-b1--periodic-panel-slowdown)
-for the changes, reasons, checks and remaining owner retest. The original
+for the changes, reasons, checks and owner disposition. The original
 investigation below is retained as planning history.
 
 ## Purpose and evidence
@@ -279,6 +280,12 @@ Retain one explicit required `player-check` row for the Hydrogen outlet and
 automatic delivery to the science district. As with the existing BLUE manual
 check, unobserved player judgment remains evidence-incomplete; phase navigation
 stays unrestricted. Do not silently mark the physical handoff complete.
+
+**Superseded at owner workshop (2026-09-19):** The manual Hydrogen/delivery
+row is removed, including its Pending reminder. It adds lengthy, untracked work
+that other science phases leave to the guide. DYSON now has five objectives;
+its receiver label explicitly names Photon Generation so power-mode receivers
+cannot be mistaken for missing telemetry. Collection and continuity stay unchanged.
 
 No fixed 1.655-GW gate: that reference assumes Ray Transmission Efficiency
 Lv0. Existing live demand/generation evidence remains the relevant warning.
