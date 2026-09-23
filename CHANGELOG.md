@@ -1,10 +1,20 @@
 # Changelog
 
-## 3.1 — Unreleased
+## 3.1.107 — 2026-09-24
+
+Tagged `3.1` and published to Thunderstore, as confirmed by the owner.
 
 - Promoted the minor version to 3.1 after owner validation confirmed support
   for DSP Early Access `0.10.35.29057` without runtime changes. Existing
-  behavior and snapshot contracts are unchanged; CI supplies the patch number.
+  behavior and snapshot contracts are unchanged; CI run 107 supplied the patch.
+- Verified both local build variants and the downloaded CI artifacts, including
+  compiled plugin/exporter identities, assembly/file metadata, diagnostic labels,
+  snapshot-control separation, package manifest and public-DLL hash.
+- Closed the compatibility and promotion work and confirmed maintenance mode
+  with no active epic, story or acceptance gate.
+
+The [3.1 release record](docs/archive/project-management/RELEASE-3.1.107.md)
+retains source identity, validation evidence and artifact hashes.
 
 ## 3.0.104 — 2026-09-19
 

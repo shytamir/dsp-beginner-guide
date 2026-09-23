@@ -7,6 +7,9 @@ current shape, but they are not active work and do not override
 
 ## Project management
 
+- [Completed 3.1 compatibility and release record](project-management/RELEASE-3.1.107.md).
+  The owner confirmed tag `3.1` and Thunderstore publication of 3.1.107 on
+  2026-09-24; the compatibility and promotion work closed in maintenance mode.
 - [Completed Guide 3.0 roadmap](project-management/guide-3.0/ROADMAP.md),
   [gap analysis](project-management/guide-3.0/GUIDE3-GAP-ANALYSIS.md),
   [implementation and release record](project-management/guide-3.0/GUIDE3-EXECUTION.md),

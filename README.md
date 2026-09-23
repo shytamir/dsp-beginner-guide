@@ -22,9 +22,9 @@ and it shows no unsolicited alerts.
 
 ## Requirements and installation
 
-Dyson Sphere Program and BepInEx 5 are required. DSP Guide Check **3.0.104**
+Dyson Sphere Program and BepInEx 5 are required. DSP Guide Check **3.1.107**
 fully supports DSP Early Access `0.10.35.29057`. The owner confirmed that all
-existing validations pass without changes to the mod.
+existing validations pass; the 3.1 promotion changes version metadata only.
 
 Use a Thunderstore-compatible mod manager to install DSP Guide Check and
 launch DSP with mods enabled. For manual installation, install BepInEx 5
@@ -78,11 +78,9 @@ For a bug report, include the DSP/mod versions, selected phase, expected
 behavior and a screenshot where useful. See [CONTRIBUTING.md](CONTRIBUTING.md)
 for reporting, source builds and diagnostic guidance.
 
-The published version is **3.0.104**. The repository is in **maintenance mode**,
-with no active implementation roadmap. See [project state](docs/PROJECT.md),
+The published version is **3.1.107**, tagged `3.1`. The repository is in
+**maintenance mode**, with no active implementation roadmap. See [project state](docs/PROJECT.md),
 the [maintenance placeholder](docs/ROADMAP.md) and [release history](CHANGELOG.md).
-
-Source builds target **3.1.x**; the GitHub Actions run number supplies the patch.
 
 ## License
 

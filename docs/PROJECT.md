@@ -2,26 +2,26 @@
 
 ## Product state
 
-DSP Guide Check **3.0.104** implements the DSP Practical Progression Guide
-**3.0** default critical path. The owner confirmed successful publication on
-2026-09-19. The repository is in **maintenance mode**, with no active epic,
-story or acceptance gate.
+DSP Guide Check **3.1.107** implements the DSP Practical Progression Guide
+**3.0** default critical path. The owner confirmed tag `3.1` and successful
+Thunderstore publication on 2026-09-24. The repository is in **maintenance mode**,
+with no active epic, story or acceptance gate.
 
 [ROADMAP.md](ROADMAP.md) is the maintenance placeholder. The completed roadmap,
 implementation decisions and acceptance evidence were
 [archived together](archive/project-management/guide-3.0/ROADMAP.md).
 
-The published package came from source `ea3314b7ec33aef5073127675aa4f5c4a60abe70`,
-[CI run 104](https://github.com/shytamir/dsp-beginner-guide/actions/runs/35415921325).
-Its version is `3.0.104`; assembly/file metadata is `3.0.104.0`, and the
-diagnostic label is `3.0.104.ea3314b`. Later CI builds do not change that
+The published package came from source `1a56195cf09cb227763a369fc9fde4057f10e43d`,
+tag `3.1`, and [CI run 107](https://github.com/shytamir/dsp-beginner-guide/actions/runs/35921824373).
+Its version is `3.1.107`; assembly/file metadata is `3.1.107.0`, and the
+diagnostic label is `3.1.107.1a56195`. Later CI builds do not change that
 published baseline by themselves.
 
-Source builds target **3.1.x** after the minor-version promotion on 2026-09-23.
 The owner confirmed all existing validations pass with DSP Early Access
-`0.10.35.29057`. This promotion changes version metadata only; behavior and
-snapshot contracts remain unchanged. CI supplies the patch number, and a
-separate publication decision is required to replace the published baseline.
+`0.10.35.29057`. The 3.1 promotion changed version metadata only; behavior and
+snapshot contracts remained unchanged. Compatibility documentation, promotion,
+artifact verification and publication are complete; their evidence is retained
+in the [3.1 release record](archive/project-management/RELEASE-3.1.107.md).
 
 Maintenance intake is limited to:
 
@@ -65,7 +65,7 @@ warning system.
 ## Guide authority
 
 - Implemented guide authority: DSP Practical Progression Guide **3.0**.
-- Published mod: **3.0.104**, covering the default critical path and Expert mode.
+- Published mod: **3.1.107**, covering the default critical path and Expert mode.
 - Optional guide routes remain outside the mod's scope.
 - Current implementation: the nine-phase default critical path.
 
@@ -274,7 +274,7 @@ in one combined input objective and a separate stationary-stock objective. This 
 
 | Contract | Version |
 |---|---:|
-| Published mod | 3.0.104 |
+| Published mod | 3.1.107 |
 | Snapshot schema | 2.24 |
 | Normalized state | 2.8 |
 | Guide selection | 1.7 |
