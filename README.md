@@ -22,8 +22,9 @@ and it shows no unsolicited alerts.
 
 ## Requirements and installation
 
-Dyson Sphere Program and BepInEx 5 are required. The release was validated
-with DSP Early Access `0.10.34.28529`.
+Dyson Sphere Program and BepInEx 5 are required. DSP Guide Check **3.0.104**
+fully supports DSP Early Access `0.10.35.29057`. The owner confirmed that all
+existing validations pass without changes to the mod.
 
 Use a Thunderstore-compatible mod manager to install DSP Guide Check and
 launch DSP with mods enabled. For manual installation, install BepInEx 5
