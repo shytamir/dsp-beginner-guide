@@ -82,6 +82,8 @@ The published version is **3.0.104**. The repository is in **maintenance mode**,
 with no active implementation roadmap. See [project state](docs/PROJECT.md),
 the [maintenance placeholder](docs/ROADMAP.md) and [release history](CHANGELOG.md).
 
+Source builds target **3.1.x**; the GitHub Actions run number supplies the patch.
+
 ## License
 
 DSP Guide Check is licensed under the [Apache License 2.0](LICENSE).

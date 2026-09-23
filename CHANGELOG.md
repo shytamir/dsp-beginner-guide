@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1 — Unreleased
+
+- Promoted the minor version to 3.1 after owner validation confirmed support
+  for DSP Early Access `0.10.35.29057` without runtime changes. Existing
+  behavior and snapshot contracts are unchanged; CI supplies the patch number.
+
 ## 3.0.104 — 2026-09-19
 
 Published successfully, as confirmed by the owner.

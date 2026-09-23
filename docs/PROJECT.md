@@ -17,6 +17,12 @@ Its version is `3.0.104`; assembly/file metadata is `3.0.104.0`, and the
 diagnostic label is `3.0.104.ea3314b`. Later CI builds do not change that
 published baseline by themselves.
 
+Source builds target **3.1.x** after the minor-version promotion on 2026-09-23.
+The owner confirmed all existing validations pass with DSP Early Access
+`0.10.35.29057`. This promotion changes version metadata only; behavior and
+snapshot contracts remain unchanged. CI supplies the patch number, and a
+separate publication decision is required to replace the published baseline.
+
 Maintenance intake is limited to:
 
 - a meaningful change to the published guide;
