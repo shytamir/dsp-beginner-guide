@@ -1,7 +1,9 @@
 # Contributing
 
-The project is in maintenance mode. Bug reports and focused improvements are
-welcome; no implementation work is active. Read [AGENTS.md](AGENTS.md) and
+The published release is maintained; the
+[accepted Expert-only blueprint import](docs/archive/project-management/EXPERT-BLUEPRINT-IMPORT-01.md)
+is being prepared for publication. See [current project state](docs/PROJECT.md).
+Bug reports and focused improvements are welcome. Read [AGENTS.md](AGENTS.md) and
 [the product contract](docs/PROJECT.md) before changing the code.
 
 ## Bug reports
@@ -24,7 +26,8 @@ review them before sharing. F8 never exports a snapshot.
 Proposed work should identify the published-guide change, reproducible defect,
 compatibility issue or in-scope player need it addresses. Preserve player-owned
 selection, stable objectives, concise status, soft failure for missing evidence,
-and passive read-only operation.
+and read-only game/save observation. The explicit Expert-only blueprint import
+writes only its dedicated blueprint-library subfolder.
 
 Run the narrowest relevant deterministic checks and build against installed
 DSP references. Use the affected cases in

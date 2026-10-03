@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Added Expert-only `Import Blueprints` above the Blue Cube counter. Every click
+  writes the embedded complete-playthrough pack into `Guide Check` inside DSP's
+  configured blueprint folder, silently overwriting matching files. Normal mode
+  cannot invoke the action. Game/save state and snapshot contracts are unchanged.
+- The owner accepted all runtime validations on 2026-10-04, including placement,
+  blueprint discovery, repeat imports and normal-mode absence in both variants.
+  [EXPERT-BLUEPRINT-IMPORT-01](docs/archive/project-management/EXPERT-BLUEPRINT-IMPORT-01.md)
+  preserves the implementation and acceptance evidence.
+
 ## 3.1.107 — 2026-09-24
 
 Tagged `3.1` and published to Thunderstore, as confirmed by the owner.

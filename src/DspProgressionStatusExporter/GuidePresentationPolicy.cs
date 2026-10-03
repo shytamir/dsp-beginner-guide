@@ -16,7 +16,7 @@ namespace DspProgressionStatusExporter
         internal static bool BindExpertMode(ConfigFile config)
         {
             return config.Bind("General", "ExpertMode", DefaultExpertMode,
-                "Show all six Cube counters and DON'T PANIC using the WHITE phase. Restart the game after changing this setting.").Value;
+                "Show Import Blueprints, all six Cube counters and DON'T PANIC using the WHITE phase. Restart the game after changing this setting.").Value;
         }
     }
 }

@@ -44,7 +44,33 @@ if($null -ne $snapshot) {
     $snapshot.Invoke($controller,@()) | Out-Null
 }
 Assert ($script:navigations -eq 0 -and $script:snapshots -eq 0) 'Omitted Expert callback remained active'
+$script:imports=0
+$normalController=New 'GuidePanelController'
+$normalController.SetBlueprintImportAction([Action]{ $script:imports++ })
+$importCallback=$normalController.GetType().GetMethod('ImportBlueprints',$instanceFlags)
+$importCallback.Invoke($normalController,@()) | Out-Null
+Assert ($script:imports -eq 0) 'Normal-mode import callback remained active'
+$controller.SetBlueprintImportAction([Action]{ $script:imports++ })
+Assert ($script:imports -eq 0) 'Setting Expert import action triggered an import'
+foreach ($click in 1..2) { $importCallback.Invoke($controller,@()) | Out-Null }
+Assert ($script:imports -eq 2) 'Each Expert click must invoke import'
+
+# A synthetic native path keeps this fixture away from the player's library.
+Add-Type 'public static class GameConfig { public static string Folder; public static int Reads; public static string blueprintFolder { get { Reads++; return Folder; } } }'
+$importRoot=Join-Path $fixtures ([Guid]::NewGuid().ToString())
+[GameConfig]::Folder=$importRoot
+$pluginImport=$plugin.GetType().GetMethod('ImportBlueprints',$instanceFlags)
+$plugin.GetType().GetField('guidePanel',$instanceFlags).SetValue($plugin,$normalController)
+$pluginImport.Invoke($plugin,@()) | Out-Null
+Assert ([GameConfig]::Reads -eq 0 -and -not (Test-Path -LiteralPath $importRoot)) 'Normal plugin read/wrote the blueprint path'
+$plugin.GetType().GetField('guidePanel',$instanceFlags).SetValue($plugin,$controller)
+$pluginImport.Invoke($plugin,@()) | Out-Null
+Assert ([GameConfig]::Reads -eq 1 -and (Test-Path -LiteralPath (Join-Path $importRoot 'Guide Check/README.md'))) 'Expert plugin did not use the native blueprint path'
+[GameConfig]::Folder=$null
+$pluginImport.Invoke($plugin,@()) | Out-Null
+Assert ([GameConfig]::Reads -eq 2) 'Expert click did not resolve the current path or failed softly'
 $controller.Hide(); $controller.UpdateModel((PhasePanel (PhotonState) 'photon')); $controller.Tick(1.0)
 Assert (-not $controller.IsVisible) 'Hidden refresh reopened Expert overlay'
+Assert ($script:imports -eq 2) 'Hidden refresh automatically imported blueprints'
 $controller.Destroy()
-Write-Host 'BepInEx config binding, inert omitted callbacks and hidden lifecycle passed; Unity creation/layout requires workshop.'
+Write-Host 'BepInEx config binding, Expert-only import callbacks/native path, soft failure, inert omitted callbacks and hidden lifecycle passed; Unity creation/layout requires workshop.'

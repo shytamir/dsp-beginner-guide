@@ -4,7 +4,7 @@ param([Parameter(Mandatory)][string]$DllPath,[Parameter(Mandatory)][string]$Repo
 $ErrorActionPreference='Stop'
 $hostExe=(Get-Process -Id $PID).Path
 $lines=[Collections.Generic.List[string]]::new()
-foreach ($suite in @('Test-ProductionRisk','Test-ReceiverContinuity','Test-IlsJourney','Test-PhotonReadiness','Test-ExpertMode')) {
+foreach ($suite in @('Test-ProductionRisk','Test-ReceiverContinuity','Test-IlsJourney','Test-PhotonReadiness','Test-ExpertMode','Test-BlueprintImport')) {
     & $hostExe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "$suite.ps1") -DllPath $DllPath
     if($LASTEXITCODE -ne 0) { throw "$suite failed ($LASTEXITCODE)." }
     $lines.Add("- $suite`: passed")

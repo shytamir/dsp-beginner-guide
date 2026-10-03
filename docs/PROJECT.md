@@ -4,10 +4,13 @@
 
 DSP Guide Check **3.1.107** implements the DSP Practical Progression Guide
 **3.0** default critical path. The owner confirmed tag `3.1` and successful
-Thunderstore publication on 2026-09-24. The repository is in **maintenance mode**,
-with no active epic, story or acceptance gate.
+Thunderstore publication on 2026-09-24. The owner accepted all runtime validations
+for [EXPERT-BLUEPRINT-IMPORT-01](archive/project-management/EXPERT-BLUEPRINT-IMPORT-01.md)
+on 2026-10-04. The completed feature adds explicit Expert-only blueprint import.
+Publication preparation and minor-version promotion are authorized; the
+published baseline remains unchanged until publication is confirmed.
 
-[ROADMAP.md](ROADMAP.md) is the maintenance placeholder. The completed roadmap,
+[ROADMAP.md](ROADMAP.md) tracks this bounded work. The completed Guide 3.0 roadmap,
 implementation decisions and acceptance evidence were
 [archived together](archive/project-management/guide-3.0/ROADMAP.md).
 
@@ -57,7 +60,9 @@ warning system.
   remain separate in Next Actions.
 - The panel is hidden by default and never alerts by itself.
 - F8 never saves; `Save snapshot` is the deliberate diagnostic export.
-- The mod is read-only with respect to game and save state.
+- Runtime observation is read-only with respect to game and save state.
+  The explicit Expert-only import writes bundled files to the dedicated
+  `Guide Check` blueprint-library subfolder.
 - Collection, normalization, analysis, panel modeling, and UI remain separate.
 - Missing or renamed runtime evidence fails softly.
 - Combat and optional guide routes remain outside scope.
@@ -124,7 +129,9 @@ Normalized ObservedGameState
         on-demand Unity panel
 ```
 
-`Plugin.cs` owns lifecycle and export orchestration. Focused telemetry classes
+`Plugin.cs` owns lifecycle, export orchestration and the guarded blueprint-import
+callback. `BlueprintImporter.cs` writes the embedded pack to the native blueprint
+location on explicit request. Focused telemetry classes
 collect runtime evidence. `ObservedGameState.cs` normalizes it.
 `GuideAnalyzer.cs` and `GuideGateEngine.cs` interpret only the player-selected
 phase. `ManualPhaseNavigation.cs` owns per-playthrough selection.
@@ -210,16 +217,28 @@ rejected rather than written.
 ## Panel contract
 
 `[General] ExpertMode` defaults to false and is read once at startup. True creates
-only the existing Cube-rate bar and guide button under a non-intercepting root.
+the `Import Blueprints` button, Cube-rate bar and guide button under a
+non-intercepting root.
 No adjoining panel, header/body, navigation, collapse, stage selector, risk glyph
 or snapshot control is created. Expert mode fixes its effective phase to WHITE,
 showing all six Cube counters with WHITE rate/color policy and the WHITE guide
 anchor. This override is not persisted: normal mode retains its saved phase and
 ILS stage. F8 remains on-demand; switching modes requires a restart.
 
+`Import Blueprints` appears above Blue only in Expert mode, in both builds.
+Its guarded callback resolves native `GameConfig.blueprintFolder` on every
+click and extracts the complete embedded `DSP-Guide-Complete-Playthrough.zip`
+under `Guide Check`. Packaged files are written every time with silent overwrite;
+there is no automatic import, confirmation, change detection or success popup.
+Unrelated files are retained. The archive hierarchy is preserved, destination
+paths are confined to that subfolder, and redirected files/folders are rejected.
+Missing native path evidence or write failures produce a concise plugin-log
+warning; no fallback path is guessed. The archive is content, not executable code
+or imported game/save state. No telemetry or snapshot contract changes.
 
 The panel is click-through except for phase/ILS-stage navigation, collapse, explicit
-scrolling, `DON'T PANIC`, and the diagnostic build's `Save snapshot` control.
+scrolling, Expert-mode `Import Blueprints`, `DON'T PANIC`, and the diagnostic
+build's `Save snapshot` control.
 The public Thunderstore build omits snapshot control and its interaction path
 at compile time.
 

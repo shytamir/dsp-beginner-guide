@@ -40,6 +40,8 @@ namespace DspProgressionStatusExporter
         private const float RiskSignalIconSize = 28f;
         private const float DontPanicWidth = 98f;
         private const float DontPanicHeight = 37f;
+        private const float BlueprintImportWidth = 140f;
+        private const float BlueprintImportHeight = 28f;
 #if DSP_GUIDE_SNAPSHOT_CONTROL
         private const float SnapshotFeedbackSeconds = 2f;
 #endif
@@ -543,6 +545,7 @@ namespace DspProgressionStatusExporter
         private RectTransform snapshotLinkRect;
 #endif
         private RectTransform sourceGuideLinkRect;
+        private RectTransform blueprintImportRect;
         private RectTransform scrollUpRect;
         private RectTransform scrollDownRect;
         private RectTransform collapseButtonRect;
@@ -571,6 +574,7 @@ namespace DspProgressionStatusExporter
         private Func<bool> snapshotAction;
 #endif
         private Action<string> navigationAction;
+        private Action blueprintImportAction;
         private Action<string> warningAction;
         private bool nativeTextWarningLogged;
         private bool bodyCanScroll;
@@ -606,6 +610,11 @@ namespace DspProgressionStatusExporter
         public void SetNavigationAction(Action<string> action)
         {
             navigationAction = action;
+        }
+
+        public void SetBlueprintImportAction(Action action)
+        {
+            blueprintImportAction = action;
         }
 
         public void SetWarningAction(Action<string> action)
@@ -878,6 +887,7 @@ namespace DspProgressionStatusExporter
             if (!presentation.GuidanceEnabled)
             {
                 CreateCubeRateColumn();
+                CreateBlueprintImportButton();
                 CreateSourceGuideButton();
                 panelObject.transform.SetAsLastSibling();
                 panelObject.SetActive(false);
@@ -1061,6 +1071,20 @@ namespace DspProgressionStatusExporter
             riskSignalIcon.preserveAspect = true;
             riskSignalIcon.enabled = false;
 
+        }
+
+        private void CreateBlueprintImportButton()
+        {
+            Text text = CreateFooterLink(
+                "ImportBlueprints", cubeRateColumnRect, "Import Blueprints",
+                delegate { ImportBlueprints(); ClearButtonFocus(); }, out blueprintImportRect);
+            text.alignment = TextAnchor.MiddleCenter;
+        }
+
+        private void ImportBlueprints()
+        {
+            if (!presentation.ExpertMode || blueprintImportAction == null) return;
+            blueprintImportAction();
         }
 
         private void CreateSourceGuideButton()
@@ -1387,17 +1411,21 @@ namespace DspProgressionStatusExporter
 
         private void LayoutCubeRateColumn(float left, float top)
         {
+            float importInset = presentation.ExpertMode ? BlueprintImportHeight + CubeRateGap : 0f;
+            if (presentation.ExpertMode) SetTopRect(
+                blueprintImportRect, CubeRateSquareSize - BlueprintImportWidth,
+                0f, BlueprintImportWidth, BlueprintImportHeight);
             SetTopRect(
                 cubeRateColumnRect,
                 left,
                 top,
                 CubeRateSquareSize,
-                cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap));
+                importInset + cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap));
             for (int i = 0; i < cubeRateViews.Count; i++)
                 SetTopRect(
                     cubeRateViews[i].Root.GetComponent<RectTransform>(),
                     0f,
-                    i * (CubeRateSquareSize + CubeRateGap),
+                    importInset + i * (CubeRateSquareSize + CubeRateGap),
                     CubeRateSquareSize,
                     CubeRateSquareSize);
             if (riskSignalIcon != null) SetTopRect(
@@ -1409,7 +1437,7 @@ namespace DspProgressionStatusExporter
             SetTopRect(
                 sourceGuideLinkRect,
                 CubeRateSquareSize - DontPanicWidth,
-                cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap),
+                importInset + cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap),
                 DontPanicWidth,
                 DontPanicHeight);
         }
@@ -1419,8 +1447,9 @@ namespace DspProgressionStatusExporter
             ResetPanelAnchor();
             if (!presentation.GuidanceEnabled)
             {
-                panelWidth = Mathf.Max(CubeRateSquareSize, DontPanicWidth);
+                panelWidth = Mathf.Max(BlueprintImportWidth, DontPanicWidth);
                 panelRect.sizeDelta = new Vector2(panelWidth,
+                    BlueprintImportHeight + CubeRateGap +
                     cubeRateViews.Count * (CubeRateSquareSize + CubeRateGap) + DontPanicHeight);
                 LayoutCubeRateColumn(panelWidth - CubeRateSquareSize, 0f);
                 return;
@@ -2023,6 +2052,7 @@ namespace DspProgressionStatusExporter
             ResetScale(snapshotLinkRect);
 #endif
             ResetScale(sourceGuideLinkRect);
+            ResetScale(blueprintImportRect);
         }
 
         private static void ResetScale(RectTransform rect)

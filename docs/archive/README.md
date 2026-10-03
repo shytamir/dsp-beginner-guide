@@ -7,6 +7,9 @@ current shape, but they are not active work and do not override
 
 ## Project management
 
+- [Completed Expert-only blueprint import](project-management/EXPERT-BLUEPRINT-IMPORT-01.md).
+  The owner accepted all story validations on 2026-10-04; publication is tracked
+  separately in the current project state.
 - [Completed 3.1 compatibility and release record](project-management/RELEASE-3.1.107.md).
   The owner confirmed tag `3.1` and Thunderstore publication of 3.1.107 on
   2026-09-24; the compatibility and promotion work closed in maintenance mode.

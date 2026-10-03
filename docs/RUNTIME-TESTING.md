@@ -196,11 +196,17 @@ audit.
 ## Expert mode
 
 For both variants, set `[General] ExpertMode = true` and restart DSP. Confirm
-the overlay starts hidden, F8 opens/closes only the Cube-rate bar and working
-DON'T PANIC button, and no old panel area intercepts clicks. Check 1080p/4K,
+the overlay starts hidden, F8 opens/closes `Import Blueprints`, the Cube-rate bar
+and working DON'T PANIC button, and no old panel area intercepts clicks. Check 1080p/4K,
 refresh and save reload. All six Cube counters use WHITE, and the guide button
 opens WHITE regardless of the saved normal-mode phase or ILS stage.
 No navigation, collapse, scrolling, risk glyph or snapshot control may appear.
-Set false and restart to restore normal controls and stored selection.
+Check that `Import Blueprints` sits above Blue and writes the complete bundled
+pack beneath the native blueprint folder's `Guide Check` subfolder only when
+clicked. Open/reopen the native blueprint browser and open a supplied blueprint.
+Change an imported file and click again to confirm silent replacement; an
+unchanged repeat click must also work. No automatic import or prompts.
+Set false and restart to restore normal controls and stored selection, with no
+import button. Capture an Expert-mode screenshot and report any plugin warning.
 Automated policy/config/guard tests do not establish actual Unity layout or
 pointer behavior; verify those in game when the affected behavior changes.

@@ -105,11 +105,26 @@ namespace DspProgressionStatusExporter
             if (guidePanel.GuidanceEnabled) guidePanel.SetSnapshotAction(SaveSnapshotFromPanel);
 #endif
             if (guidePanel.GuidanceEnabled) guidePanel.SetNavigationAction(HandleGuideNavigation);
+            if (!guidePanel.GuidanceEnabled) guidePanel.SetBlueprintImportAction(ImportBlueprints);
             guidePanel.SetWarningAction(delegate(string message) {
                 if (Log != null) Log.LogWarning(message);
             });
 
             Log.LogInfo("DSP Guide Check loaded. Press " + snapshotKey.Value + " while playing.");
+        }
+
+        private void ImportBlueprints()
+        {
+            if (guidePanel.GuidanceEnabled) return;
+            try
+            {
+                string folder = GetStatic(FindType("GameConfig"), "blueprintFolder") as string;
+                BlueprintImporter.Import(folder);
+            }
+            catch (Exception ex)
+            {
+                if (Log != null) Log.LogWarning("Blueprint import failed: " + ex.Message);
+            }
         }
 
         private void Update()

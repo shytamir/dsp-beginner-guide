@@ -14,7 +14,8 @@ status summary based on what your factory is doing now.
 - Stable objectives, Cube production counters and concise shortage advice.
 - A collapsible panel with a direct link to the matching guide section.
 - Optional [Expert mode](#expert-mode): set `ExpertMode = true` in the config
-  for all six Cube counters and `DON'T PANIC`, without the guidance panel.
+  for `Import Blueprints`, all six Cube counters and `DON'T PANIC`, without
+  the guidance panel.
 
 ## Quick start
 
@@ -34,13 +35,23 @@ unsolicited alerts.
 
 ## Expert mode
 
-For only the Cube-rate bar and `DON'T PANIC` button, set
+For `Import Blueprints`, the Cube-rate bar and `DON'T PANIC`, set
 `[General] ExpertMode = true` in the mod's BepInEx config and restart DSP.
 It defaults to false. F8 still opens and closes the overlay. Expert mode shows
 all six Cube counters and opens the guide at WHITE. Set false and restart to
 restore the guidance panel, navigation controls and your saved phase and ILS stage.
 The adjoining panel is hidden in Expert mode, including the collapse control,
 Previous/Next arrows and ILS stage selector.
+
+`Import Blueprints` appears above the Blue Cube counter only in Expert mode.
+Each click unpacks the bundled guide playthrough collection into the `Guide Check`
+subfolder of DSP's configured blueprint folder. It silently overwrites matching
+files every time, preserves the pack's folder structure and leaves unrelated
+files alone. Imports are never automatic; failures appear in the plugin log.
+
+After importing, open or reopen DSP's blueprint browser and select `Guide Check`
+to browse and use the collection. Copy any blueprint you want to customize to
+another folder first: importing again restores the bundled files.
 
 ## Installation
 
