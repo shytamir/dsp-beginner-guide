@@ -7,8 +7,11 @@ DSP Guide Check **3.1.107** implements the DSP Practical Progression Guide
 Thunderstore publication on 2026-09-24. The owner accepted all runtime validations
 for [EXPERT-BLUEPRINT-IMPORT-01](archive/project-management/EXPERT-BLUEPRINT-IMPORT-01.md)
 on 2026-10-04. The completed feature adds explicit Expert-only blueprint import.
-Publication preparation and minor-version promotion are authorized; the
-published baseline remains unchanged until publication is confirmed.
+The source release line is now **3.2**. `VERSION`, local plugin/exporter constants
+and local assembly/file defaults were promoted together on 2026-10-04, following
+successful feature [CI run 109](https://github.com/shytamir/dsp-beginner-guide/actions/runs/37162651398).
+CI supplies the patch number and commit-bearing diagnostic label. Publication
+is pending; the published baseline remains unchanged until it is confirmed.
 
 [ROADMAP.md](ROADMAP.md) tracks this bounded work. The completed Guide 3.0 roadmap,
 implementation decisions and acceptance evidence were
@@ -294,6 +297,7 @@ in one combined input objective and a separate stationary-stock objective. This 
 | Contract | Version |
 |---|---:|
 | Published mod | 3.1.107 |
+| Source release line | 3.2 (publication pending) |
 | Snapshot schema | 2.24 |
 | Normalized state | 2.8 |
 | Guide selection | 1.7 |

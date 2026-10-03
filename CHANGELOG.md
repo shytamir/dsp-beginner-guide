@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 3.2 — publication pending
+
+Minor version promoted on 2026-10-04 after owner acceptance. CI supplies the
+patch number; package/plugin versions are `3.2.N`, assembly/file versions are
+`3.2.N.0`, and diagnostic labels include the source commit. The published
+baseline remains 3.1.107 until the new package is published.
 
 - Added Expert-only `Import Blueprints` above the Blue Cube counter. Every click
   writes the embedded complete-playthrough pack into `Guide Check` inside DSP's

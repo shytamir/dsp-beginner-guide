@@ -4,12 +4,14 @@ DSP Guide Check is preparing an accepted feature for publication. Version **3.1.
 was published successfully, as confirmed by the owner on 2026-09-24. It
 implements the DSP Practical Progression Guide **3.0** default critical path.
 
-The game-compatibility and version-promotion work is complete.
+The previous 3.1 game-compatibility and publication work is complete.
 
 - **EXPERT-BLUEPRINT-IMPORT-01:** [Completed Expert-only blueprint import](archive/project-management/EXPERT-BLUEPRINT-IMPORT-01.md).
   Automated checks passed; the owner accepted all story validations on 2026-10-04.
-- **Release preparation:** Check player instructions and packaging, promote the
-  minor version using the established version mapping, and verify the CI artifacts.
+- **Release preparation:** Player instructions and the changelog include the
+  accepted feature. The source release line is promoted to **3.2** after successful
+  feature CI run 109. Use the promoted commit's verified CI package for publication;
+  CI supplies the patch number. Tagging and store publication remain separate.
 
 No implementation story or human-validation gate remains open. Publication is
 pending; no other epic or story is active.

@@ -92,8 +92,9 @@ for reporting, source builds and diagnostic guidance.
 
 The published version is **3.1.107**, tagged `3.1`. The
 [Expert-only import](docs/archive/project-management/EXPERT-BLUEPRINT-IMPORT-01.md)
-was accepted by the owner on 2026-10-04 and is being prepared for publication;
-it is not part of that published baseline. See
+was accepted by the owner on 2026-10-04 and promoted into the **3.2** release
+line. Publication is pending; it is not part of that published baseline. CI
+supplies the patch number in each `3.2.N` package. See
 [project state](docs/PROJECT.md), [current work](docs/ROADMAP.md) and
 [release history](CHANGELOG.md).
 
