@@ -7,7 +7,7 @@ namespace DspProgressionStatusExporter
     internal static class BlueprintImporter
     {
         private const string ResourceName =
-            "DspGuideCheck.Blueprints.DSP-Guide-Complete-Playthrough.zip";
+            "DspGuideCheck.Blueprints.DSP-Guide-Blueprint-Collection-Ready.zip";
 
         internal static void Import(string blueprintFolder)
         {

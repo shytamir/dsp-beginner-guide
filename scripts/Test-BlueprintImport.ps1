@@ -23,12 +23,12 @@ function Assert-Rejected([string]$Root) {
 }
 Assert-Rejected $null
 Assert-Rejected 'relative-blueprint-path'
-$resource = $assembly.GetManifestResourceStream('DspGuideCheck.Blueprints.DSP-Guide-Complete-Playthrough.zip')
+$resource = $assembly.GetManifestResourceStream('DspGuideCheck.Blueprints.DSP-Guide-Blueprint-Collection-Ready.zip')
 Assert ($null -ne $resource) 'Bundled archive missing'
 $sha = [Security.Cryptography.SHA256]::Create()
 try {
     $embeddedHash = [BitConverter]::ToString($sha.ComputeHash($resource)).Replace('-', '').ToLowerInvariant()
-    $suppliedHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repo 'src/DspProgressionStatusExporter/Assets/Blueprints/DSP-Guide-Complete-Playthrough.zip')).Hash.ToLowerInvariant()
+    $suppliedHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repo 'src/DspProgressionStatusExporter/Assets/Blueprints/DSP-Guide-Blueprint-Collection-Ready.zip')).Hash.ToLowerInvariant()
     Assert ($embeddedHash -ceq $suppliedHash) 'Embedded archive differs from the supplied package'
     $resource.Position = 0
     $archive = [IO.Compression.ZipArchive]::new($resource, [IO.Compression.ZipArchiveMode]::Read, $true)

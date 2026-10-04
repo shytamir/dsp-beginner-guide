@@ -11,6 +11,10 @@ baseline remains 3.1.107 until the new package is published.
   writes the embedded complete-playthrough pack into `Guide Check` inside DSP's
   configured blueprint folder, silently overwriting matching files. Normal mode
   cannot invoke the action. Game/save state and snapshot contracts are unchanged.
+- Replaced the outdated bundle with the owner's `DSP-Guide-Blueprint-Collection-Ready.zip`:
+  the same 56 blueprints with shorter descriptions, plus 68 Markdown files.
+  The collection omits previews, JSON files and other unnecessary material.
+  Import behavior is unchanged; files left by earlier imports are not deleted.
 - The owner accepted all runtime validations on 2026-10-04, including placement,
   blueprint discovery, repeat imports and normal-mode absence in both variants.
   [EXPERT-BLUEPRINT-IMPORT-01](docs/archive/project-management/EXPERT-BLUEPRINT-IMPORT-01.md)

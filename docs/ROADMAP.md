@@ -10,8 +10,10 @@ The previous 3.1 game-compatibility and publication work is complete.
   Automated checks passed; the owner accepted all story validations on 2026-10-04.
 - **Release preparation:** Player instructions and the changelog include the
   accepted feature. The source release line is promoted to **3.2** after successful
-  feature CI run 109. Use the promoted commit's verified CI package for publication;
-  CI supplies the patch number. Tagging and store publication remain separate.
+  feature CI run 109. The owner subsequently supplied the trimmed blueprint
+  collection recorded in [PROJECT.md](PROJECT.md). Use the latest verified 3.2
+  CI package containing that replacement for publication; CI supplies the patch
+  number. Tagging and store publication remain separate.
 
 No implementation story or human-validation gate remains open. Publication is
 pending; no other epic or story is active.

@@ -230,8 +230,12 @@ ILS stage. F8 remains on-demand; switching modes requires a restart.
 
 `Import Blueprints` appears above Blue only in Expert mode, in both builds.
 Its guarded callback resolves native `GameConfig.blueprintFolder` on every
-click and extracts the complete embedded `DSP-Guide-Complete-Playthrough.zip`
-under `Guide Check`. Packaged files are written every time with silent overwrite;
+click and extracts the embedded `DSP-Guide-Blueprint-Collection-Ready.zip`
+under `Guide Check`. The owner supplied this replacement on 2026-10-04: 124 files
+(56 blueprints and 68 Markdown files), with shorter descriptions and no previews
+or JSON files. Its SHA-256 is
+`12975f38eae4fee950d9877f51904a72774cde67b5b892f6cf3ea12a530eff9c`.
+Packaged files are written every time with silent overwrite;
 there is no automatic import, confirmation, change detection or success popup.
 Unrelated files are retained. The archive hierarchy is preserved, destination
 paths are confined to that subfolder, and redirected files/folders are rejected.

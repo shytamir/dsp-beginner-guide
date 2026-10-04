@@ -22,8 +22,8 @@
 
   <ItemGroup>
     <Reference Include="System.IO.Compression" />
-    <EmbeddedResource Include="Assets\Blueprints\DSP-Guide-Complete-Playthrough.zip"
-                      LogicalName="DspGuideCheck.Blueprints.DSP-Guide-Complete-Playthrough.zip" />
+    <EmbeddedResource Include="Assets\Blueprints\DSP-Guide-Blueprint-Collection-Ready.zip"
+                      LogicalName="DspGuideCheck.Blueprints.DSP-Guide-Blueprint-Collection-Ready.zip" />
     <EmbeddedResource Include="Assets\Fonts\Basic-Regular.ttf"
                       LogicalName="DspGuideCheck.Fonts.Basic-Regular.ttf" />
     <EmbeddedResource Include="Assets\Fonts\Basic-OFL.txt"
