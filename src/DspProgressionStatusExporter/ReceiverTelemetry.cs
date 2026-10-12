@@ -25,8 +25,10 @@ namespace DspProgressionStatusExporter
             public string PlanetName;
             public int EntityId;
             public int ProductId;
-            public int CatalystId;
+            public int CurrentCatalystId;
             public int CatalystPoints;
+            public int BufferedCatalystId;
+            public int BufferedCatalystCount;
             public double Warmup;
             public double Strength;
             public double RequestedPowerWatts;
@@ -140,10 +142,14 @@ namespace DspProgressionStatusExporter
                             EntityId = entityId,
                             ProductId = Plugin.ToInt(
                                 Plugin.GetMember(component, "productId")),
-                            CatalystId = Plugin.ToInt(
-                                Plugin.GetMember(component, "catalystId")),
+                            CurrentCatalystId = Plugin.ToInt(
+                                Plugin.GetMember(component, "curCatalystId")),
                             CatalystPoints = Plugin.ToInt(
                                 Plugin.GetMember(component, "catalystPoint")),
+                            BufferedCatalystId = Plugin.ToInt(
+                                Plugin.GetMember(component, "catalystId")),
+                            BufferedCatalystCount = Plugin.ToInt(
+                                Plugin.GetMember(component, "catalystCount")),
                             Warmup = Plugin.ToDouble(
                                 Plugin.GetMember(component, "warmup")),
                             Strength = Plugin.ToDouble(
@@ -235,10 +241,12 @@ namespace DspProgressionStatusExporter
                     history.Count >= MinimumSamples;
                 bool configuredNow =
                     latest.ProductId == CriticalPhotonItemId;
-                bool lensedNow =
-                    configuredNow &&
-                    latest.CatalystId == GravitonLensItemId &&
-                    latest.CatalystPoints > 0;
+                bool lensedNow = IsLensedSample(
+                    latest.ProductId,
+                    latest.CurrentCatalystId,
+                    latest.CatalystPoints,
+                    latest.BufferedCatalystId,
+                    latest.BufferedCatalystCount);
                 bool fullNow =
                     configuredNow && latest.Strength >= 0.999;
                 bool continuous =
@@ -251,10 +259,12 @@ namespace DspProgressionStatusExporter
                 {
                     bool sampleConfigured =
                         sample.ProductId == CriticalPhotonItemId;
-                    bool sampleLensed =
-                        sampleConfigured &&
-                        sample.CatalystId == GravitonLensItemId &&
-                        sample.CatalystPoints > 0;
+                    bool sampleLensed = IsLensedSample(
+                        sample.ProductId,
+                        sample.CurrentCatalystId,
+                        sample.CatalystPoints,
+                        sample.BufferedCatalystId,
+                        sample.BufferedCatalystCount);
                     lensSustained = lensSustained && sampleLensed;
                     if (!sampleConfigured ||
                         !sampleLensed ||
@@ -297,8 +307,16 @@ namespace DspProgressionStatusExporter
                     { "productId", latest.ProductId },
                     { "lensedNow", lensedNow },
                     { "lensSustained", lensSustained },
-                    { "catalystId", latest.CatalystId },
+                    { "catalystId", latest.BufferedCatalystId },
                     { "catalystPoints", latest.CatalystPoints },
+                    { "currentCatalystId", latest.CurrentCatalystId },
+                    { "bufferedCatalystId", latest.BufferedCatalystId },
+                    { "bufferedCatalystCount", latest.BufferedCatalystCount },
+                    { "effectiveCatalystId", EffectiveCatalystId(
+                        latest.CurrentCatalystId,
+                        latest.CatalystPoints,
+                        latest.BufferedCatalystId,
+                        latest.BufferedCatalystCount) },
                     { "continuousReceivingNow", continuous },
                     { "warmupNow", latest.Warmup },
                     { "minimumWarmup", minimumWarmup },
@@ -337,6 +355,32 @@ namespace DspProgressionStatusExporter
         {
             return windowReady &&
                 unhealthySampleCount <= MaximumUnhealthySamples;
+        }
+
+        internal static int EffectiveCatalystId(
+            int currentCatalystId,
+            int catalystPoints,
+            int bufferedCatalystId,
+            int bufferedCatalystCount)
+        {
+            if (catalystPoints > 0) return currentCatalystId;
+            if (bufferedCatalystCount > 0) return bufferedCatalystId;
+            return 0;
+        }
+
+        internal static bool IsLensedSample(
+            int productId,
+            int currentCatalystId,
+            int catalystPoints,
+            int bufferedCatalystId,
+            int bufferedCatalystCount)
+        {
+            return productId == CriticalPhotonItemId &&
+                EffectiveCatalystId(
+                    currentCatalystId,
+                    catalystPoints,
+                    bufferedCatalystId,
+                    bufferedCatalystCount) == GravitonLensItemId;
         }
 
         private static string Key(int planetId, int entityId)

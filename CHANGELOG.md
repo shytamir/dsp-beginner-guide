@@ -19,6 +19,10 @@ baseline remains 3.1.107 until the new package is published.
   blueprint discovery, repeat imports and normal-mode absence in both variants.
   [EXPERT-BLUEPRINT-IMPORT-01](docs/archive/project-management/EXPERT-BLUEPRINT-IMPORT-01.md)
   preserves the implementation and acceptance evidence.
+- Corrected Ray Receiver lens evidence to follow DSP's active-first,
+  buffered-second catalyst state. Diagnostic snapshots now expose the native
+  fields behind that decision under normalized-state contract 2.9 and snapshot
+  schema 2.25; owner validation on DSP `0.10.35.29131` remains pending.
 
 ## 3.1.107 — 2026-09-24
 

@@ -13,12 +13,11 @@ successful feature [CI run 109](https://github.com/shytamir/dsp-beginner-guide/a
 CI supplies the patch number and commit-bearing diagnostic label. Publication
 is pending; the published baseline remains unchanged until it is confirmed.
 
-[ROADMAP.md](ROADMAP.md) now tracks the single implementation-ready
+[ROADMAP.md](ROADMAP.md) now tracks the single implemented
 `RECEIVER-LENS-HOTFIX-01` compatibility story for DSP `0.10.35.29131`. The
-hotfix corrects active-versus-buffered Graviton Lens evidence; implementation
-and runtime acceptance remain pending, and the roadmap does not authorize code
-changes by itself. The completed Guide 3.0 roadmap, implementation decisions and
-acceptance evidence were
+hotfix corrects active-versus-buffered Graviton Lens evidence; owner runtime
+acceptance remains pending. The completed Guide 3.0 roadmap, implementation
+decisions and acceptance evidence were
 [archived together](archive/project-management/guide-3.0/ROADMAP.md).
 
 The published package came from source `1a56195cf09cb227763a369fc9fde4057f10e43d`,
@@ -213,7 +212,7 @@ does not materialize the unused full normalized-state diagnostic export.
 
 ## Snapshot contract
 
-Snapshot schema 2.24 serializes the selected-phase conclusions used by the
+Snapshot schema 2.25 serializes the selected-phase conclusions used by the
 panel plus only the evidence needed to audit implemented functions. It
 includes provenance, playtime, research and Cube aggregates, selection
 diagnostics including selected ILS stage/origin, Mission Completed progress when available, focused evidence,
@@ -222,7 +221,9 @@ coverage, performance, and explicit omission or truncation markers.
 
 Broad factory, technology, station-slot, inventory, topology, and all-item
 dumps are excluded. Receiver detail is capped, and exports above 256 KiB are
-rejected rather than written.
+rejected rather than written. Receiver detail exposes active, buffered and
+effective catalyst IDs plus active points and buffered count so lens-state
+decisions can be audited.
 
 ## Panel contract
 
@@ -309,8 +310,8 @@ in one combined input objective and a separate stationary-stock objective. This 
 |---|---:|
 | Published mod | 3.1.107 |
 | Source release line | 3.2 (publication pending) |
-| Snapshot schema | 2.24 |
-| Normalized state | 2.8 |
+| Snapshot schema | 2.25 |
+| Normalized state | 2.9 |
 | Guide selection | 1.7 |
 | Guide analysis | 3.13 |
 | Progression | 3.10 |

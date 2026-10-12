@@ -238,6 +238,11 @@ namespace DspProgressionStatusExporter
         public bool ConfiguredForPhotonGeneration;
         public bool LensedNow;
         public bool LensSustained;
+        public int CurrentCatalystId;
+        public int CatalystPoints;
+        public int BufferedCatalystId;
+        public int BufferedCatalystCount;
+        public int EffectiveCatalystId;
         public bool ContinuousReceivingNow;
         public double WarmupNow;
         public double MinimumWarmup;
@@ -373,7 +378,7 @@ namespace DspProgressionStatusExporter
         public Dictionary<string, object> Export()
         {
             var result = new Dictionary<string, object>();
-            result["modelVersion"] = "2.8";
+            result["modelVersion"] = "2.9";
             result["photonReadiness"] = ExportPhotonInputs();
             result["playerInventoryAvailable"] = PlayerInventoryAvailable;
             result["playerLocationAvailable"] = PlayerLocationAvailable;
@@ -1235,6 +1240,16 @@ namespace DspProgressionStatusExporter
                             GetValue(receiver, "lensedNow")),
                         LensSustained = ToBool(
                             GetValue(receiver, "lensSustained")),
+                        CurrentCatalystId = Plugin.ToInt(
+                            GetValue(receiver, "currentCatalystId")),
+                        CatalystPoints = Plugin.ToInt(
+                            GetValue(receiver, "catalystPoints")),
+                        BufferedCatalystId = Plugin.ToInt(
+                            GetValue(receiver, "bufferedCatalystId")),
+                        BufferedCatalystCount = Plugin.ToInt(
+                            GetValue(receiver, "bufferedCatalystCount")),
+                        EffectiveCatalystId = Plugin.ToInt(
+                            GetValue(receiver, "effectiveCatalystId")),
                         ContinuousReceivingNow = ToBool(
                             GetValue(
                                 receiver,
@@ -1502,6 +1517,11 @@ namespace DspProgressionStatusExporter
                     { "configuredForPhotonGeneration", receiver.ConfiguredForPhotonGeneration },
                     { "lensedNow", receiver.LensedNow },
                     { "lensSustained", receiver.LensSustained },
+                    { "currentCatalystId", receiver.CurrentCatalystId },
+                    { "catalystPoints", receiver.CatalystPoints },
+                    { "bufferedCatalystId", receiver.BufferedCatalystId },
+                    { "bufferedCatalystCount", receiver.BufferedCatalystCount },
+                    { "effectiveCatalystId", receiver.EffectiveCatalystId },
                     { "continuousReceivingNow", receiver.ContinuousReceivingNow },
                     { "warmupNow", receiver.WarmupNow },
                     { "minimumWarmup", receiver.MinimumWarmup },

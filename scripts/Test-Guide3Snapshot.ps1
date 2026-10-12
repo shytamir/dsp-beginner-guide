@@ -17,12 +17,18 @@ foreach($phase in @('blue','red','ils','yellow','purple','green','dyson','photon
         $state=if($phase -eq 'ils'){ReceiptState}else{PhotonState}
         if($phase -eq 'ils') { ObserveReceipt (New 'IlsReceiptTracker') ([object]::new()) $state | Out-Null }
         $irrelevant=New 'ObservedItemFlow'; SetField $irrelevant 'ItemId' 9999; SetField $irrelevant 'Name' ('UNRELATED-DATA-' * 20000); (Field $state 'ItemFlows')[9999]=$irrelevant
-        foreach($i in 1..20) { (Field (Field $state 'Dyson') 'Receivers').Add((New 'ObservedReceiverState')) }
+        $receiver=New 'ObservedReceiverState'
+        SetField $receiver 'CurrentCatalystId' 1209
+        SetField $receiver 'CatalystPoints' 1200
+        SetField $receiver 'EffectiveCatalystId' 1209
+        SetField $receiver 'LensedNow' $true
+        (Field (Field $state 'Dyson') 'Receivers').Add($receiver)
+        foreach($i in 2..20) { (Field (Field $state 'Dyson') 'Receivers').Add((New 'ObservedReceiverState')) }
         $analysis=Call 'GuideAnalyzer' 'AnalyzeSelected' @($state,$phase,$stage)
         $panel=Call 'GuidePanelModelBuilder' 'Build' @($analysis,$state,$null,$null,$null)
         $empty=[Collections.Generic.Dictionary[string,object]]::new()
         $selection=(Selection "nav3;phase=$phase;ils=$stage;ilsOrigin=manual-control").Export('fixture')
-        $snapshot=Call 'CompactSnapshotBuilder' 'Build' @('2.24','fixture',$empty,$empty,$empty,$empty,$state,$selection,$analysis,$panel.Export(),$empty,$false)
+        $snapshot=Call 'CompactSnapshotBuilder' 'Build' @('2.25','fixture',$empty,$empty,$empty,$empty,$state,$selection,$analysis,$panel.Export(),$empty,$false)
         $snapshot.Remove('exportedAtUtc') | Out-Null
         $json=Call 'Json' 'Stringify' (,$snapshot)
         $bytes=[Text.Encoding]::UTF8.GetByteCount($json); $maximumBytes=[Math]::Max($maximumBytes,$bytes)
@@ -34,6 +40,12 @@ foreach($phase in @('blue','red','ils','yellow','purple','green','dyson','photon
             Assert ($snapshot['evidence']['logistics']['stageEvidence']['transportPackage'].ContainsKey('available')) 'Availability provenance absent'
         }
         if($phase -eq 'photon') { Assert ($snapshot['evidence']['photonReadiness'].Count -eq 6) 'Six-input provenance absent' }
+        if($phase -in @('dyson','photon','white')) {
+            $receiverEvidence=$snapshot['evidence']['dyson']['receivers']['details'][0]
+            Assert ($receiverEvidence['currentCatalystId'] -eq 1209) 'Active receiver lens evidence absent'
+            Assert ($receiverEvidence['bufferedCatalystCount'] -eq 0) 'Receiver buffer-count evidence absent'
+            Assert ($receiverEvidence['effectiveCatalystId'] -eq 1209) 'Effective receiver lens evidence absent'
+        }
         $documents["$phase-$stage"]=$snapshot
     }
 }

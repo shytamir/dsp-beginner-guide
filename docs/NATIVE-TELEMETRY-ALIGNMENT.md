@@ -67,6 +67,9 @@ inventory/deployment sources and selected endpoint identities.
   aggregate totals.
 - Ejectors and silos use their dedicated component pools.
 - Ray Receiver configuration and continuity use the dedicated generator pool.
+  Effective lens state follows the native active-first rule: `curCatalystId`
+  while `catalystPoint` remains, then buffered `catalystId` while
+  `catalystCount` is positive.
 
 ## Collection boundaries
 

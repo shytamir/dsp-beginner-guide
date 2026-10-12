@@ -3,10 +3,10 @@
 ## Status and authority
 
 This roadmap replaces the maintenance placeholder with one bounded compatibility
-hotfix. Planning is complete and the story is ready for implementation, but this
-document does not authorize implementation by itself. The published baseline,
-the source release line and the last owner-confirmed game compatibility remain
-unchanged until their separate gates are completed.
+hotfix. Implementation and automated validation are complete; the owner runtime
+gate is open. The published baseline, source release line and last
+owner-confirmed game compatibility remain unchanged until their separate gates
+are completed.
 
 The evidence source is the read-only DSP `0.10.35.29131` comparison retained
 outside this repository. It confirms that Ray Receiver lens calculations use the
@@ -106,9 +106,10 @@ must accept the gate before compatibility documentation can name
 
 ## Sequence
 
-1. Receive explicit implementation authorization.
-2. Implement the collector and evidence correction with focused tests.
-3. Build both variants and push only when requested.
+1. ~~Receive explicit implementation authorization.~~ Completed.
+2. ~~Implement the collector and evidence correction with focused tests.~~
+   Completed.
+3. ~~Build both variants and push only when requested.~~ Completed.
 4. Run and accept the focused runtime gate.
 5. Reconcile compatibility documentation, archive this roadmap and return the
    project to maintenance mode.

@@ -18,6 +18,14 @@ $evaluate = $type.GetMethod('IsSustainedHealthy', $flags)
 if ($null -eq $evaluate) {
     throw 'Receiver continuity policy method was not found.'
 }
+$effectiveCatalyst = $type.GetMethod('EffectiveCatalystId', $flags)
+if ($null -eq $effectiveCatalyst) {
+    throw 'Receiver effective-catalyst policy method was not found.'
+}
+$isLensed = $type.GetMethod('IsLensedSample', $flags)
+if ($null -eq $isLensed) {
+    throw 'Receiver lens policy method was not found.'
+}
 
 function Assert-Continuity {
     param(
@@ -42,4 +50,58 @@ Assert-Continuity 'Two unhealthy samples' $true 2 $true
 Assert-Continuity 'Third unhealthy sample' $true 3 $false
 Assert-Continuity 'Recovery after an old failure expires' $true 2 $true
 
-Write-Output 'Receiver continuity tests passed.'
+function Assert-EffectiveCatalyst {
+    param(
+        [string]$Name,
+        [int]$CurrentId,
+        [int]$CurrentPoints,
+        [int]$BufferedId,
+        [int]$BufferedCount,
+        [int]$Expected
+    )
+    $actual = [int]$effectiveCatalyst.Invoke(
+        $null,
+        @($CurrentId, $CurrentPoints, $BufferedId, $BufferedCount)
+    )
+    if ($actual -ne $Expected) {
+        throw "$Name returned $actual; expected $Expected."
+    }
+}
+
+function Assert-Lensed {
+    param(
+        [string]$Name,
+        [int]$ProductId,
+        [int]$CurrentId,
+        [int]$CurrentPoints,
+        [int]$BufferedId,
+        [int]$BufferedCount,
+        [bool]$Expected
+    )
+    $actual = [bool]$isLensed.Invoke(
+        $null,
+        @(
+            $ProductId,
+            $CurrentId,
+            $CurrentPoints,
+            $BufferedId,
+            $BufferedCount
+        )
+    )
+    if ($actual -ne $Expected) {
+        throw "$Name returned $actual; expected $Expected."
+    }
+}
+
+Assert-EffectiveCatalyst 'Active lens with empty buffer' 1209 1200 0 0 1209
+Assert-EffectiveCatalyst 'Buffered lens without active lens' 0 0 1209 2 1209
+Assert-EffectiveCatalyst 'No active or buffered lens' 1209 0 1209 0 0
+Assert-EffectiveCatalyst 'Active item takes native precedence' 9999 1200 1209 2 9999
+Assert-Lensed 'Active lens is accepted' 1208 1209 1200 0 0 $true
+Assert-Lensed 'Buffered lens is accepted' 1208 0 0 1209 2 $true
+Assert-Lensed 'No lens is rejected' 1208 1209 0 1209 0 $false
+Assert-Lensed 'Non-lens active item is rejected' 1208 9999 1200 1209 2 $false
+Assert-Lensed 'Wrong receiver mode is rejected' 0 1209 1200 0 0 $false
+Assert-Lensed 'Missing reflected evidence fails softly' 1208 0 0 0 0 $false
+
+Write-Output 'Receiver lens and continuity tests passed.'
