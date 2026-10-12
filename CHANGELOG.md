@@ -22,7 +22,8 @@ baseline remains 3.1.107 until the new package is published.
 - Corrected Ray Receiver lens evidence to follow DSP's active-first,
   buffered-second catalyst state. Diagnostic snapshots now expose the native
   fields behind that decision under normalized-state contract 2.9 and snapshot
-  schema 2.25; owner validation on DSP `0.10.35.29131` remains pending.
+  schema 2.25. The owner accepted the focused diagnostic and public runtime gate
+  on DSP `0.10.35.29131` on 2026-10-12 with no visible regression.
 
 ## 3.1.107 — 2026-09-24
 

@@ -13,12 +13,13 @@ successful feature [CI run 109](https://github.com/shytamir/dsp-beginner-guide/a
 CI supplies the patch number and commit-bearing diagnostic label. Publication
 is pending; the published baseline remains unchanged until it is confirmed.
 
-[ROADMAP.md](ROADMAP.md) now tracks the single implemented
-`RECEIVER-LENS-HOTFIX-01` compatibility story for DSP `0.10.35.29131`. The
-hotfix corrects active-versus-buffered Graviton Lens evidence; owner runtime
-acceptance remains pending. The completed Guide 3.0 roadmap, implementation
-decisions and acceptance evidence were
-[archived together](archive/project-management/guide-3.0/ROADMAP.md).
+[ROADMAP.md](ROADMAP.md) is the maintenance placeholder with no active story or
+validation gate. The owner accepted `RECEIVER-LENS-HOTFIX-01` with both build
+variants on 2026-10-12, confirming DSP `0.10.35.29131` compatibility and the
+correct active-versus-buffered Graviton Lens behavior. The completed story and
+acceptance evidence are [archived](archive/project-management/RECEIVER-LENS-HOTFIX-01.md).
+The completed Guide 3.0 roadmap, implementation decisions and acceptance
+evidence were [archived together](archive/project-management/guide-3.0/ROADMAP.md).
 
 The published package came from source `1a56195cf09cb227763a369fc9fde4057f10e43d`,
 tag `3.1`, and [CI run 107](https://github.com/shytamir/dsp-beginner-guide/actions/runs/35921824373).
@@ -31,9 +32,10 @@ The owner confirmed all existing validations pass with DSP Early Access
 snapshot contracts remained unchanged. Compatibility documentation, promotion,
 artifact verification and publication are complete; their evidence is retained
 in the [3.1 release record](archive/project-management/RELEASE-3.1.107.md).
-DSP `0.10.35.29131` is under bounded compatibility review through the active
-receiver hotfix and must not be represented as owner-confirmed until that
-runtime gate passes.
+The owner confirmed both diagnostic and public variants on DSP Early Access
+`0.10.35.29131` on 2026-10-12. The focused receiver evidence proved that an
+actively consumed Graviton Lens remains recognized after its input buffer
+empties, and the owner observed no visible regression.
 
 Maintenance intake is limited to:
 

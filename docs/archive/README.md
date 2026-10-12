@@ -7,6 +7,9 @@ current shape, but they are not active work and do not override
 
 ## Project management
 
+- [Completed DSP 0.10.35.29131 receiver lens hotfix](project-management/RECEIVER-LENS-HOTFIX-01.md).
+  The owner accepted both variants on 2026-10-12 after diagnostic evidence
+  confirmed native active-lens precedence with an empty input buffer.
 - [Completed Expert-only blueprint import](project-management/EXPERT-BLUEPRINT-IMPORT-01.md).
   The owner accepted all story validations on 2026-10-04; publication is tracked
   separately in the current project state.
