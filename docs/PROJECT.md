@@ -13,8 +13,12 @@ successful feature [CI run 109](https://github.com/shytamir/dsp-beginner-guide/a
 CI supplies the patch number and commit-bearing diagnostic label. Publication
 is pending; the published baseline remains unchanged until it is confirmed.
 
-[ROADMAP.md](ROADMAP.md) tracks this bounded work. The completed Guide 3.0 roadmap,
-implementation decisions and acceptance evidence were
+[ROADMAP.md](ROADMAP.md) now tracks the single implementation-ready
+`RECEIVER-LENS-HOTFIX-01` compatibility story for DSP `0.10.35.29131`. The
+hotfix corrects active-versus-buffered Graviton Lens evidence; implementation
+and runtime acceptance remain pending, and the roadmap does not authorize code
+changes by itself. The completed Guide 3.0 roadmap, implementation decisions and
+acceptance evidence were
 [archived together](archive/project-management/guide-3.0/ROADMAP.md).
 
 The published package came from source `1a56195cf09cb227763a369fc9fde4057f10e43d`,
@@ -28,6 +32,9 @@ The owner confirmed all existing validations pass with DSP Early Access
 snapshot contracts remained unchanged. Compatibility documentation, promotion,
 artifact verification and publication are complete; their evidence is retained
 in the [3.1 release record](archive/project-management/RELEASE-3.1.107.md).
+DSP `0.10.35.29131` is under bounded compatibility review through the active
+receiver hotfix and must not be represented as owner-confirmed until that
+runtime gate passes.
 
 Maintenance intake is limited to:
 
